@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
-from enquiries import models
+from app.enquiries import models
 
 
 

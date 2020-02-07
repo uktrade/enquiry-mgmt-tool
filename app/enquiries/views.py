@@ -3,7 +3,7 @@ from rest_framework import generics, viewsets
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 
-from enquiries import models, serializers
+from app.enquiries import models, serializers
 
 
 class EnquiryViewSet(viewsets.ModelViewSet):
