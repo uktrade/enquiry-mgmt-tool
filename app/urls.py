@@ -16,16 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
-from rest_framework.routers import DefaultRouter
-
-from app.enquiries import views
 
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name="index.html")),
     path('admin/', admin.site.urls),
 ]
-
-router = DefaultRouter()
-router.register(r'api/v1/enquiries', views.EnquiryViewSet)
-urlpatterns += router.urls
