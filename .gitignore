@@ -97,3 +97,6 @@ conf/env/secrets-do-not-commit
 # Dynamically created
 .venv
 staticfiles
+
+# node and npm
+node_modules
