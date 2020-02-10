@@ -1,0 +1,19 @@
+{
+  "name": "enquiry-mgmt-tool",
+  "version": "1.0.0",
+  "description": "This is tool mainly used by IST users to manage investment enquiries. They can review enquiries, update them during their engagement with the potential investors and submit the information to Data Hub.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uktrade/enquiry-mgmt-tool.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uktrade/enquiry-mgmt-tool/issues"
+  },
+  "homepage": "https://github.com/uktrade/enquiry-mgmt-tool#readme"
+}
