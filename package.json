@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/uktrade/enquiry-mgmt-tool/issues"
   },
-  "homepage": "https://github.com/uktrade/enquiry-mgmt-tool#readme"
+  "homepage": "https://github.com/uktrade/enquiry-mgmt-tool#readme",
+  "dependencies": {
+    "govuk-frontend": "^3.5.0"
+  }
 }
