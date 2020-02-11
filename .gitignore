@@ -100,3 +100,6 @@ staticfiles
 
 # node and npm
 node_modules
+
+# static files
+app/**/static
