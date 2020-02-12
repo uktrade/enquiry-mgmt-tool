@@ -5,7 +5,7 @@ import random
 from datetime import date
 from django.conf import settings
 from django.forms.models import model_to_dict
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase
 from django.urls import reverse
 from faker import Faker
 from rest_framework import status
@@ -70,7 +70,7 @@ def canned_enquiry():
 
 REST_FRAMEWORK_TEST = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 2,
+    "PAGE_SIZE": 10,
 }
 
 
@@ -118,7 +118,6 @@ class EnquiryViewTestCase(TestCase):
         results = response["results"]
         self.assertEqual(len(results), len(enquiries))
 
-    @override_settings(REST_FRAMEWORK=REST_FRAMEWORK_TEST)
     def test_enquiries_list_pagination(self):
         """
         Tests pagination of enquiries list view.
@@ -127,7 +126,7 @@ class EnquiryViewTestCase(TestCase):
         It will be same for all pages except for the last page
         if num_enquiries is not a multiple of page_size
         """
-        num_enquiries = 3
+        num_enquiries = 13
         enquiries = EnquiryFactory.create_batch(num_enquiries)
         ids = [e.id for e in enquiries]
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
@@ -205,7 +204,8 @@ class EnquiryViewTestCase(TestCase):
         Creates an enquiry first, updates few fields and ensures
         the data is updated after submitting the form
         """
-        enquiry = model_to_dict(EnquiryFactory())
+        enquiry_obj = EnquiryFactory()
+        enquiry = model_to_dict(enquiry_obj)
         # TODO: remove blank fields
         # POST request to a form expects all the fields but sending optional
         # fields whose value is None causing form_invalid errors.
@@ -215,6 +215,18 @@ class EnquiryViewTestCase(TestCase):
         data["enquiry_stage"] = get_random_item(ref_data.EnquiryStage)
         data["notes"] = self.faker.sentence()
         data["country"] = get_random_item(ref_data.Country)
+
+        # Enquirer fields are also sent in a single form update
+        enquirer = enquiry_obj.enquirer
+        data["enquirer"] = enquirer.id
+        data["first_name"] = "updated first name"
+        data["last_name"] = enquirer.last_name
+        data["job_title"] = enquirer.job_title
+        data["email"] = enquirer.email
+        data["phone"] = enquirer.phone
+        data["email_consent"] = False
+        data["phone_consent"] = True
+        data["request_for_call"] = enquirer.request_for_call
         response = self.client.post(
             reverse("enquiry-edit", kwargs={"pk": data["id"]}), data,
         )
@@ -224,11 +236,14 @@ class EnquiryViewTestCase(TestCase):
         # retrieve updated record
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": data["id"]}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        updated = model_to_dict(response.context["enquiry"])
-        self.assertEqual(updated["company_name"], data["company_name"])
-        self.assertEqual(updated["enquiry_stage"], data["enquiry_stage"])
-        self.assertEqual(updated["notes"], data["notes"])
-        self.assertEqual(updated["country"], data["country"])
+        updated = response.context["enquiry"]
+        self.assertEqual(updated.company_name, data["company_name"])
+        self.assertEqual(updated.enquiry_stage, data["enquiry_stage"])
+        self.assertEqual(updated.notes, data["notes"])
+        self.assertEqual(updated.country, data["country"])
+        self.assertEqual(updated.enquirer.first_name, "updated first name")
+        self.assertEqual(updated.enquirer.email_consent, False)
+        self.assertEqual(updated.enquirer.phone_consent, True)
 
     def test_enquiry_failed_update(self):
         """
@@ -247,7 +262,6 @@ class EnquiryViewTestCase(TestCase):
         self.assertEqual(updated_enquiry["company_name"], enquiry["company_name"])
         self.assertNotEqual(updated_enquiry["company_name"], "")
 
-    def test_enquiry_detail_template_simple(self):
         """Test the template is using the right variables to show enquiry data 
         in the simple case when data is a string"""
         enquiry = EnquiryFactory()
