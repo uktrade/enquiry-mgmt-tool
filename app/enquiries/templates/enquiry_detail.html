@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Enquiry Management tool</title>
 </head>
+
 <body>
     <h1>Enquiry Details</h1>
+    <form action="{% url 'enquiry-detail' pk=enquiry.pk %}" method="POST">
+        {% csrf_token %}
+        {% load widget_tweaks %}
+        {% load rest_framework %}
+        <!-- {% render_form serializer %} -->
+
+        {% render_field serializer.created style=style %}
+        {% render_field serializer.company_name style=style %}
+        {% render_field serializer.owner style=style %}
+        {% render_field serializer.owner style=style %}
+        {% render_field serializer.enquiry_text style=style %}
+        {{ serializer.owner.value }}
+
+        <input type="submit" value="Save">
+    </form>
 </body>
+
 </html>
