@@ -3,7 +3,7 @@ from django.core.paginator import Paginator as DjangoPaginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
-from rest_framework import status
+from rest_framework import generics, status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
