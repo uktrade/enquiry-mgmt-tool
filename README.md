@@ -13,7 +13,18 @@ This project uses Docker compose to setup and run all the necessary components. 
     cd enquiry-mgmt-tool
     ```
 
-2.  Build and run the necessary containers for the required environment:
+1.  Build the frontend styles:
+    ```shell
+    docker run -it --rm --name frontend -v "$(pwd):/app" node:10 bash -c 'cd /app && npm rebuild node-sass && npm install && npm run sass'
+    ```
+
+    To build the styles and watch for changes use the `sass:watch` script instead (this process will stay open in your shell): 
+
+    ```shell
+    docker run -it --rm --name frontend -v "$(pwd):/app" node:10 bash -c 'cd /app && npm rebuild node-sass && npm install && npm run sass:watch'
+    ```
+
+1.  Build and run the necessary containers for the required environment:
 
     ```shell
     docker-compose up -d && docker-compose logs -f api
