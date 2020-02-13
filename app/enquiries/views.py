@@ -21,3 +21,19 @@ class EnquiryListView(APIView):
             {"serializer": serializer.data},
             template_name="enquiry_list.html",
         )
+
+
+class EnquiryDetail(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "enquiry_detail.html"
+
+    def get(self, request, pk):
+        enquiry = get_object_or_404(models.Enquiry, pk=pk)
+        serializer = serializers.EnquiryDetailSerializer(enquiry)
+        return Response(
+            {
+                "serializer": serializer,
+                "enquiry": enquiry,
+                "style": {"template_pack": "rest_framework/vertical/"},
+            }
+        )
