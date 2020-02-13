@@ -24,4 +24,5 @@ urlpatterns = [
     path('', views.EnquiryListView.as_view(), name="enquiry-list"),
     path('admin/', admin.site.urls),
     path('enquiries/', views.EnquiryListView.as_view(), name="enquiry-list"),
+    path('enquiries/<int:pk>/', views.EnquiryDetailView.as_view(), name="enquiry-detail"),
 ]
