@@ -1,12 +1,21 @@
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
-from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
+from drf_writable_nested import WritableNestedModelSerializer
 
 from app.enquiries import models
 
 
-class EnquirySerializer(WritableNestedModelSerializer):
+class OwnerSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Owner
+        fields = "__all__"
+
+    def get_user(self, obj):
+        return obj
+
+
+class EnquirySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Enquiry
@@ -14,9 +23,9 @@ class EnquirySerializer(WritableNestedModelSerializer):
 
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
+    owner = OwnerSerializer()
     created = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     modified = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    owner = serializers.CharField(source="get_owner_display")
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
     investment_readiness = serializers.CharField(source="get_investment_readiness_display")
     quality = serializers.CharField(source="get_quality_display")

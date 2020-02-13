@@ -1,4 +1,3 @@
-from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -17,14 +16,14 @@ class Owner(models.Model):
 
 
 class Enquiry(TimeStampedModel):
+    owner = models.ForeignKey(
+        Owner, on_delete=models.PROTECT, related_name="owner", blank=True, null=True
+    )
     company_name = models.CharField(max_length=MAX_LENGTH)
     enquiry_stage = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.EnquiryStage.CHOICES,
         default=ref_data.EnquiryStage.NEW,
-    )
-    owner = models.ForeignKey(
-        Owner, on_delete=models.PROTECT, related_name="owner", blank=True, null=True
     )
     enquiry_text = models.CharField(max_length=MAX_LENGTH)
     investment_readiness = models.CharField(

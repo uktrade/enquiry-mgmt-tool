@@ -33,7 +33,11 @@
                 <td>{{ obj.updated}}</td>
                 <td>{{ obj.company_name}}</td>
                 <td>{{ obj.enquiry_stage}}</td>
-                <td>{{ obj.owner}}</td>
+                <td>{% if obj.owner %}
+                    {{ obj.owner.user }}
+                    {% else %}
+                    Unassigned
+                    {%endif %}</td>
                 <td>{{ obj.enquiry_text}}</td>
                 <td>{{ obj.country}}</td>
                 <td>{{ obj.request_for_call}}</td>
