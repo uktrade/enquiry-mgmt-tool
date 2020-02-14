@@ -10,7 +10,6 @@
         <h2 class="govuk-heading-l">Enquiries</h2>
 
         {% load rest_framework %}
-        {% for obj in serializer.data %}
         <article>
             <header class="collection-header">
                 <!-- TODO: Add filter controls and data to header -->
@@ -28,6 +27,7 @@
                 </div> -->
             </header>
             <ol class="entity-list">
+                {% for obj in serializer.data %}
                 <li class="entity-list-item">
                     <div class="entity-enquiry">
                         <div class="entity-header">
@@ -71,9 +71,9 @@
                         </div>
                     </div>
                 </li>
+                {% endfor %}
             </ol>
             <nav class="pagination"></nav>
-            {% endfor %}
         </article>
     </main>
 </div>
