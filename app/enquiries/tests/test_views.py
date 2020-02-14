@@ -1,21 +1,16 @@
-<<<<<<< HEAD
 import random
 
 from django.forms.models import model_to_dict
-=======
 import pytz
 import random
 from datetime import datetime
->>>>>>> Update api to add new Enquiries
 from django.test import Client, TestCase
 from django.urls import reverse
 from faker import Faker
 from rest_framework import status
 
-<<<<<<< HEAD
 import app.enquiries.ref_data as ref_data
 from app.enquiries.tests.factories import EnquiryFactory, get_random_item
-=======
 from app.enquiries.tests.factories import EnquiryFactory, get_random_item
 import app.enquiries.ref_data as ref_data
 
@@ -66,7 +61,6 @@ def canned_enquiry():
         "datahub_project_status": get_random_item(ref_data.DatahubProjectStatus),
         "project_success_date": datetime(2022, 2, 3, 16, 25, 40, tzinfo=pytz.UTC),
     }
->>>>>>> Update api to add new Enquiries
 
 
 class EnquiryViewTestCase(TestCase):
