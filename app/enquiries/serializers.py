@@ -24,7 +24,7 @@ class EnquirySerializer(serializers.ModelSerializer):
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
     owner = OwnerSerializer()
-    created = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    created = serializers.DateTimeField(format="%d %b %Y")
     modified = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
     investment_readiness = serializers.CharField(source="get_investment_readiness_display")
