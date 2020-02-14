@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 from drf_writable_nested import WritableNestedModelSerializer
-=======
->>>>>>> Create users and update Enquiry model
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
 
@@ -32,7 +29,6 @@ class OwnerSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         return obj
 
-<<<<<<< HEAD
 class EnquirerDetailSerializer(serializers.ModelSerializer):
     request_for_call = serializers.CharField(source="get_request_for_call_display")
     class Meta:
@@ -42,10 +38,6 @@ class EnquirerDetailSerializer(serializers.ModelSerializer):
 class EnquirySerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%d %B %Y ", read_only=True)
     modified = serializers.DateTimeField(format="%d %B %Y", read_only=True)
-=======
-
-class EnquirySerializer(serializers.ModelSerializer):
->>>>>>> Create users and update Enquiry model
 
     class Meta:
         model = models.Enquiry
