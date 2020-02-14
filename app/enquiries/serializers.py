@@ -46,7 +46,10 @@ class EnquirySerializer(serializers.ModelSerializer):
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
     owner = OwnerSerializer()
+<<<<<<< HEAD
     enquirer = EnquirerDetailSerializer()
+=======
+>>>>>>> Update enquiry detail template
     created = serializers.DateTimeField(format="%d %B %Y")
     modified = serializers.DateTimeField(format="%d %B %Y")
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
