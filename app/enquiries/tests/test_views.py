@@ -188,7 +188,6 @@ class EnquiryViewTestCase(TestCase):
             response = self.create_enquiry_and_assert(enquiry)
         self.assertEqual(Enquirer.objects.all().count(), num_enquirers)
 
-    def test_enquiry_detail(self):
         """Test retrieving a valid enquiry returns 200"""
         enquiry = EnquiryFactory()
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
