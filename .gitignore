@@ -107,4 +107,4 @@ app/**/static
 .vscode/
 
 # dummy database data
-initial_data.diff
+*.diff
