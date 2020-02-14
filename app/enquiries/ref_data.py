@@ -31,9 +31,9 @@ class InvestmentReadiness(Choices):
 class Quality(Choices):
     DEFAULT = ("DEFAULT", "----")
     JUNK = ("JUNK", "Junk")
-    NON_FDI = ("NON_FDI", "Non FDI / Potentially Non FDI")
+    NON_FDI = ("NON_FDI", "Non-FDI / Potentially Non-FDI")
     POTENTIAL_FDI = ("POTENTIAL_FDI", "Potentially FDI")
-    LIKELY_FDI = ("LIKELY_FDI", "Likely to be FDI")
+    LIKELY_FDI = ("LIKELY_FDI", "FDI or likely FDI")
 
 
 class MarketingChannel(Choices):
@@ -41,7 +41,7 @@ class MarketingChannel(Choices):
     LINKEDIN = ("LINKEDIN", "LinkedInLeadGen")
     CHOGM = ("CHOGM", "CHOGM")
     IIGB = ("IIGB", "IiGB")
-    IIGB_LINKEDIN = ("IIGB_LINKEDIN", "IiGB (LinkedIN)")
+    IIGB_LINKEDIN = ("IIGB_LINKEDIN", "IiGB (LinkedIn)")
     HPO = ("HPO", "HPO")
     B2B = ("B2B", "B2B")
     EBOOK = ("EBOOK", "EBOOK - Worldwide")
@@ -52,11 +52,11 @@ class MarketingChannel(Choices):
 
 class HowDidTheyHear(Choices):
     DEFAULT = ("DEFAULT", "----")
-    PRESS_AD = ("PRESS_AD", "Press ad (newspapaer/trade publication")
+    PRESS_AD = ("PRESS_AD", "Press ad (newspaper/trade publication")
     OUTDOOR_AD = ("OUTDOOR_AD", "Outdoor ad/billboard")
     LINKEDIN = ("LINKEDIN", "LinkedIn")
     SOCIAL_MEDIA = ("SOCIAL_MEDIA", "Other social media (e.g. Twitter/Facebook)")
-    INTERNET_SEARCH = ("INTERNET_SEARCH", "Internet Search")
+    INTERNET_SEARCH = ("INTERNET_SEARCH", "Internet search")
     OTHER = ("OTHER", "Other")
 
 
@@ -307,8 +307,8 @@ class Country(Choices):
 class Region(Choices):
     DEFAULT = ("DEFAULT", "----")
     AMERICAS = ("AMERICAS", "Americas")
-    APAC = ("APAC", "Asia Pacific")
-    EMEA = ("EMEA", "Europe and Middle East")
+    APAC = ("APAC", "Asia-Pacific")
+    EMEA = ("EMEA", "EMEA")
 
 
 class RequestForCall(Choices):
@@ -335,12 +335,12 @@ class HpoSelection(Choices):
 
 class OrganisationType(Choices):
     DEFAULT = ("DEFAULT", "----")
-    CHARITY = ("CHARITY,", "charity")
-    GOVERNMENT = ("GOVERNMENT", "gov department or other public body")
-    LIMITED_COMPANY = ("LIMITED_COMPANY", "limited company")
-    LIMITED_PARTNERSHIP = ("LIMITED_PARTNERSHIP", "limited partnership")
-    PARTNERSHIP = ("PARTNERSHIP,", "partnership")
-    SOLE_TRADER = ("SOLE_TRADER", "sole trader")
+    CHARITY = ("CHARITY,", "Charity")
+    GOVERNMENT = ("GOVERNMENT", "Government department or other public body")
+    LIMITED_COMPANY = ("LIMITED_COMPANY", "Limited company")
+    LIMITED_PARTNERSHIP = ("LIMITED_PARTNERSHIP", "Limited partnership")
+    PARTNERSHIP = ("PARTNERSHIP,", "Partnership")
+    SOLE_TRADER = ("SOLE_TRADER", "Sole trader")
 
 
 class InvestmentType(Choices):
@@ -357,8 +357,8 @@ class InvestmentType(Choices):
 
 class NewExistingInvestor(Choices):
     DEFAULT = ("DEFAULT", "----")
-    NEW = ("NEW,", "New Investor")
-    EXISTING = ("EXISTING,", "Existing Investor")
+    NEW = ("NEW,", "New investor")
+    EXISTING = ("EXISTING,", "Existing investor")
 
 
 class InvestorInvolvement(Choices):
@@ -394,8 +394,8 @@ class InvestmentProgram(Choices):
     CONTRACT_RESEARCH = ("CONTRACT_RESEARCH", "Contract Research (Non-FDI)")
     FDI_CAPITAL_ONLY = ("FDI_CAPITAL_ONLY", "FDI (Capital Only)")
     GREAT_INV_PROG = ("GREAT_INV_PROG", "GREAT Investors Programme")
-    GLOBAL_ENTERP_PROG = ("GLOBAL_ENTERP_PROG", "Global Entrepreneur Programme")
-    GRADUATE_ENTERP_PROG = ("GRADUATE_ENTERP_PROG", "Graduate Entrepreneur Programme")
+    GLOBAL_ENTREP_PROG = ("GLOBAL_ENTREP_PROG", "Global Entrepreneur Programme")
+    GRADUATE_ENTREP_PROG = ("GRADUATE_ENTREP_PROG", "Graduate Entrepreneur Programme")
     HQ_UK = ("HQ_UK", "HQ-UK")
     II_AND_I = ("II&I", "II&I Programme")
     INFRASTRUCTURE_GATEWAY = ("INFRASTRUCTURE_GATEWAY", "Infrastructure Gateway")
@@ -410,7 +410,7 @@ class InvestmentProgram(Choices):
     SIRIUS = ("SIRIUS", "Sirius (Graduate Entrepreneurs)")
     SPACE = ("SPACE", "Space")
     UNIVERSITY_COLLAB = ("UNIVERSITY_COLLAB", "University Collaboration (Non-FDI)")
-    VENTURE_CAPITAL = ("VENTURE_CAPITAL", "Venture / Equity Captial")
+    VENTURE_CAPITAL = ("VENTURE_CAPITAL", "Venture / Equity Capital")
 
 
 class DatahubProjectStatus(Choices):
