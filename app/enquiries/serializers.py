@@ -4,6 +4,13 @@ from rest_framework import serializers
 from app.enquiries import models
 
 
+class EnquirerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Enquirer
+        fields = "__all__"
+
+
 class OwnerSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
@@ -16,10 +23,17 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 
 class EnquirySerializer(serializers.ModelSerializer):
+    enquirer = EnquirerSerializer()
 
     class Meta:
         model = models.Enquiry
         fields = "__all__"
+
+    def create(self, validated_data):
+        enquirer = validated_data.pop('enquirer')
+        enquirer_instance = models.Enquirer.objects.create(**enquirer)
+        enquiry = models.Enquiry.objects.create(**validated_data, enquirer=enquirer_instance)
+        return enquiry
 
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
