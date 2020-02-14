@@ -42,7 +42,7 @@
                                         <span>{{ obj.enquiry_stage }}</span>
                                     </div>
                                     <div class="entity-badges-item">
-                                        <span>{{ obj.owner }}</span>
+                                        <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</span>
                                     </div>
                                     <div class="entity-badges-item">
                                         <span>{{ obj.country }}</span>
