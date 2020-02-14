@@ -108,3 +108,4 @@ app/**/static
 
 # dummy database data
 *.diff
+__seed_enquiry_data.py
