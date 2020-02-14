@@ -9,40 +9,72 @@
 
         <h2 class="govuk-heading-l">Enquiries</h2>
 
-
-
         {% load rest_framework %}
-        <table id="enquiries_list" class="table" border="1">
-            <thead>
-                <tr>
-                    <th scope="col">S No</th>
-                    <th scope="col">Created</th>
-                    <th scope="col">Updated</th>
-                    <th scope="col">Company Name</th>
-                    <th scope="col">Enquiry Stage</th>
-                    <th scope="col">Owner</th>
-                    <th scope="col">Enquiry text</th>
-                    <th scope="col">Country</th>
-                    <th scope="col">Call preference</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for obj in serializer.data %}
-                <tr>
-                    <td>{{ obj.id}}</td>
-                    <td>{{ obj.created}}</td>
-                    <td>{{ obj.updated}}</td>
-                    <td>{{ obj.company_name}}</td>
-                    <td>{{ obj.enquiry_stage}}</td>
-                    <td>{{ obj.owner}}</td>
-                    <td>{{ obj.enquiry_text}}</td>
-                    <td>{{ obj.country}}</td>
-                    <td>{{ obj.request_for_call}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
+        {% for obj in serializer.data %}
+        <article>
+            <header class="collection-header">
+                <!-- TODO: Add filter controls and data to header -->
+                <div class="collection-header-row" style="border-bottom: 5px solid;">
+                    <div class="collection-header-intro">
+                        <span class="big-number-of-enquiries">{{ serializer.data|length }}</span> enquiries
+                        <div class="collection-header-actions">
+                            <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
+                        </div>
+                    </div>
+                    <!-- <div class="collection-filter-summary">Stage: New</div> -->
+                </div>
+                <!-- <div class="collection-header-row">
+                    <span class="header-page-number">Page 1 of 5</span>
+                </div> -->
+            </header>
+            <ol class="entity-list">
+                <li class="entity-list-item">
+                    <div class="entity-enquiry">
+                        <div class="entity-header">
+                            <div class="entity-title">
+                                <h3>
+                                    <a class="entity-title-link" href="#">{{ obj.company_name }}</a>
+                                </h3>
+                            </div>
+                            <div class="entity-badges">
+                                <div class="entity-badges-list">
+                                    <div class="entity-badges-item">
+                                        <span>{{ obj.enquiry_stage }}</span>
+                                    </div>
+                                    <div class="entity-badges-item">
+                                        <span>{{ obj.owner }}</span>
+                                    </div>
+                                    <div class="entity-badges-item">
+                                        <span>{{ obj.country }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-subtitle">
+                                Date received {{ obj.created }}
+                            </div>
+                        </div>
+                        <div class="entity-content">
+                            <div class="entity-content-list">
+                                <div class="entity-content-item">
+                                    <span class="list-item-label">Enquiry text</span>
+                                    <span class="list-item-value">{{ obj.enquiry_text }}</span>
+                                </div>
+                                <div class="entity-content-item">
+                                    <span class="list-item-label">Date last updated</span>
+                                    <span class="list-item-value">{{ obj.updated }}</span>
+                                </div>
+                                <div class="entity-content-item">
+                                    <span class="list-item-label">Call?</span>
+                                    <span class="list-item-value">{{ obj.request_for_call }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ol>
+            <nav class="pagination"></nav>
+            {% endfor %}
+        </article>
     </main>
 </div>
 
