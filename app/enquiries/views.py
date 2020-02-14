@@ -14,7 +14,7 @@ class EnquiryListView(APIView):
     List all enquiries.
     """
 
-    renderer_classes = (TemplateHTMLRenderer,)
+    renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
 
     def get(self, request, format=None):
         enquiries = models.Enquiry.objects.all()
@@ -22,6 +22,14 @@ class EnquiryListView(APIView):
         return Response(
             {"serializer": serializer.data}, template_name="enquiry_list.html",
         )
+
+    def post(self, request, format=None):
+        serializer = serializers.EnquirySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EnquiryDetailView(TemplateView):
