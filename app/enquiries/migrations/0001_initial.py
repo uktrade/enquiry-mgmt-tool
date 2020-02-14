@@ -119,7 +119,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "google_compaign",
+                    "google_campaign",
                     models.CharField(blank=True, max_length=255, null=True),
                 ),
                 (

@@ -37,7 +37,7 @@ class Enquiry(TimeStampedModel):
         choices=ref_data.Quality.CHOICES,
         default=ref_data.Quality.DEFAULT,
     )
-    google_compaign = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
+    google_campaign = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
     marketing_channel = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.MarketingChannel.CHOICES,
