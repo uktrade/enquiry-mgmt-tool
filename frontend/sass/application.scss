@@ -2,6 +2,30 @@ $govuk-assets-path: '/static/assets/';
 
 @import "node_modules/govuk-frontend/govuk/all";
 
+* {
+    font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif !important;
+}
+
 .govuk-grid-row {
     margin: 0;
+}
+
+.govuk-header__logo, .govuk-header__content {
+    display: inline-block;
+}
+
+.govuk-header__container {
+    border-bottom: 10px solid white;
+}
+
+.govuk-header__link--service-name {
+    font-size: 30px;
+}
+
+.govuk-tag {
+    transform: translate(5px, -5px);
+}
+
+.govuk-header__content {
+    padding-left: 0px;
 }
