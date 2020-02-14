@@ -21,7 +21,7 @@ from app.enquiries import views
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name="index.html")),
+    path('', views.EnquiryList.as_view(), name="enquiry-list"),
     path('admin/', admin.site.urls),
     path('enquiries/', views.EnquiryListView.as_view(), name="enquiry-list"),
 ]
