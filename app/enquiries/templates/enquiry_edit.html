@@ -556,52 +556,92 @@
 
             <h3 class="govuk-heading-m">Marketing</h3>
 
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Google campaign
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.google_campaign.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Marketing channel
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.marketing_channel.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="google-campaign">
+                    Google campaign
+                </label>
+                <input class="govuk-input" id="google-campaign" name="google-campaign" type="text" value="#r.4142563726849_345374257">
+            </div>
 
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        How did they hear about DIT?
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.how_they_heard_dit.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="marketing-channel">
+                    Marketing channel
+                </label>
+                <select class="govuk-select" id="marketing-channel" name="marketing-channel">
+                    <option value="linkedinleadgen">LinkedInLeadGen</option>
+                    <option value="chogm">CHOGM</option>
+                    <option value="iigb" selected>IiGB</option>
+                    <option value="iigb-linkedin">IiGB (LinkedIn)</option>
+                    <option value="hpo">HPO</option>
+                    <option value="other">Other</option>
+                    <option value="b2b">B2B</option>
+                    <option value="ebook-worldwide">EBOOK - Worldwide</option>
+                    <option value="tra">TRA</option>
+                    <option value="encore">Encore</option>
+                </select>
+            </div>
 
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="how-they-heard-dit">
+                    How did they hear about DIT?
+                </label>
+                <select class="govuk-select" id="how-they-heard-dit" name="how-they-heard-dit">
+                    <option value="press">Press ad (newspaper/trade publication)</option>
+                    <option value="outdoor">Outdoor ad/billboard</option>
+                    <option value="linkedin" selected>LinkedIn</option>
+                    <option value="social">Other social media (e.g. Twitter/Facebook)</option>
+                    <option value="internet">Internet search</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend">
                         Consent (email)
-                    </dt>
-                    <dd class="govuk-summary-list__value">{% if serializer.email_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
-                    <dd class="govuk-summary-list__actions">
+                    </legend>
+                    <div class="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="" name="consent-email" type="radio"
+                                value="yes" checked>
+                            <label class="govuk-label govuk-radios__label" for="consent-email">
+                                Yes
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="consent-email-2" name="consent-email" type="radio"
+                                value="no">
+                            <label class="govuk-label govuk-radios__label" for="consent-email-2">
+                                No
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
 
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend">
                         Consent (telephone)
-                    </dt>
-                    <dd class="govuk-summary-list__value">{% if serializer.phone_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
-                    <dd class="govuk-summary-list__actions">
-
-                    </dd>
-                </div>
-            </dl>
+                    </legend>
+                    <div class="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="" name="consent-phone" type="radio"
+                                value="yes" checked>
+                            <label class="govuk-label govuk-radios__label" for="consent-phone">
+                                Yes
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="consent-phone-2" name="consent-phone" type="radio"
+                                value="no">
+                            <label class="govuk-label govuk-radios__label" for="consent-phone-2">
+                                No
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
 
         </div>
 
