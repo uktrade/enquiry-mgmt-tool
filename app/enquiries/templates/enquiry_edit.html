@@ -267,9 +267,47 @@
 
     <div class="govuk-grid-row enquiry-details-row">
 
+<<<<<<< HEAD
         <h3 class="govuk-heading-m">Company details</h3>
 
         {% include 'snippets/enquiry_field_input.html' with field=serializer.website %}
+=======
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="hpo-selection">
+                    HPO selection
+                </label>
+                <select class="govuk-select" id="hpo-selection" name="hpo-selection">
+                    <option value="food-production">Food production</option>
+                    <option value="uk-rail">UK Rail</option>
+                    <option value="lightweight-structures">Lightweight structures</option>
+                    <option value="na" selected>N/A</option>
+                </select>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="second-hpo-selection">
+                    Second HPO selection
+                </label>
+                <select class="govuk-select" id="second-hpo-selection" name="second-hpo-selection">
+                    <option value="food-production">Food production</option>
+                    <option value="uk-rail">UK Rail</option>
+                    <option value="lightweight-structures">Lightweight structures</option>
+                    <option value="na" selected>N/A</option>
+                </select>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="third-hpo-selection">
+                    Third HPO selection
+                </label>
+                <select class="govuk-select" id="third-hpo-selection" name="third-hpo-selection">
+                    <option value="food-production">Food production</option>
+                    <option value="uk-rail">UK Rail</option>
+                    <option value="lightweight-structures">Lightweight structures</option>
+                    <option value="na" selected>N/A</option>
+                </select>
+            </div>
+>>>>>>> Update edit template - hpo details
 
         {% include 'snippets/enquiry_field_select.html' with field=serializer.country %}
 
