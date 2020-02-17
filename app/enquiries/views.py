@@ -1,3 +1,4 @@
+from django.http import QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import generics, viewsets, status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
@@ -5,25 +6,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
-
-
-class EnquiryEdit(APIView):
-    """
-    Edit a single enquiry
-    """
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "enquiry_edit.html"
-
-    def get(self, request, pk):
-        enquiry = get_object_or_404(models.Enquiry, pk=pk)
-        serializer = serializers.EnquiryDetailSerializer(enquiry)
-        return Response(
-            {
-                "serializer": serializer,
-                "enquiry": enquiry,
-                "style": {"template_pack": "rest_framework/vertical/"},
-            }
-        )
 
 
 class EnquiryList(APIView):
@@ -51,7 +33,6 @@ class EnquiryList(APIView):
 
 class EnquiryDetail(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = "enquiry_detail.html"
 
     def get(self, request, pk):
         enquiry = get_object_or_404(models.Enquiry, pk=pk)
@@ -61,5 +42,58 @@ class EnquiryDetail(APIView):
                 "serializer": serializer,
                 "enquiry": enquiry,
                 "style": {"template_pack": "rest_framework/vertical/"},
-            }
+            },
+            template_name="enquiry_detail.html",
         )
+
+    def get_edit_view(self, request, *args, **kwargs):
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        serializer = serializers.EnquirySerializer(enquiry)
+        response = Response(
+            {
+                "pk": kwargs["pk"],
+                "serializer": serializer,
+                "enquiry": enquiry,
+                "style": {"template_pack": "rest_framework/vertical/"},
+            },
+            template_name="enquiry_edit.html",
+        )
+        response.accepted_renderer = TemplateHTMLRenderer()
+        response.accepted_media_type = "text/html"
+        response.renderer_context = self.get_renderer_context()
+        return response
+
+    def post(self, request, pk):
+        enquiry = get_object_or_404(models.Enquiry, pk=pk)
+        data = request.data.copy()
+        if data.get('owner') == 'unassigned':
+            data['owner'] = None
+        serializer = serializers.EnquirySerializer(
+            enquiry, data=data, partial=True
+        )
+        if not serializer.is_valid():
+            response = Response(
+                {
+                    "pk": pk,
+                    "serializer": serializer,
+                    "style": {"template_pack": "rest_framework/vertical/"},
+                },
+                template_name="enquiry_edit.html",
+            )
+            response.accepted_renderer = TemplateHTMLRenderer()
+            response.accepted_media_type = "text/html"
+            response.renderer_context = self.get_renderer_context()
+            return response
+
+        serializer.save()
+        return redirect("enquiry-detail", pk=pk)
+
+    def dispatch(self, request, *args, **kwargs):
+        url = request.get_full_path()
+        if url.split("/")[-1] == "edit":
+            if request.method == "GET":
+                return self.get_edit_view(request, *args, **kwargs)
+            elif request.method == "POST":
+                request.data = request.POST
+                return self.post(request, kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
