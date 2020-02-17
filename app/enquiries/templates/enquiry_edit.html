@@ -692,123 +692,187 @@
 
             <h3 class="govuk-heading-m">Data Hub</h3>
 
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Organisation type
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.organisation_type.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="organisation-type">
+                    Organisation type
+                </label>
+                <select class="govuk-select" id="organisation-type" name="organisation-type">
+                    <option value="charity">Charity</option>
+                    <option value="government-department">Government department or other public body</option>
+                    <option value="limited-company" selected>Limited company</option>
+                    <option value="limited-partnership">Limited partnership</option>
+                    <option value="partnership">Partnership</option>
+                    <option value="sole-trader">Sole trader</option>
+                </select>
+            </div>
 
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Type of investment
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.investment_type.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="type-of-investment">
+                    Type of investment
+                </label>
+                <select class="govuk-select" id="type-of-investment" name="type-of-investment">
+                    <option value="acquisition">Acquisition</option>
+                    <option value="capital-only">Capital only</option>
+                    <option value="creation-of-new-site-or-activity">Creation of new site or activity
+                    </option>
+                    <option value="expansion-of-new-site-or-activity" selected>Expansion of existing site or
+                        activity</option>
+                    <option value="joint-venture">Joint venture</option>
+                    <option value="merger">Merger</option>
+                    <option value="retention">Retention</option>
+                    <option value="not-specified">Not specified</option>
+                </select>
+            </div>
 
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Project name
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.project_name.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Project description
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.project_description.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Anonymised project description
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.anonymised_project_description.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Estimated land date
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.estimated_land_date.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        New or existing investor
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.new_existing_investor.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Investor level of involvement
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.investor_involvement_level.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Specific investment programme
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.specific_investment_programme.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        CRM
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.crm.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Date added to Data Hub
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.date_added_to_datahub.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Project code
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.project_code.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Data Hub project status
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.datahub_project_status.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Project success date
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.project_success_date.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="project-name">
+                    Project name
+                </label>
+                <input class="govuk-input" id="project-name" name="project-name" type="text"
+                    value="CE Hummingbird">
+            </div>
 
-                    </dd>
-                </div>
-            </dl>
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="project-description">
+                    Project description
+                </label>
+                <textarea class="govuk-textarea" id="project-description" name="project-description"
+                    rows="5">Expansion of CE Hummingbird factory site</textarea>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="anonymised-project-description">
+                    Anonymised project description
+                </label>
+                <textarea class="govuk-textarea" id="anonymised-project-description" name="anonymised-project-description"
+                    rows="5">Expansion of CE Hummingbird factory site</textarea>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="estimated-land-date">
+                    Estimated land date
+                </label>
+                <input class="govuk-input" id="estimated-land-date" name="estimated-land-date" type="date"
+                    value="2020-02-03">
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="new-or-existing-investor">
+                    New or existing investor
+                </label>
+                <select class="govuk-select" id="new-or-existing-investor" name="new-or-existing-investor">
+                    <option value="existing-investor" selected>Existing investor</option>
+                    <option value="new-investor">New investor</option>
+                </select>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="investor-level-of-involvement">
+                    Investor level of involvement
+                </label>
+                <select class="govuk-select" id="investor-level-of-involvement" name="investor-level-of-involvement">
+                    <option value="FDI-Hub-HQLEP">FDI Hub + HQ + LEP</option>
+                    <option value="FDI-Hub-HQ-Post-LEP">FDI Hub + HQ + Post + LEP</option>
+                    <option value="FDI-Hub-HQ-Post-Reg">FDI Hub + HQ + Post + Reg</option>
+                    <option value="FDI-Hub-HQ-Reg">FDI Hub + HQ + Reg</option>
+                    <option value="FDI-Hub-LEP">FDI Hub + LEP</option>
+                    <option value="FDI-Hub-Post" selected>FDI Hub + Post</option>
+                    <option value="FDI-Hub-Post-HQ">FDI Hub + Post + HQ</option>
+                    <option value="FDI-Hub-Post-LEP">FDI Hub + Post + LEP</option>
+                    <option value="FDI-Hub-Post-Reg">FDI Hub + Post + Reg</option>
+                    <option value="FDI-Hub-Region">FDI Hub + Region</option>
+                    <option value="FDI-Hub-Only">FDI Hub Only</option>
+                    <option value="HQ-LEP">HQ + LEP</option>
+                    <option value="HQ-Post-LEP">HQ + Post + LEP</option>
+                    <option value="HQ-Only">HQ Only</option>
+                    <option value="HQ-and-Post-Only">HQ and Post Only</option>
+                    <option value="HQ-and-Region">HQ and Region</option>
+                    <option value="HQ-Post-and-Region">HQ, Post and Region</option>
+                    <option value="LEP-Only">LEP Only</option>
+                    <option value="No-involvement">No involvement</option>
+                    <option value="Post-LEP">Post + LEP</option>
+                    <option value="Post-Only">Post Only</option>
+                    <option value="Post-and-Region">Post and Region</option>
+                    <option value="Region-Only">Region Only</option>
+                </select>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="specific-investment-programme">
+                    Specific investment programme
+                </label>
+                <select class="govuk-select" id="investor-level-of-involvement" name="investor-level-of-involvement">
+                    <option value="Advanced-Engineering-Supply-Chain">Advanced Engineering Supply Chain</option>
+                    <option value="Business-Partnership-Non-FDI">Business Partnership (Non-FDI)</option>
+                    <option value="Contract-Research-Non-FDI">Contract Research (Non-FDI)</option>
+                    <option value="FDI-Capital-Only">FDI (Capital Only)</option>
+                    <option value="GREAT-Investors-Programme">GREAT Investors Programme</option>
+                    <option value="Global-Entrepreneur-Programme">Global Entrepreneur Programme</option>
+                    <option value="Graduate-Entrepreneur-Programme">Graduate Entrepreneur Programme</option>
+                    <option value="HQ-UK">HQ-UK</option>
+                    <option value="II-I-Programme">II&I Programme</option>
+                    <option value="Infrastructure-Gateway">Infrastructure Gateway</option>
+                    <option value="Invest-in-Great-Britain">Invest in Great Britain</option>
+                    <option value="No-Specific-Programme">No Specific Programme</option>
+                    <option value="R&D-Collaboration-Non-FDI">R&D Collaboration (Non-FDI)</option>
+                    <option value="R&D-Partnership-Non-FDI">R&D Partnership (Non-FDI)</option>
+                    <option value="R&D-Prog-Obsolete">R&D Prog (Obsolete)</option>
+                    <option value="Regeneration-Investment-Organisation-RIO">Regeneration Investment Organisation (RIO)</option>
+                    <option value="SRM-Programme">SRM Programme</option>
+                    <option value="Screen-Production-Investment">Screen Production Investment</option>
+                    <option value="Sirius–Graduate-Entrepreneurs">Sirius (Graduate Entrepreneurs)</option>
+                    <option value="Space">Space</option>
+                    <option value="University-Collaboration-Non-FDI">University Collaboration (Non-FDI)</option>
+                    <option value="Venture-Equity-Capital">Venture / Equity Capital</option>
+                </select>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="crm">
+                    CRM
+                </label>
+                <input class="govuk-input" id="crm" name="crm" type="text"
+                    value="Data Hub user 1">
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="date-added-to-data-hub">
+                    Date added to Data Hub
+                </label>
+                <input class="govuk-input" id="date-added-to-data-hub" name="date-added-to-data-hub" type="date"
+                    value="2020-02-03">
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="project-code">
+                    Project code
+                </label>
+                <input class="govuk-input" id="project-code" name="project-code" type="text"
+                    value="42901">
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="data-hub-project-status">
+                    Data Hub project status
+                </label>
+                <select class="govuk-select" id="data-hub-project-status" name="data-hub-project-status">
+                    <option value="prospect">Prospect</option>
+                    <option value="assign-pm">Assign PM</option>
+                    <option value="active" selected>Active</option>
+                    <option value="verify-win">Verify Win</option>
+                    <option value="won">Won</option>
+                    <option value="abandoned">Abandoned</option>
+                    <option value="delayed">Delayed</option>
+                </select>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="project-success-date">
+                    Project success date
+                </label>
+                <input class="govuk-input" id="project-success-date" name="project-success-date" type="date"
+                    value="2022-02-03">
+            </div>
 
         </div>
 
@@ -816,19 +880,12 @@
 
             <h3 class="govuk-heading-m">Notes</h3>
 
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Notes
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        {{ serializer.notes.value }}
-                    </dd>
-                    <dd class="govuk-summary-list__actions">
-
-                    </dd>
-                </div>
-            </dl>
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="notes">
+                    Notes
+                </label>
+                <textarea class="govuk-textarea" id="notes" name="notes" rows="5">This is the notes section. The IST user can add any notes relating to the enquiry. This is a textarea and the user can input multiple lines of text.</textarea>
+            </div>
 
         </div>
 
