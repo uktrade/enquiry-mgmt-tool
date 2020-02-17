@@ -649,17 +649,41 @@
 
             <h3 class="govuk-heading-m">HPO details</h3>
 
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        HPO selection
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.first_hpo_selection.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="hpo-selection">
+                    HPO selection
+                </label>
+                <select class="govuk-select" id="hpo-selection" name="hpo-selection">
+                    <option value="food-production">Food production</option>
+                    <option value="uk-rail">UK Rail</option>
+                    <option value="lightweight-structures">Lightweight structures</option>
+                    <option value="na" selected>N/A</option>
+                </select>
+            </div>
 
-                    </dd>
-                </div>
-            </dl>
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="second-hpo-selection">
+                    Second HPO selection
+                </label>
+                <select class="govuk-select" id="second-hpo-selection" name="second-hpo-selection">
+                    <option value="food-production">Food production</option>
+                    <option value="uk-rail">UK Rail</option>
+                    <option value="lightweight-structures">Lightweight structures</option>
+                    <option value="na" selected>N/A</option>
+                </select>
+            </div>
+
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="third-hpo-selection">
+                    Third HPO selection
+                </label>
+                <select class="govuk-select" id="third-hpo-selection" name="third-hpo-selection">
+                    <option value="food-production">Food production</option>
+                    <option value="uk-rail">UK Rail</option>
+                    <option value="lightweight-structures">Lightweight structures</option>
+                    <option value="na" selected>N/A</option>
+                </select>
+            </div>
 
         </div>
 
