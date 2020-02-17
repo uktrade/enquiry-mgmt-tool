@@ -25,5 +25,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/enquiries/', views.EnquiryList.as_view(), name="enquiry-list"),
     path('api/v1/enquiries/<int:pk>/', views.EnquiryDetail.as_view(), name="enquiry-detail"),
-    path('api/v1/enquiries/<int:pk>/edit', views.EnquiryEdit.as_view(), name="enquiry-edit")
+    path('api/v1/enquiries/<int:pk>/edit', views.EnquiryDetail.as_view(), name="enquiry-edit")
 ]
