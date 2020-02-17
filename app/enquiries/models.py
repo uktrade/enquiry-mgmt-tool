@@ -126,10 +126,10 @@ class Enquiry(TimeStampedModel):
         choices=ref_data.InvestorInvolvement.CHOICES,
         default=ref_data.InvestorInvolvement.FDI_HUB_POST,
     )
-    specific_investment_program = models.CharField(
+    specific_investment_programme = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.InvestmentProgram.CHOICES,
-        default=ref_data.InvestmentProgram.IIGB,
+        choices=ref_data.InvestmentProgramme.CHOICES,
+        default=ref_data.InvestmentProgramme.IIGB,
     )
     crm = models.CharField(max_length=MAX_LENGTH)
     project_code = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)

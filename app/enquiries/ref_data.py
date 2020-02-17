@@ -388,7 +388,7 @@ class InvestorInvolvement(Choices):
     REGION_ONLY = ("REGION_ONLY", "Region Only")
 
 
-class InvestmentProgram(Choices):
+class InvestmentProgramme(Choices):
     ADVANCED_ENG = ("ADVANCED_ENG", "Advanced Engineering Supply Chain")
     BUSINESS_PARTNER = ("BUSINESS_PARTNER", "Business Partnership (Non-FDI)")
     CONTRACT_RESEARCH = ("CONTRACT_RESEARCH", "Contract Research (Non-FDI)")
