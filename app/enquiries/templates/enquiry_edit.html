@@ -78,188 +78,13 @@
 
     <div class="govuk-grid-row enquiry-edit-row">
 
-<<<<<<< HEAD
         <h3 class="govuk-heading-m">Enquiry details</h3>
-=======
-        <div class="govuk-grid-row enquiry-details-row">
-
-            <h3 class="govuk-heading-m">Contact</h3>
-
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="enquirer-first-name">
-                    Enquirer first name
-                </label>
-                <input class="govuk-input" id="enquirer-first-name" name="enquirer-first-name" type="text"
-                    spellcheck="false" value="Evelyn">
-            </div>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="enquirer-last-name">
-                    Enquirer last name
-                </label>
-                <input class="govuk-input" id="enquirer-last-name" name="enquirer-last-name" type="text"
-                    spellcheck="false" value="Wang">
-            </div>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="job-title">
-                    Job title
-                </label>
-                <input class="govuk-input" id="job-title" name="job-title" type="text" value="Director">
-            </div>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="enquirer-email">
-                    Enquirer email address
-                </label>
-                <input class="govuk-input" id="enquirer-email" name="enquirer-email" type="email"
-                    spellcheck="false" value="evelyn.wang@example.com">
-            </div>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="telephone-number">
-                    Telephone number
-                </label>
-                <input class="govuk-input govuk-input--width-20" id="telephone-number" name="telephone-number"
-                    type="tel" value="+86 88 8888 8888">
-            </div>
-
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend">
-                        Request for call
-                    </legend>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="" name="request-for-call" type="radio"
-                                value="yes-morning">
-                            <label class="govuk-label govuk-radios__label" for="request-for-call">
-                                Yes – morning
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="request-for-call-2" name="request-for-call" type="radio"
-                                value="yes-afternoon" checked>
-                            <label class="govuk-label govuk-radios__label" for="request-for-call-2">
-                                Yes – afternoon
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="request-for-call-3" name="request-for-call" type="radio"
-                                value="yes-other">
-                            <label class="govuk-label govuk-radios__label" for="request-for-call-3">
-                                Yes – other
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="request-for-call-3" name="request-for-call" type="radio"
-                                value="no">
-                            <label class="govuk-label govuk-radios__label" for="request-for-call-3">
-                                No
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
->>>>>>> Update edit template - contact
 
         {% include 'snippets/enquiry_field_textarea.html' with field=serializer.enquiry_text %}
 
         {% include 'snippets/enquiry_field_select.html' with field=serializer.investment_readiness %}
 
-<<<<<<< HEAD
         {% include 'snippets/enquiry_field_select.html' with field=serializer.quality %}
-=======
-            <h3 class="govuk-heading-m">Marketing</h3>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="google-campaign">
-                    Google campaign
-                </label>
-                <input class="govuk-input" id="google-campaign" name="google-campaign" type="text" value="#r.4142563726849_345374257">
-            </div>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="marketing-channel">
-                    Marketing channel
-                </label>
-                <select class="govuk-select" id="marketing-channel" name="marketing-channel">
-                    <option value="linkedinleadgen">LinkedInLeadGen</option>
-                    <option value="chogm">CHOGM</option>
-                    <option value="iigb" selected>IiGB</option>
-                    <option value="iigb-linkedin">IiGB (LinkedIn)</option>
-                    <option value="hpo">HPO</option>
-                    <option value="other">Other</option>
-                    <option value="b2b">B2B</option>
-                    <option value="ebook-worldwide">EBOOK - Worldwide</option>
-                    <option value="tra">TRA</option>
-                    <option value="encore">Encore</option>
-                </select>
-            </div>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="how-they-heard-dit">
-                    How did they hear about DIT?
-                </label>
-                <select class="govuk-select" id="how-they-heard-dit" name="how-they-heard-dit">
-                    <option value="press">Press ad (newspaper/trade publication)</option>
-                    <option value="outdoor">Outdoor ad/billboard</option>
-                    <option value="linkedin" selected>LinkedIn</option>
-                    <option value="social">Other social media (e.g. Twitter/Facebook)</option>
-                    <option value="internet">Internet search</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend">
-                        Consent (email)
-                    </legend>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="" name="consent-email" type="radio"
-                                value="yes" checked>
-                            <label class="govuk-label govuk-radios__label" for="consent-email">
-                                Yes
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="consent-email-2" name="consent-email" type="radio"
-                                value="no">
-                            <label class="govuk-label govuk-radios__label" for="consent-email-2">
-                                No
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
-
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend">
-                        Consent (telephone)
-                    </legend>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="" name="consent-phone" type="radio"
-                                value="yes" checked>
-                            <label class="govuk-label govuk-radios__label" for="consent-phone">
-                                Yes
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="consent-phone-2" name="consent-phone" type="radio"
-                                value="no">
-                            <label class="govuk-label govuk-radios__label" for="consent-phone-2">
-                                No
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
->>>>>>> Update edit template - marketing
 
         {% include 'snippets/enquiry_field_select.html' with field=serializer.first_response_channel %}
 
@@ -267,47 +92,9 @@
 
     <div class="govuk-grid-row enquiry-details-row">
 
-<<<<<<< HEAD
         <h3 class="govuk-heading-m">Company details</h3>
 
         {% include 'snippets/enquiry_field_input.html' with field=serializer.website %}
-=======
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="hpo-selection">
-                    HPO selection
-                </label>
-                <select class="govuk-select" id="hpo-selection" name="hpo-selection">
-                    <option value="food-production">Food production</option>
-                    <option value="uk-rail">UK Rail</option>
-                    <option value="lightweight-structures">Lightweight structures</option>
-                    <option value="na" selected>N/A</option>
-                </select>
-            </div>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="second-hpo-selection">
-                    Second HPO selection
-                </label>
-                <select class="govuk-select" id="second-hpo-selection" name="second-hpo-selection">
-                    <option value="food-production">Food production</option>
-                    <option value="uk-rail">UK Rail</option>
-                    <option value="lightweight-structures">Lightweight structures</option>
-                    <option value="na" selected>N/A</option>
-                </select>
-            </div>
-
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="third-hpo-selection">
-                    Third HPO selection
-                </label>
-                <select class="govuk-select" id="third-hpo-selection" name="third-hpo-selection">
-                    <option value="food-production">Food production</option>
-                    <option value="uk-rail">UK Rail</option>
-                    <option value="lightweight-structures">Lightweight structures</option>
-                    <option value="na" selected>N/A</option>
-                </select>
-            </div>
->>>>>>> Update edit template - hpo details
 
         {% include 'snippets/enquiry_field_select.html' with field=serializer.country %}
 
