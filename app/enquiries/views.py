@@ -7,6 +7,25 @@ from rest_framework.views import APIView
 from app.enquiries import models, serializers
 
 
+class EnquiryEdit(APIView):
+    """
+    Edit a single enquiry
+    """
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "enquiry_edit.html"
+
+    def get(self, request, pk):
+        enquiry = get_object_or_404(models.Enquiry, pk=pk)
+        serializer = serializers.EnquiryDetailSerializer(enquiry)
+        return Response(
+            {
+                "serializer": serializer,
+                "enquiry": enquiry,
+                "style": {"template_pack": "rest_framework/vertical/"},
+            }
+        )
+
+
 class EnquiryList(APIView):
     """
     List all enquiries, or create a new enquiry.
