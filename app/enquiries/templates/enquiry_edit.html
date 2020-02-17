@@ -61,42 +61,94 @@
 
             <h3 class="govuk-heading-m">Enquiry details</h3>
 
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Enquiry text
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.enquiry_text.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="enquiry-text">
+                    Enquiry text
+                </label>
+                <textarea class="govuk-textarea" id="enquiry-text" name="enquiry-text"
+                    rows="5">China Electronics are looking to expand our presence in the UK by opening a new production facility in Dartford, Kent to complement our existing UK site in Derby. We have secured a site and are looking to...</textarea>
+            </div>
 
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Investment readiness ("Which of these best describes how you feel about expanding to the UK?")
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.investment_readiness.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="investment-readiness">
+                    Investment readiness
+                </label>
+                <select class="govuk-select" id="investment-readiness" name="investment-readiness">
+                    <option value="convinced" selected>I’m convinced and want to talk to someone about my plans.</option>
+                    <option value="shortlist">The UK is on my shortlist. How can the Department for International Trade help me?</option>
+                    <option value="exploring">I’m still exploring where to expand my business and would like to know more about the UK’s offer.</option>
+                    <option value="not-yet-ready">I’m not yet ready to invest. Keep me informed.</option>
+                </select>
+            </div>
 
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend">
                         Quality
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.quality.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
+                    </legend>
+                    <div class="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="quality" name="quality" type="radio"
+                                value="junk">
+                            <label class="govuk-label govuk-radios__label" for="quality">
+                                Junk
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="quality-2" name="quality" type="radio"
+                                value="non-fdi">
+                            <label class="govuk-label govuk-radios__label" for="quality-2">
+                                Non-FDI or potentially non-FDI
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="quality-3" name="quality" type="radio"
+                                value="potentially-fdi">
+                            <label class="govuk-label govuk-radios__label" for="quality-3">
+                                Potentially FDI
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="quality-4" name="quality" type="radio"
+                                value="fdi" checked>
+                            <label class="govuk-label govuk-radios__label" for="quality-4">
+                                FDI or likely FDI
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend">
                         First response channel
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.first_response_channel.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
-                </div>
-            </dl>
+                    </legend>
+                    <div class="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="" name="first-response-channel" type="radio"
+                                value="call">
+                            <label class="govuk-label govuk-radios__label" for="first-response-channel">
+                                Call
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="first-response-channel-2" name="first-response-channel" type="radio"
+                                value="email" checked>
+                            <label class="govuk-label govuk-radios__label" for="first-response-channel-2">
+                                Email
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="first-response-channel-3" name="first-response-channel" type="radio"
+                                value="not-yet-responded">
+                            <label class="govuk-label govuk-radios__label" for="first-response-channel-3">
+                                Not yet responded
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
 
         </div>
 
