@@ -44,7 +44,7 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     investment_type = serializers.CharField(source="get_investment_type_display")
     new_existing_investor = serializers.CharField(source="get_new_existing_investor_display")
     investor_involvement_level = serializers.CharField(source="get_investor_involvement_level_display")
-    specific_investment_program = serializers.CharField(source="get_specific_investment_program_display")
+    specific_investment_programme = serializers.CharField(source="get_specific_investment_programme_display")
     date_added_to_datahub = serializers.DateTimeField(format="%d %B %Y")
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
     project_success_date = serializers.DateTimeField(format="%d %B %Y")
