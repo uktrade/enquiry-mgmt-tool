@@ -49,7 +49,7 @@ def canned_enquiry():
         "estimated_land_date": None,
         "new_existing_investor": get_random_item(ref_data.NewExistingInvestor),
         "investor_involvement_level": ref_data.InvestorInvolvement.FDI_HUB_POST,
-        "specific_investment_programme": ref_data.InvestmentProgram.IIGB,
+        "specific_investment_programme": ref_data.InvestmentProgramme.IIGB,
         "crm": "Data Hub user 1",
         "project_code": "42901",
         "date_added_to_datahub": datetime(2020, 2, 3, 10, 20, 30, tzinfo=pytz.UTC),
