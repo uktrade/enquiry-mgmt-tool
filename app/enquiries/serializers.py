@@ -31,6 +31,8 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 
 class EnquirySerializer(serializers.ModelSerializer):
+    created = serializers.DateTimeField(format="%d %B %Y ", read_only=True)
+    modified = serializers.DateTimeField(format="%d %B %Y", read_only=True)
 
     class Meta:
         model = models.Enquiry
