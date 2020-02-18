@@ -4,15 +4,16 @@
 
 {% include 'partials/govuk_header_partial.html' %}
 
+{% csrf_token %}
+{% load widget_tweaks %}
+{% load rest_framework %}
+{% load enquiries_extras %}
+
 <div class="govuk-width-container">
 
     <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
 
     <main class="govuk-main-wrapper">
-
-        {% csrf_token %}
-        {% load widget_tweaks %}
-        {% load rest_framework %}
 
         <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
 
@@ -24,60 +25,48 @@
                         Date received
                     </dt>
                     <dd class="govuk-summary-list__value">{{ serializer.created.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-
-                    </dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Date last updated
                     </dt>
                     <dd class="govuk-summary-list__value">{{ serializer.modified.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-
-                    </dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Enquiry stage
                     </dt>
-                    <dd class="govuk-summary-list__value">{{ serializer.enquiry_stage.value }}</dd>
-                    <dd class="govuk-summary-list__actions">
-
-                    </dd>
+                    <dd class="govuk-summary-list__value">{{ serializer.enquiry_stage.choices|get_item:serializer.enquiry_stage.value }}</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Owner
                     </dt>
                     <dd class="govuk-summary-list__value">{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</dd>
-                    <dd class="govuk-summary-list__actions">
-                    </dd>
                 </div>
             </dl>
         </div>
 
         <div class="govuk-grid-row enquiry-edit-row">
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="company-name">
-                    Company name
-                </label>
-                <input class="govuk-input" id="company-name" name="company-name" type="text"
-                    value="China Electronics Co.">
-            </div>
+            {% include 'snippets/enquiry_field_input.html' with field=serializer.company_name %}
 
+            {% include 'snippets/enquiry_field_select.html' with field=serializer.enquiry_stage %}
+
+            <!-- TODO: Replace with snippet when owner implementation is ready -->
             <div class="govuk-form-group">
-                <label class="govuk-label" for="owner">
-                    Owner
+                <label for="owner" class="govuk-label">
+                    {{ serializer.owner.label }}
                 </label>
-                <select class="govuk-select" id="owner" name="owner">
-                    <option value="ist-user-1">IST User 1</option>
-                    <option value="ist-user-2">IST User 2</option>
-                    <option value="ist-user-3">IST User 3</option>
-                    <option value="ist-user-4" selected>IST User 4</option>
-                    <option value="ist-user-5">IST User 5</option>
-                    <option value="unassigned">Unassigned</option>
+                <select name="{{ serializer.owner.name }}" id="{{ serializer.owner.name }}" class="govuk-select">
+                    <option value="0" {% if not serializer.owner.value %} selected{% endif %}>
+                        Unassigned
+                    </option>
+                    {% for key, owner in serializer.owner.choices.items %}
+                    <option value="{{ key }}" {% if key == serializer.owner.value %} selected{% endif %}>
+                        {{ owner }}
+                    </option>
+                    {% endfor %}
                 </select>
             </div>
 
@@ -87,94 +76,13 @@
 
             <h3 class="govuk-heading-m">Enquiry details</h3>
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="enquiry-text">
-                    Enquiry text
-                </label>
-                <textarea class="govuk-textarea" id="enquiry-text" name="enquiry-text"
-                    rows="5">China Electronics are looking to expand our presence in the UK by opening a new production facility in Dartford, Kent to complement our existing UK site in Derby. We have secured a site and are looking to...</textarea>
-            </div>
+            {% include 'snippets/enquiry_field_textarea.html' with field=serializer.enquiry_text %}
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="investment-readiness">
-                    Investment readiness
-                </label>
-                <select class="govuk-select" id="investment-readiness" name="investment-readiness">
-                    <option value="convinced" selected>I’m convinced and want to talk to someone about my plans.</option>
-                    <option value="shortlist">The UK is on my shortlist. How can the Department for International Trade help me?</option>
-                    <option value="exploring">I’m still exploring where to expand my business and would like to know more about the UK’s offer.</option>
-                    <option value="not-yet-ready">I’m not yet ready to invest. Keep me informed.</option>
-                </select>
-            </div>
+            {% include 'snippets/enquiry_field_select.html' with field=serializer.investment_readiness %}
 
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend">
-                        Quality
-                    </legend>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="quality" name="quality" type="radio"
-                                value="junk">
-                            <label class="govuk-label govuk-radios__label" for="quality">
-                                Junk
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="quality-2" name="quality" type="radio"
-                                value="non-fdi">
-                            <label class="govuk-label govuk-radios__label" for="quality-2">
-                                Non-FDI or potentially non-FDI
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="quality-3" name="quality" type="radio"
-                                value="potentially-fdi">
-                            <label class="govuk-label govuk-radios__label" for="quality-3">
-                                Potentially FDI
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="quality-4" name="quality" type="radio"
-                                value="fdi" checked>
-                            <label class="govuk-label govuk-radios__label" for="quality-4">
-                                FDI or likely FDI
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
+            {% include 'snippets/enquiry_field_select.html' with field=serializer.quality %}
 
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend">
-                        First response channel
-                    </legend>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="" name="first-response-channel" type="radio"
-                                value="call">
-                            <label class="govuk-label govuk-radios__label" for="first-response-channel">
-                                Call
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="first-response-channel-2" name="first-response-channel" type="radio"
-                                value="email" checked>
-                            <label class="govuk-label govuk-radios__label" for="first-response-channel-2">
-                                Email
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="first-response-channel-3" name="first-response-channel" type="radio"
-                                value="not-yet-responded">
-                            <label class="govuk-label govuk-radios__label" for="first-response-channel-3">
-                                Not yet responded
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
+            {% include 'snippets/enquiry_field_select.html' with field=serializer.first_response_channel %}
 
         </div>
 
