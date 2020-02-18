@@ -129,30 +129,9 @@
 
             <h3 class="govuk-heading-m">Marketing</h3>
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="google-campaign">
-                    Google campaign
-                </label>
-                <input class="govuk-input" id="google-campaign" name="google-campaign" type="text" value="#r.4142563726849_345374257">
-            </div>
+            {% include 'snippets/enquiry_field_input.html' with field=serializer.google_campaign %}
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="marketing-channel">
-                    Marketing channel
-                </label>
-                <select class="govuk-select" id="marketing-channel" name="marketing-channel">
-                    <option value="linkedinleadgen">LinkedInLeadGen</option>
-                    <option value="chogm">CHOGM</option>
-                    <option value="iigb" selected>IiGB</option>
-                    <option value="iigb-linkedin">IiGB (LinkedIn)</option>
-                    <option value="hpo">HPO</option>
-                    <option value="other">Other</option>
-                    <option value="b2b">B2B</option>
-                    <option value="ebook-worldwide">EBOOK - Worldwide</option>
-                    <option value="tra">TRA</option>
-                    <option value="encore">Encore</option>
-                </select>
-            </div>
+            {% include 'snippets/enquiry_field_select.html' with field=serializer.marketing_channel %}
 
             <div class="govuk-form-group">
                 <label class="govuk-label" for="how-they-heard-dit">
