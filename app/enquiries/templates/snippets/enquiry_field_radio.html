@@ -1,0 +1,18 @@
+<div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend">
+            {{ field.label }}
+        </legend>
+        <div class="govuk-radios">
+            {% for key,value in field.choices.items %}
+            <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="{{ field.name }}" name="{{ field.name }}" type="radio"
+                    value="{{ key }}">
+                <label class="govuk-label govuk-radios__label" for="{{ field.name }}">
+                    {{ value }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </fieldset>
+</div>
