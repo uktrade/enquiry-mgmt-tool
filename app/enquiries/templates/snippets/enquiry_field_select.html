@@ -1,0 +1,12 @@
+<div class="govuk-form-group">
+    <label class="govuk-label" for="sort">
+        {{ field.label }}
+    </label>
+    <select class="govuk-select" id={{ field.name }} name={{ field.name }}>
+        {% for key,value in field.choices.items %}
+        <option value="{{ key }}" {% if key == field.value %} selected{% endif %}>
+            {{ value }}
+        </option>
+        {% endfor %}
+    </select>
+</div>
