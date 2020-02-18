@@ -33,7 +33,7 @@ class Quality(Choices):
     JUNK = ("JUNK", "Junk")
     NON_FDI = ("NON_FDI", "Non-FDI / Potentially Non-FDI")
     POTENTIAL_FDI = ("POTENTIAL_FDI", "Potentially FDI")
-    LIKELY_FDI = ("LIKELY_FDI", "FDI or likely FDI")
+    LIKELY_FDI = ("LIKELY_FDI", "FDI / likely FDI")
 
 
 class MarketingChannel(Choices):
