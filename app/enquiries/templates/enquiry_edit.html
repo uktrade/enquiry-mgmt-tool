@@ -109,83 +109,19 @@
 
             <h3 class="govuk-heading-m">Contact</h3>
 
+            {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer_first_name %}
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="enquirer-first-name">
-                    Enquirer first name
-                </label>
-                <input class="govuk-input" id="enquirer-first-name" name="enquirer-first-name" type="text"
-                    spellcheck="false" value="Evelyn">
-            </div>
+            {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer_last_name %}
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="enquirer-last-name">
-                    Enquirer last name
-                </label>
-                <input class="govuk-input" id="enquirer-last-name" name="enquirer-last-name" type="text"
-                    spellcheck="false" value="Wang">
-            </div>
+            {% include 'snippets/enquiry_field_input.html' with field=serializer.job_title %}
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="job-title">
-                    Job title
-                </label>
-                <input class="govuk-input" id="job-title" name="job-title" type="text" value="Director">
-            </div>
+            <!-- TODO: Change label 'Enquirer email' to 'Enquirer email address' -->
+            {% include 'snippets/enquiry_field_input_email.html' with field=serializer.enquirer_email %}
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="enquirer-email">
-                    Enquirer email address
-                </label>
-                <input class="govuk-input" id="enquirer-email" name="enquirer-email" type="email"
-                    spellcheck="false" value="evelyn.wang@example.com">
-            </div>
+            <!-- TODO: Change label 'Enquirer phone' to 'Enquirer telephone number' -->
+            {% include 'snippets/enquiry_field_input_tel.html' with field=serializer.enquirer_phone %}
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="telephone-number">
-                    Telephone number
-                </label>
-                <input class="govuk-input govuk-input--width-20" id="telephone-number" name="telephone-number"
-                    type="tel" value="+86 88 8888 8888">
-            </div>
-
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend">
-                        Request for call
-                    </legend>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="" name="request-for-call" type="radio"
-                                value="yes-morning">
-                            <label class="govuk-label govuk-radios__label" for="request-for-call">
-                                Yes – morning
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="request-for-call-2" name="request-for-call" type="radio"
-                                value="yes-afternoon" checked>
-                            <label class="govuk-label govuk-radios__label" for="request-for-call-2">
-                                Yes – afternoon
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="request-for-call-3" name="request-for-call" type="radio"
-                                value="yes-other">
-                            <label class="govuk-label govuk-radios__label" for="request-for-call-3">
-                                Yes – other
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="request-for-call-3" name="request-for-call" type="radio"
-                                value="no">
-                            <label class="govuk-label govuk-radios__label" for="request-for-call-3">
-                                No
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
+            {% include 'snippets/enquiry_field_select.html' with field=serializer.request_for_call %}
 
         </div>
 
