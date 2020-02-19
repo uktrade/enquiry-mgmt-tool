@@ -65,11 +65,8 @@ class EnquiryDetail(APIView):
 
     def post(self, request, pk):
         enquiry = get_object_or_404(models.Enquiry, pk=pk)
-        data = request.data.copy()
-        if data.get('owner') == 'unassigned':
-            data['owner'] = None
         serializer = serializers.EnquirySerializer(
-            enquiry, data=data, partial=True
+            enquiry, data=request.data, partial=True
         )
         if not serializer.is_valid():
             response = Response(
