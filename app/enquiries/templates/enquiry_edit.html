@@ -133,67 +133,14 @@
 
             {% include 'snippets/enquiry_field_select.html' with field=serializer.marketing_channel %}
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="how-they-heard-dit">
-                    How did they hear about DIT?
-                </label>
-                <select class="govuk-select" id="how-they-heard-dit" name="how-they-heard-dit">
-                    <option value="press">Press ad (newspaper/trade publication)</option>
-                    <option value="outdoor">Outdoor ad/billboard</option>
-                    <option value="linkedin" selected>LinkedIn</option>
-                    <option value="social">Other social media (e.g. Twitter/Facebook)</option>
-                    <option value="internet">Internet search</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
+            <!-- TODO: Change label to 'How did they hear about DIT?' -->
+            {% include 'snippets/enquiry_field_select.html' with field=serializer.how_they_heard_dit %}
 
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend">
-                        Consent (email)
-                    </legend>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="" name="consent-email" type="radio"
-                                value="yes" checked>
-                            <label class="govuk-label govuk-radios__label" for="consent-email">
-                                Yes
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="consent-email-2" name="consent-email" type="radio"
-                                value="no">
-                            <label class="govuk-label govuk-radios__label" for="consent-email-2">
-                                No
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
+            <!-- TODO: Change label to 'Consent (email)' -->
+            {% include 'snippets/enquiry_field_boolean_select.html' with field=serializer.email_consent %}
 
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend">
-                        Consent (telephone)
-                    </legend>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="" name="consent-phone" type="radio"
-                                value="yes" checked>
-                            <label class="govuk-label govuk-radios__label" for="consent-phone">
-                                Yes
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="consent-phone-2" name="consent-phone" type="radio"
-                                value="no">
-                            <label class="govuk-label govuk-radios__label" for="consent-phone-2">
-                                No
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
+            <!-- TODO: Change label to 'Consent (telephone)' -->
+            {% include 'snippets/enquiry_field_boolean_select.html' with field=serializer.phone_consent %}
 
         </div>
 
