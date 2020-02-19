@@ -51,6 +51,14 @@
         <form class="form" action="{% url 'enquiry-edit' pk=pk %}" method="post">
             {% csrf_token %}
 
+            <div>
+                {% if not serializer.is_valid %}
+                {% for key,error in serializer.errors.items %}
+                {{key}}: {{ error.0 }} <br>
+                {% endfor %}
+                {% endif %}
+            </div>
+
             <div class="govuk-grid-row enquiry-edit-row">
 
                 {% include 'snippets/enquiry_field_input.html' with field=serializer.company_name %}
