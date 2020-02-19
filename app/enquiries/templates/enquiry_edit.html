@@ -71,7 +71,7 @@
                         {{ serializer.owner.label }}
                     </label>
                     <select name="{{ serializer.owner.name }}" id="{{ serializer.owner.name }}" class="govuk-select">
-                        <option value="0" {% if not serializer.owner.value %} selected{% endif %}>
+                        <option value="" {% if not serializer.owner.value %} selected{% endif %}>
                             Unassigned
                         </option>
                         {% for key, owner in serializer.owner.choices.items %}
