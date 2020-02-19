@@ -684,7 +684,7 @@ class Migration(migrations.Migration):
                     "project_code",
                     models.CharField(blank=True, max_length=255, null=True),
                 ),
-                ("date_added_to_datahub", models.DateTimeField(blank=True, null=True)),
+                ("date_added_to_datahub", models.DateField(blank=True, null=True)),
                 (
                     "datahub_project_status",
                     models.CharField(
@@ -702,7 +702,7 @@ class Migration(migrations.Migration):
                         max_length=255,
                     ),
                 ),
-                ("project_success_date", models.DateTimeField(blank=True, null=True)),
+                ("project_success_date", models.DateField(blank=True, null=True)),
                 (
                     "owner",
                     models.ForeignKey(
