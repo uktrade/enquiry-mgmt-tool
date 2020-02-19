@@ -133,13 +133,13 @@ class Enquiry(TimeStampedModel):
     )
     crm = models.CharField(max_length=MAX_LENGTH)
     project_code = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
-    date_added_to_datahub = models.DateTimeField(blank=True, null=True)
+    date_added_to_datahub = models.DateField(blank=True, null=True)
     datahub_project_status = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.DatahubProjectStatus.CHOICES,
         default=ref_data.DatahubProjectStatus.DEFAULT,
     )
-    project_success_date = models.DateTimeField(blank=True, null=True)
+    project_success_date = models.DateField(blank=True, null=True)
 
     class Meta:
         ordering = ["created"]
