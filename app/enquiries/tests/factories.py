@@ -23,7 +23,7 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
     marketing_channel = get_random_item(ref_data.MarketingChannel)
     how_they_heard_dit = get_random_item(ref_data.HowDidTheyHear)
     primary_sector = get_random_item(ref_data.PrimarySector)
-    ist_sector = get_random_item(ref_data.SpecificSector)
+    ist_sector = get_random_item(ref_data.IstSector)
     company_hq_address = factory.Faker("address")
     country = get_random_item(ref_data.Country)
     region = get_random_item(ref_data.Region)
