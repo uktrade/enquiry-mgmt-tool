@@ -726,6 +726,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("project_success_date", models.DateField(blank=True, null=True)),
+<<<<<<< HEAD
                 (
                     "enquirer",
                     models.ForeignKey(
@@ -734,6 +735,8 @@ class Migration(migrations.Migration):
                         to="enquiries.Enquirer",
                     ),
                 ),
+=======
+>>>>>>> Update migration
                 (
                     "owner",
                     models.ForeignKey(
