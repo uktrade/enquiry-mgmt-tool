@@ -16,45 +16,117 @@
                         <div class="collection-header-actions">
                             <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
                         </div>
-                    </div>
-                    <!-- <div class="collection-filter-summary">Stage: New</div> -->
+                    </fieldset>
                 </div>
-                <!-- <div class="collection-header-row">
-                    <span class="header-page-number">Page 1 of 5</span>
-                </div> -->
-            </header>
-            <ol class="entity-list">
-                {% for obj in serializer %}
-                <li class="entity-list-item">
-                    <div class="entity-enquiry">
-                        <div class="entity-header">
-                            <div class="entity-title">
-                                <h3>
-                                    <a class="entity-title-link" href="{% url 'enquiry-detail' obj.id %}">{{ obj.company_name }}</a>
-                                </h3>
+                <div class="govuk-form-group filter-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                            <h3 class="govuk-fieldset__heading">
+                                Owner
+                            </h3>
+                        </legend>
+                        <div class="govuk-checkboxes govuk-checkboxes--small">
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="stage" name="stage" type="checkbox"
+                                    value="new">
+                                <label class="govuk-label govuk-checkboxes__label" for="stage">
+                                    IST User 1
+                                </label>
                             </div>
-                            <div class="entity-badges">
-                                <div class="entity-badges-list">
-                                    <div class="entity-badges-item">
-                                        <span>{{ obj.enquiry_stage }}</span>
-                                    </div>
-                                    <div class="entity-badges-item">
-                                        <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</span>
-                                    </div>
-                                    <div class="entity-badges-item">
-                                        <span>{{ obj.country }}</span>
-                                    </div>
-                                </div>
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="stage-2" name="stage" type="checkbox"
+                                    value="awaiting">
+                                <label class="govuk-label govuk-checkboxes__label" for="stage-2">
+                                    IST User 2
+                                </label>
                             </div>
-                            <div class="entity-subtitle">
-                                Date received {{ obj.created }}
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="stage-3" name="stage" type="checkbox"
+                                    value="engaged">
+                                <label class="govuk-label govuk-checkboxes__label" for="stage-3">
+                                    IST User 3
+                                </label>
+                            </div>
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="stage-4" name="stage" type="checkbox"
+                                    value="non-responsive">
+                                <label class="govuk-label govuk-checkboxes__label" for="stage-4">
+                                    IST User 4
+                                </label>
+                            </div>
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="stage-4" name="stage" type="checkbox"
+                                    value="non-fdi">
+                                <label class="govuk-label govuk-checkboxes__label" for="stage-4">
+                                    IST User 5
+                                </label>
+                            </div>
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="stage-4" name="stage" type="checkbox"
+                                    value="added-to-data-hub">
+                                <label class="govuk-label govuk-checkboxes__label" for="stage-4">
+                                    Unassigned
+                                </label>
                             </div>
                         </div>
-                        <div class="entity-content">
-                            <div class="entity-content-list">
-                                <div class="entity-content-item">
-                                    <span class="list-item-label">Enquiry text</span>
-                                    <span class="list-item-value">{{ obj.enquiry_text }}</span>
+                    </fieldset>
+                </div>
+                <div class="govuk-form-group filter-form-group">
+                    <label class="govuk-label" for="date-received-before">
+                        Date received before
+                    </label>
+                    <input class="govuk-input" id="date-received-before" name="date-received-before" type="date">
+                </div>
+                <div class="govuk-form-group filter-form-group">
+                    <label class="govuk-label" for="date-received-after">
+                        Date received after
+                    </label>
+                    <input class="govuk-input" id="date-received-after" name="date-received-after" type="date">
+                </div>
+                <div class="govuk-form-group filter-form-group">
+                    <label class="govuk-label" for="company-name">
+                        Company name
+                    </label>
+                    <input class="govuk-input" id="company-name" name="company-name" type="searchs">
+                </div>
+                <div class="govuk-form-group filter-form-group">
+                    <label class="govuk-label" for="enquirer-email">
+                        Enquirer email address
+                    </label>
+                    <input class="govuk-input" id="enquirer-email" name="enquirer-email" type="searchs">
+                </div>
+                <div class="govuk-form-group filter-form-group">
+                    <label class="govuk-label" for="date-received-before">
+                        Date added to Data Hub before
+                    </label>
+                    <input class="govuk-input" id="date-received-before" name="date-received-before" type="date">
+                </div>
+                <div class="govuk-form-group filter-form-group">
+                    <label class="govuk-label" for="date-received-after">
+                        Date added to Data Hub after
+                    </label>
+                    <input class="govuk-input" id="date-received-after" name="date-received-after" type="date">
+                </div>
+                <button class="govuk-button govuk-!-margin-right-1" data-module="govuk-button">
+                    Apply filters
+                </button>
+                <button class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                    Clear filters
+                </button>
+            </div>
+
+
+            <div class="govuk-grid-column-two-thirds">
+
+                {% load rest_framework %}
+                <article>
+                    <header class="collection-header">
+                        <!-- TODO: Add filter controls and data to header -->
+                        <div class="collection-header-row">
+                            <div class="collection-header-intro">
+                                <span class="big-number-of-enquiries">{{ serializer|length }}</span> enquiries
+                                <div class="collection-header-actions">
+                                    <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
                                 </div>
                                 <div class="entity-content-item">
                                     <span class="list-item-label">Date last updated</span>
@@ -65,13 +137,14 @@
                                     <span class="list-item-value">{{ obj.enquirer.request_for_call }}</span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </li>
-                {% endfor %}
-            </ol>
-            <nav class="pagination"></nav>
-        </article>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                    <nav class="pagination"></nav>
+                </article>
+
+            </div>
+        </div>
     </main>
 </div>
 {% endblock main %}
