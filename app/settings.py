@@ -129,3 +129,4 @@ STATIC_URL = '/static/'
 
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
+ENQUIRIES_PER_PAGE = 10
