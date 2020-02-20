@@ -54,8 +54,12 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     new_existing_investor = serializers.CharField(source="get_new_existing_investor_display")
     investor_involvement_level = serializers.CharField(source="get_investor_involvement_level_display")
     specific_investment_programme = serializers.CharField(source="get_specific_investment_programme_display")
+<<<<<<< HEAD
+=======
+    date_added_to_datahub = serializers.DateField(format="%d %B %Y")
+>>>>>>> Fix datetime bug
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
-    project_success_date = serializers.DateTimeField(format="%d %B %Y")
+    project_success_date = serializers.DateField(format="%d %B %Y")
 
     class Meta:
         model = models.Enquiry
