@@ -15,7 +15,7 @@
                 <!-- TODO: Add filter controls and data to header -->
                 <div class="collection-header-row">
                     <div class="collection-header-intro">
-                        <span class="big-number-of-enquiries">{{ serializer|length }}</span> enquiries
+                        <span class="big-number-of-enquiries">{{ serializer.count }}</span> enquiries
                         <div class="collection-header-actions">
                             <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
                         </div>
@@ -26,8 +26,12 @@
                     <span class="header-page-number">Page 1 of 5</span>
                 </div> -->
             </header>
+            <a class="entity-title-link" href="{% url 'enquiry-list' %}?page=1">Page 1</a><br>
+            <a class="entity-title-link" href="{% url 'enquiry-list' %}?page=2">Page 2</a><br>
+            <a class="entity-title-link" href="{% url 'enquiry-list' %}?page=3">Page 3</a><br>
+            <a class="entity-title-link" href="{% url 'enquiry-list' %}?page=4">Page 4</a><br>
             <ol class="entity-list">
-                {% for obj in serializer %}
+                {% for obj in serializer.results %}
                 <li class="entity-list-item">
                     <div class="entity-enquiry">
                         <div class="entity-header">
