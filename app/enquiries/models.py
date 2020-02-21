@@ -10,6 +10,9 @@ MAX_LENGTH = settings.CHAR_FIELD_MAX_LENGTH
 
 
 class Enquirer(models.Model):
+    """
+    Model for Enquirer details
+    """
     first_name = models.CharField(max_length=MAX_LENGTH)
     last_name = models.CharField(max_length=MAX_LENGTH)
     job_title = models.CharField(max_length=MAX_LENGTH)
@@ -25,6 +28,9 @@ class Enquirer(models.Model):
 
 
 class Owner(models.Model):
+    """
+    Model for the user assigned to an Enquiry
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -32,14 +38,17 @@ class Owner(models.Model):
 
 
 class Enquiry(TimeStampedModel):
-    company_name = models.CharField(max_length=MAX_LENGTH)
+    """
+    Model for investment Enquiry
+    """
+    company_name = models.CharField(max_length=MAX_LENGTH, help_text="Name of the company")
     enquiry_stage = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.EnquiryStage.choices,
         default=ref_data.EnquiryStage.NEW,
     )
     owner = models.ForeignKey(
-        Owner, on_delete=models.PROTECT, related_name="owner", blank=True, null=True
+        Owner, on_delete=models.PROTECT, related_name="owner", blank=True, null=True, help_text="User assigned to the enquiry"
     )
     enquiry_text = models.CharField(max_length=MAX_LENGTH)
     investment_readiness = models.CharField(
@@ -136,15 +145,15 @@ class Enquiry(TimeStampedModel):
         choices=ref_data.InvestmentProgram.choices,
         default=ref_data.InvestmentProgram.IIGB,
     )
-    crm = models.CharField(max_length=MAX_LENGTH)
+    crm = models.CharField(max_length=MAX_LENGTH, help_text="Name of the relationship manager")
     project_code = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
-    date_added_to_datahub = models.DateTimeField(blank=True, null=True)
+    date_added_to_datahub = models.DateField(blank=True, null=True)
     datahub_project_status = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.DatahubProjectStatus.choices,
         default=ref_data.DatahubProjectStatus.DEFAULT,
     )
-    project_success_date = models.DateTimeField(blank=True, null=True)
+    project_success_date = models.DateField(blank=True, null=True)
 
     class Meta:
         ordering = ["created"]
