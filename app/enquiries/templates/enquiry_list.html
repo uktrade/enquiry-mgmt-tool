@@ -1,9 +1,6 @@
+{% extends 'base.html' %}
 {% load static %}
-
-{% include 'base.html' %}
-
-{% include 'partials/govuk_header_partial.html' %}
-
+{% block main %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
 
@@ -77,5 +74,4 @@
         </article>
     </main>
 </div>
-
-{% include 'partials/govuk_footer_partial.html' %}
+{% endblock main %}
