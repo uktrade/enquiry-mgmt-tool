@@ -1,5 +1,6 @@
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from rest_framework import generics, viewsets, status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -42,6 +43,7 @@ class EnquiryDetail(APIView):
                 "serializer": serializer,
                 "enquiry": enquiry,
                 "style": {"template_pack": "rest_framework/vertical/"},
+                "back_url": reverse('enquiry-list')
             },
             template_name="enquiry_detail.html",
         )
@@ -55,6 +57,7 @@ class EnquiryDetail(APIView):
                 "serializer": serializer,
                 "enquiry": enquiry,
                 "style": {"template_pack": "rest_framework/vertical/"},
+                "back_url": reverse('enquiry-list')
             },
             template_name="enquiry_edit.html",
         )

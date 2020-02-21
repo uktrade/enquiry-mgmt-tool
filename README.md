@@ -53,4 +53,7 @@ To build the styles and watch for changes use the `sass:watch` script instead (t
     docker run -it --rm --name frontend -v "$(pwd):/app" node:10 bash -c 'cd /app && npm rebuild node-sass && npm install && npm run sass:watch'
     ```
 
-For testing, you might want to load sample enquiries into the database. Sample data is available in json format, please ask the development team for more information.
+## Loading initial data
+1. Obtain a copy of the `enquiries.json` initial data fixture from the team and place it in a folder called fixtures in the enquiries app folder (it could be anywhere really as long its available to the apps docker container)
+2. After initialising the docker container in a separate terminal shell into the app container `docker exec -it enquiry-mgmt-tool_api_1 /bin/bash`
+3. from with the container run this command to load the data: `python manage.py loaddata app/enquiries/fixtures/enquiries.json`
