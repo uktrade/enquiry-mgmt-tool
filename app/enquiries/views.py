@@ -2,6 +2,7 @@ from django.http import QueryDict
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from rest_framework import generics, viewsets, status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
