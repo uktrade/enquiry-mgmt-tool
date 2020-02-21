@@ -29,3 +29,8 @@ This project uses Docker compose to setup and run all the necessary components. 
     ```shell
     docker-compose up -d && docker-compose logs -f api
     ```
+
+## Loading initial data
+1. Obtain a copy of the `enquiries.json` initial data fixture from the team and place it in a folder called fixtures in the enquiries app folder (it could be anywhere really as long its available to the apps docker container)
+2. After initialising the docker container in a separate terminal shell into the app container `docker exec -it enquiry-mgmt-tool_api_1 /bin/bash`
+3. from with the container run this command to load the data: `python manage.py loaddata app/enquiries/fixtures/enquiries.json`
