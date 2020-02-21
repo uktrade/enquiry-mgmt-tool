@@ -111,10 +111,7 @@ a.entity-title-link {
 }
 
 .enquiry-details-row {
-<<<<<<< HEAD
     margin: govuk-spacing(8);
-=======
-    margin-bottom: 50px;
 }
 
 .govuk-fieldset__legend {
@@ -128,5 +125,8 @@ a.entity-title-link {
 
 .govuk-radios__label {
     font-weight: normal;
->>>>>>> Update edit template - enquiry details
+}
+
+button.enquiry-edit-button {
+    float: right;
 }
