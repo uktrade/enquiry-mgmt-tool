@@ -20,7 +20,7 @@ class Enquiry(TimeStampedModel):
     company_name = models.CharField(max_length=MAX_LENGTH)
     enquiry_stage = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.EnquiryStage.CHOICES,
+        choices=ref_data.EnquiryStage.choices,
         default=ref_data.EnquiryStage.NEW,
     )
     owner = models.ForeignKey(
@@ -29,45 +29,45 @@ class Enquiry(TimeStampedModel):
     enquiry_text = models.CharField(max_length=MAX_LENGTH)
     investment_readiness = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.InvestmentReadiness.CHOICES,
+        choices=ref_data.InvestmentReadiness.choices,
         default=ref_data.InvestmentReadiness.DEFAULT,
     )
     quality = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.Quality.CHOICES,
+        choices=ref_data.Quality.choices,
         default=ref_data.Quality.DEFAULT,
     )
     google_campaign = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
     marketing_channel = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.MarketingChannel.CHOICES,
+        choices=ref_data.MarketingChannel.choices,
         default=ref_data.MarketingChannel.DEFAULT,
     )
     how_they_heard_dit = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.HowDidTheyHear.CHOICES,
+        choices=ref_data.HowDidTheyHear.choices,
         default=ref_data.HowDidTheyHear.DEFAULT,
     )
     website = models.URLField(max_length=MAX_LENGTH, blank=True, null=True)
     primary_sector = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.PrimarySector.CHOICES,
+        choices=ref_data.PrimarySector.choices,
         default=ref_data.PrimarySector.DEFAULT,
     )
     ist_sector = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.IstSector.CHOICES,
+        choices=ref_data.IstSector.choices,
         default=ref_data.IstSector.DEFAULT,
     )
     company_hq_address = models.CharField(max_length=MAX_LENGTH)
     country = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.Country.CHOICES,
+        choices=ref_data.Country.choices,
         default=ref_data.Country.DEFAULT,
     )
     region = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.Region.CHOICES,
+        choices=ref_data.Region.choices,
         default=ref_data.Region.DEFAULT,
     )
     enquirer_first_name = models.CharField(max_length=MAX_LENGTH)
@@ -79,38 +79,38 @@ class Enquiry(TimeStampedModel):
     phone_consent = models.BooleanField(default=False)
     request_for_call = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.RequestForCall.CHOICES,
+        choices=ref_data.RequestForCall.choices,
         default=ref_data.RequestForCall.DEFAULT,
     )
     first_response_channel = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.FirstResponseChannel.CHOICES,
+        choices=ref_data.FirstResponseChannel.choices,
         default=ref_data.FirstResponseChannel.DEFAULT,
     )
     notes = models.TextField()
     first_hpo_selection = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.HpoSelection.CHOICES,
+        choices=ref_data.HpoSelection.choices,
         default=ref_data.HpoSelection.DEFAULT,
     )
     second_hpo_selection = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.HpoSelection.CHOICES,
+        choices=ref_data.HpoSelection.choices,
         default=ref_data.HpoSelection.DEFAULT,
     )
     third_hpo_selection = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.HpoSelection.CHOICES,
+        choices=ref_data.HpoSelection.choices,
         default=ref_data.HpoSelection.DEFAULT,
     )
     organisation_type = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.OrganisationType.CHOICES,
+        choices=ref_data.OrganisationType.choices,
         default=ref_data.OrganisationType.DEFAULT,
     )
     investment_type = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.InvestmentType.CHOICES,
+        choices=ref_data.InvestmentType.choices,
         default=ref_data.InvestmentType.DEFAULT,
     )
     project_name = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
@@ -119,17 +119,17 @@ class Enquiry(TimeStampedModel):
     estimated_land_date = models.DateField(blank=True, null=True)
     new_existing_investor = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.NewExistingInvestor.CHOICES,
+        choices=ref_data.NewExistingInvestor.choices,
         default=ref_data.NewExistingInvestor.DEFAULT,
     )
     investor_involvement_level = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.InvestorInvolvement.CHOICES,
+        choices=ref_data.InvestorInvolvement.choices,
         default=ref_data.InvestorInvolvement.FDI_HUB_POST,
     )
     specific_investment_program = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.InvestmentProgram.CHOICES,
+        choices=ref_data.InvestmentProgram.choices,
         default=ref_data.InvestmentProgram.IIGB,
     )
     crm = models.CharField(max_length=MAX_LENGTH)
@@ -137,7 +137,7 @@ class Enquiry(TimeStampedModel):
     date_added_to_datahub = models.DateTimeField(blank=True, null=True)
     datahub_project_status = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.DatahubProjectStatus.CHOICES,
+        choices=ref_data.DatahubProjectStatus.choices,
         default=ref_data.DatahubProjectStatus.DEFAULT,
     )
     project_success_date = models.DateTimeField(blank=True, null=True)
