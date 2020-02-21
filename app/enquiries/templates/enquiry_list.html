@@ -26,10 +26,6 @@
                     <span class="header-page-number">Page 1 of 5</span>
                 </div> -->
             </header>
-            <a class="entity-title-link" href="{% url 'enquiry-list' %}?page=1">Page 1</a><br>
-            <a class="entity-title-link" href="{% url 'enquiry-list' %}?page=2">Page 2</a><br>
-            <a class="entity-title-link" href="{% url 'enquiry-list' %}?page=3">Page 3</a><br>
-            <a class="entity-title-link" href="{% url 'enquiry-list' %}?page=4">Page 4</a><br>
             <ol class="entity-list">
                 {% for obj in serializer.results %}
                 <li class="entity-list-item">
@@ -77,7 +73,24 @@
                 </li>
                 {% endfor %}
             </ol>
-            <nav class="pagination"></nav>
+
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+            <nav class="pagination">
+
+                <ol>
+                    {%if serializer.previous is not None %}
+                    <li>
+                        <a class="govuk-link entity-title-link" href="{{ serializer.previous }}">Previous</a>
+                    </li>
+                    {%endif%}
+                    {%if serializer.next is not None %}
+                    <li>
+                        <a class="govuk-link entity-title-link" href="{{ serializer.next }}">Next</a>
+                    </li>
+                    {%endif%}
+                </ol>
+            </nav>
         </article>
     </main>
 </div>
