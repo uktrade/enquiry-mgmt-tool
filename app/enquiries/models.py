@@ -9,6 +9,21 @@ import app.enquiries.ref_data as ref_data
 MAX_LENGTH = settings.CHAR_FIELD_MAX_LENGTH
 
 
+class Enquirer(models.Model):
+    first_name = models.CharField(max_length=MAX_LENGTH)
+    last_name = models.CharField(max_length=MAX_LENGTH)
+    job_title = models.CharField(max_length=MAX_LENGTH)
+    email = models.EmailField(unique=True, max_length=MAX_LENGTH, blank=True)
+    phone = models.CharField(max_length=MAX_LENGTH)
+    email_consent = models.BooleanField(default=False)
+    phone_consent = models.BooleanField(default=False)
+    request_for_call = models.CharField(
+        max_length=MAX_LENGTH,
+        choices=ref_data.RequestForCall.choices,
+        default=ref_data.RequestForCall.DEFAULT,
+    )
+
+
 class Owner(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -70,18 +85,7 @@ class Enquiry(TimeStampedModel):
         choices=ref_data.Region.choices,
         default=ref_data.Region.DEFAULT,
     )
-    enquirer_first_name = models.CharField(max_length=MAX_LENGTH)
-    enquirer_last_name = models.CharField(max_length=MAX_LENGTH)
-    job_title = models.CharField(max_length=MAX_LENGTH)
-    enquirer_email = models.EmailField(max_length=MAX_LENGTH, blank=True)
-    enquirer_phone = models.CharField(max_length=MAX_LENGTH)
-    email_consent = models.BooleanField(default=False)
-    phone_consent = models.BooleanField(default=False)
-    request_for_call = models.CharField(
-        max_length=MAX_LENGTH,
-        choices=ref_data.RequestForCall.choices,
-        default=ref_data.RequestForCall.DEFAULT,
-    )
+    enquirer = models.ForeignKey(Enquirer, related_name="enquirer", on_delete=models.PROTECT)
     first_response_channel = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.FirstResponseChannel.choices,
