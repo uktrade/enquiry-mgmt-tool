@@ -149,16 +149,3 @@ class Enquiry(TimeStampedModel):
     class Meta:
         ordering = ["created"]
 
-    def save(self, *args, **kwargs):
-        # Validate whether the selected value is a valid choice
-        choice_fields = [field for field in self._meta.get_fields() if field.choices]
-        for index, field in enumerate(choice_fields):
-            choice = field.value_from_object(self)
-            # if the value is blank, use default choice
-            if not choice:
-                choice = field.default
-            if not any(choice in _tuple for _tuple in field.choices):
-                raise ValueError(
-                    f"Invalid choice {choice} provided for the field {field.name}"
-                )
-        super().save(*args, **kwargs)
