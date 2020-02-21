@@ -1,11 +1,9 @@
+from django.db.models.query import QuerySet
 from django.http import QueryDict
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.db.models.query import QuerySet
-from functools import reduce
-from operator import __and__ as AND
 from rest_framework import generics, viewsets, status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -118,15 +116,48 @@ class EnquiryDetailView(TemplateView):
     View to provide complete details of an Enquiry
     """
 
+<<<<<<< HEAD
     model = models.Enquiry
     template_name = "enquiry_detail.html"
+=======
+    def get(self, request, pk):
+        enquiry = get_object_or_404(models.Enquiry, pk=pk)
+        serializer = serializers.EnquiryDetailSerializer(enquiry)
+        return Response(
+            {
+                "serializer": serializer,
+                "enquiry": enquiry,
+                "style": {"template_pack": "rest_framework/vertical/"},
+                "back_url": reverse('enquiry-list')
+            },
+            template_name="enquiry_detail.html",
+        )
+>>>>>>> refactored templates to extend from base.html
 
     def get_context_data(self, **kwargs):
         pk = kwargs["pk"]
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+<<<<<<< HEAD
         context["enquiry"] = enquiry
         return context
+=======
+        serializer = serializers.EnquirySerializer(enquiry)
+        response = Response(
+            {
+                "pk": kwargs["pk"],
+                "serializer": serializer,
+                "enquiry": enquiry,
+                "style": {"template_pack": "rest_framework/vertical/"},
+                "back_url": reverse('enquiry-list')
+            },
+            template_name="enquiry_edit.html",
+        )
+        response.accepted_renderer = TemplateHTMLRenderer()
+        response.accepted_media_type = "text/html"
+        response.renderer_context = self.get_renderer_context()
+        return response
+>>>>>>> refactored templates to extend from base.html
 
 
 class EnquiryEditView(UpdateView):

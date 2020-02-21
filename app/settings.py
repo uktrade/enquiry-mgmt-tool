@@ -84,11 +84,19 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+<<<<<<< HEAD
         'NAME': env('POSTGRES_DB_NAME', default='postgres'),
         'USER': env('POSTGRES_DB_USER', default='postgres'),
         'PASSWORD': env('POSTGRES_DB_PASSWORD'),
         'HOST': env('POSTGRES_DB_HOST'),
         'PORT': env.int('POSTGRES_DB_PORT', default=5432),
+=======
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': 5432,
+>>>>>>> refactored templates to extend from base.html
     }
 }
 
