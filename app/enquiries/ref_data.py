@@ -22,9 +22,10 @@ class InvestmentReadiness(models.TextChoices):
 
 class Quality(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    JUNK = "JUNK", _("Junk")
-    NON_FDI = "NON_FDI", _("Non FDI / Potentially Non FDI")
-    POTENTIAL_FDI = "POTENTIAL_FDI", _("Potentially FDI")
+    NON_APPLICABLE = "NON_APPLICABLE", _("Non-applicable")
+    NON_FDI = "NON_FDI", _("Non-FDI")
+    POTENTIALLY_NON_FDI = "POTENTIALLY_NON_FDI", _("Potentially Non-FDI")
+    POTENTIALLY_FDI = "POTENTIALLY_FDI", _("Potentially FDI")
     LIKELY_FDI = "LIKELY_FDI", _("Likely to be FDI")
 
 
@@ -316,9 +317,9 @@ class FirstResponseChannel(models.TextChoices):
 
 class HpoSelection(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    FOOD_PRODUCTION = "FOOD_PRODUCTION", _("Food Production")
-    UK_RAIL = "UK_RAIL", _("UK Rail")
-    LIGHTWEIGHT_STRUCTURES = "LIGHTWEIGHT_STRUCTURES", _("Lightweight Structures")
+    FOOD_PRODUCTION = "FOOD_PRODUCTION", _("Food production")
+    UK_RAIL = "UK_RAIL", _("UK rail")
+    LIGHTWEIGHT_STRUCTURES = "LIGHTWEIGHT_STRUCTURES", _("Lightweight structures")
 
 
 class OrganisationType(models.TextChoices):
