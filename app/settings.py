@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'rest_framework',
+    'widget_tweaks',
     'app.enquiries',
 ]
 
@@ -81,6 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
+        'PASSWORD': 'password',
         'HOST': 'db',
         'PORT': 5432,
     }
@@ -124,3 +126,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# App specific settings
+CHAR_FIELD_MAX_LENGTH = 255
