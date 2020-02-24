@@ -1,0 +1,45 @@
+<li class="entity-list-item">
+    <div class="entity-enquiry">
+        <div class="entity-header">
+            <div class="entity-title">
+                <h3>
+                    <a class="entity-title-link"
+                        href="{% url 'enquiry-detail' obj.id %}">{{ enquiry.company_name }}</a>
+                </h3>
+            </div>
+            <div class="entity-badges">
+                <div class="entity-badges-list">
+                    <div class="entity-badges-item">
+                        <span>{{ enquiry.enquiry_stage }}</span>
+                    </div>
+                    <div class="entity-badges-item">
+                        <span>{% if enquiry.owner %}{{ enquiry.owner.user }} {%else%} {{ "Unassigned" }}
+                            {%endif%}</span>
+                    </div>
+                    <div class="entity-badges-item">
+                        <span>{{ enquiry.country }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="entity-subtitle">
+                Date received {{ enquiry.created }}
+            </div>
+        </div>
+        <div class="entity-content">
+            <div class="entity-content-list">
+                <div class="entity-content-item">
+                    <span class="list-item-label">Enquiry text</span>
+                    <span class="list-item-value">{{ enquiry.enquiry_text }}</span>
+                </div>
+                <div class="entity-content-item">
+                    <span class="list-item-label">Date last updated</span>
+                    <span class="list-item-value">{{ enquiry.updated }}</span>
+                </div>
+                <div class="entity-content-item">
+                    <span class="list-item-label">Call?</span>
+                    <span class="list-item-value">{{ enquiry.request_for_call }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>
