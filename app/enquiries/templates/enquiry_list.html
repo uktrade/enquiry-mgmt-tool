@@ -84,6 +84,11 @@
                         <a class="govuk-link entity-title-link" href="{{ serializer.previous }}">Previous</a>
                     </li>
                     {%endif%}
+                    
+                    <li>
+                        <a class="govuk-link entity-title-link" href="{% url 'enquiry-list' %}">1</a>
+                    </li>
+
                     {%if serializer.next is not None %}
                     <li>
                         <a class="govuk-link entity-title-link" href="{{ serializer.next }}">Next</a>
