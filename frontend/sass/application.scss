@@ -134,3 +134,33 @@ a.entity-title-link {
 button.enquiry-edit-button {
     float: right;
 }
+
+a.pagination-link {
+    text-decoration: none;
+    font-size: large;
+    font-weight: bold;
+    color: #005ea5;
+}
+
+li.pagination-list-item {
+    display: inline-block;
+    background-color: #fafafa;
+    min-width: 22px;
+    text-align: center;
+    padding: 0.5em;
+    margin: 3px;
+}
+
+li:hover.pagination-list-item {
+    background-color: #dee0e2;
+}
+
+li:active.pagination-list-item {
+    border: 3px solid #ffbf47;
+    margin: 0px;
+}
+
+ol.pagination-list {
+    margin: auto;
+    width:  50%;
+}
