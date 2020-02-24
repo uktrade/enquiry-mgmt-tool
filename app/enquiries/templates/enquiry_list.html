@@ -11,49 +11,6 @@
             <div class="govuk-grid-column-one-third">
                 
                 {% include 'partials/enquiry_filters.html' %}
-                
-                <!-- <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="date-received-before">
-                        Date received before
-                    </label>
-                    <input class="govuk-input" id="date-received-before" name="date-received-before" type="date">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="date-received-after">
-                        Date received after
-                    </label>
-                    <input class="govuk-input" id="date-received-after" name="date-received-after" type="date">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="company-name">
-                        Company name
-                    </label>
-                    <input class="govuk-input" id="company-name" name="company-name" type="searchs">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="enquirer-email">
-                        Enquirer email address
-                    </label>
-                    <input class="govuk-input" id="enquirer-email" name="enquirer-email" type="searchs">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="date-received-before">
-                        Date added to Data Hub before
-                    </label>
-                    <input class="govuk-input" id="date-received-before" name="date-received-before" type="date">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="date-received-after">
-                        Date added to Data Hub after
-                    </label>
-                    <input class="govuk-input" id="date-received-after" name="date-received-after" type="date">
-                </div>
-                <button class="govuk-button govuk-!-margin-right-1" data-module="govuk-button">
-                    Apply filters
-                </button>
-                <button class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                    Clear filters
-                </button> -->
             </div>
 
 
@@ -69,16 +26,16 @@
                                 <div class="collection-header-actions">
                                     <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
                                 </div>
-                                <div class="entity-content-item">
-                                    <span class="list-item-label">Date last updated</span>
-                                    <span class="list-item-value">{{ obj.modified }}</span>
-                                </div>
-                                <div class="entity-content-item">
-                                    <span class="list-item-label">Call requested</span>
-                                    <span class="list-item-value">{{ obj.enquirer.request_for_call }}</span>
-                                </div>
                             </div>
-                        </li>
+                            <!-- <div class="collection-filter-summary">Stage: New</div> -->
+                        </div>
+                        <!-- <div class="collection-header-row">
+                    <span class="header-page-number">Page 1 of 5</span>
+                </div> -->
+                    </header>
+                    <ol class="entity-list">
+                        {% for obj in serializer %}
+                        {% include 'snippets/enquiry_item.html' with enquiry=obj %}
                         {% endfor %}
                     </ol>
                     <nav class="pagination"></nav>
