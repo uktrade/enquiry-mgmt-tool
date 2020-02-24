@@ -6,72 +6,13 @@
     <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
 
         <h2 class="govuk-heading-l">Enquiries</h2>
-        {% load rest_framework %}
-        <article>
-            <header class="collection-header">
-                <!-- TODO: Add filter controls and data to header -->
-                <div class="collection-header-row">
-                    <div class="collection-header-intro">
-                        <span class="big-number-of-enquiries">{{ serializer|length }}</span> enquiries
-                        <div class="collection-header-actions">
-                            <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
-                        </div>
-                    </fieldset>
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                            <h3 class="govuk-fieldset__heading">
-                                Owner
-                            </h3>
-                        </legend>
-                        <div class="govuk-checkboxes govuk-checkboxes--small">
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="stage" name="stage" type="checkbox"
-                                    value="new">
-                                <label class="govuk-label govuk-checkboxes__label" for="stage">
-                                    IST User 1
-                                </label>
-                            </div>
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="stage-2" name="stage" type="checkbox"
-                                    value="awaiting">
-                                <label class="govuk-label govuk-checkboxes__label" for="stage-2">
-                                    IST User 2
-                                </label>
-                            </div>
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="stage-3" name="stage" type="checkbox"
-                                    value="engaged">
-                                <label class="govuk-label govuk-checkboxes__label" for="stage-3">
-                                    IST User 3
-                                </label>
-                            </div>
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="stage-4" name="stage" type="checkbox"
-                                    value="non-responsive">
-                                <label class="govuk-label govuk-checkboxes__label" for="stage-4">
-                                    IST User 4
-                                </label>
-                            </div>
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="stage-4" name="stage" type="checkbox"
-                                    value="non-fdi">
-                                <label class="govuk-label govuk-checkboxes__label" for="stage-4">
-                                    IST User 5
-                                </label>
-                            </div>
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="stage-4" name="stage" type="checkbox"
-                                    value="added-to-data-hub">
-                                <label class="govuk-label govuk-checkboxes__label" for="stage-4">
-                                    Unassigned
-                                </label>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-                <div class="govuk-form-group filter-form-group">
+        <div class="govuk-grid-row">
+
+            <div class="govuk-grid-column-one-third">
+                
+                {% include 'partials/enquiry_filters.html' %}
+                
+                <!-- <div class="govuk-form-group filter-form-group">
                     <label class="govuk-label" for="date-received-before">
                         Date received before
                     </label>
@@ -112,7 +53,7 @@
                 </button>
                 <button class="govuk-button govuk-button--secondary" data-module="govuk-button">
                     Clear filters
-                </button>
+                </button> -->
             </div>
 
 
