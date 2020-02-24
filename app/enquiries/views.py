@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.paginator import Paginator as DjangoPaginator
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import generics, viewsets, status
 from rest_framework.pagination import PageNumberPagination
@@ -53,9 +54,14 @@ class EnquiryListView(APIView, PaginationHandlerMixin):
     pagination_class = EnquiryListPagination
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
 
+    # This is mainly used for displaying page range in the template
+    django_paginator_class = DjangoPaginator
+
     def get(self, request, format=None):
         enquiries = models.Enquiry.objects.all()
         paged_queryset = self.paginate_queryset(enquiries, request)
+        page_size = self.pagination_class.page_size
+        paginator = self.django_paginator_class(enquiries, page_size)
         if paged_queryset:
             paged_serializer = serializers.EnquiryDetailSerializer(
                 paged_queryset, many=True
@@ -65,5 +71,10 @@ class EnquiryListView(APIView, PaginationHandlerMixin):
             serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
 
         return Response(
-            {"serializer": serializer.data}, template_name="enquiry_list.html",
+            {
+                "serializer": serializer.data,
+                "page_range": paginator.page_range,
+                "current_page": request.query_params.get("page", "1"),
+            },
+            template_name="enquiry_list.html",
         )
