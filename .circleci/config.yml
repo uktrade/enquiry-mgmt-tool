@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 
 jobs:
   build:
@@ -13,9 +13,9 @@ jobs:
       DEBUG: 'True'
 
     docker:
-      - image: <<parameters.python_image>>
+      - image: circleci/python:3.6.4
 
-      - image: <<parameters.postgres_image>>
+      - image: circleci/postgres:9.6
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
@@ -29,7 +29,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-<<parameters.python_image>>-{{ checksum "requirements.txt" }}
+            - v1-dependencies-{{ checksum "requirements.txt" }}
           paths:
             - ./venv
 
@@ -42,7 +42,7 @@ jobs:
 
       - save_cache:
           name: Save pip cache
-          key: v1-<<parameters.python_image>>-{{ checksum "requirements.txt" }}
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
           paths:
             - ./venv
 
@@ -50,13 +50,4 @@ jobs:
           name: Run tests
           command: |
             . venv/bin/activate
-            python -m pytest -s -vvv app/enquiries/tests
-
-workflows:
-  version: 2
-
-  Default build:
-    jobs:
-      - build:
-          python_image: circleci/python:3.6.4
-          postgres_image: circleci/postgres:9.6
+            python -m pytest --ds=app.config.circleci -s -vvv app/enquiries/tests
