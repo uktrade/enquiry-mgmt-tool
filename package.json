@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "sass": "gulp",
-    "sass:watch": "gulp && gulp sass:watch"
+    "sass:watch": "gulp && gulp sass:watch",
+    "start-server": "docker-compose up -d && docker-compose logs -f api"
   },
   "repository": {
     "type": "git",
