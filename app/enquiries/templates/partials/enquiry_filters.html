@@ -83,7 +83,7 @@
         'date_added_to_datahub__lt', 'date_added_to_datahub__gt',
       ]
 
-      const controls_select = []
+      const controls_select = ['enquiry_stage_container', 'users']
       const controls_radio_check = ['users', 'enquiry_stage_container']
 
       // clear inputs
@@ -99,7 +99,15 @@
         els.forEach((el) => {
           el.checked = false
         })
-        
+      })
+
+      // clear selects
+      controls_select.forEach((id, i) => {
+        const el = document.getElementById(id)
+        const els = [].slice.call(el.querySelectorAll('option'))
+        els.forEach((el) => {
+          el.removeAttribute('selected')
+        })
       })
   })
   
