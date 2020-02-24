@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
+from app.enquiries.ref_data import EnquiryStage
 
 
 class EnquiryListView(APIView):
@@ -15,12 +16,40 @@ class EnquiryListView(APIView):
     """
 
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+    def get_queryset(self):
+        filterable = (
+            'enquiry_stage', 'owner', 'company_name__icontains', 'enquirer_email',
+            'created__lt', 'created__gt', 'date_added_to_datahub__lt',
+            'date_added_to_datahub__gt', 'owner__user__id'
+            )
+        # filterable_dates = (
+        #     'created__lt', 'created__gt', 'date_added_to_datahub__lt',
+        #     'date_added_to_datahub__gt')
+        queryset = models.Enquiry.objects.all()
+        # add filters to queryset
+        for key, value in self.request.query_params.items():
+            if key in filterable and value != '':
+                p = {key: value}
+                queryset = queryset.filter(**p)
+        return queryset
 
     def get(self, request, format=None):
-        enquiries = models.Enquiry.objects.all()
+        enquiries = self.get_queryset()
         serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
+
+        filter_fields = [field for field in models.Enquiry._meta.get_fields() if field.choices]
+        filter_config = {}
+        for field in filter_fields:
+            filter_config[field.name] = field
         return Response(
-            {"serializer": serializer.data}, template_name="enquiry_list.html",
+            {
+                "serializer": serializer.data,
+                'owners': models.Owner.objects.all(),
+                'EnquiryStage': EnquiryStage(),
+                'filters': filter_config,
+                "query_params": request.GET
+            },
+            template_name="enquiry_list.html",
         )
 
     def post(self, request, format=None):

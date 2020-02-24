@@ -20,6 +20,10 @@ class EnquirySerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%d %B %Y ", read_only=True)
     modified = serializers.DateTimeField(format="%d %B %Y", read_only=True)
 
+    props = {
+        'enquiry_stage': models.Enquiry._meta.get_field('enquiry_stage')
+    }
+
     class Meta:
         model = models.Enquiry
         fields = "__all__"
@@ -53,6 +57,10 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
 >>>>>>> Fix datetime bug
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
     project_success_date = serializers.DateField(format="%d %B %Y")
+
+    props = {
+        'enquiry_stage': models.Enquiry._meta.get_field('enquiry_stage')
+    }
 
     class Meta:
         model = models.Enquiry
