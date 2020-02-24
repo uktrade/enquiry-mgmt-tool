@@ -10,49 +10,6 @@
             <div class="govuk-grid-column-one-third">
                 
                 {% include 'partials/enquiry_filters.html' %}
-                
-                <!-- <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="date-received-before">
-                        Date received before
-                    </label>
-                    <input class="govuk-input" id="date-received-before" name="date-received-before" type="date">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="date-received-after">
-                        Date received after
-                    </label>
-                    <input class="govuk-input" id="date-received-after" name="date-received-after" type="date">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="company-name">
-                        Company name
-                    </label>
-                    <input class="govuk-input" id="company-name" name="company-name" type="searchs">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="enquirer-email">
-                        Enquirer email address
-                    </label>
-                    <input class="govuk-input" id="enquirer-email" name="enquirer-email" type="searchs">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="date-received-before">
-                        Date added to Data Hub before
-                    </label>
-                    <input class="govuk-input" id="date-received-before" name="date-received-before" type="date">
-                </div>
-                <div class="govuk-form-group filter-form-group">
-                    <label class="govuk-label" for="date-received-after">
-                        Date added to Data Hub after
-                    </label>
-                    <input class="govuk-input" id="date-received-after" name="date-received-after" type="date">
-                </div>
-                <button class="govuk-button govuk-!-margin-right-1" data-module="govuk-button">
-                    Apply filters
-                </button>
-                <button class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                    Clear filters
-                </button> -->
             </div>
 
 
@@ -77,51 +34,7 @@
                     </header>
                     <ol class="entity-list">
                         {% for obj in serializer %}
-                        <li class="entity-list-item">
-                            <div class="entity-enquiry">
-                                <div class="entity-header">
-                                    <div class="entity-title">
-                                        <h3>
-                                            <a class="entity-title-link"
-                                                href="{% url 'enquiry-detail' obj.id %}">{{ obj.company_name }}</a>
-                                        </h3>
-                                    </div>
-                                    <div class="entity-badges">
-                                        <div class="entity-badges-list">
-                                            <div class="entity-badges-item">
-                                                <span>{{ obj.enquiry_stage }}</span>
-                                            </div>
-                                            <div class="entity-badges-item">
-                                                <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }}
-                                                    {%endif%}</span>
-                                            </div>
-                                            <div class="entity-badges-item">
-                                                <span>{{ obj.country }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="entity-subtitle">
-                                        Date received {{ obj.created }}
-                                    </div>
-                                </div>
-                                <div class="entity-content">
-                                    <div class="entity-content-list">
-                                        <div class="entity-content-item">
-                                            <span class="list-item-label">Enquiry text</span>
-                                            <span class="list-item-value">{{ obj.enquiry_text }}</span>
-                                        </div>
-                                        <div class="entity-content-item">
-                                            <span class="list-item-label">Date last updated</span>
-                                            <span class="list-item-value">{{ obj.updated }}</span>
-                                        </div>
-                                        <div class="entity-content-item">
-                                            <span class="list-item-label">Call?</span>
-                                            <span class="list-item-value">{{ obj.request_for_call }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+                        {% include 'snippets/enquiry_item.html' with enquiry=obj %}
                         {% endfor %}
                     </ol>
                     <nav class="pagination"></nav>
