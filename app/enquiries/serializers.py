@@ -4,6 +4,14 @@ from drf_writable_nested import WritableNestedModelSerializer
 from app.enquiries import models
 
 
+class EnquirerSerializer(serializers.ModelSerializer):
+    request_for_call = serializers.CharField(source="get_request_for_call_display")
+
+    class Meta:
+        model = models.Enquirer
+        fields = "__all__"
+
+
 class OwnerSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
@@ -16,16 +24,24 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 
 class EnquirySerializer(serializers.ModelSerializer):
+    enquirer = EnquirerSerializer()
 
     class Meta:
         model = models.Enquiry
         fields = "__all__"
+
+    def create(self, validated_data):
+        enquirer = validated_data.pop('enquirer')
+        enquirer_instance = models.Enquirer.objects.create(**enquirer)
+        enquiry = models.Enquiry.objects.create(**validated_data, enquirer=enquirer_instance)
+        return enquiry
 
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
     owner = OwnerSerializer()
     created = serializers.DateTimeField(format="%d %B %Y")
     modified = serializers.DateTimeField(format="%d %B %Y")
+    enquirer = EnquirerSerializer()
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
     investment_readiness = serializers.CharField(source="get_investment_readiness_display")
     quality = serializers.CharField(source="get_quality_display")
@@ -35,7 +51,6 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     ist_sector = serializers.CharField(source="get_ist_sector_display")
     country = serializers.CharField(source="get_country_display")
     region = serializers.CharField(source="get_region_display")
-    request_for_call = serializers.CharField(source="get_request_for_call_display")
     first_response_channel = serializers.CharField(source="get_first_response_channel_display")
     first_hpo_selection = serializers.CharField(source="get_first_hpo_selection_display")
     second_hpo_selection = serializers.CharField(source="get_second_hpo_selection_display")
