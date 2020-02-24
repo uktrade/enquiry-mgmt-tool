@@ -1,6 +1,11 @@
 {% load enquiries_extras %}
+<<<<<<< HEAD
 <form method="GET" action="{% url 'enquiry-list' %}">
   {% include 'snippets/enquiry_field_checkbox.html' with group_id='enquiry_stage_container' heading='Enquiry stage' field=filters.enquiry_stage query_params=query_params %}
+=======
+<form method="GET" action="/api/v1/enquiries/">
+  {% include 'snippets/enquiry_field_checkbox.html' with group_id='enquiry_stage_container' heading='Enquiry stage' field=filters.enquiry_stage %}
+>>>>>>> add filters to list view
   <div class="govuk-form-group" id="users">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -13,15 +18,24 @@
       </span>
       <div class="govuk-checkboxes govuk-checkboxes--small">
         <div class="govuk-checkboxes__item">
+<<<<<<< HEAD
           <input class="govuk-checkboxes__input" id="user" name="owner" type="checkbox" value="UNASSIGNED" {% query_params_value_selected 'UNASSIGNED' 'owner' query_params ' checked'  %}>
+=======
+          <input class="govuk-checkboxes__input" id="user" name="owner__suser__id" type="checkbox" value="added-to-data-hub">
+>>>>>>> add filters to list view
           <label class="govuk-label govuk-checkboxes__label" for="user">
             Unassigned
           </label>
         </div>
         {% for owner in owners%}
         <div class="govuk-checkboxes__item">
+<<<<<<< HEAD
           <input class="govuk-checkboxes__input" id="user_{{owner.id}}" name="owner" type="checkbox" value="{{owner.id}}"{% query_params_value_selected owner.id 'owner' query_params ' checked'  %}>
           <label class="govuk-label govuk-checkboxes__label" for="user_{{owner.id}}">
+=======
+          <input class="govuk-checkboxes__input" id="user_{{owner.user.id}}" name="owner__user__id" type="checkbox" value="{{owner.user.id}}">
+          <label class="govuk-label govuk-checkboxes__label" for="user_{{owner.user.id}}">
+>>>>>>> add filters to list view
              {{owner.user.first_name}} {{owner.user.last_name}}
           </label>
         </div>
@@ -30,6 +44,7 @@
     </fieldset>
   </div>
     <div class="govuk-form-group">
+<<<<<<< HEAD
     <label class="govuk-label" for="date_created_before">
       Date received before
     </label>
@@ -40,12 +55,28 @@
       Date received after
     </label>
     <input class="govuk-input" id="date_created_after" name="date_created_after" type="date" value="{{query_params.date_created_after}}">
+=======
+    <label class="govuk-label" for="date_created__lt">
+      Date received before
+    </label>
+    <input class="govuk-input" id="date_created__lt" name="created__lt" type="date" value="{{query_params.created__lt}}">
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="date_created__gt">
+      Date received after
+    </label>
+    <input class="govuk-input" id="date_created__gt" name="created__gt" type="date" value="{{query_params.created__gt}}">
+>>>>>>> add filters to list view
   </div>
   <div class="govuk-form-group">
     <label class="govuk-label" for="company_name">
       Company name
     </label>
+<<<<<<< HEAD
     <input class="govuk-input" id="company_name" name="company_name" type="search" value={{query_params.company_name}}>
+=======
+    <input class="govuk-input" id="company_name" name="company_name__icontains" type="search" value={{query_params.company_name__icontains}}>
+>>>>>>> add filters to list view
   </div>
   <div class="govuk-form-group">
     <label class="govuk-label" for="enquirer_email">
@@ -57,20 +88,34 @@
     <label class="govuk-label" for="date_added_to_datahub__lt">
       Date added to Data Hub before
     </label>
+<<<<<<< HEAD
     <input class="govuk-input" id="date_added_to_datahub__lt" name="date_added_to_datahub_before" type="date" value="{{query_params.date_added_to_datahub_before}}">
+=======
+    <input class="govuk-input" id="date_added_to_datahub__lt" name="date_added_to_datahub__lt" type="date" value="{{query_params.date_added_to_datahub__lt}}">
+>>>>>>> add filters to list view
   </div>
   <div class="govuk-form-group">
     <label class="govuk-label" for="date_added_to_datahub__gt">
       Date added to Data Hub after
     </label>
+<<<<<<< HEAD
     <input class="govuk-input" id="date_added_to_datahub__gt" name="date_added_to_datahub_after" type="date" value="{{query_params.date_added_to_datahub_after}}">
+=======
+    <input class="govuk-input" id="date_added_to_datahub__gt" name="date_added_to_datahub__gt" type="date" value="{{query_params.date_added_to_datahub__gt}}">
+>>>>>>> add filters to list view
   </div>
   <button class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" accesskey="s">
     Apply filters
   </button>
+<<<<<<< HEAD
   <a href="{% url 'enquiry-list' %}" class="govuk-button govuk-button--secondary" data-module="govuk-button" id="btn_clear" type="button" accesskey="c">
     Clear filters
   </a>
+=======
+  <button class="govuk-button govuk-button--secondary" data-module="govuk-button" id="btn_clear" type="button" accesskey="c">
+    Clear filters
+  </button>
+>>>>>>> add filters to list view
 </form>
   
 <script>
@@ -79,11 +124,19 @@
     b.addEventListener('click', (e) => {
       const controls_input = [
         'company_name', 'enquirer_email',
+<<<<<<< HEAD
         'date_created_before', 'date_created_after',
         'date_added_to_datahub__lt', 'date_added_to_datahub__gt',
       ]
 
       const controls_select = ['enquiry_stage_container', 'users']
+=======
+        'date_created__lt', 'date_created__gt',
+        'date_added_to_datahub__lt', 'date_added_to_datahub__gt',
+      ]
+
+      const controls_select = []
+>>>>>>> add filters to list view
       const controls_radio_check = ['users', 'enquiry_stage_container']
 
       // clear inputs
@@ -99,6 +152,7 @@
         els.forEach((el) => {
           el.checked = false
         })
+<<<<<<< HEAD
       })
 
       // clear selects
@@ -108,8 +162,15 @@
         els.forEach((el) => {
           el.removeAttribute('selected')
         })
+=======
+        
+>>>>>>> add filters to list view
       })
   })
   
   } )
+<<<<<<< HEAD
 </script>
+=======
+</script>
+>>>>>>> add filters to list view

@@ -78,6 +78,22 @@ class EnquiryListView(APIView):
     """
 
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+    def get_queryset(self):
+        filterable = (
+            'enquiry_stage', 'owner', 'company_name__icontains', 'enquirer_email',
+            'created__lt', 'created__gt', 'date_added_to_datahub__lt',
+            'date_added_to_datahub__gt', 'owner__user__id'
+            )
+        # filterable_dates = (
+        #     'created__lt', 'created__gt', 'date_added_to_datahub__lt',
+        #     'date_added_to_datahub__gt')
+        queryset = models.Enquiry.objects.all()
+        # add filters to queryset
+        for key, value in self.request.query_params.items():
+            if key in filterable and value != '':
+                p = {key: value}
+                queryset = queryset.filter(**p)
+        return queryset
 
     def get_queryset(self):
         queryset = models.Enquiry.objects.all()
