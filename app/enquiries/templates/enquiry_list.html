@@ -84,11 +84,19 @@
                         <a class="pagination-link" href="{{ serializer.previous }}">Previous</a>
                     </li>
                     {%endif%}
-                    
+
                     {% for page in page_range %}
+
+                    {% if page|stringformat:"s" == current_page %}
+
+                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item pagination-list-item-current">{{ page }}</li></a>
+
+                    {% else %}
 
                     <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item">{{ page }}</li></a>
                     
+                    {% endif %}
+
                     {% endfor %}
 
                     {%if serializer.next is not None %}

@@ -160,6 +160,11 @@ li:active.pagination-list-item {
     margin: 0px;
 }
 
+li.pagination-list-item-current, li:hover.pagination-list-item-current {
+    background-color: white;
+    color: black;
+}
+
 ol.pagination-list {
     margin: auto;
     width:  50%;

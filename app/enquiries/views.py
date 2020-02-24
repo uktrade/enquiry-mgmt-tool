@@ -72,7 +72,7 @@ class EnquiryList(APIView, PaginationHandlerMixin):
             serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
 
         return Response(
-            {"serializer": serializer.data, "page_range": paginator.page_range},
+            {"serializer": serializer.data, "page_range": paginator.page_range, "current_page": request.query_params.get('page', "1")},
             template_name="enquiry_list.html",
         )
 
