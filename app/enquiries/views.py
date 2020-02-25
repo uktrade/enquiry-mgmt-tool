@@ -91,10 +91,16 @@ class EnquiryDetail(APIView):
     def get(self, request, pk):
         enquiry = get_object_or_404(models.Enquiry, pk=pk)
         serializer = serializers.EnquiryDetailSerializer(enquiry)
+        owners = [
+            {"id": "", "name": "Unassigned"}
+        ]
+        for owner in models.Owner.objects.all():
+            owners.append({"id": owner.id, "name": str(owner.user.first_name) + " " + str(owner.user.last_name)})
         return Response(
             {
                 "serializer": serializer,
                 "enquiry": enquiry,
+                "owners": owners,
                 "style": {"template_pack": "rest_framework/vertical/"},
             },
             template_name="enquiry_detail.html",

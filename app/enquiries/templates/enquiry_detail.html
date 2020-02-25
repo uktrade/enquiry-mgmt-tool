@@ -57,7 +57,17 @@ Edit details
                     <dt class="govuk-summary-list__key">
                         Owner
                     </dt>
-                    <dd class="govuk-summary-list__value">{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</dd>
+                    <dd class="govuk-summary-list__value">
+                        <div class="govuk-form-group">
+                            <select name="{{ serializer.owner.name }}" id="{{ serializer.owner.name }}" class="govuk-select">
+                                {% for owner in owners %}
+                                <option value="{{ key }}" {% if key == serializer.owner.value %} selected{% endif %}>
+                                    {{ owner.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </dd>
                     <dd class="govuk-summary-list__actions">
                     </dd>
                 </div>
