@@ -662,7 +662,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "specific_investment_program",
+                    "specific_investment_programme",
                     models.CharField(
                         choices=[
                             ("ADVANCED_ENG", "Advanced Engineering Supply Chain"),
