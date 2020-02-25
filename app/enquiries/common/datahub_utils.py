@@ -78,3 +78,43 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
     )
 
     return dh_data[0]["id"] if dh_data else None
+
+
+def dh_company_search(company_name):
+    """
+    Peforms a Company name search using Data hub API.
+
+    Returns list of subset of fields for each company found
+    """
+    companies = []
+    url = settings.DATA_HUB_COMPANY_SEARCH_URL
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {settings.DATA_HUB_ACCESS_TOKEN}",
+    }
+    payload = {"name": company_name}
+
+    response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+
+    # It is not an error for us if the request fails, this can happen if the
+    # Access token is invalid, consider that there are no matches
+    if response.status_code != status.HTTP_200_OK:
+        return companies
+
+    for company in response.json()["results"]:
+        address = company["address"]
+        companies.append(
+            {
+                "name": company["name"],
+                "address": {
+                    "line_1": address["line_1"],
+                    "line_2": address["line_2"],
+                    "town": address["town"],
+                    "county": address["county"],
+                    "postcode": address["postcode"],
+                    "country": address["country"]["name"],
+                },
+            }
+        )
+
+    return companies

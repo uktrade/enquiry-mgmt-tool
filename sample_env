@@ -10,7 +10,9 @@ POSTGRES_DB_HOST=localhost
 POSTGRES_DB_PORT=5432
 
 # Data Hub variables
+DATA_HUB_ACCESS_TOKEN=datahub-access-token
 DATA_HUB_METADATA_URL=https://datahub-api-dev.london.cloudapps.digital/v4/metadata
+DATA_HUB_COMPANY_SEARCH_URL=https://datahub-api-dev.london.cloudapps.digital/v4/search/company
 
 # Hawk
 HAWK_ID=hawk-id
