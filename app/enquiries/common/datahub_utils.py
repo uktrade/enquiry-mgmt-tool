@@ -119,3 +119,37 @@ def dh_company_search(company_name):
         )
 
     return companies
+
+
+def dh_contact_search(contact_name):
+    """
+    Peforms a Contact name search using Data hub API.
+
+    Returns list of subset of fields for each contact found
+    """
+    url = settings.DATA_HUB_CONTACT_SEARCH_URL
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {settings.DATA_HUB_ACCESS_TOKEN}",
+    }
+    payload = {"name": contact_name}
+
+    response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+
+    contacts = []
+    if response.status_code != status.HTTP_200_OK:
+        return contacts
+
+    for contact in response.json()["results"]:
+        contacts.append(
+            {
+                "datahub_id": contact["id"],
+                "first_name": contact["first_name"],
+                "last_name": contact["last_name"],
+                "job_title": contact["job_title"],
+                "email": contact["email"],
+                "phone": contact["telephone_number"],
+            }
+        )
+
+    return contacts
