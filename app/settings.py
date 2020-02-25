@@ -133,3 +133,6 @@ STATIC_URL = '/static/'
 
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
+
+# Data hub
+DATA_HUB_ACCESS_TOKEN=env('DATA_HUB_ACCESS_TOKEN')
