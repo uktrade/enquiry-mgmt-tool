@@ -103,3 +103,8 @@ node_modules
 
 # static files
 app/**/static
+# vscode
+.vscode/
+
+# app specific env files
+app/.env
