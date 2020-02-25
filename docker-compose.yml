@@ -5,12 +5,16 @@ services:
     image: postgres
     environment:
       POSTGRES_PASSWORD: password
+    network_mode: "host"
+    ports:
+      - "5432:5432"
 
   api:
     build: .
     command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/usr/src/app
+    network_mode: "host"
     ports:
       - "8000:8000"
     depends_on:
