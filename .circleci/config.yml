@@ -11,6 +11,9 @@ jobs:
 
     environment:
       DEBUG: 'True'
+      DJANGO_SECRET_KEY: 'supersecretkey'
+      POSTGRES_DB_PASSWORD: 'password'
+      POSTGRES_DB_HOST: 'db'
 
     docker:
       - image: circleci/python:3.6.4
