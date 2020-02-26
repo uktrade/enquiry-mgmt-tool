@@ -6,6 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import HttpResponseRedirect
 
 from app.enquiries import models, serializers
 
@@ -143,6 +144,8 @@ class EnquiryDetail(APIView):
             return response
 
         serializer.save()
+        if request.query_params["redirect_edit"] == '1':
+            return redirect("enquiry-edit", pk=pk)
         return redirect("enquiry-detail", pk=pk)
 
     def dispatch(self, request, *args, **kwargs):

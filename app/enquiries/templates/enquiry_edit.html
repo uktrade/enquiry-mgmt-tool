@@ -44,8 +44,36 @@
                     <dt class="govuk-summary-list__key">
                         Owner
                     </dt>
-                    <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
-                        {{ "Unassigned" }} {%endif%}</dd>
+                    <dd class="govuk-summary-list__value">
+                        <div class="govuk-form-group">
+                            <form class="form" action="{% url 'enquiry-edit' serializer.id.value %}?redirect_edit=1" method="post">
+                                <select name="{{ serializer.owner.name }}" id="{{ serializer.owner.name }}" class="govuk-select" onchange="this.form.submit()">
+                                    <option value="" {% if not serializer.owner.value %} selected{% endif %}>
+                                        Unassigned
+                                    </option>
+                                    {% for key, owner in serializer.owner.choices.items %}
+                                    <option value="{{ key }}" {% if key == serializer.owner.value %} selected{% endif %}>
+                                        {{ owner }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <noscript><input class="govuk-button govuk-button--secondary" type="submit" value="Save"></noscript>
+                            </form>
+                        </div>
+                        <!-- <div class="govuk-form-group">
+                            <form class="form" action="{% url 'enquiry-edit' serializer.id.value %}" method="post">
+                                {% csrf_token %}
+                                <select name="{{ serializer.owner.name }}" id="{{ serializer.owner.name }}" class="govuk-select" onchange="this.form.submit()">
+                                    {% for owner in owners %}
+                                    <option value="{{ owner.id }}" {% if owner.id == serializer.owner.id.value %} selected{% endif %}>
+                                        {{ owner.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <noscript><input class="govuk-button govuk-button--secondary" type="submit" value="Save"></noscript>
+                            </form>
+                        </div> -->
+                    </dd>
                 </div>
             </dl>
         </div>
@@ -68,7 +96,7 @@
                 {% include 'snippets/enquiry_field_select.html' with field=serializer.enquiry_stage %}
 
                 <!-- TODO: Replace with snippet when owner implementation is ready -->
-                <div class="govuk-form-group">
+                <!-- <div class="govuk-form-group">
                     <label for="owner" class="govuk-label">
                         {{ serializer.owner.label }}
                     </label>
@@ -82,7 +110,7 @@
                         </option>
                         {% endfor %}
                     </select>
-                </div>
+                </div> -->
 
             </div>
 
