@@ -3,6 +3,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.db.models.query import QuerySet
 from rest_framework import generics, viewsets, status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -11,6 +12,24 @@ from rest_framework.views import APIView
 from app.enquiries import models, serializers
 from app.enquiries.ref_data import EnquiryStage
 
+def filter_queryset(queryset: QuerySet, query_params: QueryDict):
+    from django.db.models import Q
+    filterable = (
+        'enquiry_stage', 'owner', 'company_name__icontains', 'enquirer_email',
+        'created__lt', 'created__gt', 'date_added_to_datahub__lt',
+        'date_added_to_datahub__gt', 'owner__user__id'
+        )
+    queryset = models.Enquiry.objects.all()
+    Qs = Q()
+    # add filters to queryset
+    for key, value in query_params.items():
+        if key in filterable and value != '':
+            for keyVal in query_params.getlist(key):
+                p = {key: keyVal}
+                # Qs.add(Q(**p), Q.OR) 
+                Qs |= Q(**p)
+    queryset = queryset.filter(Qs)
+    return queryset
 
 class EnquiryListView(APIView):
     """
@@ -19,21 +38,8 @@ class EnquiryListView(APIView):
 
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
     def get_queryset(self):
-        filterable = (
-            'enquiry_stage', 'owner', 'company_name__icontains', 'enquirer_email',
-            'created__lt', 'created__gt', 'date_added_to_datahub__lt',
-            'date_added_to_datahub__gt', 'owner__user__id'
-            )
-        # filterable_dates = (
-        #     'created__lt', 'created__gt', 'date_added_to_datahub__lt',
-        #     'date_added_to_datahub__gt')
         queryset = models.Enquiry.objects.all()
-        # add filters to queryset
-        for key, value in self.request.query_params.items():
-            if key in filterable and value != '':
-                p = {key: value}
-                queryset = queryset.filter(**p)
-        return queryset
+        return filter_queryset(queryset, self.request.GET)
 
     def get(self, request, format=None):
         enquiries = self.get_queryset()
