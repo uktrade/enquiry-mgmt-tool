@@ -123,19 +123,19 @@
 
                 <h3 class="govuk-heading-m">Contact</h3>
 
-                {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer_first_name %}
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer.first_name %}
 
-                {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer_last_name %}
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer.last_name %}
 
-                {% include 'snippets/enquiry_field_input.html' with field=serializer.job_title %}
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer.job_title %}
 
                 <!-- TODO: Change label 'Enquirer email' to 'Enquirer email address' -->
-                {% include 'snippets/enquiry_field_input_email.html' with field=serializer.enquirer_email %}
+                {% include 'snippets/enquiry_field_input_email.html' with field=serializer.enquirer.email %}
 
                 <!-- TODO: Change label 'Enquirer phone' to 'Enquirer telephone number' -->
-                {% include 'snippets/enquiry_field_input_tel.html' with field=serializer.enquirer_phone %}
+                {% include 'snippets/enquiry_field_input_tel.html' with field=serializer.enquirer.phone %}
 
-                {% include 'snippets/enquiry_field_select.html' with field=serializer.request_for_call %}
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.enquirer.request_for_call %}
 
             </div>
 
