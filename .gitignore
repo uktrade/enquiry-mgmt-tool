@@ -109,3 +109,6 @@ app/**/static
 # dummy database data
 *.diff
 seed-data/*
+
+# app specific env files
+app/.env
