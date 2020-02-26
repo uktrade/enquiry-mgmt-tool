@@ -15,7 +15,7 @@
                 <!-- TODO: Add filter controls and data to header -->
                 <div class="collection-header-row">
                     <div class="collection-header-intro">
-                        <span class="big-number-of-enquiries">{{ serializer|length }}</span> enquiries
+                        <span class="big-number-of-enquiries">{{ serializer.count }}</span> enquiries
                         <div class="collection-header-actions">
                             <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
                         </div>
@@ -27,7 +27,7 @@
                 </div> -->
             </header>
             <ol class="entity-list">
-                {% for obj in serializer %}
+                {% for obj in serializer.results %}
                 <li class="entity-list-item">
                     <div class="entity-enquiry">
                         <div class="entity-header">
@@ -73,7 +73,39 @@
                 </li>
                 {% endfor %}
             </ol>
-            <nav class="pagination"></nav>
+
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+            <nav class="pagination">
+
+                <ol class="pagination-list">
+                    {%if serializer.previous is not None %}
+                    <li class="pagination-list-item">
+                        <a class="pagination-link" href="{{ serializer.previous }}">Previous</a>
+                    </li>
+                    {%endif%}
+
+                    {% for page in page_range %}
+
+                    {% if page|stringformat:"s" == current_page %}
+
+                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item pagination-list-item-current">{{ page }}</li></a>
+
+                    {% else %}
+
+                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item">{{ page }}</li></a>
+                    
+                    {% endif %}
+
+                    {% endfor %}
+
+                    {%if serializer.next is not None %}
+                    <li class="pagination-list-item">
+                        <a class="pagination-link" href="{{ serializer.next }}">Next</a>
+                    </li>
+                    {%endif%}
+                </ol>
+            </nav>
         </article>
     </main>
 </div>

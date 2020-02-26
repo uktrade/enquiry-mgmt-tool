@@ -112,3 +112,4 @@ app/**/static
 # app specific env files
 app/.env
 seed-data/*
+app/enquiries/fixtures/*
