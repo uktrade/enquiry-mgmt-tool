@@ -48,6 +48,7 @@ class EnquiryListView(APIView):
     """
 
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+
     def get_queryset(self):
         queryset = models.Enquiry.objects.all()
         return filter_queryset(queryset, self.request.GET)
