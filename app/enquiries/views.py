@@ -12,24 +12,32 @@ from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
 from app.enquiries.ref_data import EnquiryStage
+from django.db.models import Q
+
+FILTER_PROPS_MAP = {
+    "enquiry_stage": "enquiry_stage",
+    "owner": "owner__user__id",
+    "company_name": "company_name__icontains",
+    "enquirer_email": "enquirer__email",
+    "created__before": "created__lt",
+    "created__after": "created__gt",
+    "date_added_to_datahub_before": "date_added_to_datahub__lt",
+    "date_added_to_datahub_after": "date_added_to_datahub__gt"
+}
 
 def filter_queryset(queryset: QuerySet, query_params: QueryDict):
-    from django.db.models import Q
-    filterable = (
-        'enquiry_stage', 'owner', 'company_name__icontains', 'enquirer_email',
-        'created__lt', 'created__gt', 'date_added_to_datahub__lt',
-        'date_added_to_datahub__gt', 'owner__user__id'
-        )
-    queryset = models.Enquiry.objects.all()
+    VALID_KEYS = FILTER_PROPS_MAP.keys()
     Qs = Q()
     # add filters to queryset
-    for key, value in query_params.items():
-        if key in filterable and value != '':
-            for keyVal in query_params.getlist(key):
-                p = {key: keyVal}
-                # Qs.add(Q(**p), Q.OR) 
+    for query_key, query_value in query_params.items():
+        if query_key in VALID_KEYS and query_value != "":
+            # get specific query param as a list (can be in the URL multiple times)
+            QUERY_PARAM_VALUES = query_params.getlist(query_key)
+            for keyVal in QUERY_PARAM_VALUES:
+                p = {FILTER_PROPS_MAP[query_key]: keyVal}
+                # Qs.add(Q(**p), Q.OR)
                 Qs |= Q(**p)
-    queryset = queryset.filter(Qs)
+    queryset = models.Enquiry.objects.filter(Qs)
     return queryset
 
 filter_props = {
@@ -96,6 +104,7 @@ class EnquiryListView(APIView):
     """
 
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+
     def get_queryset(self):
         queryset = models.Enquiry.objects.all()
         return filter_queryset(queryset, self.request.GET)

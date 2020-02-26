@@ -39,10 +39,6 @@ class EnquirySerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%d %B %Y ", read_only=True)
     modified = serializers.DateTimeField(format="%d %B %Y", read_only=True)
 
-    props = {
-        'enquiry_stage': models.Enquiry._meta.get_field('enquiry_stage')
-    }
-
     class Meta:
         model = models.Enquiry
         fields = "__all__"
@@ -71,20 +67,9 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     new_existing_investor = serializers.CharField(source="get_new_existing_investor_display")
     investor_involvement_level = serializers.CharField(source="get_investor_involvement_level_display")
     specific_investment_programme = serializers.CharField(source="get_specific_investment_programme_display")
-<<<<<<< HEAD
     date_added_to_datahub = serializers.DateField(format="%d %B %Y")
-=======
-    date_added_to_datahub = serializers.DateTimeField(format="%d %B %Y")
->>>>>>> Fix spelling program to programme
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
     project_success_date = serializers.DateField(format="%d %B %Y")
-
-<<<<<<< HEAD
-=======
-    props = {
-        'enquiry_stage': models.Enquiry._meta.get_field('enquiry_stage')
-    }
->>>>>>> add filters to list view
 
     class Meta:
         model = models.Enquiry
