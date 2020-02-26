@@ -1,0 +1,13 @@
+<div class="govuk-form-group">
+    <label class="govuk-label" for="sort">
+        {{ field.label }}
+    </label>
+    <select class="govuk-select" id={{ field.name }} name={{ field.name }}>
+        <option value="yes" {% if field.value %} selected{% endif %}>
+            Yes
+        </option>
+        <option value="no" {% if not field.value %} selected{% endif %}>
+            No
+        </option>
+    </select>
+</div>

@@ -51,7 +51,7 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
     anonymised_project_description = factory.Faker("sentence", nb_words=10)
     new_existing_investor = get_random_item(ref_data.NewExistingInvestor)
     investor_involvement_level = get_random_item(ref_data.InvestorInvolvement)
-    specific_investment_program = get_random_item(ref_data.InvestmentProgram)
+    specific_investment_programme = get_random_item(ref_data.InvestmentProgramme)
     datahub_project_status = get_random_item(ref_data.DatahubProjectStatus)
 
     class Meta:

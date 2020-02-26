@@ -1,0 +1,232 @@
+{% load static %}
+
+{% include 'base.html' %}
+
+{% include 'partials/govuk_header_partial.html' %}
+
+{% load widget_tweaks %}
+{% load rest_framework %}
+{% load enquiries_extras %}
+
+<div class="govuk-width-container">
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+    <a href="{% url 'enquiry-detail' serializer.id.value %}" class="govuk-back-link">Back</a>
+
+    <main class="govuk-main-wrapper">
+
+        <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
+
+            <h2 class="govuk-heading-l">{{ serializer.company_name.value }}</h2>
+
+            <dl class="govuk-summary-list--no-border">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date received
+                    </dt>
+                    <dd class="govuk-summary-list__value">{{ serializer.created.value }}</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date last updated
+                    </dt>
+                    <dd class="govuk-summary-list__value">{{ serializer.modified.value }}</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Enquiry stage
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        {{ serializer.enquiry_stage.choices|get_item:serializer.enquiry_stage.value }}</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Owner
+                    </dt>
+                    <dd class="govuk-summary-list__value">{% if obj.owner %}{{ obj.owner.user }} {%else%}
+                        {{ "Unassigned" }} {%endif%}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <form class="form" action="{% url 'enquiry-edit' pk=pk %}" method="post">
+            {% csrf_token %}
+
+            <div>
+                {% if not serializer.is_valid %}
+                {% for key,error in serializer.errors.items %}
+                {{key}}: {{ error.0 }} <br>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="govuk-grid-row enquiry-edit-row">
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.company_name %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.enquiry_stage %}
+
+                <!-- TODO: Replace with snippet when owner implementation is ready -->
+                <div class="govuk-form-group">
+                    <label for="owner" class="govuk-label">
+                        {{ serializer.owner.label }}
+                    </label>
+                    <select name="{{ serializer.owner.name }}" id="{{ serializer.owner.name }}" class="govuk-select">
+                        <option value="" {% if not serializer.owner.value %} selected{% endif %}>
+                            Unassigned
+                        </option>
+                        {% for key, owner in serializer.owner.choices.items %}
+                        <option value="{{ key }}" {% if key == serializer.owner.value %} selected{% endif %}>
+                            {{ owner }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="govuk-grid-row enquiry-edit-row">
+
+                <h3 class="govuk-heading-m">Enquiry details</h3>
+
+                {% include 'snippets/enquiry_field_textarea.html' with field=serializer.enquiry_text %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.investment_readiness %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.quality %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.first_response_channel %}
+
+            </div>
+
+            <div class="govuk-grid-row enquiry-details-row">
+
+                <h3 class="govuk-heading-m">Company details</h3>
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.website %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.country %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.region %}
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.company_hq_address %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.primary_sector %}
+
+                <!-- TODO: investigate issue and fix Ist sector to IST sector -->
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.ist_sector %}
+
+            </div>
+
+            <div class="govuk-grid-row enquiry-details-row">
+
+                <h3 class="govuk-heading-m">Contact</h3>
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer_first_name %}
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.enquirer_last_name %}
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.job_title %}
+
+                <!-- TODO: Change label 'Enquirer email' to 'Enquirer email address' -->
+                {% include 'snippets/enquiry_field_input_email.html' with field=serializer.enquirer_email %}
+
+                <!-- TODO: Change label 'Enquirer phone' to 'Enquirer telephone number' -->
+                {% include 'snippets/enquiry_field_input_tel.html' with field=serializer.enquirer_phone %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.request_for_call %}
+
+            </div>
+
+            <div class="govuk-grid-row enquiry-details-row">
+
+                <h3 class="govuk-heading-m">Marketing</h3>
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.google_campaign %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.marketing_channel %}
+
+                <!-- TODO: Change label to 'How did they hear about DIT?' -->
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.how_they_heard_dit %}
+
+                <!-- TODO: Change label to 'Consent (email)' -->
+                {% include 'snippets/enquiry_field_boolean_select.html' with field=serializer.email_consent %}
+
+                <!-- TODO: Change label to 'Consent (telephone)' -->
+                {% include 'snippets/enquiry_field_boolean_select.html' with field=serializer.phone_consent %}
+
+            </div>
+
+            <div class="govuk-grid-row enquiry-details-row">
+
+                <h3 class="govuk-heading-m">HPO details</h3>
+
+                <!-- TODO: Change label to 'HPO selection' -->
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.first_hpo_selection %}
+
+                <!-- TODO: Change label to 'Second HPO selection' -->
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.second_hpo_selection %}
+
+                <!-- TODO: Change label to 'Third HPO selection' -->
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.third_hpo_selection %}
+
+            </div>
+
+
+            <div class="govuk-grid-row enquiry-details-row">
+
+                <h3 class="govuk-heading-m">Data Hub</h3>
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.organisation_type %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.investment_type %}
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.project_name %}
+
+                {% include 'snippets/enquiry_field_textarea.html' with field=serializer.project_description %}
+
+                {% include 'snippets/enquiry_field_textarea.html' with field=serializer.anonymised_project_description %}
+
+                {% include 'snippets/enquiry_field_input_date.html' with field=serializer.estimated_land_date %}
+
+                <!-- TODO: Change label to 'New or existing investor' -->
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.new_existing_investor %}
+
+                <!-- TODO: Change label to 'Investor level of involvement' -->
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.investor_involvement_level %}
+
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.specific_investment_programme %}
+
+                <!-- TODO: Full implementation searches Data Hub for users -->
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.crm %}
+
+                <!-- TODO: Change label to 'Date added to Data Hub' -->
+                {% include 'snippets/enquiry_field_input_date.html' with field=serializer.date_added_to_datahub %}
+
+                {% include 'snippets/enquiry_field_input.html' with field=serializer.project_code %}
+
+                <!-- TODO: Change label to 'Data Hub project status' -->
+                {% include 'snippets/enquiry_field_select.html' with field=serializer.datahub_project_status %}
+
+                {% include 'snippets/enquiry_field_input_date.html' with field=serializer.project_success_date %}
+
+            </div>
+
+            <div class="govuk-grid-row enquiry-details-row">
+
+                <h3 class="govuk-heading-m">Notes</h3>
+
+                {% include 'snippets/enquiry_field_textarea.html' with field=serializer.notes %}
+
+            </div>
+
+            <button class="govuk-button" data-module="govuk-button" type="submit">Save and return</button>
+            <button class="govuk-button govuk-button--secondary" data-module="govuk-button">Cancel</button>
+
+        </form>
+
+    </main>
+</div>
+
+{% include 'partials/govuk_footer_partial.html' %}
