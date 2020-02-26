@@ -33,8 +33,8 @@ class EnquirySerializer(serializers.ModelSerializer):
 class EnquiryDetailSerializer(serializers.ModelSerializer):
     owner = OwnerSerializer()
     enquirer = EnquirerDetailSerializer()
-    created = serializers.DateTimeField(format="%d %b %Y")
-    modified = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    created = serializers.DateTimeField(format="%d %B %Y")
+    modified = serializers.DateTimeField(format="%d %B %Y")
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
     investment_readiness = serializers.CharField(source="get_investment_readiness_display")
     quality = serializers.CharField(source="get_quality_display")
@@ -53,7 +53,9 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     new_existing_investor = serializers.CharField(source="get_new_existing_investor_display")
     investor_involvement_level = serializers.CharField(source="get_investor_involvement_level_display")
     specific_investment_programme = serializers.CharField(source="get_specific_investment_programme_display")
+    date_added_to_datahub = serializers.DateField(format="%d %B %Y")
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
+    project_success_date = serializers.DateField(format="%d %B %Y")
 
     class Meta:
         model = models.Enquiry
