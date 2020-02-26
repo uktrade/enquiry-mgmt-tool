@@ -4,7 +4,7 @@ from drf_writable_nested import WritableNestedModelSerializer
 from app.enquiries import models
 
 
-class EnquirerDetailSerializer(serializers.ModelSerializer):
+class EnquirerSerializer(serializers.ModelSerializer):
     request_for_call = serializers.CharField(source="get_request_for_call_display")
 
     class Meta:
@@ -26,15 +26,22 @@ class OwnerSerializer(serializers.ModelSerializer):
 class EnquirySerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%d %B %Y ", read_only=True)
     modified = serializers.DateTimeField(format="%d %B %Y", read_only=True)
+    enquirer = EnquirerSerializer()
 
     class Meta:
         model = models.Enquiry
         fields = "__all__"
 
+    def create(self, validated_data):
+        enquirer = validated_data.pop('enquirer')
+        enquirer_instance = models.Enquirer.objects.create(**enquirer)
+        enquiry = models.Enquiry.objects.create(**validated_data, enquirer=enquirer_instance)
+        return enquiry
+
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
     owner = OwnerSerializer()
-    enquirer = EnquirerDetailSerializer()
+    enquirer = EnquirerSerializer()
     created = serializers.DateTimeField(format="%d %B %Y")
     modified = serializers.DateTimeField(format="%d %B %Y")
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
