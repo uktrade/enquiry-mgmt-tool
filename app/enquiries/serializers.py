@@ -1,3 +1,4 @@
+from django.core.validators import EmailValidator
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
 
@@ -10,13 +11,18 @@ class EnquirerDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Enquirer
         fields = "__all__"
-
+        extra_kwargs = {
+            'email': {'validators': [EmailValidator]},
+        }
 
 class EnquirerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Enquirer
         fields = "__all__"
+        extra_kwargs = {
+            'email': {'validators': [EmailValidator]},
+        }
 
 
 class OwnerSerializer(serializers.ModelSerializer):
@@ -30,10 +36,10 @@ class OwnerSerializer(serializers.ModelSerializer):
         return obj
 
 
-class EnquirySerializer(serializers.ModelSerializer):
+class EnquirySerializer(WritableNestedModelSerializer):
     created = serializers.DateTimeField(format="%d %B %Y ", read_only=True)
     modified = serializers.DateTimeField(format="%d %B %Y", read_only=True)
-    enquirer = EnquirerSerializer()
+    enquirer = EnquirerSerializer(partial=True)
 
     class Meta:
         model = models.Enquiry
@@ -44,6 +50,13 @@ class EnquirySerializer(serializers.ModelSerializer):
         enquirer_instance = models.Enquirer.objects.create(**enquirer)
         enquiry = models.Enquiry.objects.create(**validated_data, enquirer=enquirer_instance)
         return enquiry
+
+    def update(self, instance, validated_data):
+        enquirer = validated_data.pop("enquirer")
+        models.Enquirer.objects.filter(email=instance.enquirer.email).update(**enquirer)
+        models.Enquiry.objects.filter(id=instance.id).update(**validated_data)
+        return instance
+
 
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
