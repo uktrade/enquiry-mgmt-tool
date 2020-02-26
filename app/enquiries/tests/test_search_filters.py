@@ -24,6 +24,28 @@ class EnquiryFiltersTestCase(TestCase):
     def test_loaded_fixtures(self):
         num = Enquiry.objects.all().count()
         self.assertEqual(num, FIXTURE_COUNT)
+    
+    def test_filter_company_name(self):
+        existing_name = 'Alphabet Projects'
+        existing_name_partial = existing_name[:-8]
+        non_existing_name = 'chinese industries'
+        existing_records = 12
+
+        # exact match
+        query_str = f'company_name__icontains={existing_name}'
+        print(query_str)
+        qd = QueryDict(query_str)
+        qs = Enquiry.objects.all()
+        qs = filter_queryset(qs, qd)
+        self.assertEqual(qs.count(), existing_records)
+        # partial match
+        query_str = f'company_name__icontains={existing_name_partial}'
+        print(query_str)
+        qd = QueryDict(query_str)
+        qs = Enquiry.objects.all()
+        qs = filter_queryset(qs, qd)
+        self.assertEqual(qs.count(), existing_records)
+
     def test_filter_enquiry_stage_types(self):
         ENQUIRY_STAGES = [
             ref_data.EnquiryStage.NEW, ref_data.EnquiryStage.AWAITING_RESPONSE,
@@ -46,7 +68,7 @@ class EnquiryFiltersTestCase(TestCase):
         num = Enquiry.objects.all().count()
         self.assertEqual(num, FIXTURE_COUNT)
 
-    def test_filter_multiple_values(self):
+    def test_filter_enquiry_stages_multiple_values(self):
         '''Filter won't be applied'''
         allowed_stages = [ref_data.EnquiryStage.NON_FDI, ref_data.EnquiryStage.POST_PROGRESSING]
         qd = QueryDict(f'enquiry_stage={ref_data.EnquiryStage.NON_FDI}&enquiry_stage={ref_data.EnquiryStage.POST_PROGRESSING}')
@@ -63,6 +85,7 @@ class EnquiryFiltersTestCase(TestCase):
         qs = Enquiry.objects.all()
         qs = filter_queryset(qs, qd)
         for e in qs.iterator():
+            print(e.enquiry_stage)
             self.assertEqual((e.enquiry_stage in allowed_stages) or (e.owner == user_keys[1]), True)
 
     def test_filter_bad_parameter_key(self):
