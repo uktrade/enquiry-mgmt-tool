@@ -1,3 +1,4 @@
+{% load enquiries_extras %}
 <div class="govuk-form-group" id="{{group_id}}">
     <fieldset class="govuk-fieldset" aria-describedby="{{ field.name }}-hint">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -11,7 +12,7 @@
       <div class="govuk-checkboxes govuk-checkboxes--small">
         {% for value, label in field.choices %}
         <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="{{ field.name }}_{{value}}" name="{{ field.name }}" type="checkbox" value="{{value}}">
+            <input class="govuk-checkboxes__input" id="{{ field.name }}_{{value}}" name="{{ field.name }}" type="checkbox" value="{{value}}" {% query_params_value_selected value 'enquiry_stage' query_params ' checked'  %}>
             <label class="govuk-label govuk-checkboxes__label" for="{{ field.name }}_{{value}}">
               {{label}}
             </label>
