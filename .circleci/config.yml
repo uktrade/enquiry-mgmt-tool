@@ -1,0 +1,56 @@
+version: 2
+
+jobs:
+  build:
+    parameters:
+      python_image:
+        type: string
+
+      postgres_image:
+        type: string
+
+    environment:
+      DEBUG: 'True'
+      DJANGO_SECRET_KEY: 'supersecretkey'
+      POSTGRES_DB_PASSWORD: 'password'
+      POSTGRES_DB_HOST: 'localhost'
+
+    docker:
+      - image: circleci/python:3.6.4
+
+      - image: circleci/postgres:9.6
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: password
+
+    steps:
+      - checkout
+      - run:
+          name: Wait for db to become available
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+          paths:
+            - ./venv
+
+      - run:
+          name: Install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
+          name: Save pip cache
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          paths:
+            - ./venv
+
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            python -m pytest -s -vvv app/enquiries/tests
