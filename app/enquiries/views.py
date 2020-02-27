@@ -16,8 +16,8 @@ FILTER_PROPS_MAP = {
     "owner": "owner__user__id",
     "company_name": "company_name__icontains",
     "enquirer_email": "enquirer__email",
-    "created__before": "created__lt",
-    "created__after": "created__gt",
+    "date_created_before": "created__lt",
+    "date_created_after": "created__gt",
     "date_added_to_datahub_before": "date_added_to_datahub__lt",
     "date_added_to_datahub_after": "date_added_to_datahub__gt"
 }
@@ -31,7 +31,10 @@ def filter_queryset(queryset: QuerySet, query_params: QueryDict):
             # get specific query param as a list (can be in the URL multiple times)
             QUERY_PARAM_VALUES = query_params.getlist(query_key)
             for keyVal in QUERY_PARAM_VALUES:
-                p = {FILTER_PROPS_MAP[query_key]: keyVal}
+                if query_key.startswith('date_'):
+                    p = {FILTER_PROPS_MAP[query_key]: keyVal + 'T00:00:00Z'}
+                else:
+                    p = {FILTER_PROPS_MAP[query_key]: keyVal}
                 # Qs.add(Q(**p), Q.OR)
                 Qs |= Q(**p)
     queryset = models.Enquiry.objects.filter(Qs)
