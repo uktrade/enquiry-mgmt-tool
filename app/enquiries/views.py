@@ -7,9 +7,9 @@ from rest_framework.views import APIView
 from app.enquiries import models, serializers
 
 
-class EnquiryList(APIView):
+class EnquiryListView(APIView):
     """
-    List all enquiries, or create a new enquiry.
+    View to render list all enquiries
     """
 
     renderer_classes = (TemplateHTMLRenderer,)

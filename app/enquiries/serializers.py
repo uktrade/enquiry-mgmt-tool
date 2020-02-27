@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
+from rest_framework import serializers
 
 from app.enquiries import models
 
