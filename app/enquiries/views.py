@@ -33,11 +33,11 @@ def filter_queryset(queryset: QuerySet, query_params: QueryDict):
             # get specific query param as a list (can be in the URL multiple times)
             QUERY_PARAM_VALUES = query_params.getlist(query_key)
             for keyVal in QUERY_PARAM_VALUES:
-                if query_key.startswith('date_'):
-                    p = {FILTER_PROPS_MAP[query_key]: keyVal + 'T00:00:00Z'}
-                else:
-                    p = {FILTER_PROPS_MAP[query_key]: keyVal}
-                # Qs.add(Q(**p), Q.OR)
+                # if query_key.startswith('date_'):
+                #     p = {FILTER_PROPS_MAP[query_key]: keyVal + 'T00:00:00Z'}
+                # else:
+                #     p = {FILTER_PROPS_MAP[query_key]: keyVal}
+                p = {FILTER_PROPS_MAP[query_key]: keyVal}
                 Qs |= Q(**p)
     queryset = models.Enquiry.objects.filter(Qs)
     return queryset
@@ -67,7 +67,6 @@ class EnquiryListView(APIView):
             {
                 "serializer": serializer.data,
                 "owners": models.Owner.objects.all(),
-                # "EnquiryStage": EnquiryStage(),
                 "filters": filter_config,
                 "query_params": request.GET,
             },
