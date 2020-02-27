@@ -3,6 +3,9 @@ from drf_writable_nested import WritableNestedModelSerializer
 
 from app.enquiries import models
 
+from datetime import timedelta
+from datetime import datetime
+
 
 class OwnerSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -56,8 +59,21 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     date_added_to_datahub = serializers.DateField(format="%d %B %Y")
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
     project_success_date = serializers.DateField(format="%d %B %Y")
-
+    days_since_last_updated = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Enquiry
         fields = "__all__"
+        extra_fields = ['days_since_last_updated']
+    
+    def get_field_names(self, declared_fields, info):
+        expanded_fields = super().get_field_names(declared_fields, info)
+
+        if getattr(self.Meta, 'extra_fields', None):
+            return expanded_fields + self.Meta.extra_fields
+        else:
+            return expanded_fields
+
+    def get_days_since_last_updated(self, obj):
+        days = (datetime.now() - obj.modified.replace(tzinfo=None)).days
+        return days
