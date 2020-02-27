@@ -72,3 +72,44 @@
     Clear filters
   </a>
 </form>
+  
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const b = document.getElementById('btn_clear')
+    b.addEventListener('click', (e) => {
+      const controls_input = [
+        'company_name', 'enquirer_email',
+        'date_created_before', 'date_created_after',
+        'date_added_to_datahub__lt', 'date_added_to_datahub__gt',
+      ]
+
+      const controls_select = ['enquiry_stage_container', 'users']
+      const controls_radio_check = ['users', 'enquiry_stage_container']
+
+      // clear inputs
+      controls_input.forEach((id, i) => {
+        const el = document.getElementById(id)
+        el.value = ''
+      })
+      // clear radio/checkboxes
+      controls_radio_check.forEach((id, i) => {
+        const el = document.getElementById(id)
+        const els = [].slice.call(el.querySelectorAll('input'))
+        console.log('els', els)
+        els.forEach((el) => {
+          el.checked = false
+        })
+      })
+
+      // clear selects
+      controls_select.forEach((id, i) => {
+        const el = document.getElementById(id)
+        const els = [].slice.call(el.querySelectorAll('option'))
+        els.forEach((el) => {
+          el.removeAttribute('selected')
+        })
+      })
+  })
+  
+  } )
+</script>

@@ -83,10 +83,6 @@ class EnquiryListView(APIView):
         queryset = models.Enquiry.objects.all()
         return filter_queryset(queryset, self.request.GET)
 
-    def get_queryset(self):
-        queryset = models.Enquiry.objects.all()
-        return filter_queryset(queryset, self.request.GET)
-
     def get(self, request, format=None):
         enquiries = self.get_queryset()
         serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
