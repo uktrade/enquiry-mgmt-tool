@@ -1,6 +1,6 @@
 import pytz
 import random
-from datetime import datetime
+from datetime import date
 from django.test import Client, TestCase
 from django.urls import reverse
 from faker import Faker
@@ -28,14 +28,16 @@ def canned_enquiry():
         "company_hq_address": faker.address(),
         "country": get_random_item(ref_data.Country),
         "region": get_random_item(ref_data.Region),
-        "enquirer_first_name": faker.first_name(),
-        "enquirer_last_name": faker.last_name(),
-        "job_title": "Director",
-        "enquirer_email": faker.email(),
-        "enquirer_phone": faker.phone_number(),
-        "email_consent": random.choice([True, False]),
-        "phone_consent": random.choice([True, False]),
-        "request_for_call": get_random_item(ref_data.RequestForCall),
+        "enquirer": {
+            "first_name": faker.first_name(),
+            "last_name": faker.last_name(),
+            "job_title": "Director",
+            "email": faker.email(),
+            "phone": faker.phone_number(),
+            "email_consent": random.choice([True, False, False, False, True]),
+            "phone_consent": random.choice([True, False, True, True, False]),
+            "request_for_call": get_random_item(ref_data.RequestForCall),
+        },
         "first_response_channel": get_random_item(ref_data.FirstResponseChannel),
         "notes": faker.text(),
         "first_hpo_selection": ref_data.HpoSelection.DEFAULT,
@@ -49,12 +51,12 @@ def canned_enquiry():
         "estimated_land_date": None,
         "new_existing_investor": get_random_item(ref_data.NewExistingInvestor),
         "investor_involvement_level": ref_data.InvestorInvolvement.FDI_HUB_POST,
-        "specific_investment_program": ref_data.InvestmentProgram.IIGB,
+        "specific_investment_programme": ref_data.InvestmentProgramme.IIGB,
         "crm": "Data Hub user 1",
         "project_code": "42901",
-        "date_added_to_datahub": datetime(2020, 2, 3, 10, 20, 30, tzinfo=pytz.UTC),
+        "date_added_to_datahub": date(2020, 2, 3),
         "datahub_project_status": get_random_item(ref_data.DatahubProjectStatus),
-        "project_success_date": datetime(2022, 2, 3, 16, 25, 40, tzinfo=pytz.UTC),
+        "project_success_date": date(2022, 2, 3),
     }
 
 
@@ -83,8 +85,22 @@ class EnquiryViewTestCase(TestCase):
 
     def test_enquiry_create_missing_mandatory_field(self):
         enquiry = canned_enquiry()
-        del enquiry['company_name']
+        del enquiry["company_name"]
         response = self.client.post(
             reverse("enquiry-list"), data=enquiry, content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_user_email_already_exists_error(self):
+        enquiry = canned_enquiry()
+        response = self.create_enquiry(enquiry)
+        self.assertEqual(response["company_name"], enquiry["company_name"])
+
+        response = self.client.post(
+            reverse("enquiry-list"), data=enquiry, content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json()["enquirer"]["email"][0],
+            "enquirer with this email already exists.",
+        )
