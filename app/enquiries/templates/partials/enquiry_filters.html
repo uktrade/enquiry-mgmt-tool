@@ -30,16 +30,16 @@
     </fieldset>
   </div>
     <div class="govuk-form-group">
-    <label class="govuk-label" for="date_created__lt">
+    <label class="govuk-label" for="date_created_before">
       Date received before
     </label>
-    <input class="govuk-input" id="date_created__lt" name="created_before" type="date" value="{{query_params.created_before}}">
+    <input class="govuk-input" id="date_created_before" name="date_created_before" type="date" value="{{query_params.date_created_before}}">
   </div>
   <div class="govuk-form-group">
-    <label class="govuk-label" for="date_created__gt">
+    <label class="govuk-label" for="date_created_after">
       Date received after
     </label>
-    <input class="govuk-input" id="date_created__gt" name="created_after" type="date" value="{{query_params.created_after}}">
+    <input class="govuk-input" id="date_created_after" name="date_created_after" type="date" value="{{query_params.date_created_after}}">
   </div>
   <div class="govuk-form-group">
     <label class="govuk-label" for="company_name">
@@ -79,7 +79,7 @@
     b.addEventListener('click', (e) => {
       const controls_input = [
         'company_name', 'enquirer_email',
-        'date_created__lt', 'date_created__gt',
+        'date_created_before', 'date_created_after',
         'date_added_to_datahub__lt', 'date_added_to_datahub__gt',
       ]
 
