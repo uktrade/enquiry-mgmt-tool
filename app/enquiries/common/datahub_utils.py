@@ -105,6 +105,7 @@ def dh_company_search(company_name):
         address = company["address"]
         companies.append(
             {
+                "datahub_id": company["id"],
                 "name": company["name"],
                 "address": {
                     "line_1": address["line_1"],
