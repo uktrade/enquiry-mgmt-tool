@@ -1,4 +1,3 @@
-from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -140,10 +139,10 @@ class Enquiry(TimeStampedModel):
         choices=ref_data.InvestorInvolvement.choices,
         default=ref_data.InvestorInvolvement.FDI_HUB_POST,
     )
-    specific_investment_program = models.CharField(
+    specific_investment_programme = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.InvestmentProgram.choices,
-        default=ref_data.InvestmentProgram.IIGB,
+        choices=ref_data.InvestmentProgramme.choices,
+        default=ref_data.InvestmentProgramme.IIGB,
     )
     crm = models.CharField(max_length=MAX_LENGTH, help_text="Name of the relationship manager")
     project_code = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)

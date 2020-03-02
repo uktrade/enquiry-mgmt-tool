@@ -377,7 +377,7 @@ class InvestorInvolvement(models.TextChoices):
     REGION_ONLY = "REGION_ONLY", _("Region Only")
 
 
-class InvestmentProgram(models.TextChoices):
+class InvestmentProgramme(models.TextChoices):
     ADVANCED_ENG = "ADVANCED_ENG", _("Advanced Engineering Supply Chain")
     BUSINESS_PARTNER = "BUSINESS_PARTNER", _("Business Partnership (Non-FDI)")
     CONTRACT_RESEARCH = "CONTRACT_RESEARCH", _("Contract Research (Non-FDI)")
