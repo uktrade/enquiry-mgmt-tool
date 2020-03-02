@@ -18,6 +18,6 @@ class EnquiryListView(APIView):
         enquiries = models.Enquiry.objects.all()
         serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
         return Response(
-            {"serializer": serializer},
+            {"serializer": serializer.data},
             template_name="enquiry_list.html",
         )
