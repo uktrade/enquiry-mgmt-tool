@@ -151,10 +151,10 @@
                 {% include 'snippets/enquiry_field_select.html' with field=serializer.how_they_heard_dit %}
 
                 <!-- TODO: Change label to 'Consent (email)' -->
-                {% include 'snippets/enquiry_field_boolean_select.html' with field=serializer.email_consent %}
+                {% include 'snippets/enquiry_field_boolean_select.html' with field=serializer.enquirer.email_consent %}
 
                 <!-- TODO: Change label to 'Consent (telephone)' -->
-                {% include 'snippets/enquiry_field_boolean_select.html' with field=serializer.phone_consent %}
+                {% include 'snippets/enquiry_field_boolean_select.html' with field=serializer.enquirer.phone_consent %}
 
             </div>
 
