@@ -35,7 +35,6 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     ist_sector = serializers.CharField(source="get_ist_sector_display")
     country = serializers.CharField(source="get_country_display")
     region = serializers.CharField(source="get_region_display")
-    request_for_call = serializers.CharField(source="get_request_for_call_display")
     first_response_channel = serializers.CharField(source="get_first_response_channel_display")
     first_hpo_selection = serializers.CharField(source="get_first_hpo_selection_display")
     second_hpo_selection = serializers.CharField(source="get_second_hpo_selection_display")
@@ -44,7 +43,7 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     investment_type = serializers.CharField(source="get_investment_type_display")
     new_existing_investor = serializers.CharField(source="get_new_existing_investor_display")
     investor_involvement_level = serializers.CharField(source="get_investor_involvement_level_display")
-    specific_investment_program = serializers.CharField(source="get_specific_investment_program_display")
+    specific_investment_programme = serializers.CharField(source="get_specific_investment_programme_display")
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
 
     class Meta:
