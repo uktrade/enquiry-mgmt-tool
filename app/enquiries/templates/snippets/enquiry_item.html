@@ -9,8 +9,8 @@
             </div>
             <div class="entity-badges">
                 <div class="entity-badges-list">
-                    <div class="entity-badges-item">
-                        <span>{{ enquiry.enquiry_stage }}</span>
+                    <div class="entity-badges-item {{ enquiry.flag_status }}">
+                        <span>{% if enquiry.enquiry_stage == "Awaiting response from Investor" %}{{ "Awaiting response" }}{% else %}{{ enquiry.enquiry_stage }}{% endif %}</span>
                     </div>
                     <div class="entity-badges-item">
                         <span>{% if enquiry.owner %}{{ enquiry.owner.user }} {%else%} {{ "Unassigned" }}

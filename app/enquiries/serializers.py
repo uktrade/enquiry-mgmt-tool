@@ -6,6 +6,7 @@ from app.enquiries import models
 from datetime import timedelta
 from datetime import datetime
 
+import app.enquiries.ref_data as ref_data
 
 class OwnerSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -59,12 +60,12 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     date_added_to_datahub = serializers.DateField(format="%d %B %Y")
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
     project_success_date = serializers.DateField(format="%d %B %Y")
-    days_since_last_updated = serializers.SerializerMethodField()
+    flag_status = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Enquiry
         fields = "__all__"
-        extra_fields = ['days_since_last_updated']
+        extra_fields = ['flag_status']
     
     def get_field_names(self, declared_fields, info):
         expanded_fields = super().get_field_names(declared_fields, info)
@@ -74,6 +75,14 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
         else:
             return expanded_fields
 
-    def get_days_since_last_updated(self, obj):
-        days = (datetime.now() - obj.modified.replace(tzinfo=None)).days
-        return days
+    def get_flag_status(self, obj):
+        flaggable_stages = [ref_data.EnquiryStage.AWAITING_RESPONSE, ref_data.EnquiryStage.ENGAGED]
+        
+        days_since_last_updated = (datetime.now() - obj.modified.replace(tzinfo=None)).days
+
+        if obj.enquiry_stage in flaggable_stages:
+            if days_since_last_updated > 28:
+                return "flag-red"
+            if days_since_last_updated > 14:
+                return "flag-orange"
+        return "no-flag"

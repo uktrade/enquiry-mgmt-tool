@@ -147,6 +147,7 @@ class Migration(migrations.Migration):
                         choices=[
                             ("NEW", "New"),
                             ("AWAITING_RESPONSE", "Awaiting response from Investor"),
+                            ("ENGAGED", "Engaged in dialogue"),
                             ("NON_RESPONSIVE", "Non-responsive"),
                             ("NON_FDI", "Non-FDI"),
                             ("ADDED_TO_DATAHUB", "Added to Data Hub"),
