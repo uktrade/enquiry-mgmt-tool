@@ -9,25 +9,37 @@ from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
 from app.enquiries.ref_data import EnquiryStage
+from django.db.models import Q
+
+FILTER_PROPS_MAP = {
+    "enquiry_stage": "enquiry_stage",
+    "owner": "owner__user__id",
+    "company_name": "company_name__icontains",
+    "enquirer_email": "enquirer__email",
+    "date_created_before": "created__lt",
+    "date_created_after": "created__gt",
+    "date_added_to_datahub_before": "date_added_to_datahub__lt",
+    "date_added_to_datahub_after": "date_added_to_datahub__gt"
+}
 
 def filter_queryset(queryset: QuerySet, query_params: QueryDict):
-    from django.db.models import Q
-    filterable = (
-        'enquiry_stage', 'owner', 'company_name__icontains', 'enquirer_email',
-        'created__lt', 'created__gt', 'date_added_to_datahub__lt',
-        'date_added_to_datahub__gt', 'owner__user__id'
-        )
-    queryset = models.Enquiry.objects.all()
+    VALID_KEYS = FILTER_PROPS_MAP.keys()
     Qs = Q()
     # add filters to queryset
-    for key, value in query_params.items():
-        if key in filterable and value != '':
-            for keyVal in query_params.getlist(key):
-                p = {key: keyVal}
-                # Qs.add(Q(**p), Q.OR) 
+    for query_key, query_value in query_params.items():
+        if query_key in VALID_KEYS and query_value != "":
+            # get specific query param as a list (can be in the URL multiple times)
+            QUERY_PARAM_VALUES = query_params.getlist(query_key)
+            for keyVal in QUERY_PARAM_VALUES:
+                # if query_key.startswith('date_'):
+                #     p = {FILTER_PROPS_MAP[query_key]: keyVal + 'T00:00:00Z'}
+                # else:
+                #     p = {FILTER_PROPS_MAP[query_key]: keyVal}
+                p = {FILTER_PROPS_MAP[query_key]: keyVal}
                 Qs |= Q(**p)
-    queryset = queryset.filter(Qs)
+    queryset = models.Enquiry.objects.filter(Qs)
     return queryset
+
 
 class EnquiryList(APIView):
     """
@@ -43,17 +55,18 @@ class EnquiryList(APIView):
         enquiries = self.get_queryset()
         serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
 
-        filter_fields = [field for field in models.Enquiry._meta.get_fields() if field.choices]
+        filter_fields = [
+            field for field in models.Enquiry._meta.get_fields() if field.choices
+        ]
         filter_config = {}
         for field in filter_fields:
             filter_config[field.name] = field
         return Response(
             {
                 "serializer": serializer.data,
-                'owners': models.Owner.objects.all(),
-                'EnquiryStage': EnquiryStage(),
-                'filters': filter_config,
-                "query_params": request.GET
+                "owners": models.Owner.objects.all(),
+                "filters": filter_config,
+                "query_params": request.GET,
             },
             template_name="enquiry_list.html",
         )
@@ -78,7 +91,7 @@ class EnquiryDetail(APIView):
                 "serializer": serializer,
                 "enquiry": enquiry,
                 "style": {"template_pack": "rest_framework/vertical/"},
-                "back_url": reverse('enquiry-list')
+                "back_url": reverse("enquiry-list"),
             },
             template_name="enquiry_detail.html",
         )
@@ -92,7 +105,7 @@ class EnquiryDetail(APIView):
                 "serializer": serializer,
                 "enquiry": enquiry,
                 "style": {"template_pack": "rest_framework/vertical/"},
-                "back_url": reverse('enquiry-list')
+                "back_url": reverse("enquiry-list"),
             },
             template_name="enquiry_edit.html",
         )
@@ -130,5 +143,5 @@ class EnquiryDetail(APIView):
                 return self.get_edit_view(request, *args, **kwargs)
             elif request.method == "POST":
                 request.data = request.POST
-                return self.post(request, kwargs['pk'])
+                return self.post(request, kwargs["pk"])
         return super().dispatch(request, *args, **kwargs)

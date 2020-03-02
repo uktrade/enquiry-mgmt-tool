@@ -27,6 +27,7 @@ This project uses Docker compose to setup and run all the necessary components. 
 1.  Build and run the necessary containers for the required environment:
 
     ```shell
+    cp sample_env app/.env
     docker-compose up -d && docker-compose logs -f api
     ```
 
