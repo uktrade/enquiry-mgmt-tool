@@ -5,7 +5,7 @@ import random
 from datetime import date
 from django.conf import settings
 from django.forms.models import model_to_dict
-from django.test import Client, TestCase
+from django.test import Client, TestCase, modify_settings, override_settings
 from django.urls import reverse
 from faker import Faker
 from rest_framework import status
@@ -67,7 +67,6 @@ def canned_enquiry():
         "datahub_project_status": get_random_item(ref_data.DatahubProjectStatus),
         "project_success_date": date(2022, 2, 3),
     }
-
 
 class EnquiryViewTestCase(TestCase):
     def setUp(self):
@@ -267,6 +266,7 @@ class EnquiryViewTestCase(TestCase):
     def test_enquiry_detail_template_ref_data(self):
         """Test the template is using the right variables to show enquiry data 
         in the case when data is a ref_data choice and has a verbose name"""
+        print('settings.FEATURE_FLAGS', settings.FEATURE_FLAGS)
         enquiry = EnquiryFactory()
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
         enquiry_stage_display_name = get_display_name(

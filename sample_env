@@ -25,3 +25,10 @@ DATA_HUB_METADATA_FETCH_INTERVAL=4      # in hours
 REDIS_BASE_URL=redis://redis:6379
 CELERY_TIMEZONE=Europe/london
 
+# Staff SSO/OAuth2 settings
+FEATURE_ENFORCE_STAFF_SSO_ENABLED=1
+
+AUTHBROKER_URL=contact-web-ops-for-details
+AUTHBROKER_CLIENT_ID=contact-web-ops-for-details
+AUTHBROKER_CLIENT_SECRET=contact-web-ops-for-details
+AUTHBROKER_TOKEN_SESSION_KEY=_authbroker_token

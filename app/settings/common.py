@@ -18,6 +18,8 @@ import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from django.urls import reverse_lazy
+
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
 
@@ -80,6 +82,9 @@ DEBUG = env.bool('DEBUG')
 # PaaS, we can open ALLOWED_HOSTS
 ALLOWED_HOSTS = ['*']
 
+FEATURE_FLAGS = {
+    'ENFORCE_STAFF_SSO_ON': env.bool('FEATURE_ENFORCE_STAFF_SSO_ENABLED', True),
+}
 
 # Application definition
 
@@ -132,7 +137,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
+AUTH_USER_MODEL = "enquiries.Owner"
 
+# authbroker config
+if FEATURE_FLAGS['ENFORCE_STAFF_SSO_ON']:
+    INSTALLED_APPS.append('authbroker_client',)
+    AUTHBROKER_URL = env('AUTHBROKER_URL')
+    AUTHBROKER_CLIENT_ID = env('AUTHBROKER_CLIENT_ID')
+    AUTHBROKER_CLIENT_SECRET = env('AUTHBROKER_CLIENT_SECRET')
+
+    AUTHBROKER_TOKEN_SESSION_KEY = env('AUTHBROKER_TOKEN_SESSION_KEY')
+    # authentication
+    AUTHENTICATION_BACKENDS = [
+        'django.contrib.auth.backends.ModelBackend',
+        'authbroker_client.backends.AuthbrokerBackend',
+    ]
+
+    LOGIN_URL = reverse_lazy('authbroker_client:login')
+    LOGIN_REDIRECT_URL = reverse_lazy('index')
+    MIDDLEWARE.append(
+        # middleware to check auth for all views, alternatively use login_required decorator
+        'authbroker_client.middleware.ProtectAllViewsMiddleware',
+    )
+else:
+    LOGIN_URL = '/admin/login/'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
