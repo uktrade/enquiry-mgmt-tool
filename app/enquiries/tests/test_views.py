@@ -14,4 +14,4 @@ class EnquiryViewTestCase(TestCase):
         response = self.client.get(reverse("enquiry-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         serializer = response.data['serializer']
-        self.assertEqual(len(serializer.data), len(enquiries))
+        self.assertEqual(len(serializer), len(enquiries))
