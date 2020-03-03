@@ -23,6 +23,10 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 
 class EnquirySerializer(serializers.ModelSerializer):
+    """
+    Enquiry model serializer mainly used for serializing during
+    create, update of Enquiry objects
+    """
     enquirer = EnquirerSerializer()
 
     class Meta:
@@ -37,6 +41,11 @@ class EnquirySerializer(serializers.ModelSerializer):
 
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer used to display Enquiry details.
+    It provides the human readable form for all the choice fields
+    in the Enquiry model.
+    """
     owner = OwnerSerializer()
     created = serializers.DateTimeField(format="%d %b %Y")
     modified = serializers.DateTimeField(format="%d %b %Y")
