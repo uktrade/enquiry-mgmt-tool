@@ -1,4 +1,214 @@
+{% extends 'base.html' %}
 {% load static %}
+{% block main %}
+
+{% csrf_token %}
+{% load widget_tweaks %}
+{% load rest_framework %}
+
+<div class="govuk-grid-row enquiry-details-row enquiry-details-header">
+
+    <h2 class="govuk-heading-l">{{ serializer.company_name.value }}</h2>
+
+    <dl class="govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Date received
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.created.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Date last updated
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.modified.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Enquiry stage
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.enquiry_stage.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Owner
+            </dt>
+            <dd class="govuk-summary-list__value">{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+    </dl>
+</div>
+
+<div class="govuk-grid-row enquiry-details-row">
+
+    <h3 class="govuk-heading-m">Enquiry details</h3>
+
+    <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Enquiry text
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.enquiry_text.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Investment readiness ("Which of these best describes how you feel about expanding to the UK?")
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.investment_readiness.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Quality
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.quality.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                First response channel
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.first_response_channel.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+    </dl>
+
+</div>
+
+<div class="govuk-grid-row enquiry-details-row">
+
+    <h3 class="govuk-heading-m">Company details</h3>
+
+    <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Website
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.website.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Country
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.country.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Region
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.region.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Company HQ address
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.company_hq_address.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Primary sector
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.primary_sector.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                IST sector
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.ist_sector.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+    </dl>
+
+</div>
+
+<div class="govuk-grid-row enquiry-details-row">
+
+    <h3 class="govuk-heading-m">Contact</h3>
+
+    <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Enquirer first name
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.enquirer.first_name.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Enquirer last name
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.enquirer.last_name.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Job title
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.enquirer.job_title.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Enquirer email address
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.enquirer.email.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Telephone number
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.enquirer.phone.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Request for call
+            </dt>
+            <dd class="govuk-summary-list__value">{{ serializer.enquirer.request_for_call.value }}</dd>
+            <dd class="govuk-summary-list__actions">
+            </dd>
+        </div>
+    </dl>
 
 {% include 'base.html' %}
 
@@ -462,5 +672,6 @@ Edit details
 
     </main>
 </div>
+{% endblock %}
 
 {% include 'partials/govuk_footer_partial.html' %}

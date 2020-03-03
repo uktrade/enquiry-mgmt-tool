@@ -106,10 +106,5 @@ app/**/static
 # vscode
 .vscode/
 
-# dummy database data
-*.diff
-
 # app specific env files
 app/.env
-seed-data/*
-app/enquiries/fixtures/*

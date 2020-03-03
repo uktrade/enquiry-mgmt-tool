@@ -35,6 +35,12 @@ class OwnerSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         return obj
 
+class EnquirerDetailSerializer(serializers.ModelSerializer):
+    request_for_call = serializers.CharField(source="get_request_for_call_display")
+
+    class Meta:
+        model = models.Enquirer
+        fields = "__all__"
 
 class EnquirySerializer(WritableNestedModelSerializer):
     created = serializers.DateTimeField(format="%d %B %Y ", read_only=True)

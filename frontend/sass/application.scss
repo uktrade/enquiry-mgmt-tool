@@ -127,7 +127,26 @@ a.entity-title-link {
     font-weight: bold;
 }
 
-.govuk-radios__label {
+
+.govuk-radios__label, .govuk-radios__checkbox {
+    font-weight: normal;
+}
+
+h2.govuk-heading-l {
+    margin-bottom: 50px;
+}
+
+.govuk-grid-column-one-third {
+    padding: 0;
+}
+
+.govuk-checkboxes__item {
+    background-color: white;
+    width: -webkit-fill-available;
+    // border: 1px solid #dee0e2;
+}
+
+.govuk-checkboxes__label {
     font-weight: normal;
 }
 

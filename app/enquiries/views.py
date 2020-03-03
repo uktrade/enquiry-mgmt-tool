@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.paginator import Paginator as DjangoPaginator
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.db.models.query import QuerySet
 from rest_framework import generics, viewsets, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
@@ -8,6 +10,36 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
+from app.enquiries.ref_data import EnquiryStage
+from django.db.models import Q
+
+filter_props = {
+    "enquiry_stage": "enquiry_stage",
+    "owner": "owner__user__id",
+    "company_name": "company_name__icontains",
+    "enquirer_email": "enquirer__email",
+    "date_created_before": "created__lt",
+    "date_created_after": "created__gt",
+    "date_added_to_datahub_before": "date_added_to_datahub__lt",
+    "date_added_to_datahub_after": "date_added_to_datahub__gt"
+}
+
+def filter_queryset(queryset, query_params):
+    valid_keys = filter_props.keys()
+    Qs = Q()
+
+    # add filters to queryset
+    for query_key, query_value in query_params.items():
+        if query_key in valid_keys and query_value != "":
+            # get specific query param as a list (can be in the URL multiple times)
+            QUERY_PARAM_VALUES = query_params.getlist(query_key)
+            for keyVal in QUERY_PARAM_VALUES:
+                if query_key == "owner" and keyVal == "UNASSIGNED":
+                    keyVal = None
+                p = {filter_props[query_key]: keyVal}
+                Qs |= Q(**p)
+    queryset = models.Enquiry.objects.filter(Qs)
+    return queryset
 
 
 class PaginationHandlerMixin:
@@ -54,12 +86,15 @@ class EnquiryList(APIView, PaginationHandlerMixin):
 
     pagination_class = EnquiryListPagination
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+    def get_queryset(self):
+        queryset = models.Enquiry.objects.all()
+        return filter_queryset(queryset, self.request.GET)
 
     # This is mainly used for displaying page range in the template
     django_paginator_class = DjangoPaginator
 
     def get(self, request, format=None):
-        enquiries = models.Enquiry.objects.all()
+        enquiries = self.get_queryset()
         paged_queryset = self.paginate_queryset(enquiries, request)
         page_size = self.pagination_class.page_size
         paginator = self.django_paginator_class(enquiries, page_size)
@@ -71,8 +106,21 @@ class EnquiryList(APIView, PaginationHandlerMixin):
         else:
             serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
 
+        filter_fields = [
+            field for field in models.Enquiry._meta.get_fields() if field.choices
+        ]
+        filter_config = {}
+        for field in filter_fields:
+            filter_config[field.name] = field
         return Response(
-            {"serializer": serializer.data, "page_range": paginator.page_range, "current_page": request.query_params.get('page', "1")},
+            {
+                "serializer": serializer.data,
+                "page_range": paginator.page_range,
+                "current_page": request.query_params.get('page', "1"),
+                "owners": models.Owner.objects.all(),
+                "filters": filter_config,
+                "query_params": request.GET,
+            },
             template_name="enquiry_list.html",
         )
 
@@ -96,6 +144,7 @@ class EnquiryDetail(APIView):
                 "serializer": serializer,
                 "enquiry": enquiry,
                 "style": {"template_pack": "rest_framework/vertical/"},
+                "back_url": reverse("enquiry-list"),
             },
             template_name="enquiry_detail.html",
         )
@@ -109,6 +158,7 @@ class EnquiryDetail(APIView):
                 "serializer": serializer,
                 "enquiry": enquiry,
                 "style": {"template_pack": "rest_framework/vertical/"},
+                "back_url": reverse("enquiry-list"),
             },
             template_name="enquiry_edit.html",
         )
