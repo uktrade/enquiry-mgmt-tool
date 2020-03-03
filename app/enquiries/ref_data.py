@@ -324,12 +324,12 @@ class HpoSelection(models.TextChoices):
 
 class OrganisationType(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    CHARITY = "CHARITY,", _("charity")
-    GOVERNMENT = "GOVERNMENT", _("gov department or other public body")
-    LIMITED_COMPANY = "LIMITED_COMPANY", _("limited company")
-    LIMITED_PARTNERSHIP = "LIMITED_PARTNERSHIP", _("limited partnership")
-    PARTNERSHIP = "PARTNERSHIP,", _("partnership")
-    SOLE_TRADER = "SOLE_TRADER", _("sole trader")
+    CHARITY = "CHARITY,", _("Charity")
+    GOVERNMENT = "GOVERNMENT", _("Government department or other public body")
+    LIMITED_COMPANY = "LIMITED_COMPANY", _("Limited company")
+    LIMITED_PARTNERSHIP = "LIMITED_PARTNERSHIP", _("Limited partnership")
+    PARTNERSHIP = "PARTNERSHIP,", _("Partnership")
+    SOLE_TRADER = "SOLE_TRADER", _("Sole trader")
 
 
 class InvestmentType(models.TextChoices):
