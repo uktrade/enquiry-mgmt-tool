@@ -1,5 +1,5 @@
 {% load enquiries_extras %}
-<form method="GET" action="/api/v1/enquiries/">
+<form method="GET" action="{% url 'enquiry-list' %}">
   {% include 'snippets/enquiry_field_checkbox.html' with group_id='enquiry_stage_container' heading='Enquiry stage' field=filters.enquiry_stage query_params=query_params %}
   <div class="govuk-form-group" id="users">
     <fieldset class="govuk-fieldset">
@@ -20,8 +20,8 @@
         </div>
         {% for owner in owners%}
         <div class="govuk-checkboxes__item">
-          <input class="govuk-checkboxes__input" id="user_{{owner.user.id}}" name="owner" type="checkbox" value="{{owner.user.id}}"{% query_params_value_selected owner.user.id 'owner' query_params ' checked'  %}>
-          <label class="govuk-label govuk-checkboxes__label" for="user_{{owner.user.id}}">
+          <input class="govuk-checkboxes__input" id="user_{{owner.id}}" name="owner" type="checkbox" value="{{owner.id}}"{% query_params_value_selected owner.id 'owner' query_params ' checked'  %}>
+          <label class="govuk-label govuk-checkboxes__label" for="user_{{owner.id}}">
              {{owner.user.first_name}} {{owner.user.last_name}}
           </label>
         </div>
@@ -68,48 +68,7 @@
   <button class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" accesskey="s">
     Apply filters
   </button>
-  <button class="govuk-button govuk-button--secondary" data-module="govuk-button" id="btn_clear" type="button" accesskey="c">
+  <a href="{% url 'enquiry-list' %}" class="govuk-button govuk-button--secondary" data-module="govuk-button" id="btn_clear" type="button" accesskey="c">
     Clear filters
-  </button>
+  </a>
 </form>
-  
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const b = document.getElementById('btn_clear')
-    b.addEventListener('click', (e) => {
-      const controls_input = [
-        'company_name', 'enquirer_email',
-        'date_created_before', 'date_created_after',
-        'date_added_to_datahub__lt', 'date_added_to_datahub__gt',
-      ]
-
-      const controls_select = ['enquiry_stage_container', 'users']
-      const controls_radio_check = ['users', 'enquiry_stage_container']
-
-      // clear inputs
-      controls_input.forEach((id, i) => {
-        const el = document.getElementById(id)
-        el.value = ''
-      })
-      // clear radio/checkboxes
-      controls_radio_check.forEach((id, i) => {
-        const el = document.getElementById(id)
-        const els = [].slice.call(el.querySelectorAll('input'))
-        console.log('els', els)
-        els.forEach((el) => {
-          el.checked = false
-        })
-      })
-
-      // clear selects
-      controls_select.forEach((id, i) => {
-        const el = document.getElementById(id)
-        const els = [].slice.call(el.querySelectorAll('option'))
-        els.forEach((el) => {
-          el.removeAttribute('selected')
-        })
-      })
-  })
-  
-  } )
-</script>
