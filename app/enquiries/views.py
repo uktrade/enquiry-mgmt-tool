@@ -3,6 +3,8 @@ from django.core.paginator import Paginator as DjangoPaginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.db.models.query import QuerySet
+from functools import reduce
+from operator import __and__ as AND
 from rest_framework import generics, viewsets, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
@@ -14,15 +16,16 @@ from app.enquiries.ref_data import EnquiryStage
 from django.db.models import Q
 
 filter_props = {
-    "enquiry_stage": "enquiry_stage",
-    "owner": "owner__user__id",
+    "enquiry_stage": "enquiry_stage__in",
+    "owner": "owner__user__id__in",
     "company_name": "company_name__icontains",
     "enquirer_email": "enquirer__email",
     "date_created_before": "created__lt",
     "date_created_after": "created__gt",
     "date_added_to_datahub_before": "date_added_to_datahub__lt",
-    "date_added_to_datahub_after": "date_added_to_datahub__gt"
+    "date_added_to_datahub_after": "date_added_to_datahub__gt",
 }
+
 
 def filter_queryset(queryset, query_params):
     valid_keys = filter_props.keys()
@@ -40,6 +43,40 @@ def filter_queryset(queryset, query_params):
                 Qs |= Q(**p)
     queryset = models.Enquiry.objects.filter(Qs)
     return queryset
+
+
+def filtered_queryset(query_params):
+    multi_option_fields = ["enquiry_stage", "owner"]
+    single_option_fields = [
+        "company_name",
+        "enquirer_email",
+        "date_created_before",
+        "date_created_after",
+        "date_added_to_datahub_before",
+        "date_added_to_datahub_before",
+    ]
+
+    filters = {}
+    for k, v in query_params.items():
+        if k in multi_option_fields and query_params.getlist(k):
+            if k == "owner":
+                users = [
+                    None if user == "UNASSIGNED" else user
+                    for user in query_params.getlist(k)
+                ]
+                filters[k] = users
+            else:
+                filters[k] = query_params.getlist(k)
+        elif k in single_option_fields and query_params.get(k):
+            filters[k] = v
+
+    if filters.keys():
+        qobjs = [Q(**{filter_props[k]: v}) for k, v in filters.items()]
+        enquiries = models.Enquiry.objects.filter(reduce(AND, qobjs))
+    else:
+        enquiries = models.Enquiry.objects.all()
+
+    return enquiries
 
 
 class PaginationHandlerMixin:
@@ -86,6 +123,7 @@ class EnquiryList(APIView, PaginationHandlerMixin):
 
     pagination_class = EnquiryListPagination
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+
     def get_queryset(self):
         queryset = models.Enquiry.objects.all()
         return filter_queryset(queryset, self.request.GET)
@@ -94,7 +132,7 @@ class EnquiryList(APIView, PaginationHandlerMixin):
     django_paginator_class = DjangoPaginator
 
     def get(self, request, format=None):
-        enquiries = self.get_queryset()
+        enquiries = filtered_queryset(request.query_params)
         paged_queryset = self.paginate_queryset(enquiries, request)
         page_size = self.pagination_class.page_size
         paginator = self.django_paginator_class(enquiries, page_size)
@@ -116,7 +154,7 @@ class EnquiryList(APIView, PaginationHandlerMixin):
             {
                 "serializer": serializer.data,
                 "page_range": paginator.page_range,
-                "current_page": request.query_params.get('page', "1"),
+                "current_page": request.query_params.get("page", "1"),
                 "owners": models.Owner.objects.all(),
                 "filters": filter_config,
                 "query_params": request.GET,
