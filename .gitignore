@@ -108,3 +108,6 @@ app/**/static
 
 # app specific env files
 app/.env
+
+# dummy data
+app/enquiries/fixtures
