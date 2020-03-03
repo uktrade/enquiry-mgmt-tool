@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 from drf_writable_nested import WritableNestedModelSerializer
+=======
+>>>>>>> 1bc0d9186f68fa126fa8abbea41fd21f0450a3e3
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
 
@@ -33,6 +36,7 @@ class EnquirySerializer(serializers.ModelSerializer):
 class EnquiryDetailSerializer(serializers.ModelSerializer):
     owner = OwnerSerializer()
 <<<<<<< HEAD
+<<<<<<< HEAD
     created = serializers.DateTimeField(format="%d %b %Y")
     modified = serializers.DateTimeField(format="%d %b %Y")
 =======
@@ -40,6 +44,11 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(format="%d %B %Y")
     modified = serializers.DateTimeField(format="%d %B %Y")
 >>>>>>> refactor templates and search filters for new model (separate Enquirer)
+=======
+    enquirer = EnquirerDetailSerializer()
+    created = serializers.DateTimeField(format="%d %B %Y")
+    modified = serializers.DateTimeField(format="%d %B %Y")
+>>>>>>> 1bc0d9186f68fa126fa8abbea41fd21f0450a3e3
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
     investment_readiness = serializers.CharField(source="get_investment_readiness_display")
     quality = serializers.CharField(source="get_quality_display")
@@ -50,9 +59,13 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     country = serializers.CharField(source="get_country_display")
     region = serializers.CharField(source="get_region_display")
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     # request_for_call = serializers.CharField(source="get_request_for_call_display")
 >>>>>>> refactor templates and search filters for new model (separate Enquirer)
+=======
+    # request_for_call = serializers.CharField(source="get_request_for_call_display")
+>>>>>>> 1bc0d9186f68fa126fa8abbea41fd21f0450a3e3
     first_response_channel = serializers.CharField(source="get_first_response_channel_display")
     first_hpo_selection = serializers.CharField(source="get_first_hpo_selection_display")
     second_hpo_selection = serializers.CharField(source="get_second_hpo_selection_display")
@@ -63,9 +76,13 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     investor_involvement_level = serializers.CharField(source="get_investor_involvement_level_display")
     specific_investment_programme = serializers.CharField(source="get_specific_investment_programme_display")
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     date_added_to_datahub = serializers.DateField(format="%d %B %Y")
 >>>>>>> Fix datetime bug
+=======
+    date_added_to_datahub = serializers.DateField(format="%d %B %Y")
+>>>>>>> 1bc0d9186f68fa126fa8abbea41fd21f0450a3e3
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
     project_success_date = serializers.DateField(format="%d %B %Y")
 
