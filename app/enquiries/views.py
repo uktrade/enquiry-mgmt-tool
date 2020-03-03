@@ -196,7 +196,7 @@ class EnquiryDetail(APIView):
                 "serializer": serializer,
                 "enquiry": enquiry,
                 "style": {"template_pack": "rest_framework/vertical/"},
-                "back_url": reverse("enquiry-list"),
+                "back_url": reverse("enquiry-detail", args=[kwargs["pk"]]),
             },
             template_name="enquiry_edit.html",
         )

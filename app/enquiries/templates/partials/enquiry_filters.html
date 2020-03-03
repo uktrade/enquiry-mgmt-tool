@@ -3,14 +3,9 @@
   {% include 'snippets/enquiry_field_checkbox.html' with group_id='enquiry_stage_container' heading='Enquiry stage' field=filters.enquiry_stage query_params=query_params %}
   <div class="govuk-form-group" id="users">
     <fieldset class="govuk-fieldset">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-        <h3 class="govuk-fieldset__heading">
-          Owner
-        </h3>
-      </legend>
-      <span id="users-hint" class="govuk-hint">
-        Select all that apply.
-      </span>
+      <label class="govuk-label">
+        Owner
+      </label>
       <div class="govuk-checkboxes govuk-checkboxes--small">
         <div class="govuk-checkboxes__item">
           <input class="govuk-checkboxes__input" id="user" name="owner" type="checkbox" value="UNASSIGNED" {% query_params_value_selected 'UNASSIGNED' 'owner' query_params ' checked'  %}>
