@@ -104,6 +104,9 @@
           el.removeAttribute('selected')
         })
       })
+
+      // clear filters in url
+      window.location.href = "{% url 'enquiry-list' %}"
   })
   
   } )
