@@ -2,6 +2,8 @@ from django.http import QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.db.models.query import QuerySet
+from functools import reduce
+from operator import __and__ as AND
 from rest_framework import generics, viewsets, status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -11,34 +13,63 @@ from app.enquiries import models, serializers
 from app.enquiries.ref_data import EnquiryStage
 from django.db.models import Q
 
-FILTER_PROPS_MAP = {
-    "enquiry_stage": "enquiry_stage",
-    "owner": "owner__user__id",
+filter_props = {
+    "enquiry_stage": "enquiry_stage__in",
+    "owner": "owner__id__in",
     "company_name": "company_name__icontains",
     "enquirer_email": "enquirer__email",
     "date_created_before": "created__lt",
     "date_created_after": "created__gt",
     "date_added_to_datahub_before": "date_added_to_datahub__lt",
-    "date_added_to_datahub_after": "date_added_to_datahub__gt"
+    "date_added_to_datahub_after": "date_added_to_datahub__gt",
 }
 
-def filter_queryset(queryset: QuerySet, query_params: QueryDict):
-    VALID_KEYS = FILTER_PROPS_MAP.keys()
-    Qs = Q()
-    # add filters to queryset
-    for query_key, query_value in query_params.items():
-        if query_key in VALID_KEYS and query_value != "":
-            # get specific query param as a list (can be in the URL multiple times)
-            QUERY_PARAM_VALUES = query_params.getlist(query_key)
-            for keyVal in QUERY_PARAM_VALUES:
-                # if query_key.startswith('date_'):
-                #     p = {FILTER_PROPS_MAP[query_key]: keyVal + 'T00:00:00Z'}
-                # else:
-                #     p = {FILTER_PROPS_MAP[query_key]: keyVal}
-                p = {FILTER_PROPS_MAP[query_key]: keyVal}
-                Qs |= Q(**p)
-    queryset = models.Enquiry.objects.filter(Qs)
-    return queryset
+def filtered_queryset(queryset: QuerySet, query_params: QueryDict) -> QuerySet:
+    multi_option_fields = ["enquiry_stage", "owner"]
+    single_option_fields = [
+        "company_name",
+        "enquirer_email",
+        "date_created_before",
+        "date_created_after",
+        "date_added_to_datahub_before",
+        "date_added_to_datahub_before",
+    ]
+
+    filters = {}
+    match_unassigned = False
+    qobjs = Q()
+
+    for k, v in query_params.items():
+        if k in multi_option_fields and query_params.getlist(k):
+            if k == "owner":
+                users = []
+                for user in query_params.getlist(k):
+                    # handle UNASSIGNED value differently as this maps to a DB null value
+                    if user == "UNASSIGNED":
+                        match_unassigned = True
+                    else:
+                        users.append(user)
+                if len(users) > 0:
+                    filters[k] = users
+            else:
+                filters[k] = query_params.getlist(k)
+        elif k in single_option_fields and query_params.get(k):
+            filters[k] = v
+
+    if filters.keys() or match_unassigned:
+        for k, v in filters.items():
+            if k == 'owner':
+                # we need to group the owner queryies together using an OR operator
+                if match_unassigned == True:
+                    qobjs &= Q(Q(**{filter_props[k]: v}) | Q(owner__isnull=True))
+                else:
+                    qobjs &= Q(**{filter_props[k]: v})        
+                continue
+            qobjs &= Q(**{filter_props[k]: v})
+        qs = queryset.filter(qobjs)
+    else:
+        qs = queryset
+    return qs
 
 class EnquiryListView(APIView):
     """
@@ -47,9 +78,9 @@ class EnquiryListView(APIView):
 
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         queryset = models.Enquiry.objects.all()
-        return filter_queryset(queryset, self.request.GET)
+        return filtered_queryset(queryset, self.request.GET)
 
     def get(self, request, format=None):
         enquiries = self.get_queryset()
@@ -80,7 +111,7 @@ class EnquiryListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EnquiryDetail(APIView):
+class EnquiryDetailView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
 
     def get(self, request, pk):
