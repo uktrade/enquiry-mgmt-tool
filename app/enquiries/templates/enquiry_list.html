@@ -17,7 +17,7 @@
                 <div class="collection-header-row">
                     <div class="collection-header-intro">
                         <span class="big-number-of-enquiries">{{ serializer.count }}</span> enquiries
-                        <button class="add-enquiries-button govuk-button govuk-button--secondary" data-module="govuk-button">
+                        <button onclick="window.location.href=`{% url 'enquiry-add' %}`" class="add-enquiries-button govuk-button govuk-button--secondary" data-module="govuk-button">
                             Add enquiries
                         </button>
                     </div>

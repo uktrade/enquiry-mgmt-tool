@@ -236,3 +236,13 @@ class EnquiryDetail(APIView):
                 request.data = request.POST
                 return self.post(request, kwargs["pk"])
         return super().dispatch(request, *args, **kwargs)
+
+class EnquiryAdd(APIView):
+
+    def get(self, request):
+        return Response(
+            {
+                "data": "goes here"
+            },
+            template_name="enquiry_add.html"
+        )
