@@ -136,3 +136,13 @@ CHAR_FIELD_MAX_LENGTH = 255
 
 # Data hub
 DATA_HUB_ACCESS_TOKEN=env('DATA_HUB_ACCESS_TOKEN')
+DATA_HUB_METADATA_URL=env('DATA_HUB_METADATA_URL')
+
+HAWK_ID=env("HAWK_ID")
+HAWK_CREDENTIALS = {
+    env("HAWK_ID"): {
+        "id": env("HAWK_ID"),
+        "key": env("HAWK_KEY"),
+        "algorithm": "sha256",
+    }
+}

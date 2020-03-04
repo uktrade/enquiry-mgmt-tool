@@ -8,3 +8,10 @@ POSTGRES_DB_USER=postgres
 POSTGRES_DB_PASSWORD=password
 POSTGRES_DB_HOST=localhost
 POSTGRES_DB_PORT=5432
+
+# Data Hub variables
+DATA_HUB_METADATA_URL=https://datahub-api-dev.london.cloudapps.digital/v4/metadata
+
+# Hawk
+HAWK_ID=hawk-id
+HAWK_KEY=hawk-key
