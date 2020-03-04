@@ -24,10 +24,17 @@ class EnquiryListView(APIView):
 
 
 class EnquiryDetailView(APIView):
+    """
+    View to provide complete details of an Enquiry
+    """
     renderer_classes = [TemplateHTMLRenderer]
     template_name = "enquiry_detail.html"
 
     def get(self, request, pk):
+        """
+        Retrieves enquiry object for the given id and provides
+        the serialized data to be rendered in a template
+        """
         enquiry = get_object_or_404(models.Enquiry, pk=pk)
         serializer = serializers.EnquiryDetailSerializer(enquiry)
         return Response(
