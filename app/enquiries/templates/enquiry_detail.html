@@ -48,7 +48,7 @@ govuk-button--secondary govuk-!-margin-right-1" data-module="govuk-button"
             <dt class="govuk-summary-list__key">
                 Owner
             </dt>
-            <dd class="govuk-summary-list__value">{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }}
+            <dd class="govuk-summary-list__value">{% if serializer.owner.user.value %}{{ serializer.owner.user.value }} {%else%} {{ "Unassigned" }}
                 {%endif%}</dd>
             <dd class="govuk-summary-list__actions">
             </dd>

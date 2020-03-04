@@ -34,7 +34,7 @@
             <dt class="govuk-summary-list__key">
                 Owner
             </dt>
-            <dd class="govuk-summary-list__value">{% if obj.owner %}{{ obj.owner.user }} {%else%}
+            <dd class="govuk-summary-list__value">{% if serializer.owner.choices|get_item:serializer.owner.value %}{{ serializer.owner.choices|get_item:serializer.owner.value }} {%else%}
                 {{ "Unassigned" }} {%endif%}</dd>
         </div>
     </dl>
