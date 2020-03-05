@@ -36,6 +36,8 @@ This project uses Docker compose to setup and run all the necessary components. 
     python manage.py loaddata app/enquiries/fixtures/users.json
     ```
 
+You can view the app at `http://localhost:8000/enquiries/`
+
 ## More useful info
 
 If you already have the app container running and want to restart, you can use this:
