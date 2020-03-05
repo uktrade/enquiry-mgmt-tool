@@ -15,15 +15,15 @@ class EnquiryViewTestCase(TestCase):
         self.faker = Faker()
         self.client = Client()
 
-    def get_an_enquiry_detail(self, num_enquiries=5):
-        enquiries = [EnquiryFactory() for i in range(num_enquiries)]
-        response = self.client.get(
-            reverse("enquiry-detail", kwargs={"pk": random.choice(enquiries).id})
-        )
+    def get_an_enquiry_detail(self):
+        """Helper function to get create a single enquiry and retrieve details"""
+        enquiry = EnquiryFactory()
+        response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         return response.context["enquiry"]
 
     def test_enquiry_list(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
         enquiries = [EnquiryFactory() for i in range(5)]
         response = self.client.get(reverse("enquiry-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -31,15 +31,22 @@ class EnquiryViewTestCase(TestCase):
         self.assertEqual(len(serializer), len(enquiries))
 
     def test_enquiry_detail(self):
-        enquiries = [EnquiryFactory() for i in range(5)]
-        response = self.client.get(
-            reverse("enquiry-detail", kwargs={"pk": random.choice(enquiries).id})
-        )
+        """Test retrieving a valid enquiry returns 200"""
+        enquiry = EnquiryFactory()
+        response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_enquiry_detail_nonexistent_id(self):
+        """Test retrieving non-existent enquiry returns 404"""
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": 100}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_enquiry_successful_update(self):
+        """
+        Test a successful update
+        Creates an enquiry first, updates few fields and ensures
+        the data is updated after submitting the form
+        """
         enquiry = self.get_an_enquiry_detail()
         enquiry = model_to_dict(enquiry)
         update_fields = {
@@ -58,12 +65,16 @@ class EnquiryViewTestCase(TestCase):
             self.assertEqual(enquiry[key], updated_enquiry[key])
 
     def test_enquiry_failed_update(self):
+        """
+        Test a successful update
+        Creates an enquiry first, ignores a mandatory field and ensures
+        the data is not updated after submitting the form
+        """
         enquiry = self.get_an_enquiry_detail()
         enquiry = model_to_dict(enquiry)
-        update_fields = {"company_name": ""}
 
         response = self.client.post(
-            reverse("enquiry-edit", kwargs={"pk": enquiry["id"]}), **update_fields,
+            reverse("enquiry-edit", kwargs={"pk": enquiry["id"]}), {"company_name": ""},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_enquiry = model_to_dict(response.context["enquiry"])
