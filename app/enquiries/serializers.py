@@ -3,6 +3,12 @@ from rest_framework import serializers
 
 from app.enquiries import models
 
+class EnquirerSerializer(serializers.ModelSerializer):
+    request_for_call = serializers.CharField(source="get_request_for_call_display")
+
+    class Meta:
+        model = models.Enquirer
+        fields = "__all__"
 
 class OwnerSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -24,6 +30,7 @@ class EnquirySerializer(serializers.ModelSerializer):
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
     owner = OwnerSerializer()
+    enquirer = EnquirerSerializer()
     created = serializers.DateTimeField(format="%d %b %Y")
     modified = serializers.DateTimeField(format="%d %b %Y")
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
