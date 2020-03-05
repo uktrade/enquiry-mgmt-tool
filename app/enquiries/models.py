@@ -200,6 +200,8 @@ class Enquiry(TimeStampedModel):
     crm = models.CharField(
         max_length=MAX_LENGTH,
         help_text="Name of the relationship manager",
+        blank=True,
+        null=True,
         verbose_name="CRM",
     )
     project_code = models.CharField(

@@ -411,3 +411,20 @@ class DatahubProjectStatus(models.TextChoices):
     WON = "WON", _("Won")
     ABANDONED = "ABANDONED", _("Abandoned")
     DELAYED = "DELAYED", _("Delayed")
+
+IMPORT_COL_NAMES = [
+    'enquirer_first_name',
+    'enquirer_last_name',
+    'enquirer_job_title',
+    'enquirer_email',
+    'enquirer_phone',
+    'enquirer_request_for_call',
+    'country',
+    'company_name',
+    'primary_sector',
+    'company_hq_address',
+    'website',
+    'investment_readiness',
+    'enquiry_text',
+    'notes'
+]

@@ -13,6 +13,7 @@ factory.Faker._DEFAULT_LOCALE = "en_GB"
 def get_random_item(refdata_model):
     return random.choice(refdata_model.choices)[0]
 
+
 def get_display_name(refdata_model, item):
     """Get the verbose name from ref_data given the short name"""
     return list(filter(lambda choice: choice[0] == item, refdata_model.choices))[0][1]
@@ -72,3 +73,23 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Enquiry
+
+
+def create_fake_enquiry_csv_row():
+    fake = Faker()
+    return {
+        "enquirer_first_name": fake.name(),
+        "enquirer_last_name": fake.name(),
+        "enquirer_job_title": fake.job(),
+        "enquirer_email": fake.email(),
+        "enquirer_phone": fake.phone_number(),
+        "enquirer_request_for_call": get_random_item(ref_data.RequestForCall),
+        "country": get_random_item(ref_data.Country),
+        "company_name": fake.company(),
+        "primary_sector": get_random_item(ref_data.PrimarySector),
+        "company_hq_address": fake.address(),
+        "website": fake.url(),
+        "investment_readiness": get_random_item(ref_data.InvestmentReadiness),
+        "enquiry_text": fake.sentence(),
+        "notes": fake.sentence(nb_words=20),
+    }

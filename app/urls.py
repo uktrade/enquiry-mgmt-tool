@@ -29,4 +29,5 @@ urlpatterns = [
     path('enquiries/<int:pk>/', views.EnquiryDetailView.as_view(), name="enquiry-detail"),
     path('enquiries/<int:pk>/edit', views.EnquiryEditView.as_view(), name="enquiry-edit"),
     path('healthcheck/ping', ping.ping, name='ping'),
+    path('enquiries/import/', views.ImportEnquiriesView.as_view(), name="import-enquiries"),
 ]
