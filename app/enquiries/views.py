@@ -238,6 +238,7 @@ class EnquiryDetail(APIView):
         return super().dispatch(request, *args, **kwargs)
 
 class EnquiryAdd(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
 
     def get(self, request):
         return Response(
