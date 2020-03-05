@@ -1,6 +1,6 @@
-from django.shortcuts import get_object_or_404, redirect, render
-from rest_framework import generics, viewsets, status
-from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from django.shortcuts import get_object_or_404
+from django.views.generic.base import TemplateView
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -23,24 +23,16 @@ class EnquiryListView(APIView):
         )
 
 
-class EnquiryDetailView(APIView):
+class EnquiryDetailView(TemplateView):
     """
     View to provide complete details of an Enquiry
     """
-    renderer_classes = [TemplateHTMLRenderer]
+    model = models.Enquiry
     template_name = "enquiry_detail.html"
 
-    def get(self, request, pk):
-        """
-        Retrieves enquiry object for the given id and provides
-        the serialized data to be rendered in a template
-        """
-        enquiry = get_object_or_404(models.Enquiry, pk=pk)
-        serializer = serializers.EnquiryDetailSerializer(enquiry)
-        return Response(
-            {
-                "serializer": serializer,
-                "enquiry": enquiry,
-                "style": {"template_pack": "rest_framework/vertical/"},
-            }
-        )
+    def get_context_data(self, **kwargs):
+        pk = kwargs['pk']
+        context = super().get_context_data(**kwargs)
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        context['enquiry'] = enquiry
+        return context
