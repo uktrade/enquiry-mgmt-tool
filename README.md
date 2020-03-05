@@ -30,3 +30,10 @@ This project uses Docker compose to setup and run all the necessary components. 
     cp sample_env app/.env
     docker-compose up -d && docker-compose logs -f api
     ```
+
+1.  Load sample users data using fixtures:
+
+    ```shell
+    docker-compose run api bash
+    python manage.py loaddata app/enquiries/fixtures/users.json
+    ```
