@@ -3,6 +3,12 @@ from rest_framework import serializers
 
 from app.enquiries import models
 
+class EnquirerSerializer(serializers.ModelSerializer):
+    request_for_call = serializers.CharField(source="get_request_for_call_display")
+
+    class Meta:
+        model = models.Enquirer
+        fields = "__all__"
 
 class EnquirerDetailSerializer(serializers.ModelSerializer):
     request_for_call = serializers.CharField(source="get_request_for_call_display")
