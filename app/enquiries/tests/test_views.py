@@ -47,28 +47,36 @@ class EnquiryViewTestCase(TestCase):
         Creates an enquiry first, updates few fields and ensures
         the data is updated after submitting the form
         """
-        enquiry = self.get_an_enquiry_detail()
-        enquiry = model_to_dict(enquiry)
-        update_fields = {
-            "company_name": self.faker.company(),
-            "enquiry_stage": get_random_item(ref_data.EnquiryStage),
-            "notes": self.faker.sentence(),
-            "country": get_random_item(ref_data.Country),
-        }
-
+        enquiry = model_to_dict(EnquiryFactory())
+        # TODO: remove blank fields
+        # POST request to a form expects all the fields but sending optional
+        # fields whose value is None causing form_invalid errors.
+        # Setting content-type as json also not helping, ignore blank fields
+        data = {k: v for k, v in enquiry.items() if v}
+        data["company_name"] = self.faker.company()
+        data["enquiry_stage"] = get_random_item(ref_data.EnquiryStage)
+        data["notes"] = self.faker.sentence()
+        data["country"] = get_random_item(ref_data.Country)
         response = self.client.post(
-            reverse("enquiry-edit", kwargs={"pk": enquiry["id"]}), **update_fields,
+            reverse("enquiry-edit", kwargs={"pk": data["id"]}), data,
         )
+        # POST request response to a form is 302
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+        # retrieve updated record
+        response = self.client.get(reverse("enquiry-detail", kwargs={"pk": data["id"]}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        updated_enquiry = model_to_dict(response.context["enquiry"])
-        for key in update_fields:
-            self.assertEqual(enquiry[key], updated_enquiry[key])
+        updated = model_to_dict(response.context["enquiry"])
+        self.assertEqual(updated["company_name"], data["company_name"])
+        self.assertEqual(updated["enquiry_stage"], data["enquiry_stage"])
+        self.assertEqual(updated["notes"], data["notes"])
+        self.assertEqual(updated["country"], data["country"])
 
     def test_enquiry_failed_update(self):
         """
         Test a successful update
-        Creates an enquiry first, ignores a mandatory field and ensures
-        the data is not updated after submitting the form
+        Creates an enquiry first, submits invalid data to a mandatory field
+        and ensures the data is not updated after submitting the form
         """
         enquiry = self.get_an_enquiry_detail()
         enquiry = model_to_dict(enquiry)
@@ -76,7 +84,7 @@ class EnquiryViewTestCase(TestCase):
         response = self.client.post(
             reverse("enquiry-edit", kwargs={"pk": enquiry["id"]}), {"company_name": ""},
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         updated_enquiry = model_to_dict(response.context["enquiry"])
         self.assertEqual(updated_enquiry["company_name"], enquiry["company_name"])
         self.assertNotEqual(updated_enquiry["company_name"], "")
