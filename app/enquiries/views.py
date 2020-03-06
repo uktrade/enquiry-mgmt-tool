@@ -243,7 +243,8 @@ class EnquiryAdd(APIView):
     def get(self, request):
         return Response(
             {
-                "data": "goes here"
+                "data": "goes here",
+                "back_url": reverse("enquiry-list"),
             },
             template_name="enquiry_add.html"
         )

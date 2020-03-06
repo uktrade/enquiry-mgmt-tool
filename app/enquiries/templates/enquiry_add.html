@@ -5,9 +5,18 @@
 {% csrf_token %}
 {% load widget_tweaks %}
 {% load rest_framework %}
-
+<h2 class="govuk-heading-l">Import enquiries</h2>
 <div class="govuk-grid-row">
-    
+    <h4 class="govuk-heading-s">
+        Steps
+    </h4>
+    <ol class="govuk-list govuk-list--number">
+        <li>Click <strong>Template download</strong> to download the CSV template.</li>
+        <li>Open the CSV template and insert the enquiry data.</li>
+        <li>Save the CSV file.</li>
+        <li>Click <strong>Choose file</strong>, locate your CSV file and then click <strong>Open</strong>.</li>
+        <li>Click Upload file.</li>
+    </ol>
 </div>
 
 {% endblock %}
