@@ -1,6 +1,7 @@
 import factory
 import random
 
+from datetime import date
 from faker import Faker
 
 from app.enquiries.models import Enquirer, Enquiry
@@ -13,11 +14,20 @@ def get_random_item(refdata_model):
     return random.choice(refdata_model.choices)[0]
 
 
+def get_display_value(ref_data_model, label):
+    text = [
+        value
+        for (choice_label, value) in ref_data_model.choices
+        if choice_label == label
+    ]
+    return text[0] if text else "Not found"
+
+
 class EnquirerFactory(factory.django.DjangoModelFactory):
-    first_name = factory.Faker('first_name')
-    last_name = factory.Faker('last_name')
-    email = factory.Faker('email')
-    phone = factory.Faker('phone_number')
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    email = factory.Faker("email")
+    phone = factory.Faker("phone_number")
     request_for_call = get_random_item(ref_data.RequestForCall)
 
     class Meta:
@@ -53,6 +63,8 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
     investor_involvement_level = get_random_item(ref_data.InvestorInvolvement)
     specific_investment_programme = get_random_item(ref_data.InvestmentProgramme)
     datahub_project_status = get_random_item(ref_data.DatahubProjectStatus)
+    date_added_to_datahub = date.today()
+    project_success_date = date.today()
 
     class Meta:
         model = Enquiry
