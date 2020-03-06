@@ -74,7 +74,7 @@ class EnquiryViewTestCase(TestCase):
 
     def test_enquiry_failed_update(self):
         """
-        Test a successful update
+        Test an unsuccessful update
         Creates an enquiry first, submits invalid data to a mandatory field
         and ensures the data is not updated after submitting the form
         """
