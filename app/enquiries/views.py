@@ -73,7 +73,7 @@ class EnquiryListView(APIView, PaginationHandlerMixin):
         return Response(
             {
                 "serializer": serializer.data,
-                "page_range": paginator.page_range,
+                "page_range": list(paginator.page_range),
                 "current_page": request.query_params.get("page", "1"),
             },
             template_name="enquiry_list.html",
