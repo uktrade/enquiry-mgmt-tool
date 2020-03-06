@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
+from rest_framework import status
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -52,3 +53,8 @@ class EnquiryEditView(UpdateView):
         enquiry = form.save(commit=False)
         enquiry.save()
         return redirect("enquiry-detail", pk=enquiry.pk)
+
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return response
