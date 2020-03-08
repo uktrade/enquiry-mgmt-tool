@@ -11,10 +11,43 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import environ
+import logging.config
 import os
 
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
+
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '[%(asctime)s] [%(levelname)-4s] %(name)-8s: %(message)s',
+            'datefmt': '%d-%m-%Y %H:%M:%S'
+        },
+        'file': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        },
+        'file': {
+            'level': 'DEBUG' if env.bool('DEBUG') else 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'file',
+            'filename': '/tmp/debug.log'
+        }
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG' if env.bool('DEBUG') else 'INFO',
+            'handlers': ['console', 'file']
+        }
+    }
+})
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
