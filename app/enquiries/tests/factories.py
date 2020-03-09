@@ -65,6 +65,7 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
     datahub_project_status = get_random_item(ref_data.DatahubProjectStatus)
     date_added_to_datahub = date.today()
     project_success_date = date.today()
+    crm = factory.Faker("first_name")
 
     class Meta:
         model = Enquiry

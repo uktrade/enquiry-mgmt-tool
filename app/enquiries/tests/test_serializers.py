@@ -20,8 +20,8 @@ class EnquiriesSerializersTestCase(TestCase):
         """
         enquiry = EnquiryFactory()
         sr_data = serializers.EnquiryDetailSerializer(enquiry).data
-        self.assertEqual(enquiry.created.strftime("%d %b %Y"), sr_data["created"])
-        self.assertEqual(enquiry.modified.strftime("%d %b %Y"), sr_data["modified"])
+        self.assertEqual(enquiry.created.strftime("%d %B %Y"), sr_data["created"])
+        self.assertEqual(enquiry.modified.strftime("%d %B %Y"), sr_data["modified"])
         self.assertEqual(
             enquiry.date_added_to_datahub.strftime("%d %B %Y"),
             sr_data["date_added_to_datahub"],

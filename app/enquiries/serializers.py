@@ -10,6 +10,14 @@ class EnquirerSerializer(serializers.ModelSerializer):
         model = models.Enquirer
         fields = "__all__"
 
+class EnquirerDetailSerializer(serializers.ModelSerializer):
+    request_for_call = serializers.CharField(source="get_request_for_call_display")
+
+    class Meta:
+        model = models.Enquirer
+        fields = "__all__"
+
+
 class OwnerSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
@@ -30,9 +38,9 @@ class EnquirySerializer(serializers.ModelSerializer):
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
     owner = OwnerSerializer()
-    enquirer = EnquirerSerializer()
-    created = serializers.DateTimeField(format="%d %b %Y")
-    modified = serializers.DateTimeField(format="%d %b %Y")
+    enquirer = EnquirerDetailSerializer()
+    created = serializers.DateTimeField(format="%d %B %Y")
+    modified = serializers.DateTimeField(format="%d %B %Y")
     enquiry_stage = serializers.CharField(source="get_enquiry_stage_display")
     investment_readiness = serializers.CharField(source="get_investment_readiness_display")
     quality = serializers.CharField(source="get_quality_display")
