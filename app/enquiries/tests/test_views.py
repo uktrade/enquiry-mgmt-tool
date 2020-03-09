@@ -16,7 +16,7 @@ class EnquiryViewTestCase(TestCase):
         self.client = Client()
 
     def get_an_enquiry_detail(self):
-        """Helper function to get create a single enquiry and retrieve details"""
+        """Helper function to get a single enquiry and retrieve details"""
         enquiry = EnquiryFactory()
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
