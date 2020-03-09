@@ -82,53 +82,6 @@ filter_props = {
     "date_added_to_datahub_after": "date_added_to_datahub__gt",
 }
 
-def filter_queryset(queryset: QuerySet, query_params: QueryDict) -> QuerySet:
-    multi_option_fields = ["enquiry_stage", "owner"]
-    single_option_fields = [
-        "company_name",
-        "enquirer_email",
-        "date_created_before",
-        "date_created_after",
-        "date_added_to_datahub_before",
-        "date_added_to_datahub_before",
-    ]
-
-    filters = {}
-    match_unassigned = False
-    qobjs = Q()
-
-    for k, v in query_params.items():
-        if k in multi_option_fields and query_params.getlist(k):
-            if k == "owner":
-                users = []
-                for user in query_params.getlist(k):
-                    # handle UNASSIGNED value differently as this maps to a DB null value
-                    if user == "UNASSIGNED":
-                        match_unassigned = True
-                    else:
-                        users.append(user)
-                if len(users) > 0:
-                    filters[k] = users
-            else:
-                filters[k] = query_params.getlist(k)
-        elif k in single_option_fields and query_params.get(k):
-            filters[k] = v
-
-    if filters.keys() or match_unassigned:
-        for k, v in filters.items():
-            if k == 'owner':
-                # we need to group the owner queryies together using an OR operator
-                if match_unassigned == True:
-                    qobjs &= Q(Q(**{filter_props[k]: v}) | Q(owner__isnull=True))
-                else:
-                    qobjs &= Q(**{filter_props[k]: v})        
-                continue
-            qobjs &= Q(**{filter_props[k]: v})
-        qs = queryset.filter(qobjs)
-    else:
-        qs = queryset
-    return qs
-
 class EnquiryListView(APIView):
     """
     List all enquiries.
@@ -169,15 +122,10 @@ class EnquiryListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-<<<<<<< HEAD
 class EnquiryDetailView(TemplateView):
     """
     View to provide complete details of an Enquiry
     """
-=======
-class EnquiryDetailView(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
->>>>>>> use owner is rather than user id
 
     model = models.Enquiry
     template_name = "enquiry_detail.html"
