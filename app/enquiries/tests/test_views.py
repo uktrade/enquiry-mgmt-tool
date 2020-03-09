@@ -64,7 +64,23 @@ class EnquiryViewTestCase(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def create_enquiry(self, enquiry):
+    def assert_dict(self, expected, actual, exclude_keys=None):
+        """
+        Asserts values of expected and actual dictionary objects
+        Some of the keys are only available in actual (eg id), they can
+        be skipped using exclude_keys
+        """
+        if not exclude_keys:
+            exclude_keys = []
+
+        for key, value in expected.items():
+            if key in exclude_keys:
+                continue
+
+            self.assertEqual(value, expected[key])
+
+    def create_enquiry_and_assert(self, enquiry):
+        """Creates an Enquiry using the API and asserts on the response status"""
         response = self.client.post(
             reverse("enquiry-list"), data=enquiry, content_type="application/json"
         )
@@ -72,18 +88,26 @@ class EnquiryViewTestCase(TestCase):
         return response.json()
 
     def test_enquiry_list(self):
-        enquiries = [self.create_enquiry(canned_enquiry()) for i in range(5)]
+        """Creates few Enquiries and ensures retrieved list matches the count"""
+        enquiries = [self.create_enquiry_and_assert(canned_enquiry()) for i in range(5)]
         response = self.client.get(reverse("enquiry-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         serializer = response.data["serializer"]
         self.assertEqual(len(serializer), len(enquiries))
 
     def test_enquiry_create(self):
+        """Creates an Enquiry and ensures response fields match with the request"""
         enquiry = canned_enquiry()
-        response = self.create_enquiry(enquiry)
-        self.assertEqual(response["company_name"], enquiry["company_name"])
+        response = self.create_enquiry_and_assert(enquiry)
+        self.assert_dict(
+            enquiry,
+            response,
+            ["enquirer", "date_added_to_datahub", "project_success_date"],
+        )
+        self.assert_dict(enquiry["enquirer"], response["enquirer"])
 
     def test_enquiry_create_missing_mandatory_field(self):
+        """Test to ensure Enquiry creation fails if a mandatory field is not supplied"""
         enquiry = canned_enquiry()
         del enquiry["company_name"]
         response = self.client.post(
@@ -92,8 +116,12 @@ class EnquiryViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_user_email_already_exists_error(self):
+        """
+        Email key for an Enquirer is unique, this tests ensures creation
+        of enquiry with same enquirer email fails
+        """
         enquiry = canned_enquiry()
-        response = self.create_enquiry(enquiry)
+        response = self.create_enquiry_and_assert(enquiry)
         self.assertEqual(response["company_name"], enquiry["company_name"])
 
         response = self.client.post(
