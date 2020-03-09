@@ -88,3 +88,11 @@ class EnquiryViewTestCase(TestCase):
         updated_enquiry = model_to_dict(response.context["enquiry"])
         self.assertEqual(updated_enquiry["company_name"], enquiry["company_name"])
         self.assertNotEqual(updated_enquiry["company_name"], "")
+
+    def test_enquiry_detail_template_simple(self):
+        """Test the template is using the right variables to show enquiry data 
+        in the simple case when data is a string"""
+        enquiry = EnquiryFactory()
+        response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
+        self.assertContains(response, enquiry.company_name)
+        self.assertContains(response, enquiry.notes)
