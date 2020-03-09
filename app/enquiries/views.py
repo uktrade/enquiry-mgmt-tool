@@ -36,13 +36,14 @@ def filtered_queryset(queryset: QuerySet, query_params: QueryDict) -> QuerySet:
     ]
 
     filters = {}
+    users = []
     match_unassigned = False
+    match_users = False
     qobjs = Q()
 
     for k, v in query_params.items():
         if k in multi_option_fields and query_params.getlist(k):
-            if k == "owner":
-                users = []
+            if k == "owner":  
                 for user in query_params.getlist(k):
                     # handle UNASSIGNED value differently as this maps to a DB null value
                     if user == "UNASSIGNED":
@@ -51,24 +52,28 @@ def filtered_queryset(queryset: QuerySet, query_params: QueryDict) -> QuerySet:
                         users.append(user)
                 if len(users) > 0:
                     filters[k] = users
+                    match_users = True
             else:
                 filters[k] = query_params.getlist(k)
         elif k in single_option_fields and query_params.get(k):
             filters[k] = v
 
-    if filters.keys() or match_unassigned:
+    if filters.keys() or match_unassigned or match_users:
         for k, v in filters.items():
             if k == 'owner':
-                # we need to group the owner queryies together using an OR operator
-                if match_unassigned == True:
-                    qobjs &= Q(Q(**{filter_props[k]: v}) | Q(owner__isnull=True))
-                else:
-                    qobjs &= Q(**{filter_props[k]: v})        
                 continue
             qobjs &= Q(**{filter_props[k]: v})
+        # we need to group the owner queries together using an OR operator
+        if match_unassigned == True and match_users == True:    
+            qobjs &= Q(Q(**{filter_props['owner']: users}) | Q(owner__isnull=True))
+        elif match_unassigned == True:
+            qobjs = Q(owner__isnull=True)
+        elif match_users == True:
+            qobjs &= Q(**{filter_props['owner']: users})
         qs = queryset.filter(qobjs)
     else:
         qs = queryset
+    
     return qs
 
 filter_props = {
