@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import environ
 import os
+import sentry_sdk
 
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
@@ -19,6 +20,9 @@ env = environ.Env()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Configure Sentry
+DJANGO_SENTRY_DSN = env('DJANGO_SENTRY_DSN')
+sentry_sdk.init(DJANGO_SENTRY_DSN)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
