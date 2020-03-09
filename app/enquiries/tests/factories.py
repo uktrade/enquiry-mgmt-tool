@@ -53,6 +53,7 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
     investor_involvement_level = get_random_item(ref_data.InvestorInvolvement)
     specific_investment_programme = get_random_item(ref_data.InvestmentProgramme)
     datahub_project_status = get_random_item(ref_data.DatahubProjectStatus)
+    crm = factory.Faker("first_name")
 
     class Meta:
         model = Enquiry
