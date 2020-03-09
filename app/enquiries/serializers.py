@@ -1,3 +1,4 @@
+from django.db import transaction
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
@@ -34,10 +35,11 @@ class EnquirySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        enquirer = validated_data.pop('enquirer')
-        enquirer_instance = models.Enquirer.objects.create(**enquirer)
-        enquiry = models.Enquiry.objects.create(**validated_data, enquirer=enquirer_instance)
-        return enquiry
+        with transaction.atomic():
+            enquirer = validated_data.pop('enquirer')
+            enquirer_instance = models.Enquirer.objects.create(**enquirer)
+            enquiry = models.Enquiry.objects.create(**validated_data, enquirer=enquirer_instance)
+            return enquiry
 
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
