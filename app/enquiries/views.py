@@ -24,7 +24,7 @@ filter_props = {
     "date_added_to_datahub_after": "date_added_to_datahub__gt",
 }
 
-def filter_queryset(queryset: QuerySet, query_params: QueryDict) -> QuerySet:
+def filtered_queryset(queryset: QuerySet, query_params: QueryDict) -> QuerySet:
     multi_option_fields = ["enquiry_stage", "owner"]
     single_option_fields = [
         "company_name",
@@ -81,10 +81,6 @@ class EnquiryListView(APIView):
     def get_queryset(self) -> QuerySet:
         queryset = models.Enquiry.objects.all()
         return filtered_queryset(queryset, self.request.GET)
-
-    def get_queryset(self):
-        queryset = models.Enquiry.objects.all()
-        return filter_queryset(queryset, self.request.GET)
 
     def get(self, request, format=None):
         enquiries = self.get_queryset()
