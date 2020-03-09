@@ -82,7 +82,7 @@ class EnquiryViewTestCase(TestCase):
     def create_enquiry_and_assert(self, enquiry):
         """Creates an Enquiry using the API and asserts on the response status"""
         response = self.client.post(
-            reverse("enquiry-list"), data=enquiry, content_type="application/json"
+            reverse("enquiry-create"), data=enquiry, content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         return response.json()
@@ -111,7 +111,7 @@ class EnquiryViewTestCase(TestCase):
         enquiry = canned_enquiry()
         del enquiry["company_name"]
         response = self.client.post(
-            reverse("enquiry-list"), data=enquiry, content_type="application/json"
+            reverse("enquiry-create"), data=enquiry, content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -125,7 +125,7 @@ class EnquiryViewTestCase(TestCase):
         self.assertEqual(response["company_name"], enquiry["company_name"])
 
         response = self.client.post(
-            reverse("enquiry-list"), data=enquiry, content_type="application/json"
+            reverse("enquiry-create"), data=enquiry, content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
