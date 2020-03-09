@@ -21,8 +21,9 @@ env = environ.Env()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Configure Sentry
-DJANGO_SENTRY_DSN = env('DJANGO_SENTRY_DSN')
-sentry_sdk.init(DJANGO_SENTRY_DSN)
+if not env.bool('DEBUG'):
+    DJANGO_SENTRY_DSN = env('DJANGO_SENTRY_DSN')
+    sentry_sdk.init(DJANGO_SENTRY_DSN)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
