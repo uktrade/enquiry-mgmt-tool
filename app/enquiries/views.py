@@ -24,7 +24,7 @@ filter_props = {
     "date_added_to_datahub_after": "date_added_to_datahub__gt",
 }
 
-def filtered_queryset(queryset: QuerySet, query_params: QueryDict) -> QuerySet:
+def filter_queryset(queryset: QuerySet, query_params: QueryDict) -> QuerySet:
     multi_option_fields = ["enquiry_stage", "owner"]
     single_option_fields = [
         "company_name",
