@@ -10,16 +10,16 @@
         {% load rest_framework %}
 
         <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
-            <h2 class="govuk-heading-l">{{ serializer.company_name.value }}</h2>
+            <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
             <dl class="govuk-summary-list--no-border">
                 <!-- TODO: Change label to 'Date received' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.created %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.created %}
                 <!-- TODO: Change label to 'Date last updated' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.modified %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.enquiry_stage %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.modified %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_enquiry_stage_display %}
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        {{ serializer.owner.label }}
+                        {{ enquiry.owner.label }}
                     </dt>
                     <dd class="govuk-summary-list__value">{% if obj.owner %}{{ obj.owner.user }} {%else%}
                         {{ "Unassigned" }} {%endif%}</dd>
@@ -29,61 +29,61 @@
         <div class="govuk-grid-row enquiry-details-row">
             <h3 class="govuk-heading-m">Enquiry details</h3>
             <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.enquiry_text %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.enquiry_text %}
                 <!-- TODO: Change label to 'Investment readiness ("Which of these best describes how you feel about expanding to the UK?")' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.investment_readiness %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.quality %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.first_response_channel %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_investment_readiness_display %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_quality_display %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_first_response_channel_display %}
             </dl>
         </div>
         <div class="govuk-grid-row enquiry-details-row">
             <h3 class="govuk-heading-m">Company details</h3>
             <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.website %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.country %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.region %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.website %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_country_display %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_region_display %}
                 <!-- TODO: Change label to 'Company HQ address' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.company_hq_address %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.primary_sector %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.company_hq_address %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_primary_sector_display %}
                 <!-- TODO: Change label to 'IST sector' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.ist_sector %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_ist_sector_display %}
             </dl>
         </div>
         <div class="govuk-grid-row enquiry-details-row">
             <h3 class="govuk-heading-m">Contact</h3>
             <dl class="govuk-summary-list">
                 <!-- TODO: Change label to 'Enquirer first name' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.enquirer.first_name %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.enquirer.first_name %}
                 <!-- TODO: Change label to 'Enquirer last name' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.enquirer.last_name %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.enquirer.job_title %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.enquirer.last_name %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.enquirer.job_title %}
                 <!-- TODO: Change label to 'Enquirer email address' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.enquirer.email %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.enquirer.email %}
                 <!-- TODO: Change label to 'Telephone number' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.enquirer.phone %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.enquirer.request_for_call %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.enquirer.phone %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.enquirer.get_request_for_call_display %}
             </dl>
         </div>
         <div class="govuk-grid-row enquiry-details-row">
             <h3 class="govuk-heading-m">Marketing</h3>
             <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.google_campaign %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.marketing_channel %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.google_campaign %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_marketing_channel_display %}
                 <!-- TODO: Change label to 'How did they hear about DIT?' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.how_they_heard_dit %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_how_they_heard_dit_display %}
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Consent (email)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {% if serializer.email_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
+                        {% if enquiry.email_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Consent (telephone)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {% if serializer.phone_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
+                        {% if enquiry.phone_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
                 </div>
             </dl>
         </div>
@@ -91,7 +91,7 @@
             <h3 class="govuk-heading-m">HPO details</h3>
             <dl class="govuk-summary-list">
                 <!-- TODO: Change label to 'HPO selection' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.first_hpo_selection %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_first_hpo_selection_display %}
                 
             </dl>
         </div>
@@ -99,32 +99,32 @@
         <div class="govuk-grid-row enquiry-details-row">
             <h3 class="govuk-heading-m">Data Hub</h3>
             <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.organisation_type %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_organisation_type_display %}
                 <!-- TODO: Change label to 'Type of investment' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.investment_type %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.project_name %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.project_description %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.anonymised_project_description %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.estimated_land_date %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_investment_type_display %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.project_name %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.project_description %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.anonymised_project_description %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.estimated_land_date %}
                 <!-- TODO: Change label to 'New or existing investor' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.new_existing_investor %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_new_existing_investor_display %}
                 <!-- TODO: Change label to 'Investor level of involvement' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.investor_involvement_level %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.specific_investment_programme %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_investor_involvement_level_display %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_specific_investment_programme_display %}
                 <!-- TODO: Change label to 'CRM' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.crm %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.crm %}
                 <!-- TODO: Change label to 'Date added to Data Hub' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.date_added_to_datahub %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.project_code %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.date_added_to_datahub %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.project_code %}
                 <!-- TODO: Change label to 'Data Hub project status' -->
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.datahub_project_status %}
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.project_success_date %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.get_datahub_project_status_display %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.project_success_date %}
             </dl>
         </div>
         <div class="govuk-grid-row enquiry-details-row">
             <h3 class="govuk-heading-m">Notes</h3>
             <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with field=serializer.notes %}
+                {% include 'snippets/summary_list_key_value.html' with field=enquiry.notes %}
             </dl>
         </div>
     </main>
