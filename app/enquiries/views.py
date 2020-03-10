@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
@@ -13,70 +14,42 @@ from rest_framework.views import APIView
 from app.enquiries import models, serializers
 
 
-class PaginationHandlerMixin:
-    """
-    Mixin for handling pagination in APIView
-    """
-
-    @property
-    def paginator(self):
-        if not hasattr(self, "_paginator"):
-            if self.pagination_class is None:
-                self._paginator = None
-            else:
-                self._paginator = self.pagination_class()
-        else:
-            pass
-        return self._paginator
-
-    def paginate_queryset(self, queryset, request):
-        if self.paginator is None:
-            return None
-        paginated_response = self.paginator.paginate_queryset(
-            queryset, request, view=self
-        )
-        return paginated_response
-
-    def get_paginated_response(self, data):
-        assert self.paginator is not None
-        return self.paginator.get_paginated_response(data)
-
-
-class EnquiryListPagination(PageNumberPagination):
-    page_size_query_param = "limit"
-    page_size = settings.ENQUIRIES_PER_PAGE
-
-
-class EnquiryListView(APIView, PaginationHandlerMixin):
+class EnquiryListView(GenericAPIView):
     """
     List all enquiries.
 
     In GET: Returns a paginated list of enquiries
+    using PageNumberPagination. This is the default
+    pagination class as set globally in settings
     """
 
-    pagination_class = EnquiryListPagination
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+    serializer_class = serializers.EnquiryDetailSerializer
 
-    # This is mainly used for displaying page range in the template
-    django_paginator_class = DjangoPaginator
+    def get_queryset(self):
+        return models.Enquiry.objects.all()
 
     def get(self, request, format=None):
-        enquiries = models.Enquiry.objects.all()
-        paged_queryset = self.paginate_queryset(enquiries, request)
-        page_size = self.pagination_class.page_size
-        paginator = self.django_paginator_class(enquiries, page_size)
+        enquiries = self.get_queryset()
+
+        num_pages = 1
+        if self.pagination_class:
+            page_size = self.pagination_class.page_size
+            num_pages = len(enquiries) // page_size
+            if len(enquiries) % page_size:
+                num_pages += 1
+
+        paged_queryset = self.paginate_queryset(enquiries)
         if paged_queryset:
-            paged_serializer = serializers.EnquiryDetailSerializer(
-                paged_queryset, many=True
-            )
-            serializer = self.get_paginated_response(paged_serializer.data)
+            serializer = self.get_serializer(paged_queryset, many=True)
+            results = self.get_paginated_response(serializer.data)
         else:
-            serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
+            results = serializers.EnquiryDetailSerializer(enquiries, many=True)
 
         return Response(
             {
-                "serializer": serializer.data,
-                "page_range": list(paginator.page_range),
+                "serializer": results.data,
+                "page_range": list(range(num_pages + 1)),
                 "current_page": request.query_params.get("page", "1"),
             },
             template_name="enquiry_list.html",
