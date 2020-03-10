@@ -8,8 +8,8 @@ from django.urls import reverse
 from faker import Faker
 from rest_framework import status
 
-from app.enquiries.tests.factories import EnquiryFactory, get_random_item
 import app.enquiries.ref_data as ref_data
+from app.enquiries.tests.factories import EnquiryFactory, get_random_item, get_display_name
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 
@@ -59,6 +59,7 @@ def canned_enquiry():
         "datahub_project_status": get_random_item(ref_data.DatahubProjectStatus),
         "project_success_date": date(2022, 2, 3),
     }
+
 
 
 class EnquiryViewTestCase(TestCase):
@@ -139,7 +140,7 @@ class EnquiryViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json()["enquirer"]["email"][0],
-            "enquirer with this email already exists.",
+            "enquirer with this Email already exists.",
         )
 
     def test_enquiry_detail(self):
@@ -200,3 +201,21 @@ class EnquiryViewTestCase(TestCase):
         updated_enquiry = model_to_dict(response.context["enquiry"])
         self.assertEqual(updated_enquiry["company_name"], enquiry["company_name"])
         self.assertNotEqual(updated_enquiry["company_name"], "")
+
+    def test_enquiry_detail_template_simple(self):
+        """Test the template is using the right variables to show enquiry data 
+        in the simple case when data is a string"""
+        enquiry = EnquiryFactory()
+        response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
+        self.assertContains(response, enquiry.company_name)
+        self.assertContains(response, enquiry.notes)
+    
+    def test_enquiry_detail_template_ref_data(self):
+        """Test the template is using the right variables to show enquiry data 
+        in the case when data is a ref_data choice and has a verbose name"""
+        enquiry = EnquiryFactory()
+        response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
+        enquiry_stage_display_name = get_display_name(ref_data.EnquiryStage, enquiry.enquiry_stage)
+        country_display_name = get_display_name(ref_data.Country, enquiry.country)
+        self.assertContains(response, enquiry_stage_display_name)
+        self.assertContains(response, country_display_name)
