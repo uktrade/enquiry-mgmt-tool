@@ -18,6 +18,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from app.enquiries import views
+from app.enquiries import ping
 
 
 urlpatterns = [
@@ -26,4 +27,5 @@ urlpatterns = [
     path('enquiries/', views.EnquiryListView.as_view(), name="enquiry-list"),
     path('enquiries/<int:pk>/', views.EnquiryDetailView.as_view(), name="enquiry-detail"),
     path('enquiries/<int:pk>/edit', views.EnquiryEditView.as_view(), name="enquiry-edit"),
+    path('healthcheck/ping.xml', ping.ping, name='ping'),
 ]
