@@ -1,7 +1,8 @@
+{% load enquiries_extras %}
 <div class="govuk-form-group">
-    <label class="govuk-label" for="{{ field.name }}">
-        {{ field.label }}
+    <label class="govuk-label" for="{{ field }}">
+        {{ instance|get_field_verbose_name:field }}
     </label>
-    <textarea class="govuk-textarea" id={{ field.name }} name={{ field.name }}
-        rows="5">{{ field.value }}</textarea>
+    <textarea class="govuk-textarea" id={{ field }} name={{ field }}
+        rows="5">{{ instance|get_field_value:field }}</textarea>
 </div>

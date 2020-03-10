@@ -1,7 +1,8 @@
+{% load enquiries_extras %}
 <div class="govuk-form-group">
     <label class="govuk-label">
-        {{ field.label }}
+        {{ instance|get_field_verbose_name:field }}
     </label>
-    <input class="govuk-input" id={{ field.name }} name={{ field.name }}
-        type="date" value="{{ field.value }}">
+    <input class="govuk-input" id={{ field }} name={{ field }}
+        type="date" value="{{ instance|get_field_value:field }}">
 </div>

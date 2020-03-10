@@ -1,12 +1,13 @@
+{% load enquiries_extras %}
 <div class="govuk-form-group">
-    <label class="govuk-label" for="sort">
-        {{ field.label }}
+    <label class="govuk-label" for="{{ field }}">
+        {{ instance|get_field_verbose_name:field }}
     </label>
-    <select class="govuk-select" id={{ field.name }} name={{ field.name }}>
-        <option value="yes" {% if field.value %} selected{% endif %}>
+    <select class="govuk-select" id={{ field }} name={{ field }}>
+        <option value="yes" {% if instance|get_field_value:field %} selected{% endif %}>
             Yes
         </option>
-        <option value="no" {% if not field.value %} selected{% endif %}>
+        <option value="no" {% if not instance|get_field_value:field %} selected{% endif %}>
             No
         </option>
     </select>

@@ -4,7 +4,15 @@
 {% include 'partials/govuk_header_partial.html' %}
 
 <div class="govuk-width-container">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
     <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
+
+    <button onclick="window.location.href = `{% url 'enquiry-edit' enquiry.id %}`" class="govuk-button
+    govuk-button--secondary govuk-!-margin-right-1 enquiry-edit-button" data-module="govuk-button">
+        Edit details
+    </button>
+
     <main class="govuk-main-wrapper">
         {% csrf_token %}
         {% load widget_tweaks %}
