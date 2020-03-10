@@ -131,24 +131,6 @@ class EnquiryViewTestCase(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_user_email_already_exists_error(self):
-        """
-        Email key for an Enquirer is unique, this tests ensures creation
-        of enquiry with same enquirer email fails
-        """
-        enquiry = canned_enquiry()
-        response = self.create_enquiry_and_assert(enquiry)
-        self.assertEqual(response["company_name"], enquiry["company_name"])
-
-        response = self.client.post(
-            reverse("enquiry-create"), data=enquiry, content_type="application/json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            response.json()["enquirer"]["email"][0],
-            "enquirer with this Email already exists.",
-        )
-
     @mock.patch("app.enquiries.models.Enquiry.objects")
     def test_enquiry_atomic_create(self, mock_enquiry):
         """
