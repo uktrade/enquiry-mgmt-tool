@@ -2,7 +2,7 @@ import random
 
 from django.conf import settings
 from django.forms.models import model_to_dict
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from faker import Faker
 from rest_framework import status
@@ -10,6 +10,10 @@ from rest_framework import status
 import app.enquiries.ref_data as ref_data
 from app.enquiries.tests.factories import EnquiryFactory, get_random_item
 
+REST_FRAMEWORK_TEST = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 2,
+}
 
 class EnquiryViewTestCase(TestCase):
     def setUp(self):
@@ -25,12 +29,14 @@ class EnquiryViewTestCase(TestCase):
 
     def test_enquiry_list(self):
         """Test retrieving enquiry list and ensure we get expected count"""
-        enquiries = [EnquiryFactory() for i in range(5)]
+        enquiries = [EnquiryFactory() for i in range(2)]
         response = self.client.get(reverse("enquiry-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        serializer = response.data['serializer']['results']
+        response = response.json()
+        serializer = response['serializer']['results']
         self.assertEqual(len(serializer), len(enquiries))
 
+    @override_settings(REST_FRAMEWORK=REST_FRAMEWORK_TEST)
     def test_enquiries_list_pagination(self):
         """
         Tests pagination of enquiries list view.
@@ -39,10 +45,12 @@ class EnquiryViewTestCase(TestCase):
         It will be same for all pages except for the last page
         if num_enquiries is not a multiple of page_size
         """
-        num_enquiries = 54
+        num_enquiries = 3
         enquiries =  [EnquiryFactory() for i in range(num_enquiries)]
-        page_size = settings.ENQUIRIES_PER_PAGE
-        total_pages = (num_enquiries // page_size) + 1
+        page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
+        total_pages = (num_enquiries // page_size)
+        if num_enquiries % page_size:
+            total_pages += 1
         expected_counts = {}
         for i in range(1, total_pages + 1):
             if num_enquiries > page_size:
@@ -54,8 +62,14 @@ class EnquiryViewTestCase(TestCase):
         for page, num_results in expected_counts.items():
             response = self.client.get(reverse("enquiry-list"), {"page": page})
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            serializer = response.data['serializer']['results']
-            self.assertEqual(len(serializer), num_results)
+            results = response.data['serializer']['results']
+            self.assertEqual(len(results), num_results)
+
+        # Ensure accesing the page after the last page should return 404
+        response = self.client.get(reverse("enquiry-list"), {"page": total_pages + 1})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
     def test_enquiry_detail(self):
         """Test retrieving a valid enquiry returns 200"""
         enquiry = EnquiryFactory()
