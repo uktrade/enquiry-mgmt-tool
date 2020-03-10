@@ -33,8 +33,8 @@ class EnquiryViewTestCase(TestCase):
         response = self.client.get(reverse("enquiry-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = response.json()
-        serializer = response['serializer']['results']
-        self.assertEqual(len(serializer), len(enquiries))
+        results = response['serializer']['results']
+        self.assertEqual(len(results), len(enquiries))
 
     @override_settings(REST_FRAMEWORK=REST_FRAMEWORK_TEST)
     def test_enquiries_list_pagination(self):
