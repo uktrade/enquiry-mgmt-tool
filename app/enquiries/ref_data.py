@@ -426,6 +426,23 @@ class DatahubProjectStatus(models.TextChoices):
     DELAYED = "DELAYED", _("Delayed")
 
 
+IMPORT_COL_NAMES = [
+    "enquirer_first_name",
+    "enquirer_last_name",
+    "enquirer_job_title",
+    "enquirer_email",
+    "enquirer_phone",
+    "enquirer_request_for_call",
+    "country",
+    "company_name",
+    "primary_sector",
+    "company_hq_address",
+    "website",
+    "investment_readiness",
+    "enquiry_text",
+    "notes",
+]
+
 MAP_ENQUIRY_FIELD_TO_REF_DATA = {
     "enquiry_stage": EnquiryStage,
     "investment_readiness": InvestmentReadiness,

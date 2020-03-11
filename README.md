@@ -50,6 +50,17 @@ Or in app/settings/*
 
     ENFORCE_STAFF_SSO_ENABLED=True on
     ENFORCE_STAFF_SSO_ENABLED=False off
+
+## Management commands
+### Import template
+To generate a import `.xlsx` template run the following command:
+
+`python manage.py generate_import_template`
+
+The following file will be created in the root of the project directory:
+
+`rtt_enquiries_import_template.xlsx`
+
 ## More useful info
 
 If you already have the app container running and want to restart, you can use this:
