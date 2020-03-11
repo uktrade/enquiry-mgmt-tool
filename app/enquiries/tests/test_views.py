@@ -11,9 +11,10 @@ import app.enquiries.ref_data as ref_data
 from app.enquiries.tests.factories import EnquiryFactory, get_random_item
 
 REST_FRAMEWORK_TEST = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 2,
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 2,
 }
+
 
 class EnquiryViewTestCase(TestCase):
     def setUp(self):
@@ -33,7 +34,7 @@ class EnquiryViewTestCase(TestCase):
         response = self.client.get(reverse("enquiry-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = response.json()
-        results = response['serializer']['results']
+        results = response["results"]
         self.assertEqual(len(results), len(enquiries))
 
     @override_settings(REST_FRAMEWORK=REST_FRAMEWORK_TEST)
@@ -46,9 +47,9 @@ class EnquiryViewTestCase(TestCase):
         if num_enquiries is not a multiple of page_size
         """
         num_enquiries = 3
-        enquiries =  [EnquiryFactory() for i in range(num_enquiries)]
+        enquiries = [EnquiryFactory() for i in range(num_enquiries)]
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
-        total_pages = (num_enquiries // page_size)
+        total_pages = num_enquiries // page_size
         if num_enquiries % page_size:
             total_pages += 1
         expected_counts = {}
@@ -62,13 +63,13 @@ class EnquiryViewTestCase(TestCase):
         for page, num_results in expected_counts.items():
             response = self.client.get(reverse("enquiry-list"), {"page": page})
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            results = response.data['serializer']['results']
+            results = response.data["results"]
+            self.assertEqual(response.data["current_page"], page)
             self.assertEqual(len(results), num_results)
 
         # Ensure accesing the page after the last page should return 404
         response = self.client.get(reverse("enquiry-list"), {"page": total_pages + 1})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
 
     def test_enquiry_detail(self):
         """Test retrieving a valid enquiry returns 200"""
