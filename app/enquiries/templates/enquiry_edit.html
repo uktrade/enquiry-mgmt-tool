@@ -25,13 +25,13 @@
                     <dt class="govuk-summary-list__key">
                         Date received
                     </dt>
-                    <dd class="govuk-summary-list__value">{{ enquiry.created }}</dd>
+                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"created" }}</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Date last updated
                     </dt>
-                    <dd class="govuk-summary-list__value">{{ enquiry.modified }}</dd>
+                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"modified" }}</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
