@@ -64,12 +64,12 @@
                     <label for="owner" class="govuk-label">
                         {{ enquiry|get_field_verbose_name:"owner" }}
                     </label>
-                    <select name="{{ enquiry|get_field_verbose_name:"owner" }}" id="{{ enquiry|get_field_verbose_name:"owner" }}" class="govuk-select">
-                        <option value="0" {% if not enquiry.owner %} selected{% endif %}>
+                    <select name="{{ enquiry.owner }}" id="{{ enquiry.owner }}" class="govuk-select">
+                        <option value="" {% if not enquiry.owner %} selected {% endif %}>
                             Unassigned
                         </option>
                         {% for owner in enquiry|get_owners %}
-                        <option value="{{ owner }}" {% if enquiry.owner == owner %} selected{% endif %}>
+                        <option value="{{ owner.id }}" {% if enquiry.owner.id == owner.id %} selected {% endif %}>
                             {{ owner }}
                         </option>
                         {% endfor %}
