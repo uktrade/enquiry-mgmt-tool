@@ -106,5 +106,9 @@ app/**/static
 # vscode
 .vscode/
 
+# dummy database data
+*.diff
+app/enquiries/fixtures/
+
 # app specific env files
 app/.env

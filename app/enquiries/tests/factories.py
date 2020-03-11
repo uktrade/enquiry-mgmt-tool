@@ -12,6 +12,9 @@ factory.Faker._DEFAULT_LOCALE = "en_GB"
 def get_random_item(refdata_model):
     return random.choice(refdata_model.choices)[0]
 
+def get_display_name(refdata_model, item):
+    """Get the verbose name from ref_data given the short name"""
+    return list(filter(lambda choice: choice[0] == item, refdata_model.choices))[0][1]
 
 class EnquirerFactory(factory.django.DjangoModelFactory):
     first_name = factory.Faker('first_name')
@@ -53,6 +56,7 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
     investor_involvement_level = get_random_item(ref_data.InvestorInvolvement)
     specific_investment_programme = get_random_item(ref_data.InvestmentProgramme)
     datahub_project_status = get_random_item(ref_data.DatahubProjectStatus)
+    crm = factory.Faker("first_name")
 
     class Meta:
         model = Enquiry
