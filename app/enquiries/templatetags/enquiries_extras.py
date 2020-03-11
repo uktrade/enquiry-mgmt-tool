@@ -54,3 +54,11 @@ def get_attribute(instance, field_name):
 @register.filter
 def get_owners(instance):
     return [str(owner) for owner in models.Owner.objects.all()]
+
+@register.filter
+def get_date(instance, field_name):
+    fields = instance._meta.fields
+
+    target = list(filter(lambda f: f.name == field_name, fields))
+
+    return target[0].value_from_object(instance).strftime('%Y-%m-%d')

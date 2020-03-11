@@ -4,5 +4,5 @@
         {{ instance|get_field_verbose_name:field }}
     </label>
     <input class="govuk-input" id={{ field }} name={{ field }}
-        type="date" value="{{ instance|get_field_value:field }}">
+        type="date" value="{{ instance|get_date:field }}">
 </div>
