@@ -3,6 +3,5 @@
     <label class="govuk-label">
         {{ instance|get_field_verbose_name:field }}
     </label>
-    <input class="govuk-input" id={{ name }} name={{ name }}
-        type="text" value="{{ instance|get_field_value:field }}">
+    <input class="govuk-input" id="{{ field }}" name="{{ field }}" type="text" value="{{ instance|get_field_value:field }}">
 </div>
