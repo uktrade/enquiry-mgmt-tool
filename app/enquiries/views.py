@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
+from app.enquiries import forms
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -95,8 +96,14 @@ class EnquiryEditView(UpdateView):
     """
 
     model = models.Enquiry
-    fields = "__all__"
+    form_class = forms.EnquiryForm
     template_name = "enquiry_edit.html"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
         enquiry = form.save(commit=False)
