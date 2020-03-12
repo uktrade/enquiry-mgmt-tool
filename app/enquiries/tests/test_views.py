@@ -4,14 +4,16 @@ import random
 
 from datetime import date
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
-from django.test import Client, TestCase, modify_settings, override_settings
 from django.urls import reverse
 from faker import Faker
 from rest_framework import status
 from unittest import mock
 
 import app.enquiries.ref_data as ref_data
+import app.enquiries.tests.utils as test_utils
+
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
     EnquiryFactory,
@@ -68,10 +70,10 @@ def canned_enquiry():
         "project_success_date": date(2022, 2, 3),
     }
 
-class EnquiryViewTestCase(TestCase):
+
+class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def setUp(self):
-        self.faker = Faker()
-        self.client = Client()
+        super().setUp()
 
     def assert_dicts_equal(self, expected, actual, exclude_keys=None):
         """
@@ -131,8 +133,7 @@ class EnquiryViewTestCase(TestCase):
             response = self.client.get(reverse("enquiry-list"), {"page": page + 1})
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(
-                [enq["id"] for enq in response.data["results"]],
-                ids[start:end]
+                [enq["id"] for enq in response.data["results"]], ids[start:end]
             )
             self.assertEqual(response.data["current_page"], page + 1)
 
@@ -266,7 +267,6 @@ class EnquiryViewTestCase(TestCase):
     def test_enquiry_detail_template_ref_data(self):
         """Test the template is using the right variables to show enquiry data 
         in the case when data is a ref_data choice and has a verbose name"""
-        print('settings.FEATURE_FLAGS', settings.FEATURE_FLAGS)
         enquiry = EnquiryFactory()
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
         enquiry_stage_display_name = get_display_name(
@@ -275,3 +275,17 @@ class EnquiryViewTestCase(TestCase):
         country_display_name = get_display_name(ref_data.Country, enquiry.country)
         self.assertContains(response, enquiry_stage_display_name)
         self.assertContains(response, country_display_name)
+
+    def test_helper_login(self):
+        result = self.login()
+        self.assertEqual(result, True)
+        self.assertEqual(self.logged_in, True)
+        self.assertEqual(result, self.logged_in)
+
+    def test_login_protected(self):
+        """Test the view is protected by SSO"""
+        self.logout()
+        response = self.client.get(reverse("enquiry-list"))
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(response.get("Location").split("?")[0], settings.LOGIN_URL)
+        self.login()

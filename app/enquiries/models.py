@@ -32,7 +32,7 @@ class Enquirer(models.Model):
 
 class Owner(AbstractUser):
     """
-    Model for the user assigned to an Enquiry
+    Customer user model user by the app. Each Enquiry has an owner.
     """
 
     def __str__(self):

@@ -22,6 +22,11 @@ jobs:
       DATA_HUB_HAWK_KEY: 'hawk-key'
       DATA_HUB_METADATA_FETCH_INTERVAL: '4'
       DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
+      FEATURE_ENFORCE_STAFF_SSO_ENABLED: 1
+      AUTHBROKER_URL: https://sso.trade.gov.uk
+      AUTHBROKER_CLIENT_ID: somestring
+      AUTHBROKER_CLIENT_SECRET: somestring
+      AUTHBROKER_TOKEN_SESSION_KEY: _authbroker_token
 
     docker:
       - image: circleci/python:3.6.4
