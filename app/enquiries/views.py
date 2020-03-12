@@ -32,6 +32,24 @@ from app.enquiries.utils import row_to_enquiry
 
 UNASSIGNED = "UNASSIGNED"
 
+def get_filter_config():
+    filter_fields = [
+        field for field in models.Enquiry._meta.get_fields() if field.choices
+    ]
+    filter_config = {}
+    for field in filter_fields:
+        filter_config[field.name] = field
+    return filter_config
+
+
+def get_enquiry_field(name):
+    filter_config = get_filter_config()
+
+    return {
+        "name": name,
+        "choices": filter_config[name].choices
+    }
+
 
 class PaginationWithPaginationMeta(PageNumberPagination):
     """
@@ -48,7 +66,11 @@ class PaginationWithPaginationMeta(PageNumberPagination):
                 "page_range": list(self.page.paginator.page_range),
                 "current_page": self.page.number,
                 "results": data,
-            }
+                "filter_enquiry_stage": get_enquiry_field("enquiry_stage"),
+                "owners": models.Owner.objects.all(),
+                "query_params": self.request.GET,
+            },
+            template_name="enquiry_list.html",
         )
 
 
@@ -151,6 +173,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
+        context["back_url"] = reverse("enquiry-list")
         return context
 
 

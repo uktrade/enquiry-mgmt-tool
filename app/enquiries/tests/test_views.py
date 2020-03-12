@@ -109,8 +109,10 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
                 continue
 
             self.assertEqual(value, expected[key])
-    
-    def assert_factory_enquiry_equals_enquiry_response(self, factory_item, response_item):
+
+    def assert_factory_enquiry_equals_enquiry_response(
+        self, factory_item, response_item
+    ):
         date_fields = [
             "created",
             "modified",
@@ -133,12 +135,12 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
                 elif isinstance(db_value, str):
                     db_value = datetime.strptime(db_value, "%d %B %Y")
                     db_value = (
-                        db_value.date()
-                        if isinstance(db_value, datetime)
-                        else db_value
+                        db_value.date() if isinstance(db_value, datetime) else db_value
                     )
                 factory_value = (
-                    factory_value.date() if isinstance(factory_value, datetime) else factory_value
+                    factory_value.date()
+                    if isinstance(factory_value, datetime)
+                    else factory_value
                 )
             elif name in ref_fields:
                 ref_model = ref_fields[name]
@@ -170,6 +172,24 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         response = response.json()
         results = response["results"]
         self.assertEqual(len(results), len(enquiries))
+
+    def test_enquiry_list_content_type_json(self):
+        response = self.client.get(reverse("enquiry-list"))
+        self.assertIn(
+            "application/json",
+            response.get("Content-Type"),
+            msg="document should have type: application/json",
+        )
+
+    def test_enquiry_list_content_type_html(self):
+        headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
+        response = self.client.get(reverse("enquiry-list"), **headers)
+
+        self.assertIn(
+            "text/html",
+            response.get("Content-Type"),
+            msg="document should have type: text/html",
+        )
 
     def test_enquiries_list_pagination(self):
         """
@@ -478,7 +498,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
     def test_enquiry_list_filtered_unassigned(self):
         """Test retrieving enquiry list and ensure we get expected count"""
-        
 
         EnquirerFactory()
         enquiries = [
@@ -498,13 +517,14 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             reverse("enquiry-list"), {"owner__id": owner.id}, **headers
         )
         data = response.data
-        
+
         enquiry_data = data["results"][0]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 1)
-        self.assert_factory_enquiry_equals_enquiry_response(enquiry_assigned, enquiry_data)
-        
+        self.assert_factory_enquiry_equals_enquiry_response(
+            enquiry_assigned, enquiry_data
+        )
 
         # owner unassigned
         response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"})
@@ -515,7 +535,9 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 1)
 
-        self.assert_factory_enquiry_equals_enquiry_response(enquiry_unassigned, enquiry_data_unassigned)
+        self.assert_factory_enquiry_equals_enquiry_response(
+            enquiry_unassigned, enquiry_data_unassigned
+        )
 
     def test_enquiry_list_filtered_enquiry_stage(self):
         """Test retrieving enquiry list and ensure we get expected count"""
