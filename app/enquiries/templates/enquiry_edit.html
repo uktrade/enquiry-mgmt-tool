@@ -203,7 +203,7 @@
 
                 {% include 'snippets/enquiry_field_input_date.html' with instance=enquiry field="project_success_date" %}
 
-                <input style="display: none;" name="enquirer" value="1">
+                <input style="display: none;" name="enquirer" value="{{ enquiry.enquirer.id }}">
 
             </div>
 
