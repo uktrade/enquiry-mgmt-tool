@@ -33,6 +33,26 @@
                     <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
                         {{ "Unassigned" }} {%endif%}</dd>
                 </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        {{ enquiry|get_field_verbose_name:"owner" }}
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <div class="govuk-form-group">
+                            <form action="{% url 'enquiry-edit' enquiry.id %}?redirect_edit=0" class="form" method="post">
+                                {% csrf_token %}
+                                <select name="owner" id="owner" class="govuk-select" onchange="this.form.submit()">
+                                    {% for owner in owners %}
+                                    <option value="{{ owner.id }}" {% if owner.id == enquiry.owner.id %} selected{% endif %}>
+                                    {{ owner.name }}
+                                    </option>
+                                    {% endfor %}
+                                    </select>
+                                    <noscript><input class="govuk-button govuk-button--secondary" type="submit" value="Save"></noscript>
+                            </form>
+                        </div>
+                    </dd>
+                </div>
             </dl>
         </div>
         <div class="govuk-grid-row enquiry-details-row">
