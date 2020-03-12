@@ -63,7 +63,7 @@ def get_date(instance, field_name):
 
     target = list(filter(lambda f: f.name == field_name, fields))
 
-    if target[0]:
+    if target[0].value_from_object(instance):
         return target[0].value_from_object(instance).strftime('%Y-%m-%d')
     else:
         return None
