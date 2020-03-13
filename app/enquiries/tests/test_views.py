@@ -3,8 +3,9 @@ import pytz
 import random
 
 from datetime import date
+from django.conf import settings
 from django.forms.models import model_to_dict
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from faker import Faker
 from rest_framework import status
@@ -67,6 +68,11 @@ def canned_enquiry():
         "project_success_date": date(2022, 2, 3),
     }
 
+REST_FRAMEWORK_TEST = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 2,
+}
+
 
 class EnquiryViewTestCase(TestCase):
     def setUp(self):
@@ -104,12 +110,42 @@ class EnquiryViewTestCase(TestCase):
         return response.context["enquiry"]
 
     def test_enquiry_list(self):
-        """Creates few Enquiries and ensures retrieved list matches the count"""
-        enquiries = [EnquiryFactory() for i in range(5)]
+        """Test retrieving enquiry list and ensure we get expected count"""
+        enquiries = [EnquiryFactory() for i in range(2)]
         response = self.client.get(reverse("enquiry-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        serializer = response.data["serializer"]
-        self.assertEqual(len(serializer), len(enquiries))
+        response = response.json()
+        results = response["results"]
+        self.assertEqual(len(results), len(enquiries))
+
+    @override_settings(REST_FRAMEWORK=REST_FRAMEWORK_TEST)
+    def test_enquiries_list_pagination(self):
+        """
+        Tests pagination of enquiries list view.
+        Creates enquiries and retrieves single page of results each time
+        and ensures we get the expected number of results for that page.
+        It will be same for all pages except for the last page
+        if num_enquiries is not a multiple of page_size
+        """
+        num_enquiries = 3
+        enquiries = EnquiryFactory.create_batch(num_enquiries)
+        ids = [e.id for e in enquiries]
+        page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
+        total_pages = (num_enquiries + page_size - 1) // page_size
+        for page in range(total_pages):
+            start = page * page_size
+            end = start + page_size
+            response = self.client.get(reverse("enquiry-list"), {"page": page + 1})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(
+                [enq["id"] for enq in response.data["results"]],
+                ids[start:end]
+            )
+            self.assertEqual(response.data["current_page"], page + 1)
+
+        # Ensure accesing the page after the last page should return 404
+        response = self.client.get(reverse("enquiry-list"), {"page": total_pages + 1})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_enquiry_create(self):
         """Creates an Enquiry and ensures response fields match with the request"""
