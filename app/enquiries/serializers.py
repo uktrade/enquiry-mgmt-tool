@@ -1,17 +1,19 @@
+from django.db import transaction
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from app.enquiries import models
 
-class EnquirerSerializer(serializers.ModelSerializer):
+
+class EnquirerDetailSerializer(serializers.ModelSerializer):
     request_for_call = serializers.CharField(source="get_request_for_call_display")
 
     class Meta:
         model = models.Enquirer
         fields = "__all__"
 
-class EnquirerDetailSerializer(serializers.ModelSerializer):
-    request_for_call = serializers.CharField(source="get_request_for_call_display")
+
+class EnquirerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Enquirer
@@ -30,13 +32,30 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 
 class EnquirySerializer(serializers.ModelSerializer):
+    """
+    Enquiry model serializer mainly used for serializing during
+    create, update of Enquiry objects
+    """
+    enquirer = EnquirerSerializer()
 
     class Meta:
         model = models.Enquiry
         fields = "__all__"
 
+    def create(self, validated_data):
+        with transaction.atomic():
+            enquirer = validated_data.pop('enquirer')
+            enquirer_instance = models.Enquirer.objects.create(**enquirer)
+            enquiry = models.Enquiry.objects.create(**validated_data, enquirer=enquirer_instance)
+            return enquiry
+
 
 class EnquiryDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer used to display Enquiry details.
+    It provides the human readable form for all the choice fields
+    in the Enquiry model.
+    """
     owner = OwnerSerializer()
     enquirer = EnquirerDetailSerializer()
     created = serializers.DateTimeField(format="%d %B %Y")

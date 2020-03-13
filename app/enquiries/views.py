@@ -8,6 +8,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
 
@@ -16,16 +17,19 @@ class PaginationWithPaginationMeta(PageNumberPagination):
     """
     Metadata class to add additional metadata for use in template
     """
+
     def get_paginated_response(self, data):
-        return Response({
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'count': self.page.paginator.count,
-            'num_pages': self.page.paginator.num_pages,
-            'page_range': list(self.page.paginator.page_range),
-            'current_page': self.page.number,
-            'results': data,
-        })
+        return Response(
+            {
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "count": self.page.paginator.count,
+                "num_pages": self.page.paginator.num_pages,
+                "page_range": list(self.page.paginator.page_range),
+                "current_page": self.page.number,
+                "results": data,
+            }
+        )
 
 
 class EnquiryListView(ListAPIView):
@@ -45,6 +49,20 @@ class EnquiryListView(ListAPIView):
 
     def get_queryset(self):
         return models.Enquiry.objects.all()
+
+
+class EnquiryCreateView(APIView):
+    """
+    Creates new Enquiry
+    """
+
+    def post(self, request, format=None):
+        serializer = serializers.EnquirySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EnquiryDetailView(TemplateView):

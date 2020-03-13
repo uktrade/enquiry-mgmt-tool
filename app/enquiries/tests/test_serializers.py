@@ -64,7 +64,7 @@ class EnquiriesSerializersTestCase(TestCase):
         are as expected
         """
         enquirer = EnquirerFactory()
-        sr_data = serializers.EnquirerSerializer(enquirer).data
+        sr_data = serializers.EnquirerDetailSerializer(enquirer).data
         self.assertEqual(enquirer.first_name, sr_data["first_name"])
         self.assertEqual(enquirer.last_name, sr_data["last_name"])
         self.assertEqual(enquirer.email, sr_data["email"])

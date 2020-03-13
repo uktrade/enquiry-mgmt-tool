@@ -8,6 +8,10 @@ $govuk-assets-path: '/static/assets/';
     padding: 0;
 }
 
+.govuk-grid-row {
+    margin: 0;
+}
+
 .govuk-header__logo, .govuk-header__content {
     display: inline-block;
 }
@@ -87,4 +91,25 @@ a.entity-title-link {
 
 .list-item-label {
     color: #6f777b;
+}
+
+.govuk-summary-list .govuk-summary-list__row:nth-child(odd) {
+    background-color: rgba(govuk-colour("light-grey"), 0.5);
+}
+
+.govuk-summary-list {
+    border-top: 2px solid govuk-colour("mid-grey");
+}
+
+.govuk-summary-list__key {
+    padding: 0 0.5em;
+}
+
+.enquiry-details-header {
+    background-color: govuk-colour("light-grey");
+    padding: 2em;
+}
+
+.enquiry-details-row {
+    margin: govuk-spacing(8);
 }
