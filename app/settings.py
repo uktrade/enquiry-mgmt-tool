@@ -62,6 +62,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': env.int('ENQUIRIES_PER_PAGE', default=10),
+}
+
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
@@ -138,3 +143,4 @@ STATIC_URL = '/static/'
 
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
+ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)

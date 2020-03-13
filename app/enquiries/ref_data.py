@@ -26,7 +26,7 @@ class Quality(models.TextChoices):
     NON_FDI = "NON_FDI", _("Non-FDI")
     POTENTIALLY_NON_FDI = "POTENTIALLY_NON_FDI", _("Potentially Non-FDI")
     POTENTIALLY_FDI = "POTENTIALLY_FDI", _("Potentially FDI")
-    LIKELY_FDI = "LIKELY_FDI", _("Likely to be FDI")
+    LIKELY_FDI = "LIKELY_FDI", _("FDI or likely FDI")
 
 
 class MarketingChannel(models.TextChoices):
@@ -34,7 +34,7 @@ class MarketingChannel(models.TextChoices):
     LINKEDIN = "LINKEDIN", _("LinkedInLeadGen")
     CHOGM = "CHOGM", _("CHOGM")
     IIGB = "IIGB", _("IiGB")
-    IIGB_LINKEDIN = "IIGB_LINKEDIN", _("IiGB (LinkedIN)")
+    IIGB_LINKEDIN = "IIGB_LINKEDIN", _("IiGB (LinkedIn)")
     HPO = "HPO", _("HPO")
     B2B = "B2B", _("B2B")
     EBOOK = "EBOOK", _("EBOOK - Worldwide")
@@ -45,11 +45,11 @@ class MarketingChannel(models.TextChoices):
 
 class HowDidTheyHear(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    PRESS_AD = "PRESS_AD", _("Press ad (newspapaer/trade publication")
+    PRESS_AD = "PRESS_AD", _("Press ad (newspaper/trade publication")
     OUTDOOR_AD = "OUTDOOR_AD", _("Outdoor ad/billboard")
     LINKEDIN = "LINKEDIN", _("LinkedIn")
     SOCIAL_MEDIA = "SOCIAL_MEDIA", _("Other social media (e.g. Twitter/Facebook)")
-    INTERNET_SEARCH = "INTERNET_SEARCH", _("Internet Search")
+    INTERNET_SEARCH = "INTERNET_SEARCH", _("Internet search")
     OTHER = "OTHER", _("Other")
 
 
@@ -296,8 +296,8 @@ class Country(models.TextChoices):
 class Region(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
     AMERICAS = "AMERICAS", _("Americas")
-    APAC = "APAC", _("Asia Pacific")
-    EMEA = "EMEA", _("Europe and Middle East")
+    APAC = "APAC", _("Asia-Pacific")
+    EMEA = "EMEA", _("EMEA")
 
 
 class RequestForCall(models.TextChoices):
@@ -324,12 +324,12 @@ class HpoSelection(models.TextChoices):
 
 class OrganisationType(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    CHARITY = "CHARITY,", _("charity")
-    GOVERNMENT = "GOVERNMENT", _("gov department or other public body")
-    LIMITED_COMPANY = "LIMITED_COMPANY", _("limited company")
-    LIMITED_PARTNERSHIP = "LIMITED_PARTNERSHIP", _("limited partnership")
-    PARTNERSHIP = "PARTNERSHIP,", _("partnership")
-    SOLE_TRADER = "SOLE_TRADER", _("sole trader")
+    CHARITY = "CHARITY,", _("Charity")
+    GOVERNMENT = "GOVERNMENT", _("Government department or other public body")
+    LIMITED_COMPANY = "LIMITED_COMPANY", _("Limited company")
+    LIMITED_PARTNERSHIP = "LIMITED_PARTNERSHIP", _("Limited partnership")
+    PARTNERSHIP = "PARTNERSHIP,", _("Partnership")
+    SOLE_TRADER = "SOLE_TRADER", _("Sole trader")
 
 
 class InvestmentType(models.TextChoices):
@@ -346,8 +346,8 @@ class InvestmentType(models.TextChoices):
 
 class NewExistingInvestor(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    NEW = "NEW,", _("New Investor")
-    EXISTING = "EXISTING,", _("Existing Investor")
+    NEW = "NEW,", _("New investor")
+    EXISTING = "EXISTING,", _("Existing investor")
 
 
 class InvestorInvolvement(models.TextChoices):
@@ -383,8 +383,8 @@ class InvestmentProgramme(models.TextChoices):
     CONTRACT_RESEARCH = "CONTRACT_RESEARCH", _("Contract Research (Non-FDI)")
     FDI_CAPITAL_ONLY = "FDI_CAPITAL_ONLY", _("FDI (Capital Only)")
     GREAT_INV_PROG = "GREAT_INV_PROG", _("GREAT Investors Programme")
-    GLOBAL_ENTERP_PROG = "GLOBAL_ENTERP_PROG", _("Global Entrepreneur Programme")
-    GRADUATE_ENTERP_PROG = "GRADUATE_ENTERP_PROG", _("Graduate Entrepreneur Programme")
+    GLOBAL_ENTREP_PROG = "GLOBAL_ENTREP_PROG", _("Global Entrepreneur Programme")
+    GRADUATE_ENTREP_PROG = "GRADUATE_ENTREP_PROG", _("Graduate Entrepreneur Programme")
     HQ_UK = "HQ_UK", _("HQ-UK")
     II_AND_I = "II&I", _("II&I Programme")
     INFRASTRUCTURE_GATEWAY = "INFRASTRUCTURE_GATEWAY", _("Infrastructure Gateway")
