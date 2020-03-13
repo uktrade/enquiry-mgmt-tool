@@ -1,14 +1,13 @@
+{% extends 'base.html' %}
 {% load static %}
+{% block main %}
+<h2 class="govuk-heading-l">Enquiries</h2>
+<div class="govuk-grid-row">
 
-{% include 'base.html' %}
+    <div class="govuk-grid-column-one-third">
+    </div>
 
-{% include 'partials/govuk_header_partial.html' %}
-
-<div class="govuk-width-container">
-    <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
-
-        <h2 class="govuk-heading-l">Enquiries</h2>
-
+    <div class="govuk-grid-column-two-thirds">
         {% load rest_framework %}
         <article>
             <header class="collection-header">
@@ -16,15 +15,17 @@
                 <div class="collection-header-row">
                     <div class="collection-header-intro">
                         <span class="big-number-of-enquiries">{{ count }}</span> enquiries
-                        <div class="collection-header-actions">
-                            <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
-                        </div>
+                        <button onclick="window.location.href=`{% url 'enquiries-import' %}`"
+                            class="add-enquiries-button govuk-button govuk-button--secondary"
+                            data-module="govuk-button">
+                            Add enquiries
+                        </button>
                     </div>
                     <!-- <div class="collection-filter-summary">Stage: New</div> -->
                 </div>
                 <!-- <div class="collection-header-row">
-                    <span class="header-page-number">Page 1 of 5</span>
-                </div> -->
+                            <span class="header-page-number">Page 1 of 5</span>
+                        </div> -->
             </header>
             <ol class="entity-list">
                 {% for obj in results %}
@@ -33,16 +34,18 @@
                         <div class="entity-header">
                             <div class="entity-title">
                                 <h3>
-                                    <a class="entity-title-link" href="{% url 'enquiry-detail' obj.id %}">{{ obj.company_name }}</a>
+                                    <a class="entity-title-link"
+                                        href="{% url 'enquiry-detail' obj.id %}">{{ obj.company_name }}</a>
                                 </h3>
                             </div>
                             <div class="entity-badges">
                                 <div class="entity-badges-list">
                                     <div class="entity-badges-item">
-                                        <span>{{ obj.enquiry_stage }}</span>
+                                        <span>{% if obj.enquiry_stage == "Awaiting response from Investor" %}{{ "Awaiting response" }}{% else %}{{ obj.enquiry_stage }}{% endif %}</span>
                                     </div>
                                     <div class="entity-badges-item">
-                                        <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</span>
+                                        <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }}
+                                            {%endif%}</span>
                                     </div>
                                     <div class="entity-badges-item">
                                         <span>{{ obj.country }}</span>
@@ -64,10 +67,11 @@
                                     <span class="list-item-value">{{ obj.modified }}</span>
                                 </div>
                                 <div class="entity-content-item">
-                                    <span class="list-item-label">Call requested</span>
+                                    <span class="list-item-label">Call?</span>
                                     <span class="list-item-value">{{ obj.enquirer.request_for_call }}</span>
                                 </div>
                             </div>
+                            <!-- <div class="collection-filter-summary">Stage: New</div> -->
                         </div>
                     </div>
                 </li>
@@ -80,28 +84,31 @@
 
                 <ol class="pagination-list">
                     {%if previous is not None %}
-                        <li class="pagination-list-item">
-                            <a class="pagination-link" href="{{ previous }}">Previous</a>
-                        </li>
+                    <li class="pagination-list-item">
+                        <a class="pagination-link" href="{{ previous }}">Previous</a>
+                    </li>
                     {%endif%}
 
                     {% for page in page_range %}
-                        {% if page|stringformat:"s" == current_page %}
-                            <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item pagination-list-item-current">{{ page }}</li></a>
-                        {% else %}
-                            <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item">{{ page }}</li></a>
-                        {% endif %}
+                    {% if page|stringformat:"s" == current_page %}
+                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}">
+                        <li class="pagination-list-item pagination-list-item-current">{{ page }}</li>
+                    </a>
+                    {% else %}
+                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}">
+                        <li class="pagination-list-item">{{ page }}</li>
+                    </a>
+                    {% endif %}
                     {% endfor %}
 
                     {%if next is not None %}
-                        <li class="pagination-list-item">
-                            <a class="pagination-link" href="{{ next }}">Next</a>
-                        </li>
+                    <li class="pagination-list-item">
+                        <a class="pagination-link" href="{{ next }}">Next</a>
+                    </li>
                     {%endif%}
                 </ol>
             </nav>
         </article>
-    </main>
+    </div>
 </div>
-
-{% include 'partials/govuk_footer_partial.html' %}
+{% endblock main %}

@@ -275,3 +275,39 @@ class EnquiryViewTestCase(TestCase):
         country_display_name = get_display_name(ref_data.Country, enquiry.country)
         self.assertContains(response, enquiry_stage_display_name)
         self.assertContains(response, country_display_name)
+
+    def test_enquiry_import_rendered(self):
+        response = self.client.get(reverse("enquiries-import"))
+        self.assertContains(response, "Import enquiries")
+        self.assertContains(response, "<form")
+        self.assertContains(response, "Upload file")
+        self.assertContains(response, "Choose a file to upload")
+        self.assertNotContains(
+            response,
+            "govuk-error-summary",
+            msg_prefix="Should not render message summary",
+        )
+        self.assertNotContains(response, "File import successfully completed.")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_enquiry_import_rendered_with_error(self):
+        url = reverse("enquiries-import") + "?errors"
+        response = self.client.get(url)
+        self.assertContains(
+            response,
+            "govuk-error-summary",
+            msg_prefix="Should not render message summary",
+        )
+        self.assertContains(response, "Error - File import has failed:")
+        self.assertNotContains(response, "File import successfully completed.")
+
+    def test_enquiry_import_rendered_with_success(self):
+        url = reverse("enquiries-import") + "?success"
+        response = self.client.get(url)
+        self.assertContains(
+            response,
+            "govuk-error-summary",
+            msg_prefix="Should not render message summary",
+        )
+        self.assertNotContains(response, "Error - File import has failed:")
+        self.assertContains(response, "File import successfully completed.")

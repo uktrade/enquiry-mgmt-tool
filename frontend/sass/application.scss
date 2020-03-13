@@ -1,5 +1,6 @@
 $govuk-assets-path: '/static/assets/';
-
+$color-green-success: #00703C;
+$color-red-error: #d4351c;
 @import "node_modules/govuk-frontend/govuk/all";
 
 * {
@@ -132,6 +133,7 @@ button.enquiry-edit-button {
     margin: govuk-spacing(8);
 }
 
+
 a.pagination-link {
     text-decoration: none;
     font-size: large;
@@ -166,3 +168,48 @@ ol.pagination-list {
     margin: auto;
     width:  50%;
 }
+
+a.edit-details-button {
+    float: right;
+    transform: translateY(-80px);
+}
+
+button.add-enquiries-button {
+    float: right;
+}
+
+.main__bar {
+    height: 100px;
+    position: relative;
+
+    &--left, &--right {
+        position: absolute;
+        top: 0;
+    }
+
+    &--left {
+        left: 0;
+    }
+
+    &--right {
+        right: 0;
+    }
+    a, button {
+        transform: translate3d(0, 50%, 0);
+    }
+}
+
+// Error Summary
+.govuk-error-summary {
+    color: $color-red-error;
+        li {
+            color: $color-red-error;
+        }
+    &--success {
+        border-color: $color-green-success;
+        color: $color-green-success;
+        li {
+            color: $color-green-success;
+        }
+    }
+} 
