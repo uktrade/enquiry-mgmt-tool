@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block main %}
-
-{% csrf_token %}
 {% load widget_tweaks %}
 {% load rest_framework %}
+
+{% block main %}
+{% csrf_token %}
+<div class="govuk-grid-row">
 <h2 class="govuk-heading-l">Import enquiries</h2>
-<button class="template-download-button govuk-button govuk-button--secondary" data-module="govuk-button">
-    Template download
-</button>
+</div>
 <div class="govuk-grid-row">
     <h4 class="govuk-heading-s">
         Steps
@@ -22,19 +21,18 @@
     </ol>
 </div>
 <div class="govuk-grid-row">
-    <div class="govuk-form-group">
-        <label class="govuk-label" for="file-upload-1">
-            Upload a file
-        </label>
-        <input class="govuk-file-upload" id="file-upload-1" name="file-upload-1" type="file">
-    </div>
-</div>
-<div class="govuk-grid-row">
-    <button class="govuk-button" data-module="govuk-button">
-        Upload file
-    </button>
+    <form method="POST" action="">
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="file-upload-1">
+                <strong>Choose a file to upload</strong>
+            </label>
+            <input class="govuk-file-upload" id="file-upload-1" name="file-upload-1" type="file">
+            <br /><br />
+            <button class="govuk-button" data-module="govuk-button">
+                Upload file
+            </button>
+        </div>
+    </form>
 </div>
 
-{% endblock %}
-
-{% include 'partials/govuk_footer_partial.html' %}
+{% endblock main %}

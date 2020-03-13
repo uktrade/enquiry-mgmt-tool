@@ -201,3 +201,24 @@ button.add-enquiries-button {
 button.template-download-button {
     float: right;
 }
+
+.main__bar {
+    height: 100px;
+    position: relative;
+    
+    &--left, &--right {
+        position: absolute;
+        top: 0;
+    }
+
+    &--left {
+        left: 0;
+    }
+
+    &--right {
+        right: 0;
+    }
+    a, button {
+        transform: translate3d(0, 50%, 0);
+    }
+}
