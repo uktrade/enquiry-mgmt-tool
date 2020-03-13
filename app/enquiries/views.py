@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib import messages
 from django.core.paginator import Paginator as DjangoPaginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -239,8 +240,12 @@ class EnquiryDetail(APIView):
 
 class EnquiryAdd(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-
+    
     def get(self, request):
+        if 'errors' in request.GET:
+            messages.add_message(request, messages.ERROR, 'The selected file could not be uploaded - please try again.')
+        elif 'success' in request.GET:
+            messages.add_message(request, messages.SUCCESS, 'Please return back to the enquiry summary page.')
         return Response(
             {
                 "data": "goes here",
@@ -249,7 +254,11 @@ class EnquiryAdd(APIView):
                     "text": "Template download",
                     'href': '',
                     'element': 'a'
-                }
+                },
+                # @TODO integration with real backend and errors
+                # currently using query variables just to illustrate the different states (success|errors)
+                'hasErrors': 'errors' in request.GET,
+                'hasSuccess': 'success' in request.GET,
             },
             template_name="enquiry_add.html"
         )
