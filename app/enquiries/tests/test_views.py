@@ -47,25 +47,20 @@ class EnquiryViewTestCase(TestCase):
         if num_enquiries is not a multiple of page_size
         """
         num_enquiries = 3
-        enquiries = [EnquiryFactory() for i in range(num_enquiries)]
+        enquiries = EnquiryFactory.create_batch(num_enquiries)
+        ids = [e.id for e in enquiries]
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
-        total_pages = num_enquiries // page_size
-        if num_enquiries % page_size:
-            total_pages += 1
-        expected_counts = {}
-        for i in range(1, total_pages + 1):
-            if num_enquiries > page_size:
-                expected_counts[i] = page_size
-                num_enquiries -= page_size
-            else:
-                expected_counts[i] = num_enquiries % page_size
-
-        for page, num_results in expected_counts.items():
-            response = self.client.get(reverse("enquiry-list"), {"page": page})
+        total_pages = (num_enquiries + page_size - 1) // page_size
+        for page in range(total_pages):
+            start = page * page_size
+            end = start + page_size
+            response = self.client.get(reverse("enquiry-list"), {"page": page + 1})
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            results = response.data["results"]
-            self.assertEqual(response.data["current_page"], page)
-            self.assertEqual(len(results), num_results)
+            self.assertEqual(
+                [enq["id"] for enq in response.data["results"]],
+                ids[start:end]
+            )
+            self.assertEqual(response.data["current_page"], page + 1)
 
         # Ensure accesing the page after the last page should return 404
         response = self.client.get(reverse("enquiry-list"), {"page": total_pages + 1})
