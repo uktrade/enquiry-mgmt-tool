@@ -204,7 +204,8 @@ class EnquiryViewTestCase(TestCase):
         Creates an enquiry first, updates few fields and ensures
         the data is updated after submitting the form
         """
-        enquiry = model_to_dict(EnquiryFactory())
+        enquiry_obj = EnquiryFactory()
+        enquiry = model_to_dict(enquiry_obj)
         # TODO: remove blank fields
         # POST request to a form expects all the fields but sending optional
         # fields whose value is None causing form_invalid errors.
@@ -214,6 +215,18 @@ class EnquiryViewTestCase(TestCase):
         data["enquiry_stage"] = get_random_item(ref_data.EnquiryStage)
         data["notes"] = self.faker.sentence()
         data["country"] = get_random_item(ref_data.Country)
+
+        # Enquirer fields are also sent in a single form update
+        enquirer = enquiry_obj.enquirer
+        data["enquirer"] = enquirer.id
+        data["first_name"] = enquirer.first_name
+        data["last_name"] = enquirer.last_name
+        data["job_title"] = enquirer.job_title
+        data["email"] = enquirer.email
+        data["phone"] = enquirer.phone
+        data["email_consent"] = enquirer.email_consent
+        data["phone_consent"] = enquirer.phone_consent
+        data["request_for_call"] = enquirer.request_for_call
         response = self.client.post(
             reverse("enquiry-edit", kwargs={"pk": data["id"]}), data,
         )
