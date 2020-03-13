@@ -1,4 +1,6 @@
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from rest_framework import status
@@ -51,6 +53,7 @@ class EnquiryDetailView(TemplateView):
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
+        context["back_url"]: reverse("enquiry-list")
         return context
 
 
@@ -72,3 +75,28 @@ class EnquiryEditView(UpdateView):
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
+
+class EnquiryAdd(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def get(self, request):
+        if 'errors' in request.GET:
+            messages.add_message(request, messages.ERROR, 'The selected file could not be uploaded - please try again.')
+        elif 'success' in request.GET:
+            messages.add_message(request, messages.SUCCESS, 'Please return back to the enquiry summary page.')
+        return Response(
+            {
+                "data": "goes here",
+                "back_url": reverse("enquiry-list"),
+                "main_bar_right_btn": {
+                    "text": "Template download",
+                    'href': '',
+                    'element': 'a'
+                },
+                # @TODO integration with real backend and errors
+                # currently using query variables just to illustrate the different states (success|errors)
+                'hasErrors': 'errors' in request.GET,
+                'hasSuccess': 'success' in request.GET,
+            },
+            template_name="enquiry_add.html"
+        )
