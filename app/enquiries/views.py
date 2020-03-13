@@ -9,12 +9,26 @@ from rest_framework.views import APIView
 from app.enquiries import models, serializers
 
 
-class EnquiryListView(APIView):
+class EnquiryCreateView(APIView):
     """
-    List all enquiries.
+    Creates new Enquiry
     """
 
-    renderer_classes = (TemplateHTMLRenderer,)
+    def post(self, request, format=None):
+        serializer = serializers.EnquirySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EnquiryListView(APIView):
+    """
+    Lists all enquiries
+    """
+
+    renderer_classes = (TemplateHTMLRenderer, )
 
     def get(self, request, format=None):
         enquiries = models.Enquiry.objects.all()

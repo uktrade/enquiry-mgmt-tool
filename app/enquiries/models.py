@@ -17,7 +17,7 @@ class Enquirer(models.Model):
     last_name = models.CharField(max_length=MAX_LENGTH, verbose_name="Last name")
     job_title = models.CharField(max_length=MAX_LENGTH, verbose_name="Job title")
     email = models.EmailField(
-        unique=True, max_length=MAX_LENGTH, blank=True, verbose_name="Email"
+        max_length=MAX_LENGTH, blank=True, verbose_name="Email"
     )
     phone = models.CharField(max_length=MAX_LENGTH, verbose_name="Phone")
     email_consent = models.BooleanField(default=False, verbose_name="Email consent")
