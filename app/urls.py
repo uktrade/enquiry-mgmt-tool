@@ -28,7 +28,3 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("enquiries/", views.EnquiryListView.as_view(), name="enquiry-list"),
 ]
-
-
-print("Enquiries app is ready, fetch metadata from Data Hub...")
-settings.dh_metadata = dh_fetch_metadata()

@@ -130,7 +130,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 
@@ -149,3 +148,14 @@ HAWK_CREDENTIALS = {
         "algorithm": "sha256",
     }
 }
+
+# Celery and Redis
+REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
+if REDIS_BASE_URL:
+    REDIS_CELERY_DB = env('REDIS_CELERY_DB', default=1)
+    BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}'
+    CELERY_RESULT_BACKEND = BROKER_URL
+    CELERY_ACCEPT_CONTENT = ['application/json']
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+    CELERY_TIMEZONE = env('CELERY_TIMEZONE')
