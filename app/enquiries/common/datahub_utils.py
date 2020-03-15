@@ -185,7 +185,7 @@ def dh_company_search(company_name):
     return companies, None
 
 
-def dh_contact_search(contact_name):
+def dh_contact_search(contact_name, company_id):
     """
     Peforms a Contact name search using Data hub API.
 
@@ -193,7 +193,10 @@ def dh_contact_search(contact_name):
     """
     contacts = []
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
-    payload = {"name": contact_name}
+    payload = {
+        "name": contact_name,
+        "company": [company_id]
+    }
 
     response = dh_request("POST", url, payload)
 
@@ -266,3 +269,112 @@ def dh_adviser_search(adviser_name):
         )
 
     return advisers, None
+
+
+def get_dh_id(metadata_items, name):
+    item = list(filter(lambda x: x["name"] == name, metadata_items))
+    assert len(item) == 1
+    return item[0]["id"]
+
+
+def dh_investment_create(enquiry, metadata=None):
+    """
+    Creates an Investment in Data Hub using the data from the given Enquiry obj.
+
+    Investment is only created if the Company corresponding to the Enquiry exists
+    in DH otherwise error is returned.
+    Enquirer details are added to the list of contacts for this company if not
+    exists already. If this is the only contact then it will be made primary.
+    """
+
+    response = {
+        "errors": []
+    }
+
+    # Allow creating of investments only if Company exists on DH
+    if not enquiry.dh_company_id:
+        response["errors"].append({"company": f"{enquiry.company_name} doesn't exist in Data Hub"})
+        return response
+
+    if metadata is None:
+        try:
+            dh_metadata = dh_fetch_metadata()
+        except Exception as e:
+            response["errors"].append({"metadata": "Error fetching metadata"})
+            return response
+        dh_metadata = json.loads(dh_metadata)
+    else:
+        dh_metadata = metadata
+
+    payload = {}
+
+    company_id = enquiry.dh_company_id
+
+    full_name = f"{enquiry.enquirer.first_name} {enquiry.enquirer.last_name}"
+    contacts, error = dh_contact_search(full_name, company_id)
+    if error:
+        response["errors"].append({"contact_search": error})
+        return response
+
+    primary = not contacts
+    # contact_response = dh_contact_create(enquiry, company_id, primary=primary)
+
+    payload["name"] = enquiry.company_name
+    payload["investor_company"] = company_id
+    payload["description"] = enquiry.project_description
+    payload["anonymous_description"] = enquiry.anonymised_project_description
+    payload["estimated_land_date"] = enquiry.estimated_land_date.isoformat()
+
+    payload["investment_type"] = get_dh_id(dh_metadata["investment-type"], "FDI")
+    payload["fdi_type"] = map_to_datahub_id(
+        enquiry.get_investment_type_display(), dh_metadata, "fdi-type"
+    )
+    payload["stage"] = get_dh_id(dh_metadata["investment-project-stage"], "Prospect")
+    payload["investor_type"] = map_to_datahub_id(
+        enquiry.get_new_existing_investor_display(), dh_metadata, "investment-investor-type"
+    )
+    payload["level_of_involvement"] = map_to_datahub_id(
+        enquiry.get_investor_involvement_level_display(), dh_metadata, "investment-involvement"
+    )
+    payload["specific_programme"] = map_to_datahub_id(
+        enquiry.get_specific_investment_programme_display(), dh_metadata, "investment-specific-programme"
+    )
+    # payload["client_contacts"] = [contact_id]
+    payload["client_contacts"] = ["4ce2b0dd-a364-4e1e-9937-971f9001db0b"]
+
+    if not enquiry.crm:
+        response["errors"].append({"adviser": "Adviser name required, should not be empty"})
+        return response
+
+    advisers, error = dh_adviser_search(enquiry.crm)
+    if error:
+        response["errors"].append({"adviser_search": error})
+        return response
+
+    if not advisers:
+        response["errors"].append({"adviser": f"Adviser {enquiry.crm} not found"})
+        return response
+
+    payload["client_relationship_manager"] = advisers[0]["datahub_id"]
+
+    payload["sector"] = map_to_datahub_id(
+        enquiry.get_primary_sector_display(), dh_metadata, "sector"
+    )
+    payload["business_activities"] = ["a2dbd807-ae52-421c-8d1d-88adfc7a506b"]
+
+    # TODO: This will be the user who is submitting the data
+    # Since the SSO integration hasn't happened yet, use Adviser id here
+    payload["referral_source_adviser"] = advisers[0]["datahub_id"]
+    payload["referral_source_activity"] = get_dh_id(dh_metadata["referral-source-activity"], "Website")
+    payload["referral_source_activity_website"] = get_dh_id(dh_metadata["referral-source-website"], "Invest in GREAT Britain")
+
+    url = settings.DATA_HUB_INVESTMENT_CREATE_URL
+
+    try:
+        result = dh_request("POST", url, payload)
+        response["result"] = result
+    except Exception as e:
+        response["errors"].append({"investment_create": f"Error creating investment, {str(e)}"})
+        return response
+
+    return response

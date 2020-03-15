@@ -47,7 +47,7 @@ logging.config.dictConfig({
     },
     'loggers': {
         '': {
-            'level': 'DEBUG' if env.bool('DEBUG') else 'INFO',
+            'level': 'INFO' if env.bool('DEBUG') else 'INFO',
             'handlers': ['console', 'file']
         }
     }
@@ -193,6 +193,8 @@ DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
 DATA_HUB_COMPANY_SEARCH_URL = env('DATA_HUB_COMPANY_SEARCH_URL')
 DATA_HUB_CONTACT_SEARCH_URL = env('DATA_HUB_CONTACT_SEARCH_URL')
 DATA_HUB_CONTACT_CREATE_URL = env('DATA_HUB_CONTACT_CREATE_URL')
+DATA_HUB_ADVISER_SEARCH_URL = env('DATA_HUB_ADVISER_SEARCH_URL')
+DATA_HUB_INVESTMENT_CREATE_URL = env('DATA_HUB_INVESTMENT_CREATE_URL')
 
 DATA_HUB_HAWK_ID = env("DATA_HUB_HAWK_ID")
 DATA_HUB_HAWK_KEY = env("DATA_HUB_HAWK_KEY")
