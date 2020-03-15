@@ -213,3 +213,30 @@ def dh_contact_search(contact_name):
         )
 
     return contacts, None
+
+
+def dh_contact_create(enquirer, company_id, primary=False):
+    """
+    Create a contact and associate with the given Company Id.
+
+    Returns created contact and error if any
+    """
+    url = settings.DATA_HUB_CONTACT_CREATE_URL
+    enquirer = enquirer.enquirer
+    payload = {
+        "first_name": enquirer.first_name,
+        "last_name": enquirer.last_name,
+        "job_title": enquirer.job_title,
+        "company": company_id,
+        "primary": primary,
+        "telephone_countrycode": "NOT SET",
+        "telephone_number": enquirer.phone,
+        "email": enquirer.email,
+        "address_same_as_company": True,
+    }
+
+    response = dh_request("POST", url, payload)
+    if not response.ok:
+        return None, response.json()
+
+    return response.json(), None
