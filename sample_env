@@ -19,6 +19,7 @@ DATA_HUB_CONTACT_SEARCH_URL=https://datahub-api-dev.london.cloudapps.digital/v3/
 HAWK_ID=hawk-id
 HAWK_KEY=hawk-key
 
-# Redis
+# Celery and Redis
+DATA_HUB_METADATA_FETCH_INTERVAL=4      # in hours
 REDIS_BASE_URL=redis://redis:6379
 CELERY_TIMEZONE=Europe/london
