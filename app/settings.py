@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'rest_framework',
+    'reversion',
     'widget_tweaks',
     'app.enquiries',
 ]

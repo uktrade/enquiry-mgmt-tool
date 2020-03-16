@@ -220,4 +220,3 @@ class Enquiry(TimeStampedModel):
 
     class Meta:
         ordering = ["created"]
-

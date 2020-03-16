@@ -81,7 +81,7 @@ class EnquiryDetailView(TemplateView):
         return context
 
 
-class EnquiryEditView(UpdateView):
+class EnquiryEditView(RevisionMixin, UpdateView):
     """
     View to provide complete details of an Enquiry
     """
