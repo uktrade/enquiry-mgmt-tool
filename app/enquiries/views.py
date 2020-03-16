@@ -37,7 +37,16 @@ class EnquiryDetailView(TemplateView):
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
+        context["owners"] = self.get_owners()
         return context
+    
+    def get_owners(self):
+        owners = [
+            {"id": "", "name": "Unassigned"}
+        ]
+        for owner in models.Owner.objects.all():
+            owners.append({"id": owner.id, "name": str(owner.user.first_name) + " " + str(owner.user.last_name)})
+        return owners
 
 
 class EnquiryEditView(UpdateView):
