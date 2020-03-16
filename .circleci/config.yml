@@ -21,7 +21,6 @@ jobs:
       HAWK_ID: 'hawk-id'
       HAWK_KEY: 'hawk-key'
       DATA_HUB_METADATA_FETCH_INTERVAL: '4'
-      REDIS_BASE_URL: 'redis-url'
 
     docker:
       - image: circleci/python:3.6.4
