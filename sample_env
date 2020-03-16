@@ -9,6 +9,11 @@ POSTGRES_DB_PASSWORD=password
 POSTGRES_DB_HOST=localhost
 POSTGRES_DB_PORT=5432
 
+# Sentry
+DJANGO_SENTRY_DSN=sentry-dsn
+
+ENQUIRIES_PER_PAGE=10
+
 # Data Hub variables
 DATA_HUB_ACCESS_TOKEN=datahub-access-token
 DATA_HUB_METADATA_URL=https://datahub-api-dev.london.cloudapps.digital/v4/metadata
@@ -23,3 +28,4 @@ HAWK_KEY=hawk-key
 DATA_HUB_METADATA_FETCH_INTERVAL=4      # in hours
 REDIS_BASE_URL=redis://redis:6379
 CELERY_TIMEZONE=Europe/london
+

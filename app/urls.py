@@ -24,7 +24,10 @@ from app.enquiries.common.datahub_utils import dh_fetch_metadata, map_to_datahub
 
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="index.html")),
-    path("admin/", admin.site.urls),
-    path("enquiries/", views.EnquiryListView.as_view(), name="enquiry-list"),
+    path('', views.EnquiryListView.as_view(), name="enquiry-list"),
+    path('admin/', admin.site.urls),
+    path('enquiry/', views.EnquiryCreateView.as_view(), name="enquiry-create"),
+    path('enquiries/', views.EnquiryListView.as_view(), name="enquiry-list"),
+    path('enquiries/<int:pk>/', views.EnquiryDetailView.as_view(), name="enquiry-detail"),
+    path('enquiries/<int:pk>/edit', views.EnquiryEditView.as_view(), name="enquiry-edit"),
 ]
