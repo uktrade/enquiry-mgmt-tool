@@ -20,8 +20,6 @@ class ServiceHealthCheckTestCase(TestCase):
             response._headers["content-type"], ("Content-Type", "text/xml")
         )
         self.assertEqual("<status>OK</status>" in str(response.content), True)
-        if models.Enquiry.objects.exists():
-            self.assertEqual("<!-- OK -->" in str(response.content), True)
 
     @mock.patch("app.enquiries.models.Enquiry.objects")
     def test_service_status_unhealthy(self, model_manager):

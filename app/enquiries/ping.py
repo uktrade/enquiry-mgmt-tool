@@ -1,7 +1,6 @@
-from django.db import connections
 from django.db.utils import OperationalError
 from django.http import HttpResponse
-from rest_framework import status
+from rest_framework.status import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 
 from app.enquiries.models import Enquiry
 
@@ -10,7 +9,7 @@ PINGDOM_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 <pingdom_http_custom_check>
     <status>{status}</status>
 </pingdom_http_custom_check>\n
-<!-- {comment} -->\n"""
+"""
 
 
 def ping(request):
@@ -20,22 +19,15 @@ def ping(request):
     Service is healthy if we can query database
     """
 
-    db_conn = connections["default"]
-
+    db_status = False
     try:
-        db_status = db_conn.cursor()
-        enquiries_exist = Enquiry.objects.exists()
-        http_status = status.HTTP_200_OK
+        Enquiry.objects.exists()
+        db_status = True
     except OperationalError:
-        db_status = False
-        enquiries_exist = False
-        http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
+        pass
 
     return HttpResponse(
-        PINGDOM_TEMPLATE.format(
-            status="OK" if db_status else "ERROR",
-            comment="OK" if enquiries_exist else "",
-        ),
-        status=http_status,
+        PINGDOM_TEMPLATE.format(status="OK" if db_status else "ERROR",),
+        status=HTTP_200_OK if db_status else HTTP_500_INTERNAL_SERVER_ERROR,
         content_type="text/xml",
     )
