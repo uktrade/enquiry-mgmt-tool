@@ -4,6 +4,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework import status
 
+from app.enquiries import models
 from app.enquiries.tests.factories import EnquiryFactory
 
 
@@ -19,15 +20,16 @@ class ServiceHealthCheckTestCase(TestCase):
             response._headers["content-type"], ("Content-Type", "text/xml")
         )
         self.assertEqual("<status>OK</status>" in str(response.content), True)
-        self.assertEqual("<!-- OK -->" in str(response.content), True)
+        if models.Enquiry.objects.exists():
+            self.assertEqual("<!-- OK -->" in str(response.content), True)
 
     @mock.patch("app.enquiries.models.Enquiry.objects")
-    def test_service_status_unhealthy(self, mgr):
+    def test_service_status_unhealthy(self, model_manager):
         """
         Test that triggers an exception when the query is executed
         and ensures service status reported as ERROR
         """
-        mgr.all.side_effect = OperationalError("connection failure")
+        model_manager.exists.side_effect = OperationalError("connection failure")
         response = self.client.post(reverse("ping"))
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.assertEqual("<status>ERROR</status>" in str(response.content), True)
