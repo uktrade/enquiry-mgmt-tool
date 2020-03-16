@@ -1,27 +1,68 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.conf import settings
+from django.core.paginator import Paginator as DjangoPaginator
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from rest_framework import status
-from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
 
 
-class EnquiryListView(APIView):
+class PaginationWithPaginationMeta(PageNumberPagination):
+    """
+    Metadata class to add additional metadata for use in template
+    """
+
+    def get_paginated_response(self, data):
+        return Response(
+            {
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "count": self.page.paginator.count,
+                "num_pages": self.page.paginator.num_pages,
+                "page_range": list(self.page.paginator.page_range),
+                "current_page": self.page.number,
+                "results": data,
+            }
+        )
+
+
+class EnquiryListView(ListAPIView):
     """
     List all enquiries.
+
+    In GET: Returns a paginated list of enquiries using PageNumberPagination.
+    This is the default pagination class as set globally in settings. It is
+    also inherited via a meta class to add additional metadata required
+    for use in the template
     """
 
-    renderer_classes = (TemplateHTMLRenderer,)
+    template_name = "enquiry_list.html"
+    renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+    serializer_class = serializers.EnquiryDetailSerializer
+    pagination_class = PaginationWithPaginationMeta
 
-    def get(self, request, format=None):
-        enquiries = models.Enquiry.objects.all()
-        serializer = serializers.EnquiryDetailSerializer(enquiries, many=True)
-        return Response(
-            {"serializer": serializer.data}, template_name="enquiry_list.html",
-        )
+    def get_queryset(self):
+        return models.Enquiry.objects.all()
+
+
+class EnquiryCreateView(APIView):
+    """
+    Creates new Enquiry
+    """
+
+    def post(self, request, format=None):
+        serializer = serializers.EnquirySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EnquiryDetailView(TemplateView):
