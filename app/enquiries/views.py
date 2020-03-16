@@ -1,3 +1,5 @@
+import reversion
+
 from django.conf import settings
 from django.core.paginator import Paginator as DjangoPaginator
 from django.shortcuts import get_object_or_404, redirect, render
@@ -9,6 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from reversion.views import RevisionMixin
 
 from app.enquiries import models, serializers
 
@@ -90,8 +93,13 @@ class EnquiryEditView(RevisionMixin, UpdateView):
     fields = "__all__"
     template_name = "enquiry_edit.html"
 
+    revision_manage_manually = False
+    revision_using = None
+    request_creates_revision = None
+
     def form_valid(self, form):
         enquiry = form.save(commit=False)
+        reversion.set_comment(f"Enquiry({enquiry.pk}) updated")
         enquiry.save()
         return redirect("enquiry-detail", pk=enquiry.pk)
 

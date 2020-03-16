@@ -1,3 +1,5 @@
+import reversion
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -41,6 +43,7 @@ class Owner(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
 
+@reversion.register
 class Enquiry(TimeStampedModel):
     """
     Model for investment Enquiry
