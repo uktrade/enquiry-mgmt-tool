@@ -70,7 +70,7 @@ def canned_enquiry():
 
 REST_FRAMEWORK_TEST = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 2,
+    "PAGE_SIZE": 10,
 }
 
 
@@ -127,7 +127,7 @@ class EnquiryViewTestCase(TestCase):
         It will be same for all pages except for the last page
         if num_enquiries is not a multiple of page_size
         """
-        num_enquiries = 3
+        num_enquiries = 13
         enquiries = EnquiryFactory.create_batch(num_enquiries)
         ids = [e.id for e in enquiries]
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
@@ -188,6 +188,7 @@ class EnquiryViewTestCase(TestCase):
             response = self.create_enquiry_and_assert(enquiry)
         self.assertEqual(Enquirer.objects.all().count(), num_enquirers)
 
+    def test_enquiry_detail(self):
         """Test retrieving a valid enquiry returns 200"""
         enquiry = EnquiryFactory()
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
