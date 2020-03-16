@@ -73,7 +73,39 @@
                 </li>
                 {% endfor %}
             </ol>
-            <nav class="pagination"></nav>
+
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+            <nav class="pagination">
+
+                <ol class="pagination-list">
+                    {%if previous is not None %}
+                    <li class="pagination-list-item">
+                        <a class="pagination-link" href="{{ previous }}">Previous</a>
+                    </li>
+                    {%endif%}
+
+                    {% for page in page_range %}
+
+                    {% if page|stringformat:"s" == current_page %}
+
+                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item pagination-list-item-current">{{ page }}</li></a>
+
+                    {% else %}
+
+                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item">{{ page }}</li></a>
+                    
+                    {% endif %}
+
+                    {% endfor %}
+
+                    {%if next is not None %}
+                    <li class="pagination-list-item">
+                        <a class="pagination-link" href="{{ next }}">Next</a>
+                    </li>
+                    {%endif%}
+                </ol>
+            </nav>
         </article>
     </main>
 </div>
