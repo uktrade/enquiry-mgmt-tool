@@ -3,11 +3,7 @@ DEBUG=True
 DJANGO_SECRET_KEY=supersecretkey
 
 # Database settings
-POSTGRES_DB_NAME=postgres
-POSTGRES_DB_USER=postgres
-POSTGRES_DB_PASSWORD=password
-POSTGRES_DB_HOST=db
-POSTGRES_DB_PORT=5432
+DATABASE_URL=postgres://username:password@host:port/name
 
 # Sentry
 DJANGO_SENTRY_DSN=sentry-dsn
