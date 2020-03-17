@@ -2,7 +2,7 @@ import pytest
 import pytz
 import random
 
-from datetime import date
+from datetime import date, datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
@@ -16,12 +16,20 @@ import app.enquiries.tests.utils as test_utils
 
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
+    EnquirerFactory,
     EnquiryFactory,
     get_random_item,
     get_display_name,
+    get_display_value,
+    return_display_value,
 )
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
+headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
+headers_json = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/json"}
+
+enquiry_field_names = [f.name for f in Enquiry._meta.fields]
+enquirer_field_names = [f.name for f in Enquirer._meta.fields]
 
 
 def canned_enquiry():
@@ -89,6 +97,43 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
                 continue
 
             self.assertEqual(value, expected[key])
+    
+    def assert_factory_enquiry_equals_enquiry_response(self, factory_item, response_item):
+        date_fields = [
+            "created",
+            "modified",
+            "date_added_to_datahub",
+            "project_success_date",
+        ]
+        omit_fields = ["owner"]
+        ref_fields = ref_data.MAP_ENQUIRY_FIELD_TO_REF_DATA
+
+        for name in enquiry_field_names:
+            if name == "enquirer":
+                continue
+            factory_value = getattr(factory_item, name)
+            db_value = response_item[name]
+            if name in omit_fields:
+                continue
+            elif name in date_fields:
+                if isinstance(db_value, datetime):
+                    db_value = db_value.date()
+                elif isinstance(db_value, str):
+                    db_value = datetime.strptime(db_value, "%d %B %Y")
+                    db_value = (
+                        db_value.date()
+                        if isinstance(db_value, datetime)
+                        else db_value
+                    )
+                factory_value = (
+                    factory_value.date() if isinstance(factory_value, datetime) else factory_value
+                )
+            elif name in ref_fields:
+                ref_model = ref_fields[name]
+                db_value = return_display_value(ref_model, db_value)
+                pass
+
+            self.assertEqual(factory_value, db_value)
 
     def create_enquiry_and_assert(self, enquiry):
         """Creates an Enquiry using the API and asserts on the response status"""
@@ -130,7 +175,9 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         for page in range(total_pages):
             start = page * page_size
             end = start + page_size
-            response = self.client.get(reverse("enquiry-list"), {"page": page + 1})
+            response = self.client.get(
+                reverse("enquiry-list"), {"page": page + 1}, **headers
+            )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(
                 [enq["id"] for enq in response.data["results"]], ids[start:end]
@@ -275,7 +322,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         country_display_name = get_display_name(ref_data.Country, enquiry.country)
         self.assertContains(response, enquiry_stage_display_name)
         self.assertContains(response, country_display_name)
-
     def test_helper_login(self):
         result = self.login()
         self.assertEqual(result, True)
@@ -289,3 +335,78 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
         self.assertEqual(response.get("Location").split("?")[0], settings.LOGIN_URL)
         self.login()
+
+    def test_enquiry_list_filtered(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        EnquiryFactory(company_name="Foo Bar")
+        EnquiryFactory(company_name="Bar Inc")
+        EnquiryFactory(company_name="Baz")
+        response = self.client.get(
+            reverse("enquiry-list"), {"company_name__icontains": "Bar"}, **headers
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 2)
+
+    def test_enquiry_list_filtered_unassigned(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        
+
+        EnquirerFactory()
+        enquiries = [
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW),
+        ]
+
+        owner = enquiries[1].owner
+        enquiries[0].owner = None
+        enquiries[0].save()
+        enquiry_unassigned = enquiries[0]
+        enquiry_assigned = enquiries[1]
+
+        # owner assigned
+        response = self.client.get(
+            reverse("enquiry-list"), {"owner__id": owner.id}, **headers
+        )
+        data = response.data
+        
+        enquiry_data = data["results"][0]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+        self.assert_factory_enquiry_equals_enquiry_response(enquiry_assigned, enquiry_data)
+        
+
+        # owner unassigned
+        response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"})
+        data = response.data
+
+        enquiry_data_unassigned = data["results"][0]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+
+        self.assert_factory_enquiry_equals_enquiry_response(enquiry_unassigned, enquiry_data_unassigned)
+
+    def test_enquiry_list_filtered_enquiry_stage(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW)
+        # enquiry stage - ADDED_TO_DATAHUB
+        response = self.client.get(
+            reverse("enquiry-list"),
+            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+
+        # enquiry stage - NON_FDI
+        response = self.client.get(
+            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 0)

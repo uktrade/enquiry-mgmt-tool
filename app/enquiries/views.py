@@ -3,9 +3,12 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
+from django_filters import rest_framework as filters
+
 from rest_framework import generics, status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -16,6 +19,7 @@ from rest_framework.views import APIView
 from app.enquiries import models, serializers
 from app.enquiries import forms
 
+UNASSIGNED = "UNASSIGNED"
 
 class PaginationWithPaginationMeta(PageNumberPagination):
     """
@@ -36,6 +40,57 @@ class PaginationWithPaginationMeta(PageNumberPagination):
         )
 
 
+def is_valid_id(v) -> bool:
+    if v == UNASSIGNED:
+        return True
+    return is_valid_int(v)
+
+
+def is_valid_int(v) -> bool:
+    try:
+        int(v)
+    except ValueError:
+        return False
+    return True
+
+
+class EnquiryFilter(filters.FilterSet):
+    
+    owner__id = filters.CharFilter(field_name="owner__id", method="filter_owner_id")
+
+    def filter_owner_id(self, queryset, name, value):
+        """
+        This filter handles the owner__id parameter with can either be an int
+        of the string 'UNASSIGNED'. In the case of UNASSIGNED to filter for enquirires where owner == None
+        """
+        vals = value.split(",")
+        # filter out valid values (int|'UNASSIGNED')
+        valid_vals = list(filter(is_valid_id, vals))
+        int_vals = list(filter(is_valid_int, valid_vals))
+        # cast numbers to int
+        int_vals = list(map(lambda v: int(v), int_vals))
+
+        q = Q()
+
+        if UNASSIGNED in valid_vals:
+            q |= Q(owner__id__isnull=True)
+
+        if int_vals:
+            q |= Q(owner__id__in=int_vals)
+
+        return queryset.filter(q)
+
+    class Meta:
+        model = models.Enquiry
+        fields = {
+            "company_name": ["icontains"],
+            "enquirer__email": ["exact"],
+            "enquiry_stage": ["exact"],
+            "created": ["lt", "gt"],
+            "date_added_to_datahub": ["lt", "gt"],
+        }
+
+
 class EnquiryListView(LoginRequiredMixin, ListAPIView):
     """
     List all enquiries.
@@ -46,6 +101,8 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     for use in the template
     """
 
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = EnquiryFilter
     template_name = "enquiry_list.html"
     renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
     serializer_class = serializers.EnquiryDetailSerializer
