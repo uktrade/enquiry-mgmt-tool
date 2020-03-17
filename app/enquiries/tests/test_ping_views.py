@@ -17,9 +17,9 @@ class ServiceHealthCheckTestCase(TestCase):
         response = self.client.post(reverse("ping"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response._headers["content-type"], ("Content-Type", "text/xml")
+            response._headers["content-type"], ("Content-Type", "text/plain")
         )
-        self.assertEqual("<status>OK</status>" in str(response.content), True)
+        self.assertEqual(response.content.decode("utf-8"), "OK")
 
     @mock.patch("app.enquiries.models.Enquiry.objects")
     def test_service_status_unhealthy(self, model_manager):
@@ -30,4 +30,4 @@ class ServiceHealthCheckTestCase(TestCase):
         model_manager.exists.side_effect = OperationalError("connection failure")
         response = self.client.post(reverse("ping"))
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-        self.assertEqual("<status>ERROR</status>" in str(response.content), True)
+        self.assertEqual(response.content.decode("utf-8"), "ERROR")
