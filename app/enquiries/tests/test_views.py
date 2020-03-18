@@ -5,7 +5,7 @@ import random
 from datetime import date
 from django.conf import settings
 from django.forms.models import model_to_dict
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase
 from django.urls import reverse
 from faker import Faker
 from rest_framework import status
@@ -68,11 +68,6 @@ def canned_enquiry():
         "project_success_date": date(2022, 2, 3),
     }
 
-REST_FRAMEWORK_TEST = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 2,
-}
-
 
 class EnquiryViewTestCase(TestCase):
     def setUp(self):
@@ -118,7 +113,6 @@ class EnquiryViewTestCase(TestCase):
         results = response["results"]
         self.assertEqual(len(results), len(enquiries))
 
-    @override_settings(REST_FRAMEWORK=REST_FRAMEWORK_TEST)
     def test_enquiries_list_pagination(self):
         """
         Tests pagination of enquiries list view.

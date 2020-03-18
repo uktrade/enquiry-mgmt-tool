@@ -15,7 +15,7 @@
                 <!-- TODO: Add filter controls and data to header -->
                 <div class="collection-header-row">
                     <div class="collection-header-intro">
-                        <span class="big-number-of-enquiries">{{ serializer|length }}</span> enquiries
+                        <span class="big-number-of-enquiries">{{ count }}</span> enquiries
                         <div class="collection-header-actions">
                             <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
                         </div>
@@ -27,7 +27,7 @@
                 </div> -->
             </header>
             <ol class="entity-list">
-                {% for obj in serializer %}
+                {% for obj in results %}
                 <li class="entity-list-item">
                     <div class="entity-enquiry">
                         <div class="entity-header">
