@@ -43,11 +43,36 @@
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Assigned company
+                        Company in Data Hub
                     </dt>
                     <dd class="govuk-summary-list__value">
                         <a href="#">
-                            www.datahub.trade.gov.uk/companies/1234567890
+                            Alphabet Projects
+                        </a>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="govuk-grid-row enquiry-details-row">
+            <h3 class="govuk-heading-m">Enquiry overview</h3>
+            <dl class="govuk-summary-list">
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_name" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_hq_address" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_stage" %}
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Owner
+                    </dt>
+                    <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
+                        {{ "Unassigned" }} {%endif%}</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Company in Data Hub
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <a href="#">
+                            Alphabet Projects
                         </a>
                     </dd>
                 </div>
@@ -68,7 +93,6 @@
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="website" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="country" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="region" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_hq_address" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="primary_sector" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="ist_sector" %}
             </dl>
