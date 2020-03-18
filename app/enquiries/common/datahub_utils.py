@@ -240,3 +240,29 @@ def dh_contact_create(enquirer, company_id, primary=False):
         return None, response.json()
 
     return response.json(), None
+
+
+def dh_adviser_search(adviser_name):
+    """
+    Peforms an Adviser search using Data hub API.
+
+    Returns list of subset of fields for each Adviser found
+    """
+    advisers = []
+    url = f"{settings.DATA_HUB_ADVISER_SEARCH_URL}/?autocomplete={adviser_name}"
+
+    response = dh_request("GET", url, {})
+
+    if response.status_code != status.HTTP_200_OK:
+        return advisers, response.json()
+
+    for adviser in response.json()["results"]:
+        advisers.append(
+            {
+                "datahub_id": adviser["id"],
+                "name": adviser["first_name"],
+                "is_active": adviser["is_active"],
+            }
+        )
+
+    return advisers, None
