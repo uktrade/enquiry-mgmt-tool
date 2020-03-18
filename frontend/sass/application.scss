@@ -130,3 +130,13 @@ a.entity-title-link {
 button.enquiry-edit-button {
     float: right;
 }
+
+.company-search-result {
+    background-color: govuk-colour("light-grey");
+    padding: 1em;
+    border: 1px solid govuk-colour("mid-grey");
+}
+
+.company-search-result-name {
+    font-weight: bold;
+}

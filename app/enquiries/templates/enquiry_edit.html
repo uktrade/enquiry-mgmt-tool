@@ -49,11 +49,11 @@
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Assigned company
+                        Company in Data Hub
                     </dt>
                     <dd class="govuk-summary-list__value">
                         <a href="#">
-                            www.datahub.trade.gov.uk/companies/1234567890
+                            Alphabet Projects
                         </a>
                     </dd>
                 </div>
@@ -65,7 +65,11 @@
 
             <div class="govuk-grid-row enquiry-details-row">
 
+                <h3 class="govuk-heading-m">Enquiry overview</h3>
+
                 {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="company_name" %}
+
+                {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="company_hq_address" %}
 
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="enquiry_stage" %}
 
@@ -84,6 +88,13 @@
                         </option>
                         {% endfor %}
                     </select>
+                </div>
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label">
+                        Company in Data Hub
+                    </label>
+                    {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
                 </div>
 
             </div>
@@ -111,8 +122,6 @@
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="country" %}
 
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="region" %}
-
-                {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="company_hq_address" %}
 
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="primary_sector" %}
 
