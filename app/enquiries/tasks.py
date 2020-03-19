@@ -14,7 +14,7 @@ from app.enquiries.common.datahub_utils import dh_fetch_metadata
 FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL}"
 
 @periodic_task(
-    run_every=(crontab(hour=FETCH_INTERVAL_HOURS)),
+    run_every=(crontab(hour=FETCH_INTERVAL_HOURS, minute="0")),
     name="refresh_datahub_metadata",
     ignore_result=True,
 )
