@@ -122,3 +122,10 @@ class EnquiryCompanySearchView(TemplateView):
 
     model = models.Enquiry
     template_name = "enquiry_company_search.html"
+
+    def get_context_data(self, **kwargs):
+        pk = kwargs["pk"]
+        context = super().get_context_data(**kwargs)
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        context["enquiry"] = enquiry
+        return context

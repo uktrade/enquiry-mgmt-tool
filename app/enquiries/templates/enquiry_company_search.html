@@ -1,1 +1,63 @@
-hello
+{% load static %}
+
+{% include 'base.html' %}
+
+{% include 'partials/govuk_header_partial.html' %}
+
+{% load widget_tweaks %}
+{% load rest_framework %}
+{% load enquiries_extras %}
+
+<div class="govuk-width-container">
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+    <a href="{% url 'enquiry-edit' enquiry.id %}" class="govuk-back-link">Back</a>
+
+    <main class="govuk-main-wrapper">
+
+        <div class="govuk-inset-text">
+            <label class="govuk-label">Company HQ address</label>
+            {{ enquiry.company_hq_address }}
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+        <h4 class="govuk-heading-m">Company search</h2>
+
+        <div class="govuk-grid-row">
+            <label class="govuk-label">Search for Data Hub company</label>
+            <input class="govuk-input" type="search">
+            <button class="govuk-button company-search-button">Search</button>
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+        <details class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text">
+                I can't find what I'm looking for
+              </span>
+            </summary>
+            <div class="govuk-details__text">
+                <p>Try:</p>
+                <div class="company-search-details-text">
+                <ul>
+                    <li>checking for spelling errors</li>
+                    <li>checking if the right country was selected</li>
+                    <li>check you're using the company's registered name</li>
+                    <li>checking or removing the postcode</li>
+                    <li>removing "limited" or "ltd"</li>
+                </ul>
+                </div>
+                <p></p>
+                <div>
+                    <a href="https://www.datahub.trade.gov.uk/companies/create" class="govuk-link link-no-visited">I still can't find what I'm looking for</a>
+                </div>
+            </div>
+          </details>
+
+    </main>
+</div>
+
+{% include 'partials/govuk_footer_partial.html' %}
