@@ -91,10 +91,13 @@
                 </div>
 
                 <div class="govuk-form-group">
-                    <label class="govuk-label">
+                    <label class="govuk-label label-inline">
                         Company in Data Hub
                     </label>
+                    <a class="govuk-link company-search-link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
+                    
                     {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
+
                 </div>
 
             </div>

@@ -114,3 +114,11 @@ class EnquiryEditView(UpdateView):
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
+
+class EnquiryCompanySearchView(TemplateView):
+    """
+    Company search view
+    """
+
+    model = models.Enquiry
+    template_name = "enquiry_company_search.html"
