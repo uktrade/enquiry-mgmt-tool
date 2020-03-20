@@ -30,9 +30,10 @@ def dh_request(method, url, payload, request_headers=None, timeout=15):
         }
 
     try:
-        response = requests.request(
-            method, url, headers=headers, data=payload, timeout=timeout
-        )
+        if method == "GET":
+            response = requests.get(url, headers=headers, timeout=timeout)
+        elif method == "POST":
+            response = requests.post(url, headers=headers, json=payload, timeout=timeout)
     except RequestException as e:
         logging.error(
             f"Error {e} while requesting {url}, request timeout set to {timeout} secs"
@@ -125,7 +126,7 @@ def dh_company_search(company_name):
     url = settings.DATA_HUB_COMPANY_SEARCH_URL
     payload = {"name": company_name}
 
-    response = dh_request("POST", url, json.dumps(payload))
+    response = dh_request("POST", url, payload)
 
     # It is not an error for us if the request fails, this can happen if the
     # Access token is invalid, consider that there are no matches
@@ -161,7 +162,7 @@ def dh_contact_search(contact_name):
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
     payload = {"name": contact_name}
 
-    response = dh_request("POST", url, json.dumps(payload))
+    response = dh_request("POST", url, payload)
 
     contacts = []
     if response.status_code != status.HTTP_200_OK:

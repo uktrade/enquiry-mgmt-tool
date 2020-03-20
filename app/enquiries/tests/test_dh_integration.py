@@ -12,10 +12,10 @@ from app.enquiries.common.datahub_utils import dh_request
 
 
 class DataHubIntegrationTests(TestCase):
-    @mock.patch("requests.request")
-    def test_dh_request_timeout(self, mock_request):
+    @mock.patch("requests.post")
+    def test_dh_request_timeout(self, mock_post):
         """ Tests to ensure data hub requests raise exception """
-        mock_request.side_effect = Timeout
+        mock_post.side_effect = Timeout
         url = settings.DATA_HUB_COMPANY_SEARCH_URL
         payload = {"name": "test"}
 
