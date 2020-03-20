@@ -3,9 +3,46 @@ import logging
 import mohawk
 import requests
 
+from bs4 import BeautifulSoup
 from django.conf import settings
 
+import app.enquiries.ref_data as ref_data
 from app.enquiries.models import ReceivedEnquiryCursor
+
+
+def parse_enquiry_email(submission):
+    """
+    Parses email body in the submission and returns Enquiry related fields.
+    This can be used to create an Enquiry.
+    """
+    enquiry_data = {}
+
+    body = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ][
+        "html_body"
+    ]
+    if not body:
+        return enquiry_data
+
+    soup = BeautifulSoup(body, features="lxml")
+    table_div = soup.find("div", {"class": "form-table"})
+    table = table_div.find("table")
+
+    for tr in table.findAll("tr"):
+        row = [d.text for d in tr.findAll("td")]
+        enquiry_data[row[0].strip()] = row[1].strip()
+
+    """
+    The query parameters are not sufficient to filter investment enquiries
+    hence using url as additional filter but some of the other enquiries share
+    the same url hence additionally look for specified keys to filter data
+    """
+    if not (
+        set(["Given name", "Job title", "Company HQ address"])
+        <= set(enquiry_data.keys())
+    ):
+        return None
+
+    return enquiry
 
 
 def hawk_request(method, url, key_id, secret_key, body):
