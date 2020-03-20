@@ -10,6 +10,90 @@ import app.enquiries.ref_data as ref_data
 from app.enquiries.models import ReceivedEnquiryCursor
 
 
+def map_enquiry_data_to_instance(data):
+    """
+    This function maps the investment enquiry data received from the via website
+    to internal database fields so that new Enquiry instances can be created.
+    Because the form processing is done in a different place the reference data
+    used is not consistent and there are slight mismatches hence this mapping is required.
+    """
+    enquiry = {}
+
+    call_request_mapping = {
+        "in the morning": ref_data.RequestForCall.YES_MORNING,
+        "in the afternoon": ref_data.RequestForCall.YES_AFTERNOON,
+    }
+    investment_readiness = {
+        "I’m convinced and want to talk to someone about my plans.": ref_data.InvestmentReadiness.CONVINCED,
+        "The UK is on my shortlist. How can the Department for International Trade help me?": ref_data.InvestmentReadiness.SHORTLIST,
+        "I’m still exploring where to expand my business and would like to know more about the UK’s offer.": ref_data.InvestmentReadiness.EXPLORING,
+        "I’m not yet ready to invest. Keep me informed.": ref_data.InvestmentReadiness.NOT_READY,
+    }
+
+    how_did_you_hear = {
+        "Press ad (newspaper/trade publication)": ref_data.HowDidTheyHear.PRESS_AD,
+        "Outdoor ad/billboard": ref_data.HowDidTheyHear.OUTDOOR_AD,
+        "LinkedIn": ref_data.HowDidTheyHear.LINKEDIN,
+        "Other social media (e.g. Twitter/Facebook)": ref_data.HowDidTheyHear.SOCIAL_MEDIA,
+        "Internet search": ref_data.HowDidTheyHear.INTERNET_SEARCH,
+        "Other": ref_data.HowDidTheyHear.OTHER,
+    }
+
+    enquiry["company_name"] = data["Company name"]
+    enquiry["website"] = data["Company website"]
+    enquiry["company_hq_address"] = data["Company HQ address"]
+    enquiry["country"] = data["Country"]
+    # TODO: map to the correct sector values
+    # The reference data values are different from ours so we need to map them
+    # A new function required to perform the mapping or better approach is to
+    # use directory-constants directly
+    enquiry["primary_sector"] = ref_data.PrimarySector.ADVANCED_ENG
+    value = data[
+        "Which of these best describes how you feel about expanding to the UK?"
+    ]
+    enquiry["investment_readiness"] = investment_readiness.get(
+        value, ref_data.InvestmentReadiness.DEFAULT
+    )
+    enquiry["enquiry_text"] = data["Tell us about your investment"]
+    value = data.get("How did you hear about us?")
+    if value:
+        enquiry["how_they_heard_dit"] = how_did_you_hear.get(
+            value, ref_data.HowDidTheyHear.DEFAULT
+        )
+    else:
+        enquiry["how_they_heard_dit"] = ref_data.HowDidTheyHear.DEFAULT
+
+    enquiry["enquirer"] = {}
+    enquiry["enquirer"]["first_name"] = data["Given name"]
+    enquiry["enquirer"]["last_name"] = data["Family name"]
+    enquiry["enquirer"]["job_title"] = data["Job title"]
+    if data.get("Email address"):
+        email = data["Email address"]
+    elif data.get("Work email address"):
+        email = data["Work email address"]
+    enquiry["enquirer"]["email"] = email
+    enquiry["enquirer"]["phone"] = data["Phone number"]
+    true_or_false = lambda value: True if value == "True" else False
+    email_consent = true_or_false(
+        data.get("I would like to be contacted by email", "False")
+    )
+    phone_consent = true_or_false(
+        data.get("I would like to be contacted by telephone", "False")
+    )
+    enquiry["enquirer"]["email_consent"] = email_consent
+    enquiry["enquirer"]["phone_consent"] = phone_consent
+
+    value = data.get("When should we call you?")
+    if value:
+        enquiry["enquirer"]["request_for_call"] = call_request_mapping.get(
+            value, ref_data.RequestForCall.DEFAULT
+        )
+    else:
+        enquiry["enquirer"]["request_for_call"] = ref_data.RequestForCall.DEFAULT
+
+    return enquiry
+
+
 def parse_enquiry_email(submission):
     """
     Parses email body in the submission and returns Enquiry related fields.
@@ -41,6 +125,9 @@ def parse_enquiry_email(submission):
         <= set(enquiry_data.keys())
     ):
         return None
+
+    # map the data to Enquiry model fields
+    enquiry = map_enquiry_data_to_instance(enquiry_data)
 
     return enquiry
 
