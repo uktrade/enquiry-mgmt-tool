@@ -3,7 +3,9 @@ import logging
 import os
 import requests
 
+from datetime import datetime
 from django.conf import settings
+from django.core.cache import cache
 from mohawk import Sender
 from requests.exceptions import RequestException
 from rest_framework import status
@@ -43,7 +45,7 @@ def dh_request(method, url, payload, request_headers=None, timeout=15):
     return response
 
 
-def dh_fetch_metadata():
+def _dh_fetch_metadata():
     """
     Fetches metadata from Data Hub as we need that to call Data Hub APIs
     """
@@ -61,13 +63,14 @@ def dh_fetch_metadata():
         "sector",
     )
 
+    logging.info(f"Fetching metadata at {datetime.now()}")
     credentials = settings.HAWK_CREDENTIALS[settings.HAWK_ID]
 
     metadata = {"failed": []}
     for endpoint in endpoints:
         meta_url = os.path.join(settings.DATA_HUB_METADATA_URL, endpoint)
 
-        print(f"Fetching {meta_url} ...")
+        logging.info(f"Fetching {meta_url} ...")
 
         sender = Sender(
             credentials,
@@ -86,9 +89,31 @@ def dh_fetch_metadata():
             metadata["failed"].append(endpoint)
 
     if metadata["failed"]:
-        print(f"Failed to fetch Data Hub metadata for endpoints: {metadata['failed']}")
+        logging.error(f"Error fetching Data Hub metadata for endpoints: {metadata['failed']}")
 
     return metadata
+
+
+def dh_fetch_metadata(cache_key='metadata', expiry_secs=60*60):
+    """
+    Fetches and caches the metadata with an expiry time
+
+    It check if the data is valid in cache, if it has expired then fetches again
+    """
+
+    try:
+        cached_metadata = cache.get(cache_key)
+        if not cached_metadata:
+            logging.info("Metadata expired in cache, fetching again ...")
+            cached_metadata = _dh_fetch_metadata()
+            cache.set(cache_key, json.dumps(cached_metadata), timeout=expiry_secs)
+            return cached_metadata
+
+        logging.info(f"Metadata valid in cache (expiry_secs={expiry_secs})")
+        return cached_metadata
+    except Exception as e:
+        logging.error(f"Error fetching metadata, {str(e)} ...")
+        raise e
 
 
 def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"):

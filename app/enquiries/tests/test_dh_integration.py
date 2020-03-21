@@ -8,7 +8,7 @@ from requests.exceptions import Timeout
 from rest_framework import status
 from unittest import mock
 
-from app.enquiries.common.datahub_utils import dh_request
+from app.enquiries.common.datahub_utils import dh_request, dh_fetch_metadata
 
 
 class DataHubIntegrationTests(TestCase):
@@ -21,3 +21,12 @@ class DataHubIntegrationTests(TestCase):
 
         with pytest.raises(Timeout):
             response = dh_request("POST", url, payload, timeout=2)
+
+    @mock.patch("django.core.cache.cache.get")
+    def test_dh_fetch_metada_exception(self, mock_cache_get):
+        """ Ensure any exception during metadata fetch handled gracefully """
+        mock_cache_get.side_effect = Exception
+
+        with pytest.raises(Exception):
+            metadata = dh_fetch_metadata()
+            self.assertEqual(metadata, None)

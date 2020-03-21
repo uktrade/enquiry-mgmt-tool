@@ -11,21 +11,22 @@ from redis.exceptions import ConnectionError
 
 from app.enquiries.common.datahub_utils import dh_fetch_metadata
 
-FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL}"
+FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS}"
+
 
 @periodic_task(
     run_every=(crontab(hour=FETCH_INTERVAL_HOURS, minute="0")),
     name="refresh_datahub_metadata",
     ignore_result=True,
 )
-def refresh_datahub_metadata(redis_host="redis", key="metadata"):
+def refresh_datahub_metadata():
 
-    with Redis(host=redis_host) as rds:
-        try:
-            rds.ping()
-
-            dh_metadata = dh_fetch_metadata()
-            rds.set(key, json.dumps(dh_metadata))
-            logging.info(f"Data Hub metadata last refreshed at {datetime.now()}")
-        except ConnectionError:
-            logging.error("Error connecting to Redis backend, cannot fetch metadata")
+    try:
+        # set expiry few minutes before next refresh so that we
+        # ensure refresh fetch data again
+        expiry_secs = settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS * 60 * 60 - (5 * 60)
+        dh_metadata = dh_fetch_metadata(expiry_secs=expiry_secs)
+        logging.info(f"Data Hub metadata last refreshed at {datetime.now()}")
+    except Exception as e:
+        logging.error(f"Error refreshing metadata, {e}")
+        raise e
