@@ -204,3 +204,15 @@ if REDIS_BASE_URL:
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_RESULT_SERIALIZER = 'json'
     CELERY_TIMEZONE = env('CELERY_TIMEZONE')
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": BROKER_URL,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
+                "SOCKET_TIMEOUT": 5,  # in seconds
+            }
+        }
+    }
