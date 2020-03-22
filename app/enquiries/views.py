@@ -11,8 +11,9 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app.enquiries import models, serializers
+from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms
+from app.enquiries import models, serializers
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -81,6 +82,24 @@ class EnquiryDetailView(TemplateView):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
         return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        enquiry = context["enquiry"]
+
+        create_response = dh_investment_create(enquiry)
+        if create_response.get("result"):
+            enquiry.refresh_from_db()
+            context["enquiry"] = enquiry
+        else:
+            context["errors"] = create_response["errors"]
+        response = render(request, self.template_name, context)
+        response.status_code = (
+            status.HTTP_400_BAD_REQUEST
+            if create_response["errors"]
+            else status.HTTP_201_CREATED
+        )
+        return response
 
 
 class EnquiryEditView(UpdateView):
