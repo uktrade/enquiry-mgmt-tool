@@ -156,7 +156,7 @@ def dh_company_search(company_name):
     # It is not an error for us if the request fails, this can happen if the
     # Access token is invalid, consider that there are no matches
     if response.status_code != status.HTTP_200_OK:
-        return companies
+        return companies, response.json()
 
     for company in response.json()["results"]:
         address = company["address"]
@@ -175,7 +175,7 @@ def dh_company_search(company_name):
             }
         )
 
-    return companies
+    return companies, None
 
 
 def dh_contact_search(contact_name):
@@ -184,14 +184,14 @@ def dh_contact_search(contact_name):
 
     Returns list of subset of fields for each contact found
     """
+    contacts = []
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
     payload = {"name": contact_name}
 
     response = dh_request("POST", url, payload)
 
-    contacts = []
     if response.status_code != status.HTTP_200_OK:
-        return contacts
+        return contacts, response.json()
 
     for contact in response.json()["results"]:
         contacts.append(
@@ -205,4 +205,4 @@ def dh_contact_search(contact_name):
             }
         )
 
-    return contacts
+    return contacts, None
