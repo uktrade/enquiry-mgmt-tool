@@ -306,13 +306,13 @@ def dh_investment_create(enquiry, metadata=None):
     ):
         prev_submission_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")
         stage = enquiry.get_datahub_project_status_display()
-        errors.append(
+        response["errors"].append(
             {
                 "enquiry": f"Enquiry can only be submitted once,"
                 f" previously submitted on {prev_submission_date}, stage {stage}"
             }
         )
-        return errors
+        return response
 
     if metadata is None:
         try:
