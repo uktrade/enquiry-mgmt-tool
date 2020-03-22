@@ -43,12 +43,14 @@
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Company in Data Hub
+                        {{ enquiry|get_field_verbose_name:"dh_assigned_company" }}
                     </dt>
                     <dd class="govuk-summary-list__value">
+                        {%if enquiry.dh_assigned_company %}
                         <a href="#">
-                            Alphabet Projects
+                             {{ enquiry.dh_assigned_company }}
                         </a>
+                        {% else %} {{ "----" }} {% endif %}
                     </dd>
                 </div>
             </dl>
@@ -68,12 +70,14 @@
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Company in Data Hub
+                        {{ enquiry|get_field_verbose_name:"dh_assigned_company" }}
                     </dt>
                     <dd class="govuk-summary-list__value">
+                        {%if enquiry.dh_assigned_company %}
                         <a href="#">
-                            Alphabet Projects
+                             {{ enquiry.dh_assigned_company }}
                         </a>
+                        {% else %} {{ "----" }} {% endif %}
                     </dd>
                 </div>
             </dl>
