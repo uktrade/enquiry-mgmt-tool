@@ -25,24 +25,21 @@
 
         <h4 class="govuk-heading-m">Company search</h2>
 
-        <div class="govuk-grid-row">
+        <form class="form" action="{% url 'enquiry-company-search' enquiry.id %}" method="post">
+            {% csrf_token %}
+            <div class="govuk-grid-row">
             <label class="govuk-label">Search for Data Hub company</label>
-            <input class="govuk-input" type="search">
+            <input class="govuk-input" name="search_term" id="search_term" type="search">
             <button class="govuk-button company-search-button">Search</button>
-        </div>
+            </div>
+        </form>
 
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
 
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
-        {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %}
+        {% for company in search_results %}
+        {{ company.name }} <br>
+        {{ company.address }} <br>
+        {% endfor %}
 
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
 

@@ -17,17 +17,26 @@ from app.enquiries import forms
 def get_companies():
     return [
         {
+            "datahub_id": "4859",
+            "name": "Alpha Corp",
+            "company_number": "24563",
+            "duns_number": "abc877",
+            "address": "IT Park, george town, California, 52532, United States",
+        },
+        {
+            "datahub_id": "7575",
             "name": "Test Aerospace Corp",
             "company_number": "12345",
             "duns_number": "abc123",
             "address": "Infinity street, test town, Los Angeles, 42351, United States",
         },
         {
-            "name": "Matchbox technologies",
+            "datahub_id": "9685",
+            "name": "Matchbox Test technologies",
             "company_number": "98765",
             "duns_number": "abc345",
             "address": "Mountain park, test town, California, 52532, United States",
-        }
+        },
     ]
 
 
@@ -118,6 +127,7 @@ class EnquiryEditView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # TODO: perform company search here
         context["companies"] = get_companies()
         return context
 
@@ -152,3 +162,12 @@ class EnquiryCompanySearchView(TemplateView):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
         return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        search_term = request.POST["search_term"].lower()
+        # TODO: perform company search here
+        context["search_results"] = [
+            c for c in get_companies() if search_term in c["name"].lower()
+        ]
+        return render(request, self.template_name, context)
