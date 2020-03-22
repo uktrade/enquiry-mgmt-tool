@@ -10,12 +10,14 @@ from django.urls import reverse
 from requests.exceptions import Timeout
 from rest_framework import status
 from unittest import mock
+from app.enquiries.tests.factories import EnquiryFactory
 
 from app.enquiries.common.datahub_utils import (
     dh_request,
     dh_fetch_metadata,
     dh_company_search,
     dh_contact_search,
+    dh_investment_create,
     DATA_HUB_METADATA_ENDPOINTS,
 )
 
@@ -164,3 +166,11 @@ class DataHubIntegrationTests(TestCase):
             response, error = dh_contact_search("")
             self.assertIsNotNone(error)
             self.assertEqual(error["name"], expected["name"])
+
+    def test_investment_creation_fails_company_not_in_dh(self):
+        """ Test that we cannot create investment if company doesn't exist in Data Hub """
+        enquiry = EnquiryFactory()
+        response = dh_investment_create(enquiry)
+        self.assertEqual(
+            response["errors"][0]["company"], f"{enquiry.company_name} doesn't exist in Data Hub"
+        )
