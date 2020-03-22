@@ -3,12 +3,14 @@ import logging
 import os
 import requests
 
-from datetime import datetime
+from datetime import datetime, date
 from django.conf import settings
 from django.core.cache import cache
 from mohawk import Sender
 from requests.exceptions import RequestException
 from rest_framework import status
+
+import app.enquiries.ref_data as ref_data
 
 
 DATA_HUB_METADATA_ENDPOINTS = (
@@ -50,7 +52,9 @@ def dh_request(method, url, payload, request_headers=None, timeout=15):
         if method == "GET":
             response = requests.get(url, headers=headers, timeout=timeout)
         elif method == "POST":
-            response = requests.post(url, headers=headers, json=payload, timeout=timeout)
+            response = requests.post(
+                url, headers=headers, json=payload, timeout=timeout
+            )
     except RequestException as e:
         logging.error(
             f"Error {e} while requesting {url}, request timeout set to {timeout} secs"
@@ -94,12 +98,14 @@ def _dh_fetch_metadata():
             metadata["failed"].append(endpoint)
 
     if metadata["failed"]:
-        logging.error(f"Error fetching Data Hub metadata for endpoints: {metadata['failed']}")
+        logging.error(
+            f"Error fetching Data Hub metadata for endpoints: {metadata['failed']}"
+        )
 
     return metadata
 
 
-def dh_fetch_metadata(cache_key='metadata', expiry_secs=60*60):
+def dh_fetch_metadata(cache_key="metadata", expiry_secs=60 * 60):
     """
     Fetches and caches the metadata with an expiry time
 
@@ -193,10 +199,7 @@ def dh_contact_search(contact_name, company_id):
     """
     contacts = []
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
-    payload = {
-        "name": contact_name,
-        "company": [company_id]
-    }
+    payload = {"name": contact_name, "company": [company_id]}
 
     response = dh_request("POST", url, payload)
 
@@ -296,6 +299,21 @@ def dh_investment_create(enquiry, metadata=None):
         response["errors"].append({"company": f"{enquiry.company_name} doesn't exist in Data Hub"})
         return response
 
+    # Same enquiry cannot be submitted if it is already done once
+    if (
+        enquiry.date_added_to_datahub
+        or enquiry.datahub_project_status != ref_data.DatahubProjectStatus.DEFAULT
+    ):
+        prev_submission_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")
+        stage = enquiry.get_datahub_project_status_display()
+        errors.append(
+            {
+                "enquiry": f"Enquiry can only be submitted once,"
+                f" previously submitted on {prev_submission_date}, stage {stage}"
+            }
+        )
+        return errors
+
     if metadata is None:
         try:
             dh_metadata = dh_fetch_metadata()
@@ -331,13 +349,19 @@ def dh_investment_create(enquiry, metadata=None):
     )
     payload["stage"] = get_dh_id(dh_metadata["investment-project-stage"], "Prospect")
     payload["investor_type"] = map_to_datahub_id(
-        enquiry.get_new_existing_investor_display(), dh_metadata, "investment-investor-type"
+        enquiry.get_new_existing_investor_display(),
+        dh_metadata,
+        "investment-investor-type",
     )
     payload["level_of_involvement"] = map_to_datahub_id(
-        enquiry.get_investor_involvement_level_display(), dh_metadata, "investment-involvement"
+        enquiry.get_investor_involvement_level_display(),
+        dh_metadata,
+        "investment-involvement",
     )
     payload["specific_programme"] = map_to_datahub_id(
-        enquiry.get_specific_investment_programme_display(), dh_metadata, "investment-specific-programme"
+        enquiry.get_specific_investment_programme_display(),
+        dh_metadata,
+        "investment-specific-programme",
     )
     # payload["client_contacts"] = [contact_id]
     payload["client_contacts"] = ["4ce2b0dd-a364-4e1e-9937-971f9001db0b"]
@@ -365,8 +389,12 @@ def dh_investment_create(enquiry, metadata=None):
     # TODO: This will be the user who is submitting the data
     # Since the SSO integration hasn't happened yet, use Adviser id here
     payload["referral_source_adviser"] = advisers[0]["datahub_id"]
-    payload["referral_source_activity"] = get_dh_id(dh_metadata["referral-source-activity"], "Website")
-    payload["referral_source_activity_website"] = get_dh_id(dh_metadata["referral-source-website"], "Invest in GREAT Britain")
+    payload["referral_source_activity"] = get_dh_id(
+        dh_metadata["referral-source-activity"], "Website"
+    )
+    payload["referral_source_activity_website"] = get_dh_id(
+        dh_metadata["referral-source-website"], "Invest in GREAT Britain"
+    )
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
 
@@ -376,5 +404,10 @@ def dh_investment_create(enquiry, metadata=None):
     except Exception as e:
         response["errors"].append({"investment_create": f"Error creating investment, {str(e)}"})
         return response
+
+    if result.ok:
+        enquiry.datahub_project_status = ref_data.DatahubProjectStatus.PROSPECT
+        enquiry.date_added_to_datahub = date.today()
+        enquiry.save()
 
     return response
