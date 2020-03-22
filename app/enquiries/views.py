@@ -14,6 +14,23 @@ from app.enquiries import models, serializers
 from app.enquiries import forms
 
 
+def get_companies():
+    return [
+        {
+            "name": "Test Aerospace Corp",
+            "company_number": "12345",
+            "duns_number": "abc123",
+            "address": "Infinity street, test town, Los Angeles, 42351, United States",
+        },
+        {
+            "name": "Matchbox technologies",
+            "company_number": "98765",
+            "duns_number": "abc345",
+            "address": "Mountain park, test town, California, 52532, United States",
+        }
+    ]
+
+
 class PaginationWithPaginationMeta(PageNumberPagination):
     """
     Metadata class to add additional metadata for use in template
@@ -99,6 +116,11 @@ class EnquiryEditView(UpdateView):
     form_class = forms.EnquiryForm
     template_name = "enquiry_edit.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["companies"] = get_companies()
+        return context
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
@@ -114,6 +136,7 @@ class EnquiryEditView(UpdateView):
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
+
 
 class EnquiryCompanySearchView(TemplateView):
     """
