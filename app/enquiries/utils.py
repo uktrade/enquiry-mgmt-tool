@@ -38,3 +38,21 @@ def row_to_enquiry(row: dict) -> Enquirer:
     e.enquirer = enquirer
     e.save()
     return e
+
+
+def csv_row_to_enquiry_filter_kwargs(e: dict) -> dict:
+    """
+    Takes a dict (represents a CSV row as exported by the tool ) and returns a dict representing a model query
+    i.e. enquiry__enquirer__first_name to access -> enquiry.enquirer.first_name
+    """
+    enquiry_kwargs = e.copy()
+    qs_kwargs = e.copy()
+
+    # build queryset filter params
+    for key in enquiry_kwargs:
+        if key.startswith("enquirer_"):
+            # accomodate enquirer being a separate model in the query
+            new_key = key.replace("enquirer_", "enquirer__")
+            qs_kwargs[new_key] = qs_kwargs.pop(key)
+    
+    return qs_kwargs

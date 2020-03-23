@@ -17,7 +17,7 @@ from rest_framework import status
 from unittest import mock
 
 import app.enquiries.ref_data as ref_data
-# from app.enquiries. import utils
+from app.enquiries import utils
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
     EnquiryFactory,
@@ -309,18 +309,9 @@ class EnquiryViewTestCase(TestCase):
         for e in enquiries:
             # generate filter keyword args dynamically
             # (can't modify the dict we arfe iterating over withouit raising an error so make a extra copy)
-            enquiry_kwargs = e.copy()
-            qs_kwargs = e.copy()
+            qs_kwargs = utils.csv_row_to_enquiry_filter_kwargs(e)
 
-            # build queryset filter params
-            for key in enquiry_kwargs:
-                if key.startswith("enquirer_"):
-                    # accomodate enquirer being a separate model in the query
-                    new_key = key.replace("enquirer_", "enquirer__")
-                    qs_kwargs[new_key] = qs_kwargs.pop(key)
-            self.assertTrue(Enquiry.objects.filter(
-                **qs_kwargs
-            ).exists())
+            self.assertTrue(Enquiry.objects.filter(**qs_kwargs).exists())
 
     def test_enquiry_import_post_error(self):
         """
