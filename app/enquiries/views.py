@@ -152,11 +152,9 @@ class ImportEnquiriesView(TemplateView):
         enquiries_key = "enquiries"
 
         try:
-            if enquiries_key in request.FILES or enquiries_key in request.POST:
+            if enquiries_key in request.FILES:
                 payload = (
                     request.FILES.get(enquiries_key)
-                    if request.FILES.get(enquiries_key)
-                    else request.POST.get(enquiries_key)
                 )
                 records = self.process_upload(payload)
             else:
