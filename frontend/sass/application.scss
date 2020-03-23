@@ -132,14 +132,23 @@ button.enquiry-edit-button {
 }
 
 .company-search-result {
-    background-color: govuk-colour("light-grey");
     padding: 1em;
-    border: 1px solid govuk-colour("mid-grey");
+    border: 1px solid $govuk-border-colour;
     margin-top: 1em;
+}
+
+.company-search-result:hover {
+    background-color: rgba(govuk-colour("light-grey"), 0.5);
+    border: 1px solid govuk-colour("light-blue");
+
+    .company-search-result-name {
+        color: govuk-colour("light-blue");
+    }
 }
 
 .company-search-result-name {
     font-weight: bold;
+    margin-bottom: 0.5em;
 }
 
 .company-search-link {
@@ -158,6 +167,18 @@ a.link-no-visited:visited {
     color: #005ea5;
 }
 
+a.link-no-decoration {
+    text-decoration: none;
+}
+
 button.company-search-button {
     margin-top: 1em;
+}
+
+span.company-search-result-address-label {
+    color: govuk-colour("dark-grey")
+}
+
+span.company-search-result-address-value {
+    color: govuk-colour("black")
 }

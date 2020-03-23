@@ -1,8 +1,10 @@
+<a class="govuk-link link-no-visited link-no-decoration" href="{% url 'enquiry-edit' enquiry.id %}?dhacid={{ datahub_id }}">
 <div class="company-search-result">
     <div class="company-search-result-name">
         {{ company_name }}
     </div>
     <div class="company-search-result-address">
-        {{ company_address }}
+        <span class="company-search-result-address-label">Address </span><span class="company-search-result-address-value">{{ company_address }}</span>
     </div>
 </div>
+</a>
