@@ -68,11 +68,6 @@ def canned_enquiry():
         "project_success_date": date(2022, 2, 3),
     }
 
-REST_FRAMEWORK_TEST = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
-}
-
 
 class EnquiryViewTestCase(TestCase):
     def setUp(self):
