@@ -1,4 +1,5 @@
 import csv
+import io
 import pytest
 import pytz
 import random
@@ -22,6 +23,7 @@ from unittest import mock
 import app.enquiries.ref_data as ref_data
 import app.enquiries.views as enquiry_views
 import app.enquiries.tests.utils as test_utils
+
 from app.enquiries import utils
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
@@ -38,9 +40,6 @@ from app.enquiries.views import ImportEnquiriesView
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
 headers_json = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/json"}
-
-enquiry_field_names = [f.name for f in Enquiry._meta.fields]
-enquirer_field_names = [f.name for f in Enquirer._meta.fields]
 
 
 def canned_enquiry():
@@ -124,9 +123,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         omit_fields = ["owner"]
         ref_fields = ref_data.MAP_ENQUIRY_FIELD_TO_REF_DATA
 
-        for name in enquiry_field_names:
-            if name == "enquirer":
-                continue
+        for name in utils.ENQUIRY_OWN_FIELD_NAMES:
             factory_value = getattr(factory_item, name)
             db_value = response_item[name]
             if name in omit_fields:
@@ -151,6 +148,21 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
             self.assertEqual(factory_value, db_value)
 
+    def assert_enquiry_equals_csv_row(self, enquiry, csv_row):
+        for name in utils.ENQUIRY_OWN_FIELD_NAMES:
+            enquiry_val = getattr(enquiry, name)
+            self.assertEqual(
+                csv_row[name], str(enquiry_val) if enquiry_val != None else ""
+            )
+        if enquiry.enquirer:
+            for enquirer_key in utils.ENQUIRER_FIELD_NAMES:
+                enquirer_val = getattr(enquiry.enquirer, enquirer_key)
+                csv_row_key = f"enquirer_{enquirer_key}"
+                self.assertEqual(
+                    csv_row[csv_row_key],
+                    str(enquirer_val) if enquirer_val != None else "",
+                )
+
     def create_enquiry_and_assert(self, enquiry):
         """Creates an Enquiry using the API and asserts on the response status"""
         response = self.client.post(
@@ -166,7 +178,9 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         return response.context["enquiry"]
 
-    @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
+    @pytest.mark.skip(
+        reason="@TODO need to investigate why the Owner model cannot be serialized"
+    )
     def test_enquiry_list(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         enquiries = [EnquiryFactory() for i in range(2)]
@@ -180,13 +194,15 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         """Test retrieving enquiry list and ensure we get expected count"""
         enquiries = EnquiryFactory.create_batch(2)
         response = self.client.get(reverse("enquiry-list"), **headers)
-        soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity-list-item")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         count = len(enquiry_els)
         self.assertEqual(count, len(enquiries))
 
-    @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
+    @pytest.mark.skip(
+        reason="@TODO need to investigate why the Owner model cannot be serialized"
+    )
     def test_enquiry_list_content_type_json(self):
         response = self.client.get(reverse("enquiry-list"))
         self.assertIn(
@@ -483,7 +499,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(num_items, final_count)
             self.assertTrue(len(body) > settings.UPLOAD_CHUNK_SIZE)
-    
+
     def test_helper_login(self):
         result = self.login()
         self.assertEqual(result, True)
@@ -510,7 +526,9 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 2)
 
-    @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
+    @pytest.mark.skip(
+        reason="@TODO need to investigate why the Owner model cannot be serialized"
+    )
     def test_enquiry_list_filtered_unassigned(self):
         """Test retrieving enquiry list and ensure we get expected count"""
 
@@ -573,23 +591,25 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             reverse("enquiry-list"), {"owner__id": owner.id}, **headers
         )
 
-        soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity-list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
 
         # owner unassigned
-        response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers)
-        soup = BeautifulSoup(response.content, 'html.parser')
+        response = self.client.get(
+            reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers
+        )
+        soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity-list-item")
-
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
 
-
-    @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
+    @pytest.mark.skip(
+        reason="@TODO need to investigate why the Owner model cannot be serialized"
+    )
     def test_enquiry_list_filtered_enquiry_stage(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
@@ -612,7 +632,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 0)
 
-
     def test_enquiry_list_filtered_enquiry_stage_html(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
@@ -621,10 +640,11 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         # enquiry stage - ADDED_TO_DATAHUB
         response = self.client.get(
             reverse("enquiry-list"),
-            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB}, **headers,
+            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
+            **headers,
         )
-        
-        soup = BeautifulSoup(response.content, 'html.parser')
+
+        soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity-list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -632,10 +652,12 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
         # enquiry stage - NON_FDI
         response = self.client.get(
-            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}, **headers
+            reverse("enquiry-list"),
+            {"enquiry_stage": ref_data.EnquiryStage.NON_FDI},
+            **headers,
         )
-        
-        soup = BeautifulSoup(response.content, 'html.parser')
+
+        soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity-list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -670,3 +692,21 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertIn(
             settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition")
         )
+
+    def test_export_view(self):
+        enquiries = EnquiryFactory.create_batch(5)
+        response = self.client.get(reverse("enquiry-export"))
+        reader = csv.DictReader(io.StringIO(response.content.decode()))
+        row_count = 0
+
+        self.assertTrue("text/csv" in response.get("Content-Type"))
+        self.assertIn(
+            settings.EXPORT_OUTPUT_FILE_SLUG, response.get("Content-Disposition"),
+        )
+
+        for i, csv_row in enumerate(reader):
+            enquiry = enquiries[i]
+            self.assert_enquiry_equals_csv_row(enquiry, csv_row)
+            row_count += 1
+
+        self.assertEqual(row_count, 5)

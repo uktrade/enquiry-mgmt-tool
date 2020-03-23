@@ -209,7 +209,11 @@ STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
 IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
+IMPORT_TEMPLATE_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 UPLOAD_CHUNK_SIZE = 256000
+EXPORT_OUTPUT_FILE_SLUG = 'rtt_enquiries_export'
+EXPORT_OUTPUT_FILE_EXT = 'csv'
+EXPORT_OUTPUT_FILE_MIMETYPE = 'text/csv'
 
 # Data Hub settings
 # TODO: Access token can be removed once SSO is integrated as it comes from SSO directly

@@ -40,6 +40,7 @@ urlpatterns = [
     path(
         "enquiries/<int:pk>/edit", views.EnquiryEditView.as_view(), name="enquiry-edit"
     ),
+    path('enquiries/export/', views.ExportEnquiriesView.as_view(), name="enquiry-export"),
     path("healthcheck/ping", ping.ping, name="ping"),
 ]
 

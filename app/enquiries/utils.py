@@ -1,8 +1,32 @@
+import csv
+import io
+import typing
+
 from django.conf import settings
+
 from openpyxl import Workbook
 
 import app.enquiries.ref_data as ref_data
 from app.enquiries.models import Enquirer, Enquiry
+
+
+from django.db.models import QuerySet
+
+from app.enquiries import models, serializers
+
+
+ENQUIRER_FIELDS = models.Enquirer._meta.get_fields()
+ENQUIRY_FIELDS = models.Enquiry._meta.get_fields()
+OWNER_FIELDS = models.Owner._meta.get_fields()
+
+ENQUIRER_FIELD_NAMES = [f.name for f in ENQUIRER_FIELDS]
+ENQUIRY_FIELD_NAMES = [f.name for f in ENQUIRY_FIELDS]
+ENQUIRY_OWN_FIELD_NAMES = list(filter(lambda x: x != "enquirer", ENQUIRY_FIELD_NAMES))
+OWNER_FIELD_NAMES = [f.name for f in OWNER_FIELDS]
+
+EXPORT_FIELD_NAMES = ENQUIRY_OWN_FIELD_NAMES + [
+    "enquirer_" + n for n in ENQUIRER_FIELD_NAMES
+]
 
 
 def get_oauth_payload(request):
@@ -17,7 +41,7 @@ def row_to_enquiry(row: dict) -> Enquirer:
     """
     Takes an dict representing a CSV row and create an Enquiry instance before saving it to the db
     """
-    enquirer = Enquirer(
+    enquirer = models.Enquirer(
         first_name=row["enquirer_first_name"],
         last_name=row["enquirer_last_name"],
         job_title=row["enquirer_job_title"],
@@ -58,10 +82,9 @@ def csv_row_to_enquiry_filter_kwargs(csv_row: dict) -> dict:
 
     # build queryset filter params
     qs_kwargs = {
-        key.replace('enquirer_', 'enquirer__'): value
-        for key, value in csv_row.items()
+        key.replace("enquirer_", "enquirer__"): value for key, value in csv_row.items()
     }
-    
+
     return qs_kwargs
 
 
@@ -106,3 +129,42 @@ def generate_import_template(file_obj):
             row = [str(v) for v in choice]
             current_sheet.append(row)
     book.save(file_obj)
+
+
+def enquiry_to_dict(e: models.Enquiry) -> dict:
+    output = {}
+
+    for f in ENQUIRY_FIELDS:
+        if f.name == "enquirer":
+            output.update(enquirer_to_dict(getattr(e, f.name)))
+        else:
+            output[f.name] = getattr(e, f.name)
+
+    return output
+
+
+def enquirer_to_dict(e: models.Enquirer) -> dict:
+    output = {}
+
+    for f in ENQUIRER_FIELDS:
+        col_name = "enquirer_" + f.name
+        output[col_name] = getattr(e, f.name)
+
+    return output
+
+
+def export_to_csv(qs: QuerySet, fp: typing.IO):
+    """
+    Exports a CSV dump of the enquiries to a CSV file
+    :qs: Django queryset
+    :fp: file-like object. This includes Django HTTP response object
+    :return: void
+    """
+    output = []
+    writer = csv.DictWriter(fp, fieldnames=EXPORT_FIELD_NAMES)
+    writer.writeheader()
+
+    for e in qs.iterator():
+        data = enquiry_to_dict(e)
+        output.append(data)
+        writer.writerow(data)
