@@ -18,24 +18,24 @@ def get_companies():
     return [
         {
             "datahub_id": "4859",
-            "name": "Alpha Corp",
-            "company_number": "24563",
-            "duns_number": "abc877",
-            "address": "IT Park, george town, California, 52532, United States",
+            "name": "ALPHABET PROJECTS UK LTD",
+            "company_number": "87654",
+            "duns_number": "abc345",
+            "address": "Alphabet Projects UK Ltd, 50 High Street, London, United Kingdom",
         },
         {
             "datahub_id": "7575",
-            "name": "Test Aerospace Corp",
-            "company_number": "12345",
-            "duns_number": "abc123",
-            "address": "Infinity street, test town, Los Angeles, 42351, United States",
+            "name": "ALPHABET PROJECTS INC",
+            "company_number": "87876",
+            "duns_number": "abc456",
+            "address": "Alphabet Projects Inc, 50 Main Street, New York, United States",
         },
         {
             "datahub_id": "9685",
-            "name": "Matchbox Test technologies",
-            "company_number": "98765",
-            "duns_number": "abc345",
-            "address": "Mountain park, test town, California, 52532, United States",
+            "name": "ALPHABET PROJECTS DEUTSCHLAND GMBH",
+            "company_number": "87887",
+            "duns_number": "abc567",
+            "address": "Alphabet Projects DE GMBH, Hauptstraße 50, Berlin, Germany",
         },
     ]
 

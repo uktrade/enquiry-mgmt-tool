@@ -37,8 +37,7 @@
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
 
         {% for company in search_results %}
-        {{ company.name }} <br>
-        {{ company.address }} <br>
+        {% include 'snippets/company_search_result.html' with company_name=company.name company_address=company.address %}
         {% endfor %}
 
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break">

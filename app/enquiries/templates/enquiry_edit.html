@@ -100,10 +100,8 @@
                     
                     <!-- {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %} -->
                     <!-- Display Company search results -->
-                    <br>
                     {% for company in companies %}
-                    Name: {{ company.name }} <br>
-                    Address: {{ company.address }} <br>
+                    {% include 'snippets/company_search_result.html' with company_name=company.name company_address=company.address %}
                     {% endfor %}
 
                     <!-- Assign selected company from the above search results to below fields -->
