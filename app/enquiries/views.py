@@ -128,7 +128,7 @@ class EnquiryAdd(APIView):
                 "data": "goes here",
                 "back_url": reverse("enquiry-list"),
                 "main_bar_right_btn": {
-                    "text": "Template download",
+                    "text": "Download template",
                     'href': '',
                     'element': 'a'
                 },
