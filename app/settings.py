@@ -15,6 +15,9 @@ import logging.config
 import os
 import sentry_sdk
 
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
 
@@ -56,7 +59,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Configure Sentry
 if not env.bool('DEBUG'):
     DJANGO_SENTRY_DSN = env('DJANGO_SENTRY_DSN')
-    sentry_sdk.init(DJANGO_SENTRY_DSN)
+    sentry_sdk.init(
+        dsn=DJANGO_SENTRY_DSN,
+        integrations=[
+            CeleryIntegration(),
+            DjangoIntegration(),
+        ],
+    )
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -177,32 +186,24 @@ STATIC_URL = '/static/'
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
 
-# Data hub
-dh_metadata = {}
-DATA_HUB_ACCESS_TOKEN=env('DATA_HUB_ACCESS_TOKEN')
-DATA_HUB_METADATA_URL=env('DATA_HUB_METADATA_URL')
-DATA_HUB_COMPANY_SEARCH_URL=env('DATA_HUB_COMPANY_SEARCH_URL')
-DATA_HUB_CONTACT_SEARCH_URL=env('DATA_HUB_CONTACT_SEARCH_URL')
+# Data Hub settings
+# TODO: Access token can be removed once SSO is integrated as it comes from SSO directly
+DATA_HUB_ACCESS_TOKEN = env('DATA_HUB_ACCESS_TOKEN')
+DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
+DATA_HUB_COMPANY_SEARCH_URL = env('DATA_HUB_COMPANY_SEARCH_URL')
+DATA_HUB_CONTACT_SEARCH_URL = env('DATA_HUB_CONTACT_SEARCH_URL')
 
-HAWK_ID=env("HAWK_ID")
-HAWK_CREDENTIALS = {
-    env("HAWK_ID"): {
-        "id": env("HAWK_ID"),
-        "key": env("HAWK_KEY"),
-        "algorithm": "sha256",
-    }
-}
+DATA_HUB_HAWK_ID = env("DATA_HUB_HAWK_ID")
+DATA_HUB_HAWK_KEY = env("DATA_HUB_HAWK_KEY")
 
 # Celery and Redis
+CACHES = {}
 DATA_HUB_METADATA_FETCH_INTERVAL_HOURS=env.int('DATA_HUB_METADATA_FETCH_INTERVAL_HOURS', default=4)
 REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
 if REDIS_BASE_URL:
     REDIS_CELERY_DB = env('REDIS_CELERY_DB', default=1)
     BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}'
     CELERY_RESULT_BACKEND = BROKER_URL
-    CELERY_ACCEPT_CONTENT = ['application/json']
-    CELERY_TASK_SERIALIZER = 'json'
-    CELERY_RESULT_SERIALIZER = 'json'
     CELERY_TIMEZONE = env('CELERY_TIMEZONE')
 
     CACHES = {

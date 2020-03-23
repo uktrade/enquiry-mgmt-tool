@@ -21,8 +21,8 @@ DATA_HUB_COMPANY_SEARCH_URL=https://datahub/company/search
 DATA_HUB_CONTACT_SEARCH_URL=https://datahub/contact/search
 
 # Hawk
-HAWK_ID=hawk-id
-HAWK_KEY=hawk-key
+DATA_HUB_HAWK_ID=hawk-id
+DATA_HUB_HAWK_KEY=hawk-key
 
 # Celery and Redis
 DATA_HUB_METADATA_FETCH_INTERVAL=4      # in hours

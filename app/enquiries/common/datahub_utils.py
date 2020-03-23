@@ -11,6 +11,19 @@ from requests.exceptions import RequestException
 from rest_framework import status
 
 
+DATA_HUB_METADATA_ENDPOINTS = (
+    "country",
+    "fdi-type",
+    "investment-investor-type",
+    "investment-involvement",
+    "investment-project-stage",
+    "investment-specific-programme",
+    "investment-type",
+    "referral-source-activity",
+    "referral-source-website",
+    "sector",
+)
+
 def dh_request(method, url, payload, request_headers=None, timeout=15):
     """
     Helper function to perform Data Hub request
@@ -26,6 +39,8 @@ def dh_request(method, url, payload, request_headers=None, timeout=15):
     if request_headers:
         headers = request_headers
     else:
+        # TODO: We don't need to send the access token in the headers
+        # once SSO is integrated as it comes from SSO directly
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {settings.DATA_HUB_ACCESS_TOKEN}",
@@ -49,25 +64,15 @@ def _dh_fetch_metadata():
     """
     Fetches metadata from Data Hub as we need that to call Data Hub APIs
     """
-
-    endpoints = (
-        "country",
-        "fdi-type",
-        "investment-investor-type",
-        "investment-involvement",
-        "investment-project-stage",
-        "investment-specific-programme",
-        "investment-type",
-        "referral-source-activity",
-        "referral-source-website",
-        "sector",
-    )
-
     logging.info(f"Fetching metadata at {datetime.now()}")
-    credentials = settings.HAWK_CREDENTIALS[settings.HAWK_ID]
+    credentials = {
+        "id": settings.DATA_HUB_HAWK_ID,
+        "key": settings.DATA_HUB_HAWK_KEY,
+        "algorithm": "sha256",
+    }
 
     metadata = {"failed": []}
-    for endpoint in endpoints:
+    for endpoint in DATA_HUB_METADATA_ENDPOINTS:
         meta_url = os.path.join(settings.DATA_HUB_METADATA_URL, endpoint)
 
         logging.info(f"Fetching {meta_url} ...")
@@ -106,7 +111,7 @@ def dh_fetch_metadata(cache_key='metadata', expiry_secs=60*60):
         if not cached_metadata:
             logging.info("Metadata expired in cache, fetching again ...")
             cached_metadata = _dh_fetch_metadata()
-            cache.set(cache_key, json.dumps(cached_metadata), timeout=expiry_secs)
+            cache.set(cache_key, cached_metadata, timeout=expiry_secs)
             return cached_metadata
 
         logging.info(f"Metadata valid in cache (expiry_secs={expiry_secs})")
@@ -154,8 +159,10 @@ def dh_company_search(company_name):
     response = dh_request("POST", url, payload)
 
     # It is not an error for us if the request fails, this can happen if the
-    # Access token is invalid, consider that there are no matches
-    if response.status_code != status.HTTP_200_OK:
+    # Access token is invalid, consider that there are no matches however
+    # user is notified of the error to take appropriate action
+    # TODO: revisit once SSO integration is completed
+    if not response.ok:
         return companies, response.json()
 
     for company in response.json()["results"]:
@@ -190,7 +197,7 @@ def dh_contact_search(contact_name):
 
     response = dh_request("POST", url, payload)
 
-    if response.status_code != status.HTTP_200_OK:
+    if not response.ok:
         return contacts, response.json()
 
     for contact in response.json()["results"]:

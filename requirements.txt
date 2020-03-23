@@ -48,6 +48,7 @@ pytest-django==3.7.0
 pytz==2019.3
 redis==3.4.1
 requests==2.22.0
+requests-mock==1.7.0
 sentry-sdk==0.14.2
 six==1.13.0
 sqlparse==0.3.0

@@ -20,13 +20,10 @@ FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS}"
     ignore_result=True,
 )
 def refresh_datahub_metadata():
+    """ Periodically refreshes metadata in cache """
 
-    try:
-        # set expiry few minutes before next refresh so that we
-        # ensure refresh fetch data again
-        expiry_secs = settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS * 60 * 60 - (5 * 60)
-        dh_metadata = dh_fetch_metadata(expiry_secs=expiry_secs)
-        logging.info(f"Data Hub metadata last refreshed at {datetime.now()}")
-    except Exception as e:
-        logging.error(f"Error refreshing metadata, {e}")
-        raise e
+    # set expiry few minutes before next refresh so that we
+    # ensure refresh fetch data again
+    expiry_secs = settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS * 60 * 60 - (5 * 60)
+    dh_metadata = dh_fetch_metadata(expiry_secs=expiry_secs)
+    logging.info(f"Data Hub metadata last refreshed at {datetime.now()}")
