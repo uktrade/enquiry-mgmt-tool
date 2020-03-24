@@ -75,7 +75,6 @@
                                     <span class="list-item-value">{{ result.enquirer.request_for_call }}</span>
                                 </div>
                             </div>
-                            <!-- <div class="collection-filter-summary">Stage: New</div> -->
                         </div>
                     </div>
                 </li>
@@ -87,22 +86,22 @@
             <nav class="pagination">
 
                 <ol class="pagination-list">
-                    {%if previous is not None %}
+                    {%if previous %}
                     <li class="pagination-list-item">
                         <a class="pagination-link" href="{{ previous }}">Previous</a>
                     </li>
                     {%endif%}
 
                     {% for page in page_range %}
-                    {% if page|stringformat:"s" == current_page %}
-                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}">
-                        <li class="pagination-list-item pagination-list-item-current">{{ page }}</li>
-                    </a>
-                    {% else %}
-                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}">
-                        <li class="pagination-list-item">{{ page }}</li>
-                    </a>
-                    {% endif %}
+                        {% if page|stringformat:"s" == current_page %}
+                        <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}">
+                            <li class="pagination-list-item pagination-list-item-current">{{ page }}</li>
+                        </a>
+                        {% else %}
+                        <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}">
+                            <li class="pagination-list-item">{{ page }}</li>
+                        </a>
+                        {% endif %}
                     {% endfor %}
 
                     {%if next is not None %}

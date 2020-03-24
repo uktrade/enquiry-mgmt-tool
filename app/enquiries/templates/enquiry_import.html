@@ -19,7 +19,7 @@
         <div class="govuk-error-summary__body">
         <ul class="govuk-list govuk-error-summary__list">
             {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            <li class="{{ message.tags }}">{{ message }}</li>
             {% endfor %}
         </ul>
         </div>
