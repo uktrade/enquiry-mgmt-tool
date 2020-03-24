@@ -38,6 +38,18 @@ This project uses Docker compose to setup and run all the necessary components. 
 
 You can view the app at `http://localhost:8000/enquiries/`
 
+## Configuration
+
+### SSO
+Use the following ENV variable to toggle SSO:
+
+    FEATURE_ENFORCE_STAFF_SSO_ENABLED=1 on
+    FEATURE_ENFORCE_STAFF_SSO_ENABLED=0 off
+
+Or in app/settings/*
+
+    ENFORCE_STAFF_SSO_ENABLED=True on
+    ENFORCE_STAFF_SSO_ENABLED=False off
 ## More useful info
 
 If you already have the app container running and want to restart, you can use this:
@@ -54,3 +66,17 @@ To build the styles and watch for changes use the `sass:watch` script instead (t
     ```
 
 For testing, you might want to load sample enquiries into the database. Sample data is available in json format, please ask the development team for more information.
+
+### Running tests
+
+To run an individual test run the following command:
+
+`pytest -s -vvv -k test_name app/enquiries`
+
+### Switching branches
+
+Remember to rebuild images (whewre dependancies have changed) and deleting __pycache__ directories
+
+Run the following from the project root to delete __pycache__ directories:
+
+`find . -type d -iname __pycache__ -exec rm -Rf {} \;`

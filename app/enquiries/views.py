@@ -1,5 +1,7 @@
 from django.db import transaction
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator as DjangoPaginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.base import TemplateView
@@ -34,7 +36,7 @@ class PaginationWithPaginationMeta(PageNumberPagination):
         )
 
 
-class EnquiryListView(ListAPIView):
+class EnquiryListView(LoginRequiredMixin, ListAPIView):
     """
     List all enquiries.
 
@@ -53,7 +55,7 @@ class EnquiryListView(ListAPIView):
         return models.Enquiry.objects.all()
 
 
-class EnquiryCreateView(APIView):
+class EnquiryCreateView(LoginRequiredMixin, APIView):
     """
     Creates new Enquiry
     """
@@ -67,7 +69,7 @@ class EnquiryCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EnquiryDetailView(TemplateView):
+class EnquiryDetailView(LoginRequiredMixin, TemplateView):
     """
     View to provide complete details of an Enquiry
     """
@@ -83,7 +85,7 @@ class EnquiryDetailView(TemplateView):
         return context
 
 
-class EnquiryEditView(UpdateView):
+class EnquiryEditView(LoginRequiredMixin, UpdateView):
     """
     View to provide complete details of an Enquiry
     """

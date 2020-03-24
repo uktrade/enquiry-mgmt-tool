@@ -1,14 +1,19 @@
 from unittest import mock
+from django.contrib.auth import get_user_model
 from django.db.utils import OperationalError
-from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework import status
+
+import app.enquiries.tests.utils as test_utils
 
 from app.enquiries import models
 from app.enquiries.tests.factories import EnquiryFactory
 
 
-class ServiceHealthCheckTestCase(TestCase):
+class ServiceHealthCheckTestCase(test_utils.BaseEnquiryTestCase):
+    def setUp(self):
+        super().setUp()
+
     def test_service_status_healthy(self):
         """
         Ping service health check route and ensure we can connect
