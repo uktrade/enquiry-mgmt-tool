@@ -1,0 +1,10 @@
+{% load enquiries_extras %}
+<div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+        {{ instance|get_field_verbose_name:field }}
+    </dt>
+    <dd class="govuk-summary-list__value">
+        {% if instance|get_field_value:field %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
+    <dd class="govuk-summary-list__actions">
+    </dd>
+</div>

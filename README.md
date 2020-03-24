@@ -15,7 +15,7 @@ This project uses Docker compose to setup and run all the necessary components. 
 
 1.  Set up your .env file:
     ```shell
-    cp sample_env app/.env
+    cp sample_env app/settings/.env
     ```
 
 1.  Build and run the necessary containers for the required environment:

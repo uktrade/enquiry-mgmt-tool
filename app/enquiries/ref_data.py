@@ -346,8 +346,8 @@ class InvestmentType(models.TextChoices):
 
 class NewExistingInvestor(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    NEW = "NEW,", _("New investor")
-    EXISTING = "EXISTING,", _("Existing investor")
+    NEW = "NEW", _("New investor")
+    EXISTING = "EXISTING", _("Existing investor")
 
 
 class InvestorInvolvement(models.TextChoices):

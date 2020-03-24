@@ -112,4 +112,5 @@ app/enquiries/fixtures/
 
 # app specific env files
 app/.env
+app/settings/.env
 celerybeat-schedule

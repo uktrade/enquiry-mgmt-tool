@@ -76,7 +76,9 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG')
 
-ALLOWED_HOSTS = []
+# As app is running behind a host-based router supplied by Heroku or other
+# PaaS, we can open ALLOWED_HOSTS
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -96,6 +98,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -135,12 +138,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('POSTGRES_DB_NAME', default='postgres'),
-        'USER': env('POSTGRES_DB_USER', default='postgres'),
-        'PASSWORD': env('POSTGRES_DB_PASSWORD'),
-        'HOST': env('POSTGRES_DB_HOST'),
-        'PORT': env.int('POSTGRES_DB_PORT', default=5432),
+        **env.db('DATABASE_URL'),
     }
 }
 
@@ -181,6 +179,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255

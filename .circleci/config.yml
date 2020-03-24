@@ -21,6 +21,7 @@ jobs:
       DATA_HUB_HAWK_ID: 'hawk-id'
       DATA_HUB_HAWK_KEY: 'hawk-key'
       DATA_HUB_METADATA_FETCH_INTERVAL: '4'
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
 
     docker:
       - image: circleci/python:3.6.4
@@ -30,6 +31,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: password
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
 
     steps:
       - checkout

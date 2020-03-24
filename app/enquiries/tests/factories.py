@@ -29,6 +29,7 @@ def get_display_value(ref_data_model, label):
 class EnquirerFactory(factory.django.DjangoModelFactory):
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
+    job_title = random.choice(["CEO", "COO", "Founder", "CFO"])
     email = factory.Faker("email")
     phone = factory.Faker("phone_number")
     request_for_call = get_random_item(ref_data.RequestForCall)
