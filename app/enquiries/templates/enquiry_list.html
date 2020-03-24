@@ -41,7 +41,11 @@
                             <div class="entity-badges">
                                 <div class="entity-badges-list">
                                     <div class="entity-badges-item">
-                                        <span>{% if result.enquiry_stage == "Awaiting response from Investor" %}{{ "Awaiting response" }}{% else %}{{ result.enquiry_stage }}{% endif %}</span>
+                                        <span>
+                                            {% if result.enquiry_stage == "Awaiting response from Investor" %}
+                                            {{ "Awaiting response" }}{% else %}{{ result.enquiry_stage }}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                     <div class="entity-badges-item">
                                         <span>{% if result.owner %}{{ result.owner.user }} {%else%} {{ "Unassigned" }}
