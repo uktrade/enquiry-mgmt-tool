@@ -15,60 +15,60 @@
                 <div class="collection-header-row">
                     <div class="collection-header-intro">
                         <span class="big-number-of-enquiries">{{ count }}</span> enquiries
-                        <button onclick="window.location.href=`{% url 'enquiries-import' %}`"
+                        <a href="{% url 'enquiries-import' %}"
                             class="add-enquiries-button govuk-button govuk-button--secondary"
                             data-module="govuk-button">
                             Add enquiries
-                        </button>
+                        </a>
                     </div>
                     <!-- <div class="collection-filter-summary">Stage: New</div> -->
                 </div>
                 <!-- <div class="collection-header-row">
-                            <span class="header-page-number">Page 1 of 5</span>
-                        </div> -->
+                    <span class="header-page-number">Page 1 of 5</span>
+                </div> -->
             </header>
             <ol class="entity-list">
-                {% for obj in results %}
+                {% for result in results %}
                 <li class="entity-list-item">
                     <div class="entity-enquiry">
                         <div class="entity-header">
                             <div class="entity-title">
                                 <h3>
                                     <a class="entity-title-link"
-                                        href="{% url 'enquiry-detail' obj.id %}">{{ obj.company_name }}</a>
+                                        href="{% url 'enquiry-detail' result.id %}">{{ result.company_name }}</a>
                                 </h3>
                             </div>
                             <div class="entity-badges">
                                 <div class="entity-badges-list">
                                     <div class="entity-badges-item">
-                                        <span>{% if obj.enquiry_stage == "Awaiting response from Investor" %}{{ "Awaiting response" }}{% else %}{{ obj.enquiry_stage }}{% endif %}</span>
+                                        <span>{% if result.enquiry_stage == "Awaiting response from Investor" %}{{ "Awaiting response" }}{% else %}{{ result.enquiry_stage }}{% endif %}</span>
                                     </div>
                                     <div class="entity-badges-item">
-                                        <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }}
+                                        <span>{% if result.owner %}{{ result.owner.user }} {%else%} {{ "Unassigned" }}
                                             {%endif%}</span>
                                     </div>
                                     <div class="entity-badges-item">
-                                        <span>{{ obj.country }}</span>
+                                        <span>{{ result.country }}</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="entity-subtitle">
-                                Date received {{ obj.created }}
+                                Date received {{ result.created }}
                             </div>
                         </div>
                         <div class="entity-content">
                             <div class="entity-content-list">
                                 <div class="entity-content-item">
                                     <span class="list-item-label">Enquiry text</span>
-                                    <span class="list-item-value">{{ obj.enquiry_text }}</span>
+                                    <span class="list-item-value">{{ result.enquiry_text }}</span>
                                 </div>
                                 <div class="entity-content-item">
                                     <span class="list-item-label">Date last updated</span>
-                                    <span class="list-item-value">{{ obj.modified }}</span>
+                                    <span class="list-item-value">{{ result.modified }}</span>
                                 </div>
                                 <div class="entity-content-item">
                                     <span class="list-item-label">Call?</span>
-                                    <span class="list-item-value">{{ obj.enquirer.request_for_call }}</span>
+                                    <span class="list-item-value">{{ result.enquirer.request_for_call }}</span>
                                 </div>
                             </div>
                             <!-- <div class="collection-filter-summary">Stage: New</div> -->
