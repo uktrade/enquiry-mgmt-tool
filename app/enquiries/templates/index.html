@@ -1,0 +1,20 @@
+{% include 'base.html' %}
+
+{% include 'partials/govuk_header_partial.html' %}
+
+<div class="govuk-width-container">
+  <main class="govuk-main-wrapper">
+    <div class="govuk-grid-row">
+      <h1 class="govuk-heading-xl">Hello</h1>
+    </div>
+    <div class="govuk-grid-row">
+      <p>
+        If you are not automatically redirected to the enquiries page, <a class="govuk-link" href="{% url 'enquiry-list' %}">click here.</a>
+      </p>
+    </div>
+  </main>
+</div>
+
+{% include 'partials/govuk_footer_partial.html' %}
+
+{% include 'partials/govuk_frontend_script_partial.html' %}

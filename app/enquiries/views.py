@@ -1,9 +1,10 @@
+from django.db import transaction
 from django.conf import settings
 from django.core.paginator import Paginator as DjangoPaginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
-from rest_framework import status
+from rest_framework import generics, status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app.enquiries import models, serializers
+from app.enquiries import forms
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -87,13 +89,22 @@ class EnquiryEditView(UpdateView):
     """
 
     model = models.Enquiry
-    fields = "__all__"
+    form_class = forms.EnquiryForm
     template_name = "enquiry_edit.html"
 
     def form_valid(self, form):
-        enquiry = form.save(commit=False)
-        enquiry.save()
-        return redirect("enquiry-detail", pk=enquiry.pk)
+        enquiry_obj = self.get_object()
+        enquirer_form = forms.EnquirerForm(form.data, instance=enquiry_obj.enquirer)
+        if enquirer_form.is_valid():
+            enquirer = enquirer_form.save(commit=False)
+            enquiry = form.save(commit=False)
+
+            with transaction.atomic():
+                enquirer.save()
+                enquiry.save()
+            return redirect("enquiry-detail", pk=enquiry.id)
+        else:
+            return self.form_invalid(form)
 
     def form_invalid(self, form):
         response = super().form_invalid(form)
