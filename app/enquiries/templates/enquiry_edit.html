@@ -97,12 +97,8 @@
                         {{ enquiry|get_field_verbose_name:"dh_assigned_company" }}
                     </label>
                     <a class="govuk-link company-search-link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
-                    
-                    <!-- {% include 'snippets/company_search_result.html' with company_name="Alphabet Projects" company_address="Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom" %} -->
-                    <!-- Display Company search results -->
-                    {% for company in companies %}
-                    {% include 'snippets/company_search_result.html' with company_name=company.name company_address=company.address %}
-                    {% endfor %}
+
+                    {% include 'snippets/company_search_assigned_company.html' %}
 
                     <!-- Assign selected company from the above search results to below fields -->
                     <!-- They are readonly and hidden but required for form submission -->
