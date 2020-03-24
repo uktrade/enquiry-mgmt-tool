@@ -1,4 +1,4 @@
-from app.settings.common import *
+from app.settings import *
 
 REST_FRAMEWORK["PAGE_SIZE"] = 2
 
