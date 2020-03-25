@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import TemplateView
 
 import app.enquiries.ref_data as ref_data
@@ -24,11 +24,19 @@ from app.enquiries import ping
 
 
 urlpatterns = [
-    path('', views.EnquiryListView.as_view(), name="enquiry-list"),
-    path('admin/', admin.site.urls),
-    path('enquiry/', views.EnquiryCreateView.as_view(), name="enquiry-create"),
-    path('enquiries/', views.EnquiryListView.as_view(), name="enquiry-list"),
-    path('enquiries/<int:pk>/', views.EnquiryDetailView.as_view(), name="enquiry-detail"),
-    path('enquiries/<int:pk>/edit', views.EnquiryEditView.as_view(), name="enquiry-edit"),
-    path('healthcheck/ping', ping.ping, name='ping'),
+    path("", views.EnquiryListView.as_view(), name="index"),
+    path("admin/", admin.site.urls),
+    path("enquiry/", views.EnquiryCreateView.as_view(), name="enquiry-create"),
+    path("enquiries/", views.EnquiryListView.as_view(), name="enquiry-list"),
+    path(
+        "enquiries/<int:pk>/", views.EnquiryDetailView.as_view(), name="enquiry-detail"
+    ),
+    path(
+        "enquiries/<int:pk>/edit", views.EnquiryEditView.as_view(), name="enquiry-edit"
+    ),
+    path("healthcheck/ping", ping.ping, name="ping"),
 ]
+
+if settings.FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
+    urlpatterns.append(path("auth/", include("authbroker_client.urls")),)
+
