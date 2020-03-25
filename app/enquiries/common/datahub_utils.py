@@ -320,7 +320,6 @@ def dh_investment_create(enquiry, metadata=None):
         except Exception as e:
             response["errors"].append({"metadata": "Error fetching metadata"})
             return response
-        dh_metadata = json.loads(dh_metadata)
     else:
         dh_metadata = metadata
 
@@ -328,6 +327,8 @@ def dh_investment_create(enquiry, metadata=None):
 
     company_id = enquiry.dh_company_id
 
+    # Create a contact for this company
+    # If a contact already exists then make the new contact as secondary
     full_name = f"{enquiry.enquirer.first_name} {enquiry.enquirer.last_name}"
     contacts, error = dh_contact_search(full_name, company_id)
     if error:
@@ -335,7 +336,10 @@ def dh_investment_create(enquiry, metadata=None):
         return response
 
     primary = not contacts
-    # contact_response = dh_contact_create(enquiry, company_id, primary=primary)
+    contact_response, error = dh_contact_create(enquiry, company_id, primary=primary)
+    if error:
+        response["errors"].append({"contact_create": error})
+        return response
 
     payload["name"] = enquiry.company_name
     payload["investor_company"] = company_id
@@ -363,8 +367,7 @@ def dh_investment_create(enquiry, metadata=None):
         dh_metadata,
         "investment-specific-programme",
     )
-    # payload["client_contacts"] = [contact_id]
-    payload["client_contacts"] = ["4ce2b0dd-a364-4e1e-9937-971f9001db0b"]
+    payload["client_contacts"] = [contact_response["id"]]
 
     if not enquiry.crm:
         response["errors"].append({"adviser": "Adviser name required, should not be empty"})
@@ -384,7 +387,9 @@ def dh_investment_create(enquiry, metadata=None):
     payload["sector"] = map_to_datahub_id(
         enquiry.get_primary_sector_display(), dh_metadata, "sector"
     )
-    payload["business_activities"] = ["a2dbd807-ae52-421c-8d1d-88adfc7a506b"]
+
+    # It is always default value - corresponds to Services
+    payload["business_activities"] = ["2f51ea6a-ca2f-466a-87fd-5f79ebfec125"]
 
     # TODO: This will be the user who is submitting the data
     # Since the SSO integration hasn't happened yet, use Adviser id here
