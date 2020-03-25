@@ -11,6 +11,7 @@ from requests.exceptions import RequestException
 from rest_framework import status
 
 import app.enquiries.ref_data as ref_data
+from app.enquiries.utils import get_oauth_payload
 
 
 DATA_HUB_METADATA_ENDPOINTS = (
@@ -26,7 +27,7 @@ DATA_HUB_METADATA_ENDPOINTS = (
     "sector",
 )
 
-def dh_request(method, url, payload, request_headers=None, timeout=15):
+def dh_request(request, access_token, method, url, payload, request_headers=None, timeout=15):
     """
     Helper function to perform Data Hub request
 
@@ -41,11 +42,14 @@ def dh_request(method, url, payload, request_headers=None, timeout=15):
     if request_headers:
         headers = request_headers
     else:
-        # TODO: We don't need to send the access token in the headers
-        # once SSO is integrated as it comes from SSO directly
+        # Extract access token
+        if not access_token:
+            session = get_oauth_payload(request)
+            access_token = session["access_token"]
+
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {settings.DATA_HUB_ACCESS_TOKEN}",
+            "Authorization": f"Bearer {access_token}",
         }
 
     try:
@@ -152,7 +156,7 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
     return dh_data[0]["id"] if dh_data else None
 
 
-def dh_company_search(company_name):
+def dh_company_search(request, access_token, company_name):
     """
     Peforms a Company name search using Data hub API.
 
@@ -162,12 +166,11 @@ def dh_company_search(company_name):
     url = settings.DATA_HUB_COMPANY_SEARCH_URL
     payload = {"name": company_name}
 
-    response = dh_request("POST", url, payload)
+    response = dh_request(request, access_token, "POST", url, payload)
 
     # It is not an error for us if the request fails, this can happen if the
     # Access token is invalid, consider that there are no matches however
     # user is notified of the error to take appropriate action
-    # TODO: revisit once SSO integration is completed
     if not response.ok:
         return companies, response.json()
 
@@ -191,7 +194,7 @@ def dh_company_search(company_name):
     return companies, None
 
 
-def dh_contact_search(contact_name, company_id):
+def dh_contact_search(request, access_token, contact_name, company_id):
     """
     Peforms a Contact name search using Data hub API.
 
@@ -201,7 +204,7 @@ def dh_contact_search(contact_name, company_id):
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
     payload = {"name": contact_name, "company": [company_id]}
 
-    response = dh_request("POST", url, payload)
+    response = dh_request(request, access_token, "POST", url, payload)
 
     if not response.ok:
         return contacts, response.json()
@@ -221,7 +224,7 @@ def dh_contact_search(contact_name, company_id):
     return contacts, None
 
 
-def dh_contact_create(enquirer, company_id, primary=False):
+def dh_contact_create(request, access_token, enquirer, company_id, primary=False):
     """
     Create a contact and associate with the given Company Id.
 
@@ -241,14 +244,14 @@ def dh_contact_create(enquirer, company_id, primary=False):
         "address_same_as_company": True,
     }
 
-    response = dh_request("POST", url, payload)
+    response = dh_request(request, access_token, "POST", url, payload)
     if not response.ok:
         return None, response.json()
 
     return response.json(), None
 
 
-def dh_adviser_search(adviser_name):
+def dh_adviser_search(request, access_token, adviser_name):
     """
     Peforms an Adviser search using Data hub API.
 
@@ -257,9 +260,8 @@ def dh_adviser_search(adviser_name):
     advisers = []
     url = f"{settings.DATA_HUB_ADVISER_SEARCH_URL}/?autocomplete={adviser_name}"
 
-    response = dh_request("GET", url, {})
-
-    if response.status_code != status.HTTP_200_OK:
+    response = dh_request(request, access_token, "GET", url, {})
+    if not response.ok:
         return advisers, response.json()
 
     for adviser in response.json()["results"]:
@@ -280,19 +282,24 @@ def get_dh_id(metadata_items, name):
     return item[0]["id"]
 
 
-def dh_investment_create(enquiry, metadata=None):
+def dh_investment_create(request, enquiry, metadata=None):
     """
     Creates an Investment in Data Hub using the data from the given Enquiry obj.
 
     Investment is only created if the Company corresponding to the Enquiry exists
     in DH otherwise error is returned.
-    Enquirer details are added to the list of contacts for this company if not
-    exists already. If this is the only contact then it will be made primary.
+    Enquirer details are added to the list of contacts for this company.
+    If this is the only contact then it will be made primary.
     """
 
+    # Return a list of errors to be displayed in UI
     response = {
         "errors": []
     }
+
+    # Extract access token
+    session = get_oauth_payload(request)
+    access_token = session["access_token"]
 
     # Allow creating of investments only if Company exists on DH
     if not enquiry.dh_company_id:
@@ -314,29 +321,33 @@ def dh_investment_create(enquiry, metadata=None):
         )
         return response
 
-    if metadata is None:
-        try:
-            dh_metadata = dh_fetch_metadata()
-        except Exception as e:
-            response["errors"].append({"metadata": "Error fetching metadata"})
-            return response
-    else:
-        dh_metadata = metadata
+    # check if the user is available in Data Hub
+    advisers, error = dh_adviser_search(request, access_token, request.user)
+    if error:
+        response["errors"].append({"referral_advisor": error})
+        return response
+
+    referral_adviser = advisers[0]["datahub_id"]
+
+    try:
+        dh_metadata = dh_fetch_metadata()
+    except Exception as e:
+        response["errors"].append({"metadata": "Error fetching metadata"})
+        return response
 
     payload = {}
-
     company_id = enquiry.dh_company_id
 
     # Create a contact for this company
     # If a contact already exists then make the new contact as secondary
     full_name = f"{enquiry.enquirer.first_name} {enquiry.enquirer.last_name}"
-    contacts, error = dh_contact_search(full_name, company_id)
+    existing_contacts, error = dh_contact_search(request, access_token, full_name, company_id)
     if error:
         response["errors"].append({"contact_search": error})
         return response
 
-    primary = not contacts
-    contact_response, error = dh_contact_create(enquiry, company_id, primary=primary)
+    primary = not existing_contacts
+    contact_response, error = dh_contact_create(request, access_token, enquiry, company_id, primary=primary)
     if error:
         response["errors"].append({"contact_create": error})
         return response
@@ -373,7 +384,7 @@ def dh_investment_create(enquiry, metadata=None):
         response["errors"].append({"adviser": "Adviser name required, should not be empty"})
         return response
 
-    advisers, error = dh_adviser_search(enquiry.crm)
+    advisers, error = dh_adviser_search(request, access_token, enquiry.crm)
     if error:
         response["errors"].append({"adviser_search": error})
         return response
@@ -390,10 +401,7 @@ def dh_investment_create(enquiry, metadata=None):
 
     # It is always default value - corresponds to Services
     payload["business_activities"] = ["2f51ea6a-ca2f-466a-87fd-5f79ebfec125"]
-
-    # TODO: This will be the user who is submitting the data
-    # Since the SSO integration hasn't happened yet, use Adviser id here
-    payload["referral_source_adviser"] = advisers[0]["datahub_id"]
+    payload["referral_source_adviser"] = referral_adviser
     payload["referral_source_activity"] = get_dh_id(
         dh_metadata["referral-source-activity"], "Website"
     )
@@ -404,8 +412,8 @@ def dh_investment_create(enquiry, metadata=None):
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
 
     try:
-        result = dh_request("POST", url, payload)
-        response["result"] = result
+        result = dh_request(request, access_token, "POST", url, payload)
+        response["result"] = result.json()
     except Exception as e:
         response["errors"].append({"investment_create": f"Error creating investment, {str(e)}"})
         return response

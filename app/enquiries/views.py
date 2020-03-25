@@ -83,13 +83,16 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
+
+        res = self.request.session.get(settings.AUTHBROKER_TOKEN_SESSION_KEY, None)
+        print(res)
         return context
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         enquiry = context["enquiry"]
 
-        create_response = dh_investment_create(enquiry)
+        create_response = dh_investment_create(request, enquiry)
         if create_response.get("result"):
             enquiry.refresh_from_db()
             context["enquiry"] = enquiry
