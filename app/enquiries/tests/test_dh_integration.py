@@ -78,7 +78,7 @@ class DataHubIntegrationTests(TestCase):
         payload = {"name": "test"}
 
         with pytest.raises(Timeout):
-            response = dh_request("POST", url, payload, timeout=2)
+            response = dh_request(None, "access-token", "POST", url, payload, timeout=2)
 
     @mock.patch("django.core.cache.cache.get")
     def test_dh_fetch_metada_exception(self, mock_cache_get):
@@ -123,7 +123,7 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, json=company_search_response()["success"])
             expected = company_search_response()["success"]["results"]
 
-            response, error = dh_company_search("test")
+            response, error = dh_company_search(None, "access-token", "test")
             self.assertIsNone(error)
             self.assertEqual(len(response), 1)
             self.assertEqual(response[0]["datahub_id"], expected[0]["id"])
@@ -136,7 +136,7 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, status_code=400, json=company_search_response()["error"])
             expected = company_search_response()["error"]
 
-            response, error = dh_company_search("")
+            response, error = dh_company_search(None, "access-token", "")
             self.assertIsNotNone(error)
             self.assertEqual(error["name"], expected["name"])
 
@@ -147,7 +147,7 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, json=contact_search_response()["success"])
             expected = contact_search_response()["success"]["results"]
 
-            response, error = dh_contact_search("User")
+            response, error = dh_contact_search(None, "access-token", "User", "1234")
             self.assertIsNone(error)
             self.assertEqual(len(response), 1)
             self.assertEqual(response[0]["datahub_id"], expected[0]["id"])
@@ -161,6 +161,6 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, status_code=400, json=contact_search_response()["error"])
             expected = contact_search_response()["error"]
 
-            response, error = dh_contact_search("")
+            response, error = dh_contact_search(None, "access-token", "", "1234")
             self.assertIsNotNone(error)
             self.assertEqual(error["name"], expected["name"])

@@ -11,7 +11,6 @@ DJANGO_SENTRY_DSN=sentry-dsn
 ENQUIRIES_PER_PAGE=10
 
 # Data Hub variables
-DATA_HUB_ACCESS_TOKEN=datahub-access-token
 DATA_HUB_METADATA_URL=https://datahub/metadata
 DATA_HUB_COMPANY_SEARCH_URL=https://datahub/company/search
 DATA_HUB_CONTACT_SEARCH_URL=https://datahub/contact/search

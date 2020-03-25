@@ -216,8 +216,6 @@ EXPORT_OUTPUT_FILE_EXT = 'csv'
 EXPORT_OUTPUT_FILE_MIMETYPE = 'text/csv'
 
 # Data Hub settings
-# TODO: Access token can be removed once SSO is integrated as it comes from SSO directly
-DATA_HUB_ACCESS_TOKEN = env('DATA_HUB_ACCESS_TOKEN', default='dh-access-token')
 DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
 DATA_HUB_COMPANY_SEARCH_URL = env('DATA_HUB_COMPANY_SEARCH_URL')
 DATA_HUB_CONTACT_SEARCH_URL = env('DATA_HUB_CONTACT_SEARCH_URL')
