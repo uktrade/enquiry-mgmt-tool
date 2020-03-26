@@ -66,10 +66,6 @@ def map_enquiry_data_to_instance(data):
     enquiry["website"] = data["Company website"]
     enquiry["company_hq_address"] = data["Company HQ address"]
     enquiry["country"] = data["Country"]
-    # TODO: map to the correct sector values
-    # The reference data values are different from ours so we need to map them
-    # A new function required to perform the mapping or better approach is to
-    # use directory-constants directly
     enquiry["primary_sector"] = great_ui_sector_rtt_mapping(data["Industry"])
     value = data[
         "Which of these best describes how you feel about expanding to the UK?"
