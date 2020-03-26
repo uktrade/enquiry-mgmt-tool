@@ -4,7 +4,8 @@ import random
 from datetime import date
 from faker import Faker
 
-from app.enquiries.models import Enquirer, Enquiry
+
+from app.enquiries.models import Enquirer, Enquiry, Owner
 import app.enquiries.ref_data as ref_data
 
 factory.Faker._DEFAULT_LOCALE = "en_GB"
@@ -25,6 +26,26 @@ def get_display_value(ref_data_model, label):
     ]
     return text[0] if text else "Not found"
 
+def return_display_value(ref_data_model, label):
+    """
+    Returns the ref_data option value when given the the ref_data_model option label
+    """
+    text = [
+        value
+        for (value, choice_label) in ref_data_model.choices
+        if choice_label == label
+    ]
+    return text[0] if text else "Not found"
+
+
+class OwnerFactory(factory.django.DjangoModelFactory):
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    username = factory.Sequence(lambda n: "user%03d" % n)
+    email = factory.Faker("email")
+
+    class Meta:
+        model = Owner
 
 class EnquirerFactory(factory.django.DjangoModelFactory):
     first_name = factory.Faker("first_name")
@@ -39,7 +60,7 @@ class EnquirerFactory(factory.django.DjangoModelFactory):
 
 
 class EnquiryFactory(factory.django.DjangoModelFactory):
-
+    owner = factory.SubFactory(OwnerFactory)
     company_name = factory.Faker("company")
     enquiry_stage = get_random_item(ref_data.EnquiryStage)
     enquiry_text = factory.Faker("sentence")

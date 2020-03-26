@@ -14,9 +14,22 @@ class EnquiryStage(models.TextChoices):
 
 class InvestmentReadiness(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    CONVINCED = "CONVINCED", _("I’m convinced and want to talk to someone about my plans")
-    SHORTLIST = "SHORTLIST", _("The UK is on my shortlist. How can the Department for International Trade help me?")
-    EXPLORING = "EXPLORING", _("I’m still exploring where to expand my business and would like to know more about the UK’s offer")
+    CONVINCED = (
+        "CONVINCED",
+        _("I’m convinced and want to talk to someone about my plans"),
+    )
+    SHORTLIST = (
+        "SHORTLIST",
+        _(
+            "The UK is on my shortlist. How can the Department for International Trade help me?"
+        ),
+    )
+    EXPLORING = (
+        "EXPLORING",
+        _(
+            "I’m still exploring where to expand my business and would like to know more about the UK’s offer"
+        ),
+    )
     NOT_READY = "NOT_READY", _("I’m not yet ready to invest. Keep me informed")
 
 
@@ -411,3 +424,26 @@ class DatahubProjectStatus(models.TextChoices):
     WON = "WON", _("Won")
     ABANDONED = "ABANDONED", _("Abandoned")
     DELAYED = "DELAYED", _("Delayed")
+
+
+MAP_ENQUIRY_FIELD_TO_REF_DATA = {
+    "enquiry_stage": EnquiryStage,
+    "investment_readiness": InvestmentReadiness,
+    "quality": Quality,
+    "marketing_channel": MarketingChannel,
+    "how_they_heard_dit": HowDidTheyHear,
+    "primary_sector": PrimarySector,
+    "country": Country,
+    "first_response_channel": FirstResponseChannel,
+    "ist_sector": IstSector,
+    "first_hpo_selection": HpoSelection,
+    "region": Region,
+    "second_hpo_selection": HpoSelection,
+    "third_hpo_selection": HpoSelection,
+    "organisation_type": OrganisationType,
+    "investment_type": InvestmentType,
+    "new_existing_investor": NewExistingInvestor,
+    "investor_involvement_level": InvestorInvolvement,
+    "specific_investment_programme": InvestmentProgramme,
+    "datahub_project_status": DatahubProjectStatus,
+}
