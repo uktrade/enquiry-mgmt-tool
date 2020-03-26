@@ -3,7 +3,7 @@ import pytest
 import pytz
 import random
 
-from io import StringIO, BytesIO
+from io import StringIO
 from datetime import date
 from faker import Faker
 
