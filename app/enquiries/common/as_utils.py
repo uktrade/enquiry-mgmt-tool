@@ -4,10 +4,33 @@ import mohawk
 import requests
 
 from bs4 import BeautifulSoup
+from django.db import transaction
 from django.conf import settings
 
 import app.enquiries.ref_data as ref_data
-from app.enquiries.models import ReceivedEnquiryCursor
+from app.enquiries.models import Enquiry, Enquirer, ReceivedEnquiryCursor, FailedEnquiry
+
+
+def great_ui_sector_rtt_mapping(value):
+    """
+    Sector data in the website is different from that in dit-sectors reference,
+    so we first check if it is in standard reference data otherwise map it to
+    our reference data. If not found anywhere use default value.
+    """
+    rtt_reference = [value for choice in ref_data.PrimarySector.choices if choice[0] == value]
+    if rtt_reference:
+        return rtt_reference[0]
+
+    mapping = {
+        "ADVANCED_MANUFACTURING": ref_data.PrimarySector.DEFAULT.value,
+        "AGRICULTURE_HORTICULTURE_AND_FISHERIES": ref_data.PrimarySector.AGRICULTURE.value,
+        "EDUCATION_AND_TRAINING": ref_data.PrimarySector.EDUCATION.value,
+        "FINANCIAL_AND_PROFESSIONAL_SERVICES": ref_data.PrimarySector.FINANCIAL.value,
+        "FOOD_AND_DRINK": ref_data.PrimarySector.FOOD.value,
+        "HEALTHCARE_AND_MEDICAL": ref_data.PrimarySector.HEALTHCARE.value,
+    }
+
+    return mapping.get(value, ref_data.PrimarySector.DEFAULT.value)
 
 
 def map_enquiry_data_to_instance(data):
@@ -47,7 +70,7 @@ def map_enquiry_data_to_instance(data):
     # The reference data values are different from ours so we need to map them
     # A new function required to perform the mapping or better approach is to
     # use directory-constants directly
-    enquiry["primary_sector"] = ref_data.PrimarySector.ADVANCED_ENG
+    enquiry["primary_sector"] = great_ui_sector_rtt_mapping(data["Industry"])
     value = data[
         "Which of these best describes how you feel about expanding to the UK?"
     ]
@@ -154,7 +177,7 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
     """
     Helper function to pull new investment enquiries from AS.
 
-    last_cursor indicates the last enquiry fetched (timestamp and id).
+    last_cursor indicates the last enquiry fetched (index and id).
     This is used to fetch next set of results when this is invoked again.
     """
 
@@ -183,7 +206,7 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
     }
 
     if last_cursor:
-        query["search_after"] = [last_cursor.timestamp, last_cursor.object_id]
+        query["search_after"] = [last_cursor.index, last_cursor.object_id]
 
     response = hawk_request("GET", url, key_id, secret_key, json.dumps(query))
     if not response.ok:
@@ -204,3 +227,38 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
     )
 
     return enquiries
+
+
+def fetch_and_process_enquiries():
+    """
+    Fetches new enquiries from AS and creates new instances in the database
+    """
+
+    last_cursor = ReceivedEnquiryCursor.objects.last()
+
+    enquiries = get_new_investment_enquiries(last_cursor, max_size=20)
+    if not enquiries:
+        return
+
+    logging.info(f"Total number of enquiries retrieved: {len(enquiries)}")
+
+    valid_count = 0
+    for item in enquiries:
+        enquiry = parse_enquiry_email(item)
+        if not enquiry:
+            continue
+
+        with transaction.atomic():
+            enquirer = enquiry.pop("enquirer")
+            enquirer_instance = Enquirer.objects.create(**enquirer)
+            enquiry_obj = Enquiry.objects.create(**enquiry, enquirer=enquirer_instance)
+            logging.info(
+                f"Enquiry ({enquiry_obj.id}) created for the company {enquiry_obj.company_name}"
+            )
+            valid_count += 1
+
+    last_obj = enquiries[-1]
+    ReceivedEnquiryCursor.objects.create(
+        index=last_obj["sort"][0], object_id=last_obj["sort"][1]
+    )
+    logging.info(f"Number of valid enquiries found: {valid_count}/{len(enquiries)}")
