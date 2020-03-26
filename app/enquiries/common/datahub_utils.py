@@ -156,6 +156,18 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
     return dh_data[0]["id"] if dh_data else None
 
 
+def dh_get_user_details(request, access_token):
+    """ Gets the currently logged in user details """
+
+    url = settings.DATA_HUB_WHOAMI
+
+    response = dh_request(request, access_token)
+    if not response.ok:
+        return None, response.json()
+
+    return response.json(), None
+
+
 def dh_company_search(request, access_token, company_name):
     """
     Peforms a Company name search using Data hub API.
