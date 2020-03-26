@@ -27,7 +27,17 @@ DATA_HUB_METADATA_ENDPOINTS = (
     "sector",
 )
 
-def dh_request(request, access_token, method, url, payload, request_headers=None, timeout=15):
+
+def dh_request(
+    request,
+    access_token,
+    method,
+    url,
+    payload,
+    request_headers=None,
+    params={},
+    timeout=15,
+):
     """
     Helper function to perform Data Hub request
 
@@ -221,17 +231,17 @@ def dh_contact_search(request, access_token, contact_name, company_id):
     if not response.ok:
         return contacts, response.json()
 
-    for contact in response.json()["results"]:
-        contacts.append(
-            {
-                "datahub_id": contact["id"],
-                "first_name": contact["first_name"],
-                "last_name": contact["last_name"],
-                "job_title": contact["job_title"],
-                "email": contact["email"],
-                "phone": contact["telephone_number"],
-            }
-        )
+    contacts = [
+        {
+            "datahub_id": contact["id"],
+            "first_name": contact["first_name"],
+            "last_name": contact["last_name"],
+            "job_title": contact["job_title"],
+            "email": contact["email"],
+            "phone": contact["telephone_number"],
+        }
+        for contact in response.json()["results"]
+    ]
 
     return contacts, None
 
@@ -250,7 +260,7 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
         "job_title": enquirer.job_title,
         "company": company_id,
         "primary": primary,
-        "telephone_countrycode": "NOT SET",
+        "telephone_countrycode": enquirer.country_code,
         "telephone_number": enquirer.phone,
         "email": enquirer.email,
         "address_same_as_company": True,
@@ -270,20 +280,21 @@ def dh_adviser_search(request, access_token, adviser_name):
     Returns list of subset of fields for each Adviser found
     """
     advisers = []
-    url = f"{settings.DATA_HUB_ADVISER_SEARCH_URL}/?autocomplete={adviser_name}"
+    url = f"{settings.DATA_HUB_ADVISER_SEARCH_URL}"
+    params = {"autocomplete": adviser_name}
 
-    response = dh_request(request, access_token, "GET", url, {})
+    response = dh_request(request, access_token, "GET", url, {}, params=params)
     if not response.ok:
         return advisers, response.json()
 
-    for adviser in response.json()["results"]:
-        advisers.append(
-            {
-                "datahub_id": adviser["id"],
-                "name": adviser["first_name"],
-                "is_active": adviser["is_active"],
-            }
-        )
+    advisers = [
+        {
+            "datahub_id": adviser["id"],
+            "name": adviser["first_name"],
+            "is_active": adviser["is_active"],
+        }
+        for adviser in response.json()["results"]
+    ]
 
     return advisers, None
 
@@ -305,9 +316,7 @@ def dh_investment_create(request, enquiry, metadata=None):
     """
 
     # Return a list of errors to be displayed in UI
-    response = {
-        "errors": []
-    }
+    response = {"errors": []}
 
     # Extract access token
     session = get_oauth_payload(request)
@@ -315,7 +324,9 @@ def dh_investment_create(request, enquiry, metadata=None):
 
     # Allow creating of investments only if Company exists on DH
     if not enquiry.dh_company_id:
-        response["errors"].append({"company": f"{enquiry.company_name} doesn't exist in Data Hub"})
+        response["errors"].append(
+            {"company": f"{enquiry.company_name} doesn't exist in Data Hub"}
+        )
         return response
 
     # Same enquiry cannot be submitted if it is already done once
@@ -334,12 +345,12 @@ def dh_investment_create(request, enquiry, metadata=None):
         return response
 
     # check if the user is available in Data Hub
-    advisers, error = dh_adviser_search(request, access_token, request.user)
+    user_details, error = dh_get_user_details(request, access_token)
     if error:
         response["errors"].append({"referral_advisor": error})
         return response
 
-    referral_adviser = advisers[0]["datahub_id"]
+    referral_adviser = user_details["id"]
 
     try:
         dh_metadata = dh_fetch_metadata()
@@ -353,13 +364,17 @@ def dh_investment_create(request, enquiry, metadata=None):
     # Create a contact for this company
     # If a contact already exists then make the new contact as secondary
     full_name = f"{enquiry.enquirer.first_name} {enquiry.enquirer.last_name}"
-    existing_contacts, error = dh_contact_search(request, access_token, full_name, company_id)
+    existing_contacts, error = dh_contact_search(
+        request, access_token, full_name, company_id
+    )
     if error:
         response["errors"].append({"contact_search": error})
         return response
 
     primary = not existing_contacts
-    contact_response, error = dh_contact_create(request, access_token, enquiry, company_id, primary=primary)
+    contact_response, error = dh_contact_create(
+        request, access_token, enquiry, company_id, primary=primary
+    )
     if error:
         response["errors"].append({"contact_create": error})
         return response
@@ -393,7 +408,9 @@ def dh_investment_create(request, enquiry, metadata=None):
     payload["client_contacts"] = [contact_response["id"]]
 
     if not enquiry.crm:
-        response["errors"].append({"adviser": "Adviser name required, should not be empty"})
+        response["errors"].append(
+            {"adviser": "Adviser name required, should not be empty"}
+        )
         return response
 
     advisers, error = dh_adviser_search(request, access_token, enquiry.crm)
@@ -411,14 +428,13 @@ def dh_investment_create(request, enquiry, metadata=None):
         enquiry.get_primary_sector_display(), dh_metadata, "sector"
     )
 
-    # It is always default value - corresponds to Services
-    payload["business_activities"] = ["2f51ea6a-ca2f-466a-87fd-5f79ebfec125"]
+    payload["business_activities"] = [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES]
     payload["referral_source_adviser"] = referral_adviser
     payload["referral_source_activity"] = get_dh_id(
-        dh_metadata["referral-source-activity"], "Website"
+        dh_metadata["referral-source-activity"], ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE
     )
     payload["referral_source_activity_website"] = get_dh_id(
-        dh_metadata["referral-source-website"], "Invest in GREAT Britain"
+        dh_metadata["referral-source-website"], ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE
     )
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
@@ -427,7 +443,9 @@ def dh_investment_create(request, enquiry, metadata=None):
         result = dh_request(request, access_token, "POST", url, payload)
         response["result"] = result.json()
     except Exception as e:
-        response["errors"].append({"investment_create": f"Error creating investment, {str(e)}"})
+        response["errors"].append(
+            {"investment_create": f"Error creating investment, {str(e)}"}
+        )
         return response
 
     if result.ok:

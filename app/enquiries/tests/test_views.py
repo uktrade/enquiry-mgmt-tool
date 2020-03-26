@@ -44,6 +44,7 @@ def canned_enquiry():
             "last_name": faker.last_name(),
             "job_title": "Director",
             "email": faker.email(),
+            "country_code": random.randint(1, 100),
             "phone": faker.phone_number(),
             "email_consent": random.choice([True, False, False, False, True]),
             "phone_consent": random.choice([True, False, True, True, False]),
@@ -218,6 +219,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         data["last_name"] = enquirer.last_name
         data["job_title"] = enquirer.job_title
         data["email"] = enquirer.email
+        data["country_code"] = enquirer.country_code
         data["phone"] = enquirer.phone
         data["email_consent"] = False
         data["phone_consent"] = True

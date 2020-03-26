@@ -49,7 +49,7 @@ logging.config.dictConfig({
     },
     'loggers': {
         '': {
-            'level': 'INFO' if env.bool('DEBUG') else 'INFO',
+            'level': 'INFO',
             'handlers': ['console', 'file']
         }
     }
