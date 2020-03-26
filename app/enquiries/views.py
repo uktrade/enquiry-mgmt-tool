@@ -129,13 +129,17 @@ class EnquiryEditView(UpdateView):
         context = super().get_context_data(**kwargs)
         # TODO: perform company search here
         context["companies"] = get_companies()
-        context["dh_assigned_company_name"] = self.dh_assigned_company['name']
-        context["dh_assigned_company_address"] = self.dh_assigned_company['address']
+        if self.dh_assigned_company is not '':
+            context["dh_assigned_company_name"] = self.dh_assigned_company['name']
+            context["dh_assigned_company_address"] = self.dh_assigned_company['address']
         return context
 
     def get(self, request, *args, **kwargs):
         dhacid = request.GET.get('dhacid', '')
-        self.dh_assigned_company = [c for c in get_companies() if dhacid in c["datahub_id"]][0]
+        if dhacid is '':
+            self.dh_assigned_company = ''
+        else:
+            self.dh_assigned_company = [c for c in get_companies() if dhacid in c["datahub_id"]][0]
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)

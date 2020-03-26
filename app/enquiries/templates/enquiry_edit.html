@@ -52,11 +52,7 @@
                         {{ enquiry|get_field_verbose_name:"dh_assigned_company" }}
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {%if enquiry.dh_assigned_company %}
-                        <a href="#">
-                             {{ enquiry.dh_assigned_company }}
-                        </a>
-                        {% else %} {{ "----" }} {% endif %}
+                        {% if dh_assigned_company_name %}<a href="#">{{ dh_assigned_company_name }}</a>{% else %}<a href="#">{{ enquiry.dh_assigned_company }}</a>{% endif %}
                     </dd>
                 </div>
             </dl>
@@ -102,8 +98,8 @@
 
                     <!-- Assign selected company from the above search results to below fields -->
                     <!-- They are readonly and hidden but required for form submission -->
-                    <input style="display: none;" name="dh_assigned_company" value="{{ enquiry.dh_assigned_company }}"> <br>
-                    <input style="display: none;" name="dh_company_address" value="{{ enquiry.dh_company_address }}">
+                    <input style="display: none;" name="dh_assigned_company" id="dh_assigned_company" value="{{ dh_assigned_company_name }}"> <br>
+                    <input style="display: none;" name="dh_company_address" id="dh_company_address" value="{{ dh_assigned_company_address }}">
 
                 </div>
 
