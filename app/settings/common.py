@@ -231,7 +231,7 @@ if REDIS_BASE_URL:
     REDIS_CELERY_DB = env('REDIS_CELERY_DB', default=1)
     BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}'
     CELERY_RESULT_BACKEND = BROKER_URL
-    CELERY_TIMEZONE = env('CELERY_TIMEZONE')
+    CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
 
     CACHES = {
         "default": {
