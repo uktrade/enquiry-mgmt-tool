@@ -220,7 +220,13 @@ DATA_HUB_HAWK_KEY = env("DATA_HUB_HAWK_KEY")
 # Celery and Redis
 CACHES = {}
 DATA_HUB_METADATA_FETCH_INTERVAL_HOURS=env.int('DATA_HUB_METADATA_FETCH_INTERVAL_HOURS', default=4)
-REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
+VCAP_SERVICES = env.json('VCAP_SERVICES', default={})
+
+if 'redis' in VCAP_SERVICES:
+    REDIS_BASE_URL = VCAP_SERVICES['redis'][0]['credentials']['uri']
+else:
+    REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
+
 if REDIS_BASE_URL:
     REDIS_CELERY_DB = env('REDIS_CELERY_DB', default=1)
     BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}'
