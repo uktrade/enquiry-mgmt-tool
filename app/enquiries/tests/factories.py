@@ -4,7 +4,6 @@ import random
 from datetime import date
 from faker import Faker
 
-from django.contrib.auth.models import User
 
 from app.enquiries.models import Enquirer, Enquiry, Owner
 import app.enquiries.ref_data as ref_data
@@ -33,22 +32,17 @@ def return_display_value(ref_data_model, label):
     """
     text = [
         value
-        for ( value, choice_label) in ref_data_model.choices
+        for (value, choice_label) in ref_data_model.choices
         if choice_label == label
     ]
     return text[0] if text else "Not found"
 
-class UserFactory(factory.django.DjangoModelFactory):
-    username = factory.Sequence(lambda n: 'john%s' % n)
-    first_name = factory.Faker("first_name")
-    last_name = factory.Faker("last_name")
-    email = factory.Faker("email")
-
-    class Meta:
-        model = User
 
 class OwnerFactory(factory.django.DjangoModelFactory):
-    user = factory.SubFactory(UserFactory)
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    username = factory.Sequence(lambda n: "user%03d" % n)
+    email = factory.Faker("email")
 
     class Meta:
         model = Owner
