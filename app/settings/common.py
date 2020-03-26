@@ -209,7 +209,7 @@ ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
 
 # Data Hub settings
 # TODO: Access token can be removed once SSO is integrated as it comes from SSO directly
-DATA_HUB_ACCESS_TOKEN = env('DATA_HUB_ACCESS_TOKEN')
+DATA_HUB_ACCESS_TOKEN = env('DATA_HUB_ACCESS_TOKEN', default='dh-access-token')
 DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
 DATA_HUB_COMPANY_SEARCH_URL = env('DATA_HUB_COMPANY_SEARCH_URL')
 DATA_HUB_CONTACT_SEARCH_URL = env('DATA_HUB_CONTACT_SEARCH_URL')
