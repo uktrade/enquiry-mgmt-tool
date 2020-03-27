@@ -94,7 +94,7 @@ class EnquiryFilter(filters.FilterSet):
 
     def filter_owner_id(self, queryset, name, value):
         """
-        This filter handles the owner__id parameter with can either be an int
+        This filter handles the owner__id parameter which can either be an int
         of the string 'UNASSIGNED'. In the case of UNASSIGNED to filter for enquirires where owner == None
         """
         vals = value.split(",")
