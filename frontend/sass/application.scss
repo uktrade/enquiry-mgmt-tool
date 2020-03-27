@@ -178,20 +178,20 @@ ol.pagination-list {
     float: right;
 }
 
-.main__bar {
+.topbar {
     height: 100px;
     position: relative;
 
-    &--left, &--right {
+    &__left, &__right {
         position: absolute;
         top: 0;
     }
 
-    &--left {
+    &__left {
         left: 0;
     }
 
-    &--right {
+    &__right {
         right: 0;
     }
     a, button {
@@ -201,15 +201,15 @@ ol.pagination-list {
 
 // Error Summary
 .govuk-error-summary {
-    color: $color-red-error;
+    color: govuk-colour("red");
         li {
-            color: $color-red-error;
+            color: govuk-colour("red");
         }
     &--success {
-        border-color: $color-green-success;
-        color: $color-green-success;
+        border-color: govuk-colour("green");
+        color: govuk-colour("green");
         li {
-            color: $color-green-success;
+            color: govuk-colour("green");
         }
     }
 } 

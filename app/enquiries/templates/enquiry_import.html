@@ -8,9 +8,9 @@
 <div class="govuk-grid-row">
     <h1 class="govuk-heading-l">Import enquiries</h1>
     {% if messages %}
-    <div class="govuk-error-summary {% if hasSuccess%}govuk-error-summary--success{% endif %}" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+    <div class="govuk-error-summary {% if has_success%}govuk-error-summary--success{% endif %}" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
         <h2 class="govuk-error-summary__title" id="error-summary-title">
-            {% if hasErrors %}
+            {% if has_errors %}
                 Error - File import has failed:
             {%  else %}
                 File import successfully completed.
@@ -45,8 +45,7 @@
                 <strong>Choose a file to upload</strong>
             </label>
             <input class="govuk-file-upload" id="file-upload-1" name="file-upload-1" type="file">
-            <br /><br />
-            <button class="govuk-button" data-module="govuk-button">
+            <button class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" style="display: block">
                 Upload file
             </button>
         </div>

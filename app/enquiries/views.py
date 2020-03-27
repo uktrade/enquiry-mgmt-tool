@@ -134,8 +134,8 @@ class EnquiryAdd(APIView):
                 },
                 # @TODO integration with real backend and errors
                 # currently using query variables just to illustrate the different states (success|errors)
-                'hasErrors': 'errors' in request.GET,
-                'hasSuccess': 'success' in request.GET,
+                'has_errors': 'errors' in request.GET,
+                'has_success': 'success' in request.GET,
             },
             template_name="enquiry_import.html"
         )
