@@ -64,7 +64,7 @@ def dh_request(
 
     try:
         if method == "GET":
-            response = requests.get(url, headers=headers, timeout=timeout)
+            response = requests.get(url, headers=headers, params=params, timeout=timeout)
         elif method == "POST":
             response = requests.post(
                 url, headers=headers, json=payload, timeout=timeout
@@ -171,7 +171,7 @@ def dh_get_user_details(request, access_token):
 
     url = settings.DATA_HUB_WHOAMI
 
-    response = dh_request(request, access_token)
+    response = dh_request(request, access_token, "GET", url, {})
     if not response.ok:
         return None, response.json()
 
