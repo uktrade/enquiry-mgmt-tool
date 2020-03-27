@@ -22,7 +22,7 @@
         <div class="govuk-checkboxes__item">
           <input class="govuk-checkboxes__input" id="owner__id{{owner.id}}" name="owner__id" type="checkbox" value="{{owner.id}}"{% query_params_value_selected owner.id 'owner' query_params ' checked'  %}>
           <label class="govuk-label govuk-checkboxes__label" for="owner__id{{owner.id}}">
-             {{owner.user.first_name}} {{owner.user.last_name}}
+             {{owner.get_full_name}}
           </label>
         </div>
         {% endfor %}
