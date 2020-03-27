@@ -3,12 +3,7 @@ import pytz
 import random
 from openpyxl import Workbook, load_workbook
 
-<<<<<<< HEAD
 from datetime import date, datetime
-=======
-from datetime import date
-
->>>>>>> add spreadsheet download endpoint and tests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
@@ -18,11 +13,8 @@ from rest_framework import status
 from unittest import mock
 
 import app.enquiries.ref_data as ref_data
-<<<<<<< HEAD
 import app.enquiries.tests.utils as test_utils
-=======
 import app.enquiries.views as enquiry_views
->>>>>>> add spreadsheet download endpoint and tests
 
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
