@@ -70,7 +70,7 @@ class PrimarySector(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
     ADVANCED_ENG = "ADVANCED_ENG", _("Advanced Engineering")
     AEROSPACE = "AEROSPACE", _("Aerospace")
-    AGRICULTURE = "AGRICULTURE,", _("Agriculture, Horticulture, Fisheries and Pets")
+    AGRICULTURE = "AGRICULTURE", _("Agriculture, Horticulture, Fisheries and Pets")
     AIRPORTS = "AIRPORTS", _("Airports")
     AUTOMOTIVE = "AUTOMOTIVE", _("Automotive")
     CHEMICALS = "CHEMICALS", _("Chemicals")
