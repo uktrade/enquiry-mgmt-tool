@@ -14,14 +14,14 @@
       <div class="govuk-checkboxes govuk-checkboxes--small">
         <div class="govuk-checkboxes__item">
           <input class="govuk-checkboxes__input" id="owner__id" name="owner__id" type="checkbox" value="UNASSIGNED" {% query_params_value_selected 'UNASSIGNED' 'owner' query_params ' checked'  %}>
-          <label class="govuk-label govuk-checkboxes__label" for="user">
+          <label class="govuk-label govuk-checkboxes__label" for="owner__id">
             Unassigned
           </label>
         </div>
         {% for owner in owners%}
         <div class="govuk-checkboxes__item">
-          <input class="govuk-checkboxes__input" id="owner__id{{owner.id}}" name="owner__id" type="checkbox" value="{{owner.id}}"{% query_params_value_selected owner.id 'owner' query_params ' checked'  %}>
-          <label class="govuk-label govuk-checkboxes__label" for="owner__id{{owner.id}}">
+          <input class="govuk-checkboxes__input" id="owner__id_{{owner.id}}" name="owner__id" type="checkbox" value="{{owner.id}}"{% query_params_value_selected owner.id 'owner' query_params ' checked'  %}>
+          <label class="govuk-label govuk-checkboxes__label" for="owner__id_{{owner.id}}">
              {{owner.get_full_name}}
           </label>
         </div>

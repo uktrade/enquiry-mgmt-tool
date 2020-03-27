@@ -15,6 +15,7 @@ from unittest import mock
 
 import app.enquiries.ref_data as ref_data
 from app.enquiries.models import Enquiry, Enquirer
+from app.enquiries.tests import utils as test_utils
 from app.enquiries.tests.factories import (
     EnquiryFactory,
     get_random_item,
@@ -22,17 +23,19 @@ from app.enquiries.tests.factories import (
 )
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
+headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
 
 
-class EnquiryViewFiltersTestCase(TestCase):
+class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
     def setUp(self):
-        self.faker = Faker()
-        self.client = Client()
+        super().setUp()
+        # self.faker = Faker()
+        # self.client = Client()
 
     def test_enquiry_filters_render(self):
         """Test that the search filters render correctly"""
         # DRF defaults to JSON response so we need to set headers to receive HTML
-        headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
+
         response = self.client.get(reverse("enquiry-list"), **headers)
         soup = BeautifulSoup(response.content, "html.parser")
 
@@ -42,8 +45,8 @@ class EnquiryViewFiltersTestCase(TestCase):
         )
 
         # users checkbox
-        _input = soup.select("#user")[0]
-        _label = soup.select("label[for=user]")[0]
+        _input = soup.select("#owner__id")[0]
+        _label = soup.select("label[for=owner__id]")[0]
 
         self.assertIsNotNone(
             _input, msg="should render unassigned control",
@@ -73,15 +76,15 @@ class EnquiryViewFiltersTestCase(TestCase):
             self.assertEqual(_label.string.strip(), label)
 
         self.assertIsNotNone(
-            soup.find(id="date_created_before"),
+            soup.find(id="created__lt"),
             msg="should render date created before control",
         )
         self.assertIsNotNone(
-            soup.find(id="date_created_after"),
-            msg="should render date created after control",
+            soup.find(id="created__gt"), msg="should render date created after control",
         )
         self.assertIsNotNone(
-            soup.find(id="company_name"), msg="should render company_name control",
+            soup.find(id="company_name__icontains"),
+            msg="should render company_name control",
         )
         self.assertIsNotNone(
             soup.find(id="date_added_to_datahub__lt"),
@@ -97,4 +100,3 @@ class EnquiryViewFiltersTestCase(TestCase):
         self.assertIsNotNone(
             soup.find(id="btn_submit"), msg="should render btn_submit control"
         )
-

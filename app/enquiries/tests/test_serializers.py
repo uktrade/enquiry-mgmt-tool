@@ -7,6 +7,7 @@ from app.enquiries import serializers
 from app.enquiries.tests.factories import (
     EnquiryFactory,
     EnquirerFactory,
+    OwnerFactory,
     get_display_value,
 )
 
@@ -68,7 +69,16 @@ class EnquiriesSerializersTestCase(TestCase):
         self.assertEqual(enquirer.first_name, sr_data["first_name"])
         self.assertEqual(enquirer.last_name, sr_data["last_name"])
         self.assertEqual(enquirer.email, sr_data["email"])
-        self.assertEqual(
-            get_display_value(ref_data.RequestForCall, enquirer.request_for_call),
-            sr_data["request_for_call"],
-        )
+
+class OwnerSerializerTestCase(TestCase):
+    def test_owner_serializer(self):
+        """
+        Test serialization of Owner object ensure display values
+        are as expected
+        """
+        owner = OwnerFactory()
+        sr_data = serializers.OwnerSerializer(owner).data
+        self.assertEqual(owner.first_name, sr_data["first_name"])
+        self.assertEqual(owner.last_name, sr_data["last_name"])
+        self.assertEqual(owner.email, sr_data["email"])
+        self.assertEqual(owner.username, sr_data["username"])
