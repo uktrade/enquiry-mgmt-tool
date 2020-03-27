@@ -1,7 +1,8 @@
-from django.db import transaction
 from django.conf import settings
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import DeleteView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from rest_framework import generics, status, viewsets
@@ -11,8 +12,7 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app.enquiries import models, serializers
-from app.enquiries import forms
+from app.enquiries import forms, models, serializers
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -110,3 +110,17 @@ class EnquiryEditView(UpdateView):
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
+
+class EnquiryDeleteView(DeleteView):
+    """
+    View to delete enquiry
+    """
+
+    model = models.Enquiry
+    template_name = "enquiry_delete.html"
+
+    def post(self, request, **kwargs):
+        pk = kwargs["pk"]
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        enquiry.delete()
+        return redirect("enquiry-list")

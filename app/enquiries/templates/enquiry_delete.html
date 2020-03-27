@@ -1,0 +1,68 @@
+{% load static %}
+
+{% include 'base.html' %}
+
+{% include 'partials/govuk_header_partial.html' %}
+
+{% load widget_tweaks %}
+{% load rest_framework %}
+{% load enquiries_extras %}
+
+<div class="govuk-width-container">
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+    <a href="{% url 'enquiry-edit' enquiry.id %}" class="govuk-back-link">Back</a>
+
+    <main class="govuk-main-wrapper">
+
+        <div class="delete-warning govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+              <span class="govuk-warning-text__assistive">Warning</span>
+              Are you sure you want to delete this enquiry?
+            </strong>
+        </div>
+
+        <form class="delete-form" action="{% url 'enquiry-delete' enquiry.id %}" method="post">
+            {% csrf_token %}
+            <button class="enquiry-delete-button govuk-button govuk-button--warning" type="submit">Delete enquiry</button>
+        </form>
+
+        <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
+
+            <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
+
+            <dl class="govuk-summary-list--no-border">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date received
+                    </dt>
+                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"created" }}</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date last updated
+                    </dt>
+                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"modified" }}</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Enquiry stage
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        {{ enquiry|get_field_value:"enquiry_stage" }}</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Owner
+                    </dt>
+                    <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
+                        {{ "Unassigned" }} {%endif%}</dd>
+                </div>
+            </dl>
+        </div>
+    </main>
+</div>
+
+{% include 'partials/govuk_footer_partial.html' %}
