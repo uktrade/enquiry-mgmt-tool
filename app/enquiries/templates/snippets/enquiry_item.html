@@ -13,7 +13,7 @@
                         <span>{{ enquiry.enquiry_stage }}</span>
                     </div>
                     <div class="entity-badges-item">
-                        <span>{% if enquiry.owner %}{{ enquiry.owner.user }} {%else%} {{ "Unassigned" }}
+                        <span>{% if enquiry.owner %}{{ enquiry.owner.first_name }} {{ enquiry.owner.last_name }} {%else%} {{ "Unassigned" }}
                             {%endif%}</span>
                     </div>
                     <div class="entity-badges-item">
