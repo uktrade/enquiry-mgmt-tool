@@ -1,3 +1,4 @@
+import json
 from django.db import transaction
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -188,6 +189,11 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
             return self.form_invalid(form)
 
     def form_invalid(self, form):
+        enquiry_obj = self.get_object()
+        enquirer_form = forms.EnquirerForm(form.data, instance=enquiry_obj.enquirer)
+        errors_dict = json.loads(enquirer_form.errors.as_json())
+        for field, msg in errors_dict.items():
+            form.add_error(None, f'{field}: {msg[0]["message"]}')
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
