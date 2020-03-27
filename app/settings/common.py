@@ -234,6 +234,7 @@ else:
     REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
 
 if REDIS_BASE_URL:
+    REDIS_CACHE_DB = env('REDIS_CACHE_DB', default=0)
     REDIS_CELERY_DB = env('REDIS_CELERY_DB', default=1)
     is_secure_redis = REDIS_BASE_URL.startswith('rediss://')
     redis_url_args = {'ssl_cert_reqs': 'CERT_REQUIRED'} if is_secure_redis else {}
@@ -245,7 +246,7 @@ if REDIS_BASE_URL:
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": BROKER_URL,
+            "LOCATION": f'{REDIS_BASE_URL}/{REDIS_CACHE_DB},
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
