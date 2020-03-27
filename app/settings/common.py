@@ -17,6 +17,7 @@ import sentry_sdk
 
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from urllib.parse import urlencode
 
 from django.urls import reverse_lazy
 
@@ -229,15 +230,19 @@ else:
     REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
 
 if REDIS_BASE_URL:
+    REDIS_CACHE_DB = env('REDIS_CACHE_DB', default=0)
     REDIS_CELERY_DB = env('REDIS_CELERY_DB', default=1)
-    BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}'
+    is_secure_redis = REDIS_BASE_URL.startswith('rediss://')
+    redis_url_args = {'ssl_cert_reqs': 'required'} if is_secure_redis else {}
+    encoded_query_args = urlencode(redis_url_args)
+    BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}?{encoded_query_args}'
     CELERY_RESULT_BACKEND = BROKER_URL
     CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
 
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": BROKER_URL,
+            "LOCATION": f'{REDIS_BASE_URL}/{REDIS_CACHE_DB}',
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
