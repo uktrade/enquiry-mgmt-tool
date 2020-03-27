@@ -52,6 +52,7 @@ class EnquirerFactory(factory.django.DjangoModelFactory):
     last_name = factory.Faker("last_name")
     job_title = random.choice(["CEO", "COO", "Founder", "CFO"])
     email = factory.Faker("email")
+    country_code = random.randint(1, 100)
     phone = factory.Faker("phone_number")
     request_for_call = get_random_item(ref_data.RequestForCall)
 

@@ -18,6 +18,10 @@
         {% load widget_tweaks %}
         {% load rest_framework %}
 
+        {% for error in errors %}
+        {{ error }}
+        {% endfor %}
+
         <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
             <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
             <dl class="govuk-summary-list--no-border">
@@ -70,6 +74,7 @@
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="last_name" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="job_title" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="email" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="country_code" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="phone" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="request_for_call" %}
             </dl>
@@ -130,5 +135,14 @@
             </dl>
         </div>
     </main>
+    <form class="form" action="{% url 'enquiry-detail' pk=enquiry.id %}" method="post">
+        {% csrf_token %}
+
+        {% if not enquiry.date_added_to_datahub %}
+        <button class="govuk-button" data-module="govuk-button" type="submit">Submit to Data Hub</button>
+        {% else %}
+        <h3 class="govuk-heading-m">Already submitted to Data Hub</h3>
+        {% endif %}
+    </form>
 </div>
 {% include 'partials/govuk_footer_partial.html' %}

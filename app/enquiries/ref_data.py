@@ -447,3 +447,9 @@ MAP_ENQUIRY_FIELD_TO_REF_DATA = {
     "specific_investment_programme": InvestmentProgramme,
     "datahub_project_status": DatahubProjectStatus,
 }
+
+
+# Data Hub metadata
+DATA_HUB_BUSINESS_ACTIVITIES_SERVICES = "2f51ea6a-ca2f-466a-87fd-5f79ebfec125"
+DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE = "Website"
+DATA_HUB_REFERRAL_SOURCE_WEBSITE = "Invest in GREAT Britain"

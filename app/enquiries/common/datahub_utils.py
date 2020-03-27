@@ -3,12 +3,15 @@ import logging
 import os
 import requests
 
-from datetime import datetime
+from datetime import datetime, date
 from django.conf import settings
 from django.core.cache import cache
 from mohawk import Sender
 from requests.exceptions import RequestException
 from rest_framework import status
+
+import app.enquiries.ref_data as ref_data
+from app.enquiries.utils import get_oauth_payload
 
 
 DATA_HUB_METADATA_ENDPOINTS = (
@@ -24,7 +27,17 @@ DATA_HUB_METADATA_ENDPOINTS = (
     "sector",
 )
 
-def dh_request(method, url, payload, request_headers=None, timeout=15):
+
+def dh_request(
+    request,
+    access_token,
+    method,
+    url,
+    payload,
+    request_headers=None,
+    params={},
+    timeout=15,
+):
     """
     Helper function to perform Data Hub request
 
@@ -39,18 +52,23 @@ def dh_request(method, url, payload, request_headers=None, timeout=15):
     if request_headers:
         headers = request_headers
     else:
-        # TODO: We don't need to send the access token in the headers
-        # once SSO is integrated as it comes from SSO directly
+        # Extract access token
+        if not access_token:
+            session = get_oauth_payload(request)
+            access_token = session["access_token"]
+
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {settings.DATA_HUB_ACCESS_TOKEN}",
+            "Authorization": f"Bearer {access_token}",
         }
 
     try:
         if method == "GET":
             response = requests.get(url, headers=headers, timeout=timeout)
         elif method == "POST":
-            response = requests.post(url, headers=headers, json=payload, timeout=timeout)
+            response = requests.post(
+                url, headers=headers, json=payload, timeout=timeout
+            )
     except RequestException as e:
         logging.error(
             f"Error {e} while requesting {url}, request timeout set to {timeout} secs"
@@ -94,12 +112,14 @@ def _dh_fetch_metadata():
             metadata["failed"].append(endpoint)
 
     if metadata["failed"]:
-        logging.error(f"Error fetching Data Hub metadata for endpoints: {metadata['failed']}")
+        logging.error(
+            f"Error fetching Data Hub metadata for endpoints: {metadata['failed']}"
+        )
 
     return metadata
 
 
-def dh_fetch_metadata(cache_key='metadata', expiry_secs=60*60):
+def dh_fetch_metadata(cache_key="metadata", expiry_secs=60 * 60):
     """
     Fetches and caches the metadata with an expiry time
 
@@ -146,7 +166,19 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
     return dh_data[0]["id"] if dh_data else None
 
 
-def dh_company_search(company_name):
+def dh_get_user_details(request, access_token):
+    """ Gets the currently logged in user details """
+
+    url = settings.DATA_HUB_WHOAMI
+
+    response = dh_request(request, access_token)
+    if not response.ok:
+        return None, response.json()
+
+    return response.json(), None
+
+
+def dh_company_search(request, access_token, company_name):
     """
     Peforms a Company name search using Data hub API.
 
@@ -156,12 +188,11 @@ def dh_company_search(company_name):
     url = settings.DATA_HUB_COMPANY_SEARCH_URL
     payload = {"name": company_name}
 
-    response = dh_request("POST", url, payload)
+    response = dh_request(request, access_token, "POST", url, payload)
 
     # It is not an error for us if the request fails, this can happen if the
     # Access token is invalid, consider that there are no matches however
     # user is notified of the error to take appropriate action
-    # TODO: revisit once SSO integration is completed
     if not response.ok:
         return companies, response.json()
 
@@ -185,7 +216,7 @@ def dh_company_search(company_name):
     return companies, None
 
 
-def dh_contact_search(contact_name):
+def dh_contact_search(request, access_token, contact_name, company_id):
     """
     Peforms a Contact name search using Data hub API.
 
@@ -193,23 +224,233 @@ def dh_contact_search(contact_name):
     """
     contacts = []
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
-    payload = {"name": contact_name}
+    payload = {"name": contact_name, "company": [company_id]}
 
-    response = dh_request("POST", url, payload)
+    response = dh_request(request, access_token, "POST", url, payload)
 
     if not response.ok:
         return contacts, response.json()
 
-    for contact in response.json()["results"]:
-        contacts.append(
-            {
-                "datahub_id": contact["id"],
-                "first_name": contact["first_name"],
-                "last_name": contact["last_name"],
-                "job_title": contact["job_title"],
-                "email": contact["email"],
-                "phone": contact["telephone_number"],
-            }
-        )
+    contacts = [
+        {
+            "datahub_id": contact["id"],
+            "first_name": contact["first_name"],
+            "last_name": contact["last_name"],
+            "job_title": contact["job_title"],
+            "email": contact["email"],
+            "phone": contact["telephone_number"],
+        }
+        for contact in response.json()["results"]
+    ]
 
     return contacts, None
+
+
+def dh_contact_create(request, access_token, enquirer, company_id, primary=False):
+    """
+    Create a contact and associate with the given Company Id.
+
+    Returns created contact and error if any
+    """
+    url = settings.DATA_HUB_CONTACT_CREATE_URL
+    enquirer = enquirer.enquirer
+    payload = {
+        "first_name": enquirer.first_name,
+        "last_name": enquirer.last_name,
+        "job_title": enquirer.job_title,
+        "company": company_id,
+        "primary": primary,
+        "telephone_countrycode": enquirer.country_code,
+        "telephone_number": enquirer.phone,
+        "email": enquirer.email,
+        "address_same_as_company": True,
+    }
+
+    response = dh_request(request, access_token, "POST", url, payload)
+    if not response.ok:
+        return None, response.json()
+
+    return response.json(), None
+
+
+def dh_adviser_search(request, access_token, adviser_name):
+    """
+    Peforms an Adviser search using Data hub API.
+
+    Returns list of subset of fields for each Adviser found
+    """
+    advisers = []
+    url = f"{settings.DATA_HUB_ADVISER_SEARCH_URL}"
+    params = {"autocomplete": adviser_name}
+
+    response = dh_request(request, access_token, "GET", url, {}, params=params)
+    if not response.ok:
+        return advisers, response.json()
+
+    advisers = [
+        {
+            "datahub_id": adviser["id"],
+            "name": adviser["first_name"],
+            "is_active": adviser["is_active"],
+        }
+        for adviser in response.json()["results"]
+    ]
+
+    return advisers, None
+
+
+def get_dh_id(metadata_items, name):
+    item = list(filter(lambda x: x["name"] == name, metadata_items))
+    assert len(item) == 1
+    return item[0]["id"]
+
+
+def dh_investment_create(request, enquiry, metadata=None):
+    """
+    Creates an Investment in Data Hub using the data from the given Enquiry obj.
+
+    Investment is only created if the Company corresponding to the Enquiry exists
+    in DH otherwise error is returned.
+    Enquirer details are added to the list of contacts for this company.
+    If this is the only contact then it will be made primary.
+    """
+
+    # Return a list of errors to be displayed in UI
+    response = {"errors": []}
+
+    # Extract access token
+    session = get_oauth_payload(request)
+    access_token = session["access_token"]
+
+    # Allow creating of investments only if Company exists on DH
+    if not enquiry.dh_company_id:
+        response["errors"].append(
+            {"company": f"{enquiry.company_name} doesn't exist in Data Hub"}
+        )
+        return response
+
+    # Same enquiry cannot be submitted if it is already done once
+    if (
+        enquiry.date_added_to_datahub
+        or enquiry.datahub_project_status != ref_data.DatahubProjectStatus.DEFAULT
+    ):
+        prev_submission_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")
+        stage = enquiry.get_datahub_project_status_display()
+        response["errors"].append(
+            {
+                "enquiry": f"Enquiry can only be submitted once,"
+                f" previously submitted on {prev_submission_date}, stage {stage}"
+            }
+        )
+        return response
+
+    # check if the user is available in Data Hub
+    user_details, error = dh_get_user_details(request, access_token)
+    if error:
+        response["errors"].append({"referral_advisor": error})
+        return response
+
+    referral_adviser = user_details["id"]
+
+    try:
+        dh_metadata = dh_fetch_metadata()
+    except Exception as e:
+        response["errors"].append({"metadata": "Error fetching metadata"})
+        return response
+
+    payload = {}
+    company_id = enquiry.dh_company_id
+
+    # Create a contact for this company
+    # If a contact already exists then make the new contact as secondary
+    full_name = f"{enquiry.enquirer.first_name} {enquiry.enquirer.last_name}"
+    existing_contacts, error = dh_contact_search(
+        request, access_token, full_name, company_id
+    )
+    if error:
+        response["errors"].append({"contact_search": error})
+        return response
+
+    primary = not existing_contacts
+    contact_response, error = dh_contact_create(
+        request, access_token, enquiry, company_id, primary=primary
+    )
+    if error:
+        response["errors"].append({"contact_create": error})
+        return response
+
+    payload["name"] = enquiry.company_name
+    payload["investor_company"] = company_id
+    payload["description"] = enquiry.project_description
+    payload["anonymous_description"] = enquiry.anonymised_project_description
+    payload["estimated_land_date"] = enquiry.estimated_land_date.isoformat()
+
+    payload["investment_type"] = get_dh_id(dh_metadata["investment-type"], "FDI")
+    payload["fdi_type"] = map_to_datahub_id(
+        enquiry.get_investment_type_display(), dh_metadata, "fdi-type"
+    )
+    payload["stage"] = get_dh_id(dh_metadata["investment-project-stage"], "Prospect")
+    payload["investor_type"] = map_to_datahub_id(
+        enquiry.get_new_existing_investor_display(),
+        dh_metadata,
+        "investment-investor-type",
+    )
+    payload["level_of_involvement"] = map_to_datahub_id(
+        enquiry.get_investor_involvement_level_display(),
+        dh_metadata,
+        "investment-involvement",
+    )
+    payload["specific_programme"] = map_to_datahub_id(
+        enquiry.get_specific_investment_programme_display(),
+        dh_metadata,
+        "investment-specific-programme",
+    )
+    payload["client_contacts"] = [contact_response["id"]]
+
+    if not enquiry.crm:
+        response["errors"].append(
+            {"adviser": "Adviser name required, should not be empty"}
+        )
+        return response
+
+    advisers, error = dh_adviser_search(request, access_token, enquiry.crm)
+    if error:
+        response["errors"].append({"adviser_search": error})
+        return response
+
+    if not advisers:
+        response["errors"].append({"adviser": f"Adviser {enquiry.crm} not found"})
+        return response
+
+    payload["client_relationship_manager"] = advisers[0]["datahub_id"]
+
+    payload["sector"] = map_to_datahub_id(
+        enquiry.get_primary_sector_display(), dh_metadata, "sector"
+    )
+
+    payload["business_activities"] = [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES]
+    payload["referral_source_adviser"] = referral_adviser
+    payload["referral_source_activity"] = get_dh_id(
+        dh_metadata["referral-source-activity"], ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE
+    )
+    payload["referral_source_activity_website"] = get_dh_id(
+        dh_metadata["referral-source-website"], ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE
+    )
+
+    url = settings.DATA_HUB_INVESTMENT_CREATE_URL
+
+    try:
+        result = dh_request(request, access_token, "POST", url, payload)
+        response["result"] = result.json()
+    except Exception as e:
+        response["errors"].append(
+            {"investment_create": f"Error creating investment, {str(e)}"}
+        )
+        return response
+
+    if result.ok:
+        enquiry.datahub_project_status = ref_data.DatahubProjectStatus.PROSPECT
+        enquiry.date_added_to_datahub = date.today()
+        enquiry.save()
+
+    return response
