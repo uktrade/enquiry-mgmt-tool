@@ -70,7 +70,7 @@ class PrimarySector(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
     ADVANCED_ENG = "ADVANCED_ENG", _("Advanced Engineering")
     AEROSPACE = "AEROSPACE", _("Aerospace")
-    AGRICULTURE = "AGRICULTURE,", _("Agriculture, Horticulture, Fisheries and Pets")
+    AGRICULTURE = "AGRICULTURE", _("Agriculture, Horticulture, Fisheries and Pets")
     AIRPORTS = "AIRPORTS", _("Airports")
     AUTOMOTIVE = "AUTOMOTIVE", _("Automotive")
     CHEMICALS = "CHEMICALS", _("Chemicals")
@@ -425,6 +425,23 @@ class DatahubProjectStatus(models.TextChoices):
     ABANDONED = "ABANDONED", _("Abandoned")
     DELAYED = "DELAYED", _("Delayed")
 
+
+IMPORT_COL_NAMES = [
+    "enquirer_first_name",
+    "enquirer_last_name",
+    "enquirer_job_title",
+    "enquirer_email",
+    "enquirer_phone",
+    "enquirer_request_for_call",
+    "country",
+    "company_name",
+    "primary_sector",
+    "company_hq_address",
+    "website",
+    "investment_readiness",
+    "enquiry_text",
+    "notes",
+]
 
 MAP_ENQUIRY_FIELD_TO_REF_DATA = {
     "enquiry_stage": EnquiryStage,

@@ -29,6 +29,8 @@ services:
       - .:/usr/src/app
     command: celery worker -A app -l info -Q celery -B
     network_mode: "host"
+    depends_on:
+      - redis
 
   redis:
     image: redis:3.2

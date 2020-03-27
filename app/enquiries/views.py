@@ -4,7 +4,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator as DjangoPaginator
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+
+from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django_filters import rest_framework as filters
@@ -16,10 +19,10 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app.enquiries import models, serializers
-from app.enquiries import forms
+from app.enquiries import forms, models, serializers, utils
 
 UNASSIGNED = "UNASSIGNED"
+
 
 class PaginationWithPaginationMeta(PageNumberPagination):
     """
@@ -55,7 +58,7 @@ def is_valid_int(v) -> bool:
 
 
 class EnquiryFilter(filters.FilterSet):
-    
+
     owner__id = filters.CharFilter(field_name="owner__id", method="filter_owner_id")
 
     def filter_owner_id(self, queryset, name, value):
@@ -168,4 +171,17 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
     def form_invalid(self, form):
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
+        return response
+
+
+class ImportTemplateDownloadView(View):
+    methods = ["get"]
+    CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+    def get(self, request):
+        response = HttpResponse(content_type=self.CONTENT_TYPE)
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="{settings.IMPORT_TEMPLATE_FILENAME}"'
+        utils.generate_import_template(response)
         return response

@@ -33,6 +33,7 @@ Markdown==3.1.1
 MarkupSafe==1.1.1
 mohawk==0.3.4
 more-itertools==8.0.2
+openpyxl==3.0.3
 packaging==19.2
 parso==0.5.1
 pexpect==4.7.0

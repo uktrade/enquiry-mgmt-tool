@@ -1,6 +1,7 @@
 import pytest
 import pytz
 import random
+from openpyxl import Workbook, load_workbook
 
 from datetime import date, datetime
 from django.conf import settings
@@ -13,6 +14,7 @@ from unittest import mock
 
 import app.enquiries.ref_data as ref_data
 import app.enquiries.tests.utils as test_utils
+import app.enquiries.views as enquiry_views
 
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
@@ -322,6 +324,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         country_display_name = get_display_name(ref_data.Country, enquiry.country)
         self.assertContains(response, enquiry_stage_display_name)
         self.assertContains(response, country_display_name)
+    
     def test_helper_login(self):
         result = self.login()
         self.assertEqual(result, True)
@@ -410,3 +413,33 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 0)
+
+    def test_import_template(self):
+        """Tests that the dynamically generated .XLSX template is accessible has the correct format.
+        The spreadsheet has multiple sheets with the 'enquiries' sheet used to capture user input.
+        All other sheets are populate with the apps ref_data.py
+        """
+        import io
+        import tempfile
+
+        response = self.client.get(reverse("import-template"))
+        content = response.content
+
+        wb = load_workbook(io.BytesIO(content))
+        sheet = wb.active
+        for row in sheet.values:
+            for i, val in enumerate(row):
+                self.assertEqual(
+                    val,
+                    ref_data.IMPORT_COL_NAMES[i],
+                    msg="should match expected column value",
+                )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(
+            enquiry_views.ImportTemplateDownloadView.CONTENT_TYPE,
+            response.get("Content-Type"),
+            msg=f"Should have content type: {enquiry_views.ImportTemplateDownloadView.CONTENT_TYPE}",
+        )
+        self.assertIn(
+            settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition")
+        )
