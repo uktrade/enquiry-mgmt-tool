@@ -239,14 +239,14 @@ if REDIS_BASE_URL:
     is_secure_redis = REDIS_BASE_URL.startswith('rediss://')
     redis_url_args = {'ssl_cert_reqs': 'CERT_REQUIRED'} if is_secure_redis else {}
     encoded_query_args = urlencode(redis_url_args)
-    BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}
+    BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}'
     CELERY_RESULT_BACKEND = BROKER_URL
     CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
 
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": f'{REDIS_BASE_URL}/{REDIS_CACHE_DB},
+            "LOCATION": f'{REDIS_BASE_URL}/{REDIS_CACHE_DB}',
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
