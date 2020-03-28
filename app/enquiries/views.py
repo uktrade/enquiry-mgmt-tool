@@ -130,6 +130,16 @@ class ImportEnquiriesView(TemplateView):
     def ERROR_URL(self):
         return reverse("import-enquiries") + "?errors=1"
 
+    def _build_records(self, file_obj):
+        records = []
+        with transaction.atomic():
+            for c in file_obj.chunks(chunk_size=settings.UPLOAD_CHUNK_SIZE):
+                csv_file = csv.DictReader(codecs.iterdecode(BytesIO(c), "utf-8"))
+                for row in csv_file:
+                    records.append(row_to_enquiry(row))
+
+        return records
+
     def process_upload(self, uploaded_file):
         records = []
         with uploaded_file as f:
@@ -139,11 +149,9 @@ class ImportEnquiriesView(TemplateView):
                     f"File is not of type: text/csv with  extension .csv. Detected type: {f.content_type}",
                 )
                 return HttpResponseRedirect(reverse("import-enquiries"))
-            with transaction.atomic():
-                for c in f.chunks(chunk_size=settings.UPLOAD_CHUNK_SIZE):
-                    csv_file = csv.DictReader(codecs.iterdecode(BytesIO(c), "utf-8"))
-                    for row in csv_file:
-                        records.append(row_to_enquiry(row))
+
+            records = self._build_records(f)
+
         logger.info(f"Successfully ingested {len(records)} records")
         return records
 
@@ -171,7 +179,7 @@ class ImportEnquiriesView(TemplateView):
         )
 
     def get(self, request, *args, **kwargs):
-        status_code = 400 if "errors" in request.GET else 200
+        status_code = status.HTTP_400_BAD_REQUEST if "errors" in request.GET else status.HTTP_200_OK
         return render(
             request,
             "import-enquiries-form.html",
