@@ -15,4 +15,9 @@ class Migration(migrations.Migration):
             name='crm',
             field=models.CharField(blank=True, help_text='Name of the relationship manager', max_length=255, null=True, verbose_name='CRM'),
         ),
+        migrations.AlterField(
+            model_name='enquiry',
+            name='notes',
+            field=models.TextField(blank=True, verbose_name='Notes'),
+        ),
     ]
