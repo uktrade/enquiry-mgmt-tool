@@ -14,9 +14,22 @@ class EnquiryStage(models.TextChoices):
 
 class InvestmentReadiness(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    CONVINCED = "CONVINCED", _("I’m convinced and want to talk to someone about my plans")
-    SHORTLIST = "SHORTLIST", _("The UK is on my shortlist. How can the Department for International Trade help me?")
-    EXPLORING = "EXPLORING", _("I’m still exploring where to expand my business and would like to know more about the UK’s offer")
+    CONVINCED = (
+        "CONVINCED",
+        _("I’m convinced and want to talk to someone about my plans"),
+    )
+    SHORTLIST = (
+        "SHORTLIST",
+        _(
+            "The UK is on my shortlist. How can the Department for International Trade help me?"
+        ),
+    )
+    EXPLORING = (
+        "EXPLORING",
+        _(
+            "I’m still exploring where to expand my business and would like to know more about the UK’s offer"
+        ),
+    )
     NOT_READY = "NOT_READY", _("I’m not yet ready to invest. Keep me informed")
 
 
@@ -57,7 +70,7 @@ class PrimarySector(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
     ADVANCED_ENG = "ADVANCED_ENG", _("Advanced Engineering")
     AEROSPACE = "AEROSPACE", _("Aerospace")
-    AGRICULTURE = "AGRICULTURE,", _("Agriculture, Horticulture, Fisheries and Pets")
+    AGRICULTURE = "AGRICULTURE", _("Agriculture, Horticulture, Fisheries and Pets")
     AIRPORTS = "AIRPORTS", _("Airports")
     AUTOMOTIVE = "AUTOMOTIVE", _("Automotive")
     CHEMICALS = "CHEMICALS", _("Chemicals")
@@ -346,8 +359,8 @@ class InvestmentType(models.TextChoices):
 
 class NewExistingInvestor(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
-    NEW = "NEW,", _("New investor")
-    EXISTING = "EXISTING,", _("Existing investor")
+    NEW = "NEW", _("New investor")
+    EXISTING = "EXISTING", _("Existing investor")
 
 
 class InvestorInvolvement(models.TextChoices):
@@ -412,19 +425,42 @@ class DatahubProjectStatus(models.TextChoices):
     ABANDONED = "ABANDONED", _("Abandoned")
     DELAYED = "DELAYED", _("Delayed")
 
+
 IMPORT_COL_NAMES = [
-    'enquirer_first_name',
-    'enquirer_last_name',
-    'enquirer_job_title',
-    'enquirer_email',
-    'enquirer_phone',
-    'enquirer_request_for_call',
-    'country',
-    'company_name',
-    'primary_sector',
-    'company_hq_address',
-    'website',
-    'investment_readiness',
-    'enquiry_text',
-    'notes'
+    "enquirer_first_name",
+    "enquirer_last_name",
+    "enquirer_job_title",
+    "enquirer_email",
+    "enquirer_phone",
+    "enquirer_request_for_call",
+    "country",
+    "company_name",
+    "primary_sector",
+    "company_hq_address",
+    "website",
+    "investment_readiness",
+    "enquiry_text",
+    "notes",
 ]
+
+MAP_ENQUIRY_FIELD_TO_REF_DATA = {
+    "enquiry_stage": EnquiryStage,
+    "investment_readiness": InvestmentReadiness,
+    "quality": Quality,
+    "marketing_channel": MarketingChannel,
+    "how_they_heard_dit": HowDidTheyHear,
+    "primary_sector": PrimarySector,
+    "country": Country,
+    "first_response_channel": FirstResponseChannel,
+    "ist_sector": IstSector,
+    "first_hpo_selection": HpoSelection,
+    "region": Region,
+    "second_hpo_selection": HpoSelection,
+    "third_hpo_selection": HpoSelection,
+    "organisation_type": OrganisationType,
+    "investment_type": InvestmentType,
+    "new_existing_investor": NewExistingInvestor,
+    "investor_involvement_level": InvestorInvolvement,
+    "specific_investment_programme": InvestmentProgramme,
+    "datahub_project_status": DatahubProjectStatus,
+}

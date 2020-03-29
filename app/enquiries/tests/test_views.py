@@ -2,32 +2,43 @@ import csv
 import pytest
 import pytz
 import random
+from openpyxl import Workbook, load_workbook
 
 from io import StringIO
-from datetime import date
+from datetime import date, datetime
 from faker import Faker
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
-from django.test import Client, TestCase
 from django.urls import reverse
 
 from rest_framework import status
 from unittest import mock
 
 import app.enquiries.ref_data as ref_data
+import app.enquiries.views as enquiry_views
+import app.enquiries.tests.utils as test_utils
 from app.enquiries import utils
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
+    EnquirerFactory,
     EnquiryFactory,
     create_fake_enquiry_csv_row,
     get_random_item,
     get_display_name,
+    get_display_value,
+    return_display_value,
 )
 from app.enquiries.views import ImportEnquiriesView
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
+headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
+headers_json = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/json"}
+
+enquiry_field_names = [f.name for f in Enquiry._meta.fields]
+enquirer_field_names = [f.name for f in Enquirer._meta.fields]
 
 
 def canned_enquiry():
@@ -80,10 +91,9 @@ def canned_enquiry():
 ERROR_MISSING_FIELD = "field cannot be blank"
 
 
-class EnquiryViewTestCase(TestCase):
+class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def setUp(self):
-        self.faker = Faker()
-        self.client = Client()
+        super().setUp()
 
     def assert_dicts_equal(self, expected, actual, exclude_keys=None):
         """
@@ -99,6 +109,43 @@ class EnquiryViewTestCase(TestCase):
                 continue
 
             self.assertEqual(value, expected[key])
+    
+    def assert_factory_enquiry_equals_enquiry_response(self, factory_item, response_item):
+        date_fields = [
+            "created",
+            "modified",
+            "date_added_to_datahub",
+            "project_success_date",
+        ]
+        omit_fields = ["owner"]
+        ref_fields = ref_data.MAP_ENQUIRY_FIELD_TO_REF_DATA
+
+        for name in enquiry_field_names:
+            if name == "enquirer":
+                continue
+            factory_value = getattr(factory_item, name)
+            db_value = response_item[name]
+            if name in omit_fields:
+                continue
+            elif name in date_fields:
+                if isinstance(db_value, datetime):
+                    db_value = db_value.date()
+                elif isinstance(db_value, str):
+                    db_value = datetime.strptime(db_value, "%d %B %Y")
+                    db_value = (
+                        db_value.date()
+                        if isinstance(db_value, datetime)
+                        else db_value
+                    )
+                factory_value = (
+                    factory_value.date() if isinstance(factory_value, datetime) else factory_value
+                )
+            elif name in ref_fields:
+                ref_model = ref_fields[name]
+                db_value = return_display_value(ref_model, db_value)
+                pass
+
+            self.assertEqual(factory_value, db_value)
 
     def create_enquiry_and_assert(self, enquiry):
         """Creates an Enquiry using the API and asserts on the response status"""
@@ -132,7 +179,7 @@ class EnquiryViewTestCase(TestCase):
         It will be same for all pages except for the last page
         if num_enquiries is not a multiple of page_size
         """
-        num_enquiries = 3
+        num_enquiries = 13
         enquiries = EnquiryFactory.create_batch(num_enquiries)
         ids = [e.id for e in enquiries]
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
@@ -140,7 +187,9 @@ class EnquiryViewTestCase(TestCase):
         for page in range(total_pages):
             start = page * page_size
             end = start + page_size
-            response = self.client.get(reverse("enquiry-list"), {"page": page + 1})
+            response = self.client.get(
+                reverse("enquiry-list"), {"page": page + 1}, **headers
+            )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(
                 [enq["id"] for enq in response.data["results"]], ids[start:end]
@@ -209,7 +258,8 @@ class EnquiryViewTestCase(TestCase):
         Creates an enquiry first, updates few fields and ensures
         the data is updated after submitting the form
         """
-        enquiry = model_to_dict(EnquiryFactory())
+        enquiry_obj = EnquiryFactory()
+        enquiry = model_to_dict(enquiry_obj)
         # TODO: remove blank fields
         # POST request to a form expects all the fields but sending optional
         # fields whose value is None causing form_invalid errors.
@@ -219,6 +269,18 @@ class EnquiryViewTestCase(TestCase):
         data["enquiry_stage"] = get_random_item(ref_data.EnquiryStage)
         data["notes"] = self.faker.sentence()
         data["country"] = get_random_item(ref_data.Country)
+
+        # Enquirer fields are also sent in a single form update
+        enquirer = enquiry_obj.enquirer
+        data["enquirer"] = enquirer.id
+        data["first_name"] = "updated first name"
+        data["last_name"] = enquirer.last_name
+        data["job_title"] = enquirer.job_title
+        data["email"] = enquirer.email
+        data["phone"] = enquirer.phone
+        data["email_consent"] = False
+        data["phone_consent"] = True
+        data["request_for_call"] = enquirer.request_for_call
         response = self.client.post(
             reverse("enquiry-edit", kwargs={"pk": data["id"]}), data,
         )
@@ -228,11 +290,14 @@ class EnquiryViewTestCase(TestCase):
         # retrieve updated record
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": data["id"]}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        updated = model_to_dict(response.context["enquiry"])
-        self.assertEqual(updated["company_name"], data["company_name"])
-        self.assertEqual(updated["enquiry_stage"], data["enquiry_stage"])
-        self.assertEqual(updated["notes"], data["notes"])
-        self.assertEqual(updated["country"], data["country"])
+        updated = response.context["enquiry"]
+        self.assertEqual(updated.company_name, data["company_name"])
+        self.assertEqual(updated.enquiry_stage, data["enquiry_stage"])
+        self.assertEqual(updated.notes, data["notes"])
+        self.assertEqual(updated.country, data["country"])
+        self.assertEqual(updated.enquirer.first_name, "updated first name")
+        self.assertEqual(updated.enquirer.email_consent, False)
+        self.assertEqual(updated.enquirer.phone_consent, True)
 
     def test_enquiry_failed_update(self):
         """
@@ -251,7 +316,6 @@ class EnquiryViewTestCase(TestCase):
         self.assertEqual(updated_enquiry["company_name"], enquiry["company_name"])
         self.assertNotEqual(updated_enquiry["company_name"], "")
 
-    def test_enquiry_detail_template_simple(self):
         """Test the template is using the right variables to show enquiry data 
         in the simple case when data is a string"""
         enquiry = EnquiryFactory()
@@ -385,3 +449,122 @@ class EnquiryViewTestCase(TestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(num_items, final_count)
             self.assertTrue(len(body) > settings.UPLOAD_CHUNK_SIZE)
+    
+    def test_helper_login(self):
+        result = self.login()
+        self.assertEqual(result, True)
+        self.assertEqual(self.logged_in, True)
+        self.assertEqual(result, self.logged_in)
+
+    def test_login_protected(self):
+        """Test the view is protected by SSO"""
+        self.logout()
+        response = self.client.get(reverse("enquiry-list"))
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(response.get("Location").split("?")[0], settings.LOGIN_URL)
+        self.login()
+
+    def test_enquiry_list_filtered(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        EnquiryFactory(company_name="Foo Bar")
+        EnquiryFactory(company_name="Bar Inc")
+        EnquiryFactory(company_name="Baz")
+        response = self.client.get(
+            reverse("enquiry-list"), {"company_name__icontains": "Bar"}, **headers
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 2)
+
+    def test_enquiry_list_filtered_unassigned(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        
+
+        EnquirerFactory()
+        enquiries = [
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW),
+        ]
+
+        owner = enquiries[1].owner
+        enquiries[0].owner = None
+        enquiries[0].save()
+        enquiry_unassigned = enquiries[0]
+        enquiry_assigned = enquiries[1]
+
+        # owner assigned
+        response = self.client.get(
+            reverse("enquiry-list"), {"owner__id": owner.id}, **headers
+        )
+        data = response.data
+        
+        enquiry_data = data["results"][0]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+        self.assert_factory_enquiry_equals_enquiry_response(enquiry_assigned, enquiry_data)
+        
+
+        # owner unassigned
+        response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"})
+        data = response.data
+
+        enquiry_data_unassigned = data["results"][0]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+
+        self.assert_factory_enquiry_equals_enquiry_response(enquiry_unassigned, enquiry_data_unassigned)
+
+    def test_enquiry_list_filtered_enquiry_stage(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW)
+        # enquiry stage - ADDED_TO_DATAHUB
+        response = self.client.get(
+            reverse("enquiry-list"),
+            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+
+        # enquiry stage - NON_FDI
+        response = self.client.get(
+            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 0)
+
+    def test_import_template(self):
+        """Tests that the dynamically generated .XLSX template is accessible has the correct format.
+        The spreadsheet has multiple sheets with the 'enquiries' sheet used to capture user input.
+        All other sheets are populate with the apps ref_data.py
+        """
+        import io
+        import tempfile
+
+        response = self.client.get(reverse("import-template"))
+        content = response.content
+
+        wb = load_workbook(io.BytesIO(content))
+        sheet = wb.active
+        for row in sheet.values:
+            for i, val in enumerate(row):
+                self.assertEqual(
+                    val,
+                    ref_data.IMPORT_COL_NAMES[i],
+                    msg="should match expected column value",
+                )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(
+            enquiry_views.ImportTemplateDownloadView.CONTENT_TYPE,
+            response.get("Content-Type"),
+            msg=f"Should have content type: {enquiry_views.ImportTemplateDownloadView.CONTENT_TYPE}",
+        )
+        self.assertIn(
+            settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition")
+        )

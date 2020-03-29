@@ -21,14 +21,10 @@ class EnquirerSerializer(serializers.ModelSerializer):
 
 
 class OwnerSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Owner
         fields = "__all__"
-
-    def get_user(self, obj):
-        return obj
 
 
 class EnquirySerializer(serializers.ModelSerializer):
@@ -75,6 +71,7 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     third_hpo_selection = serializers.CharField(source="get_third_hpo_selection_display")
     organisation_type = serializers.CharField(source="get_organisation_type_display")
     investment_type = serializers.CharField(source="get_investment_type_display")
+    estimated_land_date = serializers.DateField(format="%d %B %Y")
     new_existing_investor = serializers.CharField(source="get_new_existing_investor_display")
     investor_involvement_level = serializers.CharField(source="get_investor_involvement_level_display")
     specific_investment_programme = serializers.CharField(source="get_specific_investment_programme_display")

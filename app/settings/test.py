@@ -1,4 +1,8 @@
-from app.settings import *
+from app.settings.common import *
+
+FEATURE_FLAGS = {
+    "ENFORCE_STAFF_SSO_ON": True,
+}
 
 REST_FRAMEWORK["PAGE_SIZE"] = 2
 

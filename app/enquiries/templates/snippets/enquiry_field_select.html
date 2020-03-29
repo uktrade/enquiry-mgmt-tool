@@ -1,0 +1,13 @@
+{% load enquiries_extras %}
+<div class="govuk-form-group">
+    <label class="govuk-label" for="{{ field }}">
+        {{ instance|get_field_verbose_name:field }}
+    </label>
+    <select class="govuk-select" id={{ field }} name={{ field }}>
+        {% for key,value in instance|get_field_choices:field %}
+        <option value="{{ key }}" {% if key == instance|get_attribute:field %} selected{% endif %}>
+            {{ value }}
+        </option>
+        {% endfor %}
+    </select>
+</div>
