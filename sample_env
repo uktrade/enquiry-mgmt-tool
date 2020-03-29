@@ -35,3 +35,4 @@ AUTHBROKER_URL=contact-web-ops-for-details
 AUTHBROKER_CLIENT_ID=contact-web-ops-for-details
 AUTHBROKER_CLIENT_SECRET=contact-web-ops-for-details
 AUTHBROKER_TOKEN_SESSION_KEY=_authbroker_token
+AUTHBROKER_STAFF_SSO_SCOPE=additional-scope

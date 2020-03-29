@@ -31,6 +31,7 @@ jobs:
       AUTHBROKER_CLIENT_ID: somestring
       AUTHBROKER_CLIENT_SECRET: somestring
       AUTHBROKER_TOKEN_SESSION_KEY: _authbroker_token
+      AUTHBROKER_STAFF_SSO_SCOPE: required-scope-values
 
     docker:
       - image: circleci/python:3.6.4

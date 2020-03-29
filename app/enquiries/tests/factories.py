@@ -4,7 +4,8 @@ import random
 from datetime import date
 from faker import Faker
 
-from app.enquiries.models import Enquirer, Enquiry
+
+from app.enquiries.models import Enquirer, Enquiry, Owner
 import app.enquiries.ref_data as ref_data
 
 factory.Faker._DEFAULT_LOCALE = "en_GB"
@@ -12,6 +13,7 @@ factory.Faker._DEFAULT_LOCALE = "en_GB"
 
 def get_random_item(refdata_model):
     return random.choice(refdata_model.choices)[0]
+
 
 def get_display_name(refdata_model, item):
     """Get the verbose name from ref_data given the short name"""
@@ -25,6 +27,26 @@ def get_display_value(ref_data_model, label):
     ]
     return text[0] if text else "Not found"
 
+def return_display_value(ref_data_model, label):
+    """
+    Returns the ref_data option value when given the the ref_data_model option label
+    """
+    text = [
+        value
+        for (value, choice_label) in ref_data_model.choices
+        if choice_label == label
+    ]
+    return text[0] if text else "Not found"
+
+
+class OwnerFactory(factory.django.DjangoModelFactory):
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    username = factory.Sequence(lambda n: "user%03d" % n)
+    email = factory.Faker("email")
+
+    class Meta:
+        model = Owner
 
 class EnquirerFactory(factory.django.DjangoModelFactory):
     first_name = factory.Faker("first_name")
@@ -40,7 +62,7 @@ class EnquirerFactory(factory.django.DjangoModelFactory):
 
 
 class EnquiryFactory(factory.django.DjangoModelFactory):
-
+    owner = factory.SubFactory(OwnerFactory)
     company_name = factory.Faker("company")
     enquiry_stage = get_random_item(ref_data.EnquiryStage)
     enquiry_text = factory.Faker("sentence")
@@ -74,3 +96,23 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Enquiry
+
+
+def create_fake_enquiry_csv_row():
+    fake = Faker()
+    return {
+        "enquirer_first_name": fake.name(),
+        "enquirer_last_name": fake.name(),
+        "enquirer_job_title": fake.job(),
+        "enquirer_email": fake.email(),
+        "enquirer_phone": fake.phone_number(),
+        "enquirer_request_for_call": get_random_item(ref_data.RequestForCall),
+        "country": get_random_item(ref_data.Country),
+        "company_name": fake.company(),
+        "primary_sector": get_random_item(ref_data.PrimarySector),
+        "company_hq_address": fake.address(),
+        "website": fake.url(),
+        "investment_readiness": get_random_item(ref_data.InvestmentReadiness),
+        "enquiry_text": fake.sentence(),
+        "notes": fake.sentence(nb_words=20),
+    }

@@ -14,7 +14,7 @@ django-extensions==2.2.5
 django-filter==2.2.0
 django-redis==4.11.0
 django-rest-knox==4.1.0
-django-staff-sso-client==2.0.1
+django-staff-sso-client==2.1.0
 djangorestframework==3.10.3
 drf-writable-nested==0.5.3
 django-widget-tweaks==1.4.5
@@ -33,6 +33,7 @@ Markdown==3.1.1
 MarkupSafe==1.1.1
 mohawk==0.3.4
 more-itertools==8.0.2
+openpyxl==3.0.3
 packaging==19.2
 parso==0.5.1
 pexpect==4.7.0
