@@ -86,7 +86,7 @@ To run an individual test run the following command:
 
 ### Switching branches
 
-Remember to rebuild images (whewre dependancies have changed) and deleting __pycache__ directories
+Remember to rebuild images (where dependancies have changed) and deleting __pycache__ directories
 
 Run the following from the project root to delete __pycache__ directories:
 

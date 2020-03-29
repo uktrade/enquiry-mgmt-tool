@@ -5,7 +5,6 @@ import app.enquiries.ref_data as ref_data
 from app.enquiries.models import Enquirer, Enquiry
 
 
-
 def get_oauth_payload(request):
     """
     Returns the Staff SSO oauth data stored in the session (i.e. oauth token, expiry time etc )
@@ -14,9 +13,9 @@ def get_oauth_payload(request):
     return request.session.get(settings.AUTHBROKER_TOKEN_SESSION_KEY, None)
 
 
-def row_to_enquiry(row: list) -> Enquirer:
+def row_to_enquiry(row: dict) -> Enquirer:
     """
-    Takes an list representing a CSV row and create an Enquiry instance before saving it to the db
+    Takes an dict representing a CSV row and create an Enquiry instance before saving it to the db
     """
     enquirer = Enquirer(
         first_name=row["enquirer_first_name"],
@@ -27,9 +26,9 @@ def row_to_enquiry(row: list) -> Enquirer:
         request_for_call=row["enquirer_request_for_call"],
     )
 
-    # validate enquirer before saving
+    # validate enquirer before saving - https://docs.djangoproject.com/en/3.0/ref/models/instances/#django.db.models.Model.full_clean
     enquirer.full_clean()
-    e = Enquiry(
+    enquiry = Enquiry(
         enquirer=enquirer,
         country=row["country"],
         company_name=row["company_name"],
@@ -42,13 +41,28 @@ def row_to_enquiry(row: list) -> Enquirer:
     )
 
     # validate enquiry before saving (but exclude enquirer)
-    e.full_clean(["enquirer"])
+    enquiry.full_clean(["enquirer"])
 
-    # save and associate
+    # now that both enquiry and enquirer are valid we can save and associate them
     enquirer.save()
-    e.enquirer = enquirer
-    e.save()
-    return e
+    enquiry.enquirer = enquirer
+    enquiry.save()
+    return enquiry
+
+
+def csv_row_to_enquiry_filter_kwargs(csv_row: dict) -> dict:
+    """
+    Takes a dict (represents a CSV row as exported by the tool ) and returns a dict representing a model query
+    i.e. enquiry__enquirer__first_name to access -> enquiry.enquirer.first_name
+    """
+
+    # build queryset filter params
+    qs_kwargs = {
+        key.replace('enquirer_', 'enquirer__'): value
+        for key, value in csv_row.items()
+    }
+    
+    return qs_kwargs
 
 
 def generate_import_template(file_obj):

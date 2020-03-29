@@ -134,7 +134,7 @@ class Enquiry(TimeStampedModel):
         default=ref_data.FirstResponseChannel.DEFAULT,
         verbose_name="First response channel",
     )
-    notes = models.TextField(verbose_name="Notes")
+    notes = models.TextField(blank=True, null=True, verbose_name="Notes")
     first_hpo_selection = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.HpoSelection.choices,
@@ -198,6 +198,8 @@ class Enquiry(TimeStampedModel):
     crm = models.CharField(
         max_length=MAX_LENGTH,
         help_text="Name of the relationship manager",
+        blank=True,
+        null=True,
         verbose_name="CRM",
     )
     project_code = models.CharField(

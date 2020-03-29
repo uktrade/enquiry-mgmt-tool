@@ -33,6 +33,7 @@ urlpatterns = [
         views.ImportTemplateDownloadView.as_view(),
         name="import-template",
     ),
+    path('enquiries/import/', views.ImportEnquiriesView.as_view(), name="import-enquiries"),
     path(
         "enquiries/<int:pk>/", views.EnquiryDetailView.as_view(), name="enquiry-detail"
     ),
@@ -41,6 +42,7 @@ urlpatterns = [
     ),
     path("healthcheck/ping", ping.ping, name="ping"),
 ]
+
 
 if settings.FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
     urlpatterns.append(path("auth/", include("authbroker_client.urls")),)

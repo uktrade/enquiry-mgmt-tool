@@ -207,6 +207,7 @@ STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
 IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
+UPLOAD_CHUNK_SIZE = 256000
 
 # Data Hub settings
 # TODO: Access token can be removed once SSO is integrated as it comes from SSO directly

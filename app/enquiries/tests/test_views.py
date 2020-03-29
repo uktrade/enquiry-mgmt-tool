@@ -1,30 +1,37 @@
+import csv
 import pytest
 import pytz
 import random
 from openpyxl import Workbook, load_workbook
 
+from io import StringIO
 from datetime import date, datetime
+from faker import Faker
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.urls import reverse
-from faker import Faker
+
 from rest_framework import status
 from unittest import mock
 
 import app.enquiries.ref_data as ref_data
-import app.enquiries.tests.utils as test_utils
 import app.enquiries.views as enquiry_views
-
+import app.enquiries.tests.utils as test_utils
+from app.enquiries import utils
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
     EnquirerFactory,
     EnquiryFactory,
+    create_fake_enquiry_csv_row,
     get_random_item,
     get_display_name,
     get_display_value,
     return_display_value,
 )
+from app.enquiries.views import ImportEnquiriesView
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
@@ -79,6 +86,9 @@ def canned_enquiry():
         "datahub_project_status": get_random_item(ref_data.DatahubProjectStatus),
         "project_success_date": date(2022, 2, 3),
     }
+
+
+ERROR_MISSING_FIELD = "field cannot be blank"
 
 
 class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
@@ -324,6 +334,121 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         country_display_name = get_display_name(ref_data.Country, enquiry.country)
         self.assertContains(response, enquiry_stage_display_name)
         self.assertContains(response, country_display_name)
+
+    def test_enquiry_import_view(self):
+        """Test retrieving a valid enquiry returns 200"""
+        response = self.client.get(reverse("import-enquiries"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_enquiry_import_post_success(self):
+        """
+        Test a successful import
+        Creates a list of enquiry dicts and ensures
+        that records are written to the DB after submitting the form (POST)
+        """
+        num_items = 5
+        enquiries = [create_fake_enquiry_csv_row() for i in range(num_items)]
+        fp = StringIO()
+
+        writer = csv.DictWriter(
+            fp, fieldnames=ref_data.IMPORT_COL_NAMES, quoting=csv.QUOTE_MINIMAL
+        )
+        writer.writeheader()
+        writer.writerows(enquiries)
+
+        body = fp.getvalue().encode()
+        upload = SimpleUploadedFile("test.csv", body, content_type="text/csv")
+
+        response = self.client.post(
+            reverse("import-enquiries"), {"enquiries": upload}, follow=True
+        )
+
+        db_enquiries = Enquiry.objects.all()
+        final_count = db_enquiries.count()
+        self.assertNotContains(response, ImportEnquiriesView.ERROR_HEADER)
+        self.assertContains(response, f"Successfully posted {num_items} records!")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(final_count, num_items)
+
+        for e in enquiries:
+            # generate filter keyword args dynamically
+            # (can't modify the dict we arfe iterating over withouit raising an error so make a extra copy)
+            qs_kwargs = utils.csv_row_to_enquiry_filter_kwargs(e)
+
+            self.assertTrue(Enquiry.objects.filter(**qs_kwargs).exists())
+
+    def test_enquiry_import_post_error(self):
+        """
+        Test a unsuccessful import
+        Creates an enquiry dict, updates few fields and ensures
+        the data is updated after submitting the form
+        """
+        num_items = 5
+        initial_count = Enquiry.objects.count()
+        enquiries = [create_fake_enquiry_csv_row() for i in range(num_items)]
+        enquiries[3]["enquirer_job_title"] = ""
+
+        fp = StringIO()
+
+        writer = csv.DictWriter(
+            fp, fieldnames=ref_data.IMPORT_COL_NAMES, quoting=csv.QUOTE_MINIMAL
+        )
+        writer.writeheader()
+        writer.writerows(enquiries)
+
+        body = fp.getvalue().encode()
+        upload = SimpleUploadedFile("test.csv", body, content_type="text/csv")
+
+        response = self.client.post(
+            reverse("import-enquiries"), {"enquiries": upload}, follow=True
+        )
+
+        final_count = Enquiry.objects.count()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # test atomic transactions
+        self.assertEqual(
+            final_count,
+            initial_count,
+            f"atomic transaction should prevent any records being created. Found: {final_count}",
+        )
+
+    def test_enquiry_import_post_success_chunks(self):
+        """
+        Test a successful import over the chunk limit
+        Creates a list of enquiry dicts and ensures
+        that records are written to the DB after submitting the form (POST)
+        """
+        TEST_CHUNK_SIZE = 16000
+        num_items = 0
+        file_size = 0
+        fp = StringIO()
+
+        writer = csv.DictWriter(
+            fp, fieldnames=ref_data.IMPORT_COL_NAMES, quoting=csv.QUOTE_MINIMAL
+        )
+        writer.writeheader()
+
+        with self.settings(UPLOAD_CHUNK_SIZE=TEST_CHUNK_SIZE):
+            while file_size <= settings.UPLOAD_CHUNK_SIZE:
+                e = create_fake_enquiry_csv_row()
+                content_len = writer.writerow(e)
+                file_size += content_len
+                num_items += 1
+
+            body = fp.getvalue().encode()
+            upload = SimpleUploadedFile("test.csv", body, content_type="text/csv")
+
+            response = self.client.post(
+                reverse("import-enquiries"), {"enquiries": upload}, follow=True
+            )
+
+            final_count = Enquiry.objects.count()
+            self.assertNotContains(response, ImportEnquiriesView.ERROR_HEADER)
+            self.assertContains(response, f"Successfully posted {num_items} records!")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(num_items, final_count)
+            self.assertTrue(len(body) > settings.UPLOAD_CHUNK_SIZE)
     
     def test_helper_login(self):
         result = self.login()
