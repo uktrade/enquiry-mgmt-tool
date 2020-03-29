@@ -64,7 +64,9 @@ def dh_request(
 
     try:
         if method == "GET":
-            response = requests.get(url, headers=headers, params=params, timeout=timeout)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=timeout
+            )
         elif method == "POST":
             response = requests.post(
                 url, headers=headers, json=payload, timeout=timeout
@@ -334,7 +336,11 @@ def dh_investment_create(request, enquiry, metadata=None):
         enquiry.date_added_to_datahub
         or enquiry.datahub_project_status != ref_data.DatahubProjectStatus.DEFAULT
     ):
-        prev_submission_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")
+        prev_submission_date = (
+            enquiry.date_added_to_datahub.strftime("%d %B %Y")
+            if enquiry.date_added_to_datahub
+            else ""
+        )
         stage = enquiry.get_datahub_project_status_display()
         response["errors"].append(
             {
@@ -383,7 +389,9 @@ def dh_investment_create(request, enquiry, metadata=None):
     payload["investor_company"] = company_id
     payload["description"] = enquiry.project_description
     payload["anonymous_description"] = enquiry.anonymised_project_description
-    payload["estimated_land_date"] = enquiry.estimated_land_date.isoformat()
+    payload["estimated_land_date"] = ""
+    if enquiry.estimated_land_date:
+        payload["estimated_land_date"] = enquiry.estimated_land_date.isoformat()
 
     payload["investment_type"] = get_dh_id(dh_metadata["investment-type"], "FDI")
     payload["fdi_type"] = map_to_datahub_id(
@@ -431,10 +439,12 @@ def dh_investment_create(request, enquiry, metadata=None):
     payload["business_activities"] = [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES]
     payload["referral_source_adviser"] = referral_adviser
     payload["referral_source_activity"] = get_dh_id(
-        dh_metadata["referral-source-activity"], ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE
+        dh_metadata["referral-source-activity"],
+        ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE,
     )
     payload["referral_source_activity_website"] = get_dh_id(
-        dh_metadata["referral-source-website"], ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE
+        dh_metadata["referral-source-website"],
+        ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE,
     )
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
@@ -451,6 +461,7 @@ def dh_investment_create(request, enquiry, metadata=None):
     if result.ok:
         enquiry.datahub_project_status = ref_data.DatahubProjectStatus.PROSPECT
         enquiry.date_added_to_datahub = date.today()
+        enquiry.enquiry_stage = ref_data.EnquiryStage.ADDED_TO_DATAHUB
         enquiry.save()
 
     return response

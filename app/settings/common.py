@@ -240,8 +240,7 @@ if REDIS_BASE_URL:
     redis_url_args = {'ssl_cert_reqs': 'required'} if is_secure_redis else {}
     encoded_query_args = urlencode(redis_url_args)
     BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}?{encoded_query_args}'
-    CELERY_BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}?{encoded_query_args}'
-    CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+    CELERY_RESULT_BACKEND = BROKER_URL
     CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
 
     CACHES = {
