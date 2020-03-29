@@ -307,6 +307,118 @@ def get_dh_id(metadata_items, name):
     return item[0]["id"]
 
 
+def dh_enquiry_readiness(request, access_token, enquiry):
+    """
+    Check whether the given enquiry is ready to be submitted to Data Hub
+
+    Criteria is that the company should exist in Data Hub, crm is valid user,
+    given user is available etc
+
+    Returns json response with error description.
+    """
+    response = {"errors": []}
+
+    # Allow creating of investments only if Company exists on DH
+    if not enquiry.dh_company_id:
+        response["errors"].append(
+            {"company": f"{enquiry.company_name} doesn't exist in Data Hub"}
+        )
+        return response
+
+    # Same enquiry cannot be submitted if it is already done once
+    if (
+        enquiry.date_added_to_datahub
+        or enquiry.datahub_project_status != ref_data.DatahubProjectStatus.DEFAULT
+    ):
+        prev_submission_date = (
+            enquiry.date_added_to_datahub.strftime("%d %B %Y")
+            if enquiry.date_added_to_datahub
+            else "----"
+        )
+        stage = enquiry.get_datahub_project_status_display()
+        response["errors"].append(
+            {
+                "enquiry": f"Enquiry can only be submitted once,"
+                f" previously submitted on {prev_submission_date}, stage {stage}"
+            }
+        )
+        return response
+
+    if not enquiry.crm:
+        response["errors"].append(
+            {"adviser": "Adviser name required, should not be empty"}
+        )
+        return response
+
+    advisers, error = dh_adviser_search(request, access_token, enquiry.crm)
+    if error:
+        response["errors"].append({"adviser_search": error})
+        return response
+
+    if not advisers:
+        response["errors"].append({"adviser": f"Adviser {enquiry.crm} not found"})
+        return response
+
+    response["adviser"] = advisers[0]["datahub_id"]
+
+    return response
+
+
+def prepare_dh_payload(enquiry, dh_metadata, company_id, contact_id, adviser_id, crm_id):
+    """ Prepares the payload for investment create request """
+
+    payload = {}
+    payload["name"] = enquiry.company_name
+    payload["investor_company"] = company_id
+    payload["description"] = enquiry.project_description
+    payload["anonymous_description"] = enquiry.anonymised_project_description
+    payload["estimated_land_date"] = ""
+    if enquiry.estimated_land_date:
+        payload["estimated_land_date"] = enquiry.estimated_land_date.isoformat()
+    payload["investment_type"] = get_dh_id(
+        dh_metadata["investment-type"], ref_data.DATA_HUB_INVESTMENT_TYPE_FDI
+    )
+    payload["fdi_type"] = map_to_datahub_id(
+        enquiry.get_investment_type_display(), dh_metadata, "fdi-type"
+    )
+    payload["stage"] = get_dh_id(
+        dh_metadata["investment-project-stage"],
+        ref_data.DATA_HUB_PROJECT_STAGE_PROSPECT,
+    )
+    payload["investor_type"] = map_to_datahub_id(
+        enquiry.get_new_existing_investor_display(),
+        dh_metadata,
+        "investment-investor-type",
+    )
+    payload["level_of_involvement"] = map_to_datahub_id(
+        enquiry.get_investor_involvement_level_display(),
+        dh_metadata,
+        "investment-involvement",
+    )
+    payload["specific_programme"] = map_to_datahub_id(
+        enquiry.get_specific_investment_programme_display(),
+        dh_metadata,
+        "investment-specific-programme",
+    )
+    payload["client_contacts"] = [contact_id]
+    payload["client_relationship_manager"] = crm_id
+    payload["sector"] = map_to_datahub_id(
+        enquiry.get_primary_sector_display(), dh_metadata, "sector"
+    )
+    payload["business_activities"] = [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES]
+    payload["referral_source_adviser"] = adviser_id
+    payload["referral_source_activity"] = get_dh_id(
+        dh_metadata["referral-source-activity"],
+        ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE,
+    )
+    payload["referral_source_activity_website"] = get_dh_id(
+        dh_metadata["referral-source-website"],
+        ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE,
+    )
+
+    return payload
+
+
 def dh_investment_create(request, enquiry, metadata=None):
     """
     Creates an Investment in Data Hub using the data from the given Enquiry obj.
@@ -324,35 +436,16 @@ def dh_investment_create(request, enquiry, metadata=None):
     session = get_oauth_payload(request)
     access_token = session["access_token"]
 
-    # Allow creating of investments only if Company exists on DH
-    if not enquiry.dh_company_id:
-        response["errors"].append(
-            {"company": f"{enquiry.company_name} doesn't exist in Data Hub"}
-        )
-        return response
-
-    # Same enquiry cannot be submitted if it is already done once
-    if (
-        enquiry.date_added_to_datahub
-        or enquiry.datahub_project_status != ref_data.DatahubProjectStatus.DEFAULT
-    ):
-        prev_submission_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")
-        stage = enquiry.get_datahub_project_status_display()
-        response["errors"].append(
-            {
-                "enquiry": f"Enquiry can only be submitted once,"
-                f" previously submitted on {prev_submission_date}, stage {stage}"
-            }
-        )
-        return response
-
     # check if the user is available in Data Hub
     user_details, error = dh_get_user_details(request, access_token)
     if error:
         response["errors"].append({"referral_advisor": error})
         return response
 
-    referral_adviser = user_details["id"]
+    dh_status = dh_enquiry_readiness(request, access_token, enquiry)
+    if dh_status["errors"]:
+        response["errors"].extend(dh_status["errors"])
+        return response
 
     try:
         dh_metadata = dh_fetch_metadata()
@@ -360,9 +453,7 @@ def dh_investment_create(request, enquiry, metadata=None):
         response["errors"].append({"metadata": "Error fetching metadata"})
         return response
 
-    payload = {}
     company_id = enquiry.dh_company_id
-
     # Create a contact for this company
     # If a contact already exists then make the new contact as secondary
     full_name = f"{enquiry.enquirer.first_name} {enquiry.enquirer.last_name}"
@@ -381,65 +472,14 @@ def dh_investment_create(request, enquiry, metadata=None):
         response["errors"].append({"contact_create": error})
         return response
 
-    payload["name"] = enquiry.company_name
-    payload["investor_company"] = company_id
-    payload["description"] = enquiry.project_description
-    payload["anonymous_description"] = enquiry.anonymised_project_description
-    payload["estimated_land_date"] = enquiry.estimated_land_date.isoformat()
-
-    payload["investment_type"] = get_dh_id(dh_metadata["investment-type"], "FDI")
-    payload["fdi_type"] = map_to_datahub_id(
-        enquiry.get_investment_type_display(), dh_metadata, "fdi-type"
-    )
-    payload["stage"] = get_dh_id(dh_metadata["investment-project-stage"], "Prospect")
-    payload["investor_type"] = map_to_datahub_id(
-        enquiry.get_new_existing_investor_display(),
-        dh_metadata,
-        "investment-investor-type",
-    )
-    payload["level_of_involvement"] = map_to_datahub_id(
-        enquiry.get_investor_involvement_level_display(),
-        dh_metadata,
-        "investment-involvement",
-    )
-    payload["specific_programme"] = map_to_datahub_id(
-        enquiry.get_specific_investment_programme_display(),
-        dh_metadata,
-        "investment-specific-programme",
-    )
-    payload["client_contacts"] = [contact_response["id"]]
-
-    if not enquiry.crm:
-        response["errors"].append(
-            {"adviser": "Adviser name required, should not be empty"}
-        )
-        return response
-
-    advisers, error = dh_adviser_search(request, access_token, enquiry.crm)
-    if error:
-        response["errors"].append({"adviser_search": error})
-        return response
-
-    if not advisers:
-        response["errors"].append({"adviser": f"Adviser {enquiry.crm} not found"})
-        return response
-
-    payload["client_relationship_manager"] = advisers[0]["datahub_id"]
-
-    payload["sector"] = map_to_datahub_id(
-        enquiry.get_primary_sector_display(), dh_metadata, "sector"
-    )
-
-    payload["business_activities"] = [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES]
-    payload["referral_source_adviser"] = referral_adviser
-    payload["referral_source_activity"] = get_dh_id(
-        dh_metadata["referral-source-activity"], ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE
-    )
-    payload["referral_source_activity_website"] = get_dh_id(
-        dh_metadata["referral-source-website"], ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE
-    )
+    contact_id = contact_response["id"]
+    referral_adviser = user_details["id"]
+    crm_id = dh_status["adviser"]
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
+    payload = prepare_dh_payload(
+        enquiry, dh_metadata, company_id, contact_id, referral_adviser, crm_id
+    )
 
     try:
         result = dh_request(request, access_token, "POST", url, payload)
@@ -453,6 +493,7 @@ def dh_investment_create(request, enquiry, metadata=None):
     if result.ok:
         enquiry.datahub_project_status = ref_data.DatahubProjectStatus.PROSPECT
         enquiry.date_added_to_datahub = date.today()
+        enquiry.enquiry_stage = ref_data.EnquiryStage.ADDED_TO_DATAHUB
         enquiry.save()
 
     return response
