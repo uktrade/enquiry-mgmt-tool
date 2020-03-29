@@ -2,7 +2,8 @@ from faker import Faker
 import logging
 
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase, override_settings
+from django.db import transaction
+from django.test import Client, TestCase
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +20,16 @@ class BaseEnquiryTestCase(TestCase):
         self.CREDENTIALS = {"username": "test", "password": "user"}
         self.logged_in = False
         user_model = get_user_model()
-        # create test user
-        u = user_model(username=self.CREDENTIALS["username"])
-        u.set_password(self.CREDENTIALS["password"])
-        u.save()
+        with transaction.atomic():
+            # create test user
+            self.u = user_model(username=self.CREDENTIALS["username"])
+            self.u.set_password(self.CREDENTIALS["password"])
+            self.u.save()
         # login
         self.login()
+    def tearDown(self):
+        with transaction.atomic():
+            self.u.delete()
 
     def login(self):
         self.logged_in = self.client.login(**self.CREDENTIALS)

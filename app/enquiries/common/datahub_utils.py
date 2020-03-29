@@ -48,7 +48,9 @@ def dh_request(method, url, payload, request_headers=None, timeout=15):
 
     try:
         if method == "GET":
-            response = requests.get(url, headers=headers, timeout=timeout)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=timeout
+            )
         elif method == "POST":
             response = requests.post(url, headers=headers, json=payload, timeout=timeout)
     except RequestException as e:

@@ -17,6 +17,7 @@ import sentry_sdk
 
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from urllib.parse import urlencode
 
 from django.urls import reverse_lazy
 
@@ -49,7 +50,7 @@ logging.config.dictConfig({
     },
     'loggers': {
         '': {
-            'level': 'DEBUG' if env.bool('DEBUG') else 'INFO',
+            'level': 'INFO',
             'handlers': ['console', 'file']
         }
     }
@@ -147,6 +148,7 @@ if FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
     AUTHBROKER_CLIENT_ID = env("AUTHBROKER_CLIENT_ID")
     AUTHBROKER_CLIENT_SECRET = env("AUTHBROKER_CLIENT_SECRET")
     AUTHBROKER_TOKEN_SESSION_KEY = env("AUTHBROKER_TOKEN_SESSION_KEY")
+    AUTHBROKER_STAFF_SSO_SCOPE = env('AUTHBROKER_STAFF_SSO_SCOPE')
     AUTHENTICATION_BACKENDS = [
         "django.contrib.auth.backends.ModelBackend",
         "authbroker_client.backends.AuthbrokerBackend",
@@ -206,10 +208,12 @@ STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
+IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
+UPLOAD_CHUNK_SIZE = 256000
 
 # Data Hub settings
 # TODO: Access token can be removed once SSO is integrated as it comes from SSO directly
-DATA_HUB_ACCESS_TOKEN = env('DATA_HUB_ACCESS_TOKEN')
+DATA_HUB_ACCESS_TOKEN = env('DATA_HUB_ACCESS_TOKEN', default='dh-access-token')
 DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
 DATA_HUB_COMPANY_SEARCH_URL = env('DATA_HUB_COMPANY_SEARCH_URL')
 DATA_HUB_CONTACT_SEARCH_URL = env('DATA_HUB_CONTACT_SEARCH_URL')
@@ -220,17 +224,27 @@ DATA_HUB_HAWK_KEY = env("DATA_HUB_HAWK_KEY")
 # Celery and Redis
 CACHES = {}
 DATA_HUB_METADATA_FETCH_INTERVAL_HOURS=env.int('DATA_HUB_METADATA_FETCH_INTERVAL_HOURS', default=4)
-REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
+VCAP_SERVICES = env.json('VCAP_SERVICES', default={})
+
+if 'redis' in VCAP_SERVICES:
+    REDIS_BASE_URL = VCAP_SERVICES['redis'][0]['credentials']['uri']
+else:
+    REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
+
 if REDIS_BASE_URL:
+    REDIS_CACHE_DB = env('REDIS_CACHE_DB', default=0)
     REDIS_CELERY_DB = env('REDIS_CELERY_DB', default=1)
-    BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}'
+    is_secure_redis = REDIS_BASE_URL.startswith('rediss://')
+    redis_url_args = {'ssl_cert_reqs': 'required'} if is_secure_redis else {}
+    encoded_query_args = urlencode(redis_url_args)
+    BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}?{encoded_query_args}'
     CELERY_RESULT_BACKEND = BROKER_URL
-    CELERY_TIMEZONE = env('CELERY_TIMEZONE')
+    CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
 
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": BROKER_URL,
+            "LOCATION": f'{REDIS_BASE_URL}/{REDIS_CACHE_DB}',
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
