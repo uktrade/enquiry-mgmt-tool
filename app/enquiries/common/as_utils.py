@@ -4,6 +4,7 @@ import mohawk
 import requests
 
 from bs4 import BeautifulSoup
+from datetime import datetime
 from django.db import transaction
 from django.conf import settings
 
@@ -17,7 +18,9 @@ def great_ui_sector_rtt_mapping(value):
     so we first check if it is in standard reference data otherwise map it to
     our reference data. If not found anywhere use default value.
     """
-    rtt_reference = [value for choice in ref_data.PrimarySector.choices if choice[0] == value]
+    rtt_reference = [
+        value for choice in ref_data.PrimarySector.choices if choice[0] == value
+    ]
     if rtt_reference:
         return rtt_reference[0]
 
@@ -172,6 +175,8 @@ def hawk_request(method, url, key_id, secret_key, body):
 def get_new_investment_enquiries(last_cursor=None, max_size=100):
     """
     Helper function to pull new investment enquiries from AS.
+    ACTIVITY_STREAM_INITIAL_LOAD_DATE determines the initial date
+    from which the data is queried.
 
     last_cursor indicates the last enquiry fetched (index and id).
     This is used to fetch next set of results when this is invoked again.
@@ -180,11 +185,20 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
     key_id = settings.ACTIVITY_STREAM_KEY_ID
     secret_key = settings.ACTIVITY_STREAM_KEY
     url = settings.ACTIVITY_STREAM_SEARCH_URL
+    start_date_str = settings.ACTIVITY_STREAM_INITIAL_LOAD_DATE
+    start_date = datetime.strptime(start_date_str, "%d-%B-%Y").isoformat()
     query = {
         "size": max_size,
         "query": {
             "bool": {
                 "filter": [
+                    {
+                        "range": {
+                            "object.published": {
+                                "gte": start_date
+                            }
+                        }
+                    },
                     {
                         "term": {
                             settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1: settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1
@@ -232,7 +246,7 @@ def fetch_and_process_enquiries():
 
     last_cursor = ReceivedEnquiryCursor.objects.last()
 
-    enquiries = get_new_investment_enquiries(last_cursor, max_size=20)
+    enquiries = get_new_investment_enquiries(last_cursor, max_size=40)
     if not enquiries:
         return
 
@@ -245,9 +259,12 @@ def fetch_and_process_enquiries():
             continue
 
         with transaction.atomic():
+            published = item["_source"]["object"]["published"]
             enquirer = enquiry.pop("enquirer")
             enquirer_instance = Enquirer.objects.create(**enquirer)
             enquiry_obj = Enquiry.objects.create(**enquiry, enquirer=enquirer_instance)
+            enquiry_obj.created = published
+            enquiry_obj.save()
             logging.info(
                 f"Enquiry ({enquiry_obj.id}) created for the company {enquiry_obj.company_name}"
             )
