@@ -262,7 +262,7 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
         "job_title": enquirer.job_title,
         "company": company_id,
         "primary": primary,
-        "telephone_countrycode": enquirer.country_code,
+        "telephone_countrycode": enquirer.phone_country_code,
         "telephone_number": enquirer.phone,
         "email": enquirer.email,
         "address_same_as_company": True,

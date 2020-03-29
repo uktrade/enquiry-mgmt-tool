@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='enquirer',
-            name='country_code',
-            field=models.CharField(default='', max_length=5, verbose_name='Country code'),
+            name='phone_country_code',
+            field=models.CharField(default='', max_length=5, verbose_name='Telephone country code'),
             preserve_default=False,
         ),
     ]

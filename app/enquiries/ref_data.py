@@ -437,6 +437,7 @@ IMPORT_COL_NAMES = [
     "enquirer_last_name",
     "enquirer_job_title",
     "enquirer_email",
+    "enquirer_phone_country_code",
     "enquirer_phone",
     "enquirer_request_for_call",
     "country",
