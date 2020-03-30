@@ -15,9 +15,6 @@ services:
     volumes:
       - .:/usr/src/app
     network_mode: "host"
-    ports:
-      - "6379:6379"
-      - "8000:8000"
     depends_on:
       - celery
       - db

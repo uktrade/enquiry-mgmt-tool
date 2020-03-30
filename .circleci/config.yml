@@ -73,14 +73,12 @@ jobs:
 
     docker:
       - image: circleci/python:3.6.4
-
       - image: circleci/postgres:9.6
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: password
           DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
-
       - image: redis:3.2.10
       - image: postgres:10
         name: postgres
@@ -128,48 +126,9 @@ jobs:
             python -m pytest -s -vvv app/enquiries/tests
 
       - run:
-          name: Install Cypress and dependencies
-          command: |
-            # Install NodeJS
-            curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-
-            # Install Chromebrowser
-            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-              echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
-              apt-get update && \
-              apt-get install -y dbus-x11 google-chrome-stable && \
-              rm -rf /var/lib/apt/lists/*
-
-            # Install yarn
-            npm install -g yarn@1.16.0
-
-            # Install Cypress dependencies
-            apt-get \
-              install \
-              libgtk2.0-0 \
-              libgtk-3-0 \
-              libnotify-dev \
-              libgconf-2-4 \
-              libnss3 \
-              libxss1 \
-              libasound2 \
-              libxtst6 \
-              xauth \
-              xvfb
-
-            # Install Chrome (Latest)
-            apt-get install -y xvfb xdg-utils libgtk-3-0 lsb-release libappindicator3-1 fonts-liberation libasound2 libnspr4 libnss3 \
-              && curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O \
-              && dpkg -i google-chrome-stable_current_amd64.deb \
-              && rm google-chrome-stable_current_amd64.deb
-
-            # Install Cypress binary
-            yarn global adds cypress
-
-            # Check Cypress version
-            cypress -v
-
-      - run:
           name: Wait for Data Hub API to become available
           command: dockerize -wait tcp://localhost:8000 -timeout 5m
+
+      - run:
+          name: Run e2e tests
+          command: cypress run --browser chrome

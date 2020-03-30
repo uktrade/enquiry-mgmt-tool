@@ -1,0 +1,10 @@
+{
+  "integrationFolder": "app/enquiries/e2e_tests",
+  "baseUrl": "http://localhost:8000",
+  "video": true,
+  "videoUploadOnPasses": false,
+  "screenshotOnRunFailure": false,
+  "pluginsFile": false,
+  "defaultCommandTimeout": 10000,
+  "projectId": "TODO"
+}
