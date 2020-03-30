@@ -1,0 +1,15 @@
+$govuk-assets-path: '/static/assets/';
+
+@import "node_modules/govuk-frontend/govuk/all";
+
+button.enquiry-delete-button {
+    float: right;
+}
+
+form.delete-form {
+    display: inline;
+}
+
+.delete-warning {
+    display: inline-block;
+}

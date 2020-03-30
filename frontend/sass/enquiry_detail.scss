@@ -1,0 +1,16 @@
+$govuk-assets-path: '/static/assets/';
+
+@import "node_modules/govuk-frontend/govuk/all";
+
+button.enquiry-edit-button {
+    float: right;
+    margin-bottom: govuk-spacing(8);
+}
+
+.govuk-summary-list .govuk-summary-list__row:nth-child(odd) {
+    background-color: rgba(govuk-colour("light-grey"), 0.5);
+}
+
+.govuk-summary-list {
+    border-top: 2px solid govuk-colour("mid-grey");
+}
