@@ -72,7 +72,7 @@ jobs:
       AUTHBROKER_STAFF_SSO_SCOPE: required-scope-values
 
     docker:
-      - image: circleci/python:3.6.4
+      - image: quay.io/uktrade/enquiry-mgmt-tool
       - image: circleci/postgres:9.6
         environment:
           POSTGRES_USER: postgres
