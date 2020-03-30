@@ -126,3 +126,7 @@ jobs:
           command: |
             . venv/bin/activate
             python -m pytest -s -vvv app/enquiries/tests
+
+      - run:
+          name: Wait for Data Hub API to become available
+          command: dockerize -wait tcp://localhost:8000 -timeout 5m
