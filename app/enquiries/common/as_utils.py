@@ -97,10 +97,10 @@ def map_enquiry_data_to_instance(data):
     enquiry["enquirer"]["phone"] = data["Phone number"]
     true_or_false = lambda value: True if value == "True" else False
     email_consent = true_or_false(
-        data.get("I would like to be contacted by email", "False")
+        data.get("I would like to receive additional information by email", "False")
     )
     phone_consent = true_or_false(
-        data.get("I would like to be contacted by telephone", "False")
+        data.get("I would like to receive additional information by telephone", "False")
     )
     enquiry["enquirer"]["email_consent"] = email_consent
     enquiry["enquirer"]["phone_consent"] = phone_consent
