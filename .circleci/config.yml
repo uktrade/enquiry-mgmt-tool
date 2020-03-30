@@ -1,5 +1,47 @@
 version: 2
 
+aliases:
+  - &data_hub_api
+    image: quay.io/uktrade/data-hub-api:master
+    environment:
+      AWS_DEFAULT_REGION: eu-west-2
+      AWS_ACCESS_KEY_ID: foo
+      AWS_SECRET_ACCESS_KEY: bar
+      DATABASE_URL: postgresql://postgres:datahub@postgres/datahub
+      MI_DATABASE_URL: postgresql://postgres:datahub@mi-postgres/mi
+      DEBUG: 'False'
+      DEFAULT_BUCKET: baz
+      DJANGO_SECRET_KEY: topSecret
+      DJANGO_SETTINGS_MODULE: config.settings.local
+      ENABLE_CELERY_ES_SYNC_OBJECT: 'True'
+      ES_INDEX_PREFIX: test_index
+      ES5_URL: http://localhost:9200
+      POSTGRES_URL: tcp://postgres:5432
+      MI_POSTGRES_URL: tcp://mi-postgres:5432
+      REDIS_BASE_URL: redis://localhost:6379
+      REDIS_CACHE_DB: 5
+      REDIS_CELERY_DB: 6
+      SSO_ENABLED: 'True'
+      RESOURCE_SERVER_INTROSPECTION_URL: http://localhost:8080/o/introspect # required but not used as user with token has been created in backend setup script
+      RESOURCE_SERVER_AUTH_TOKEN: sso-token
+      STAFF_SSO_BASE_URL: http://localhost:8080/
+      STAFF_SSO_AUTH_TOKEN: sso-token
+      WEB_CONCURRENCY: 2
+      ACTIVITY_STREAM_ACCESS_KEY_ID: some-id
+      ACTIVITY_STREAM_SECRET_ACCESS_KEY: some-secret
+      DISABLE_PAAS_IP_CHECK: 'True'
+      DATA_HUB_FRONTEND_ACCESS_KEY_ID: frontend-key-id
+      DATA_HUB_FRONTEND_SECRET_ACCESS_KEY: frontend-key
+      ADMIN_OAUTH2_ENABLED: 'False'
+      # Workaround for Docker/CircleCI compatibility problem with Python 3.8
+      COLUMNS: 80
+    command: ./setup-uat.sh
+  - &data_hub_api_celery
+    <<: *data_hub_api
+    # Note: By default Celery will default to the number of CPU cores, which can be a large number on CircleCI like 36
+    # which then ends up causing out-of-memory errors
+    command: celery worker -A config -l info -Q celery,long-running --concurrency 3
+
 jobs:
   build:
     parameters:
@@ -38,6 +80,21 @@ jobs:
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: password
           DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
+
+      - image: redis:3.2.10
+      - image: postgres:10
+        name: postgres
+        environment:
+          POSTGRES_DB: datahub
+          POSTGRES_PASSWORD: datahub
+      - image: postgres:9.6
+        name: mi-postgres
+        environment:
+          POSTGRES_DB: mi
+          POSTGRES_PASSWORD: datahub
+      - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
+      - <<: *data_hub_api
+      - <<: *data_hub_api_celery
 
     steps:
       - checkout
