@@ -32,6 +32,10 @@ $govuk-assets-path: '/static/assets/';
     padding-left: 0px;
 }
 
+.govuk-label {
+    font-weight: bold;
+}
+
 ol {
     list-style-type: none;
 }
@@ -40,11 +44,11 @@ ol {
     padding: 0 0.5em;
 }
 
-.enquiry-details-header {
+.enquiry-detail__header {
     background-color: govuk-colour("light-grey");
     padding: 2em;
 }
 
-.enquiry-details-row {
+.enquiry-detail__row {
     margin-bottom: govuk-spacing(8);
 }

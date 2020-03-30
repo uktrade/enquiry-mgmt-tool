@@ -16,7 +16,7 @@
 
     <main class="govuk-main-wrapper">
 
-        <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
+        <div class="govuk-grid-row enquiry-detail__row enquiry-detail__header">
 
             <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
 
@@ -53,7 +53,7 @@
         <form class="form" action="{% url 'enquiry-edit' enquiry.id %}" method="post">
             {% csrf_token %}
 
-            <div class="govuk-grid-row enquiry-details-row">
+            <div class="govuk-grid-row enquiry-detail__row">
 
                 {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="company_name" %}
 
@@ -78,7 +78,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-details-row">
+            <div class="govuk-grid-row enquiry-detail__row">
 
                 <h3 class="govuk-heading-m">Enquiry details</h3>
 
@@ -92,7 +92,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-details-row">
+            <div class="govuk-grid-row enquiry-detail__row">
 
                 <h3 class="govuk-heading-m">Company details</h3>
 
@@ -111,7 +111,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-details-row">
+            <div class="govuk-grid-row enquiry-detail__row">
 
                 <h3 class="govuk-heading-m">Contact</h3>
 
@@ -131,7 +131,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-details-row">
+            <div class="govuk-grid-row enquiry-detail__row">
 
                 <h3 class="govuk-heading-m">Marketing</h3>
 
@@ -150,7 +150,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-details-row">
+            <div class="govuk-grid-row enquiry-detail__row">
 
                 <h3 class="govuk-heading-m">HPO details</h3>
 
@@ -166,7 +166,7 @@
             </div>
 
 
-            <div class="govuk-grid-row enquiry-details-row">
+            <div class="govuk-grid-row enquiry-detail__row">
 
                 <h3 class="govuk-heading-m">Data Hub</h3>
 
@@ -207,7 +207,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-details-row">
+            <div class="govuk-grid-row enquiry-detail__row">
 
                 {% include 'snippets/enquiry_field_textarea.html' with instance=enquiry field="notes" %}
 
@@ -216,7 +216,7 @@
             <button class="govuk-button" data-module="govuk-button" type="submit">Save and return</button>
             <button onclick="window.location.href=`{% url 'enquiry-detail' enquiry.id %}`" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button">Cancel</button>
 
-            <button onclick="window.location.href=`{% url 'enquiry-delete' enquiry.id %}`" class="enquiry-delete-button govuk-button govuk-button--secondary" type="button">Delete enquiry</button>
+            <button onclick="window.location.href=`{% url 'enquiry-delete' enquiry.id %}`" class="enquiry-delete__button govuk-button govuk-button--secondary" type="button">Delete enquiry</button>
 
         </form>
 

@@ -9,7 +9,7 @@
     <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
 
     <button onclick="window.location.href = `{% url 'enquiry-edit' enquiry.id %}`" class="govuk-button
-    govuk-button--secondary govuk-!-margin-right-1 enquiry-edit-button" data-module="govuk-button">
+    govuk-button--secondary govuk-!-margin-right-1 enquiry-edit__button" data-module="govuk-button">
         Edit details
     </button>
 
@@ -18,7 +18,7 @@
         {% load widget_tweaks %}
         {% load rest_framework %}
 
-        <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
+        <div class="govuk-grid-row enquiry-detail__row enquiry-detail__header">
             <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
             <dl class="govuk-summary-list--no-border">
                 <div class="govuk-summary-list__row">
@@ -43,7 +43,7 @@
                 </div>
             </dl>
         </div>
-        <div class="govuk-grid-row enquiry-details-row">
+        <div class="govuk-grid-row enquiry-detail__row">
             <h3 class="govuk-heading-m">Enquiry details</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_text" %}
@@ -52,7 +52,7 @@
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="first_response_channel" %}
             </dl>
         </div>
-        <div class="govuk-grid-row enquiry-details-row">
+        <div class="govuk-grid-row enquiry-detail__row">
             <h3 class="govuk-heading-m">Company details</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="website" %}
@@ -63,7 +63,7 @@
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="ist_sector" %}
             </dl>
         </div>
-        <div class="govuk-grid-row enquiry-details-row">
+        <div class="govuk-grid-row enquiry-detail__row">
             <h3 class="govuk-heading-m">Contact details</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="first_name" %}
@@ -74,7 +74,7 @@
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="request_for_call" %}
             </dl>
         </div>
-        <div class="govuk-grid-row enquiry-details-row">
+        <div class="govuk-grid-row enquiry-detail__row">
             <h3 class="govuk-heading-m">Marketing information</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="google_campaign" %}
@@ -96,7 +96,7 @@
                 </div>
             </dl>
         </div>
-        <div class="govuk-grid-row enquiry-details-row">
+        <div class="govuk-grid-row enquiry-detail__row">
             <h3 class="govuk-heading-m">HPO details</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="first_hpo_selection" %}
@@ -104,7 +104,7 @@
             </dl>
         </div>
 
-        <div class="govuk-grid-row enquiry-details-row">
+        <div class="govuk-grid-row enquiry-detail__row">
             <h3 class="govuk-heading-m">Data Hub details</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="organisation_type" %}
@@ -123,7 +123,7 @@
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_success_date" %}
             </dl>
         </div>
-        <div class="govuk-grid-row enquiry-details-row">
+        <div class="govuk-grid-row enquiry-detail__row">
             <h3 class="govuk-heading-m">Notes</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="notes" %}

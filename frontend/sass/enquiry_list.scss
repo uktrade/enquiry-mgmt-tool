@@ -2,14 +2,14 @@ $govuk-assets-path: '/static/assets/';
 
 @import "node_modules/govuk-frontend/govuk/all";
 
-a.pagination-link {
+.pagination__link {
     text-decoration: none;
     font-size: large;
     font-weight: bold;
     color: #005ea5;
 }
 
-li.pagination-list-item {
+.pagination__list-item {
     display: inline-block;
     background-color: #fafafa;
     min-width: 22px;
@@ -18,21 +18,21 @@ li.pagination-list-item {
     margin: 3px;
 }
 
-li:hover.pagination-list-item {
+.pagination__list-item:hover {
     background-color: #dee0e2;
 }
 
-li:active.pagination-list-item {
+.pagination__list-item:active {
     border: 3px solid #ffbf47;
     margin: 0px;
 }
 
-li.pagination-list-item-current, li:hover.pagination-list-item-current {
+.pagination__list-item--current, .pagination__list-item--current:hover {
     background-color: white;
     color: black;
 }
 
-ol.pagination-list {
+.pagination__list {
     margin: auto;
     width:  50%;
 }
@@ -41,30 +41,30 @@ ol.pagination-list {
     color: #6f777b;
 }
 
-li.entity-list-item {
+.entity__list-item {
     padding: 20px 0;
     border-bottom: 1px solid #6f777b;
 }
 
-a.entity-title-link {
+.entity__title-link {
     text-decoration: none;
     font-size: x-large;
     color: #005ea5;
 }
 
-.entity-title {
+.entity__title {
     display: inline-block;
 }
 
-.entity-badges {
+.entity__badges {
     float: right;
 }
 
-.entity-badges-list {
+.entity__badges-list {
     display: inline-block;
 }
 
-.entity-badges-item {
+.entity__badges-item {
     display: inline-block;
     border: 2px solid rgba(11,12,12,0.15);
     border-radius: 5px;
@@ -72,24 +72,24 @@ a.entity-title-link {
     padding: 3px;
 }
 
-.entity-subtitle {
+.entity__subtitle {
     margin: 5px 0;
     color: #6f777b;
 }
 
-.entity-content-item {
+.entity__content-item {
     margin: 10px 0;
     font-size: large;
 }
 
-span.big-number-of-enquiries {
+.big-number-of-enquiries {
     font-size: 3rem;
 }
 
-.collection-header-intro {
+.collection-header__intro {
     font-size: 1.5rem;
 }
 
-.collection-header-row {
+.collection-header__row {
     border-bottom: 5px solid black;
 }

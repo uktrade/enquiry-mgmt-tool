@@ -2,14 +2,14 @@ $govuk-assets-path: '/static/assets/';
 
 @import "node_modules/govuk-frontend/govuk/all";
 
-button.enquiry-delete-button {
+.enquiry-delete__button {
     float: right;
 }
 
-form.delete-form {
+.enquiry-delete__form {
     display: inline;
 }
 
-.delete-warning {
+.enquiry-delete__warning {
     display: inline-block;
 }
