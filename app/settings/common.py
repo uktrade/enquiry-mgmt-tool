@@ -254,14 +254,21 @@ if REDIS_BASE_URL:
     }
 
 # Activity stream settings
+#
 ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS = env('ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS', default=30)
 ACTIVITY_STREAM_KEY_ID = env('ACTIVITY_STREAM_KEY_ID')
 ACTIVITY_STREAM_KEY = env('ACTIVITY_STREAM_KEY')
+# Date from which we want to pull the enquiries data
 ACTIVITY_STREAM_INITIAL_LOAD_DATE = env('ACTIVITY_STREAM_INITIAL_LOAD_DATE')
 ACTIVITY_STREAM_SEARCH_URL = env('ACTIVITY_STREAM_SEARCH_URL')
+# search url for additional filtering as it is not part of the fields mapped for searching
 ACTIVITY_STREAM_SEARCH_TARGET_URL = env('ACTIVITY_STREAM_SEARCH_TARGET_URL')
+# Fields required to retrieve the relevant object in the search results
+# retrieved data is a list of nested objects and these fields allow us
+# to extract enquiry data and some assocoated metadata
 ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1')
 ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1')
 ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2')
 ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2')
+# key of the object that contains enquiry data
 ACTIVITY_STREAM_ENQUIRY_DATA_OBJ = env('ACTIVITY_STREAM_ENQUIRY_DATA_OBJ')

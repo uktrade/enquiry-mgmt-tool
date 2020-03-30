@@ -95,7 +95,7 @@ def map_enquiry_data_to_instance(data):
         email = data["Work email address"]
     enquiry["enquirer"]["email"] = email
     enquiry["enquirer"]["phone"] = data["Phone number"]
-    true_or_false = lambda value: True if value == "True" else False
+    true_or_false = lambda value: value == "True"
     email_consent = true_or_false(
         data.get("I would like to receive additional information by email", "False")
     )
@@ -143,8 +143,8 @@ def parse_enquiry_email(submission):
     the same url hence additionally look for specified keys to filter data
     """
     if not (
-        set(["Given name", "Job title", "Company HQ address"])
-        <= set(enquiry_data.keys())
+        {"Given name", "Job title", "Company HQ address"}
+        <= enquiry_data.keys()
     ):
         return None
 
