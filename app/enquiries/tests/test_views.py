@@ -40,7 +40,9 @@ from app.enquiries.views import ImportEnquiriesView
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
 headers_json = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/json"}
-
+enquiry_item_data_attr_id = "data-enquiry-id"
+enquiry_item_selector = ".entity-list-item"
+enquiry_item_id_selector = f"[{enquiry_item_data_attr_id}]"
 
 def canned_enquiry():
     return {
@@ -178,38 +180,15 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         return response.context["enquiry"]
 
-    @pytest.mark.skip(
-        reason="@TODO need to investigate why the Owner model cannot be serialized"
-    )
     def test_enquiry_list(self):
         """Test retrieving enquiry list and ensure we get expected count"""
-        enquiries = [EnquiryFactory() for i in range(2)]
-        response = self.client.get(reverse("enquiry-list"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response = response.json()
-        results = response["results"]
-        self.assertEqual(len(results), len(enquiries))
-
-    def test_enquiry_list_html(self):
-        """Test retrieving enquiry list and ensure we get expected count"""
         enquiries = EnquiryFactory.create_batch(2)
-        response = self.client.get(reverse("enquiry-list"), **headers)
-        soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        count = len(enquiry_els)
-        self.assertEqual(count, len(enquiries))
-
-    @pytest.mark.skip(
-        reason="@TODO need to investigate why the Owner model cannot be serialized"
-    )
-    def test_enquiry_list_content_type_json(self):
         response = self.client.get(reverse("enquiry-list"))
-        self.assertIn(
-            "application/json",
-            response.get("Content-Type"),
-            msg="document should have type: application/json",
-        )
+        soup = BeautifulSoup(response.content, "html.parser")
+        enquiry_els = soup.select(enquiry_item_selector)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(enquiry_els), len(enquiries))
+
 
     def test_enquiry_list_content_type_html(self):
         headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
@@ -240,11 +219,17 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             response = self.client.get(
                 reverse("enquiry-list"), {"page": page + 1}, **headers
             )
+            soup = BeautifulSoup(response.content, "html.parser")
+            
+            enquiry_els = soup.select(enquiry_item_selector)
+
+            self.assertEqual(soup.select(".pagination-list-item-current"), True)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # self.assertEqual(enquiry_els[0].a.get(enquiry_item_data_attr_id), True)
             self.assertEqual(
-                [enq["id"] for enq in response.data["results"]], ids[start:end]
+                [int(enq.a.get(enquiry_item_data_attr_id)) for enq in enquiry_els], ids[start:end]
             )
-            self.assertEqual(response.data["current_page"], page + 1)
+            self.assertEqual(int(soup.find("li", class_="pagination-list-item-current").string), page + 1)
 
         # Ensure accesing the page after the last page should return 404
         response = self.client.get(reverse("enquiry-list"), {"page": total_pages + 1})
@@ -526,9 +511,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 2)
 
-    @pytest.mark.skip(
-        reason="@TODO need to investigate why the Owner model cannot be serialized"
-    )
     def test_enquiry_list_filtered_unassigned(self):
         """Test retrieving enquiry list and ensure we get expected count"""
 
@@ -547,17 +529,19 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
         # owner assigned
         response = self.client.get(
-            reverse("enquiry-list"), {"owner__id": owner.id}, **headers
+            reverse("enquiry-list"), {"owner__id": owner.id}
         )
-        data = response.data
+        
+        soup = BeautifulSoup(response.content, "html.parser")
+        enquiry_els = soup.select(enquiry_item_selector)
 
-        enquiry_data = data["results"][0]
+        # enquiry_data = data["results"][0]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data["count"], 1)
-        self.assert_factory_enquiry_equals_enquiry_response(
-            enquiry_assigned, enquiry_data
-        )
+        self.assertEqual(len(enquiry_els), 1)
+        # self.assert_factory_enquiry_equals_enquiry_response(
+        #     enquiry_assigned, enquiry_data
+        # )
 
         # owner unassigned
         response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"})
@@ -572,44 +556,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             enquiry_unassigned, enquiry_data_unassigned
         )
 
-    def test_enquiry_list_filtered_unassigned_html(self):
-        """Test retrieving enquiry list and ensure we get expected count"""
-
-        EnquirerFactory()
-        enquiries = [
-            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
-            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
-            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW),
-        ]
-
-        owner = enquiries[1].owner
-        enquiries[0].owner = None
-        enquiries[0].save()
-
-        # owner assigned
-        response = self.client.get(
-            reverse("enquiry-list"), {"owner__id": owner.id}, **headers
-        )
-
-        soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(enquiry_els), 1)
-
-        # owner unassigned
-        response = self.client.get(
-            reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers
-        )
-        soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(enquiry_els), 1)
-
-    @pytest.mark.skip(
-        reason="@TODO need to investigate why the Owner model cannot be serialized"
-    )
     def test_enquiry_list_filtered_enquiry_stage(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
@@ -620,45 +566,20 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             reverse("enquiry-list"),
             {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
         )
-        data = response.data
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data["count"], 1)
-
-        # enquiry stage - NON_FDI
-        response = self.client.get(
-            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}
-        )
-        data = response.data
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data["count"], 0)
-
-    def test_enquiry_list_filtered_enquiry_stage_html(self):
-        """Test retrieving enquiry list and ensure we get expected count"""
-        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
-        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
-        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW)
-        # enquiry stage - ADDED_TO_DATAHUB
-        response = self.client.get(
-            reverse("enquiry-list"),
-            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
-            **headers,
-        )
-
+        
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(enquiry_item_selector)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
 
         # enquiry stage - NON_FDI
         response = self.client.get(
-            reverse("enquiry-list"),
-            {"enquiry_stage": ref_data.EnquiryStage.NON_FDI},
-            **headers,
+            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(enquiry_item_selector)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 0)

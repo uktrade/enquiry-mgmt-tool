@@ -26,7 +26,7 @@ from io import BytesIO
 from rest_framework import generics, status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -142,7 +142,7 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = EnquiryFilter
     template_name = "enquiry_list.html"
-    renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+    renderer_classes = (TemplateHTMLRenderer, )
     serializer_class = serializers.EnquiryDetailSerializer
     pagination_class = PaginationWithPaginationMeta
 
