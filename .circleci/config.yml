@@ -80,6 +80,7 @@ jobs:
           POSTGRES_PASSWORD: password
           DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
       - image: redis:3.2.10
+        name: redis
       - image: postgres:10
         name: postgres
         environment:
@@ -99,36 +100,32 @@ jobs:
       - run:
           name: Wait for db to become available
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
-
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "requirements.txt" }}
           paths:
             - ./venv
-
       - run:
           name: Install dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-
       - save_cache:
           name: Save pip cache
           key: v1-dependencies-{{ checksum "requirements.txt" }}
           paths:
             - ./venv
-
       - run:
           name: Run tests
           command: |
             . venv/bin/activate
             python -m pytest -s -vvv app/enquiries/tests
-
       - run:
           name: Wait for Data Hub API to become available
           command: dockerize -wait tcp://localhost:8000 -timeout 5m
-
       - run:
           name: Run e2e tests
           command: cypress run --browser chrome
+      - store_artifacts:
+          path: cypress/screenshots

@@ -91,3 +91,29 @@ Remember to rebuild images (where dependancies have changed) and deleting __pyca
 Run the following from the project root to delete __pycache__ directories:
 
 `find . -type d -iname __pycache__ -exec rm -Rf {} \;`
+
+## Rebuilding Docker image used by CircleCI
+
+1.  Build the container:
+
+    ```shell
+    docker build -t enquiry-mgmt-tool .
+    ```
+    
+2.  Tag the container:
+
+    ```shell
+    docker tag enquiry-mgmt-tool:latest quay.io/uktrade/enquiry-mgmt-tool:latest
+    ```
+    
+3. Log in to quay.io
+
+    ```shell
+    docker login quay.io
+    ```
+   
+4. Push the container to quay.io
+
+    ```shell
+    docker push quay.io/uktrade/enquiry-mgmt-tool:latest
+    ```

@@ -1,12 +1,10 @@
 FROM python:3
+
 ENV PYTHONUNBUFFERED 1
-RUN export TERM=xterm-256color
-RUN apt-get update
-RUN apt-get install -y postgresql
+ENV TERM xterm-256color
+
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
-COPY requirements.txt /usr/src/app
-RUN pip install -r requirements.txt
 
 # Install NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - \
@@ -30,5 +28,14 @@ RUN apt-get update \
 # Check version
 RUN cypress -v \
     && node -v
+
+# Install dockerize https://github.com/jwilder/dockerize
+ENV DOCKERIZE_VERSION v0.2.0
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+# Install PIP packages
+COPY requirements.txt /usr/src/app
+RUN pip install -r requirements.txt
 
 COPY . /usr/src/app
