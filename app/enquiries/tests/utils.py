@@ -27,6 +27,7 @@ class BaseEnquiryTestCase(TestCase):
             self.u.save()
         # login
         self.login()
+
     def tearDown(self):
         with transaction.atomic():
             self.u.delete()
