@@ -1,0 +1,9 @@
+$govuk-assets-path: '/static/assets/';
+
+@import "node_modules/govuk-frontend/govuk/all";
+@import "frontend/sass/_settings";
+@import "frontend/sass/_enquiries";
+@import "frontend/sass/_enquiry_list";
+@import "frontend/sass/_enquiry_detail";
+@import "frontend/sass/_enquiry_edit";
+@import "frontend/sass/_enquiry_delete";

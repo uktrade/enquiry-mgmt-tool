@@ -1,11 +1,13 @@
 $govuk-assets-path: '/static/assets/';
 
-@import "node_modules/govuk-frontend/govuk/all";
-
 * {
-    font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif !important;
+    font-family: "HelveticaNeue", "Helvetica Neue", "Helvetica", "Arial", sans-serif !important;
     margin: 0;
     padding: 0;
+}
+
+ol {
+    list-style-type: none;
 }
 
 .govuk-grid-row {
@@ -21,7 +23,8 @@ $govuk-assets-path: '/static/assets/';
 }
 
 .govuk-header__link--service-name {
-    font-size: 30px;
+    // override default of 1.5rem
+    font-size: 2rem;
 }
 
 .govuk-tag {
@@ -36,19 +39,6 @@ $govuk-assets-path: '/static/assets/';
     font-weight: bold;
 }
 
-ol {
-    list-style-type: none;
-}
-
 .govuk-summary-list__key {
     padding: 0 0.5em;
-}
-
-.enquiry-detail__header {
-    background-color: govuk-colour("light-grey");
-    padding: 2em;
-}
-
-.enquiry-detail__row {
-    margin-bottom: govuk-spacing(8);
 }
