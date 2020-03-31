@@ -1,6 +1,7 @@
 [
     {
-        "model": "auth.user",
+        "model": "enquiries.owner",
+
         "pk": 1,
         "fields": {
             "username": "ist-user-1",
@@ -10,7 +11,8 @@
         }
     },
     {
-        "model": "auth.user",
+        "model": "enquiries.owner",
+
         "pk": 2,
         "fields": {
             "username": "ist-user-2",
@@ -20,7 +22,8 @@
         }
     },
     {
-        "model": "auth.user",
+        "model": "enquiries.owner",
+
         "pk": 3,
         "fields": {
             "username": "ist-user-3",
@@ -30,7 +33,8 @@
         }
     },
     {
-        "model": "auth.user",
+        "model": "enquiries.owner",
+
         "pk": 4,
         "fields": {
             "username": "ist-user-4",
@@ -40,48 +44,14 @@
         }
     },
     {
-        "model": "auth.user",
+        "model": "enquiries.owner",
+
         "pk": 5,
         "fields": {
             "username": "ist-user-5",
             "first_name": "IST",
             "last_name": "User 5",
             "email": "ist.user.5@example.com"
-        }
-    },
-    {
-        "model": "enquiries.owner",
-        "pk": 1,
-        "fields": {
-            "user": 1
-        }
-    },
-    {
-        "model": "enquiries.owner",
-        "pk": 2,
-        "fields": {
-            "user": 2
-        }
-    },
-    {
-        "model": "enquiries.owner",
-        "pk": 3,
-        "fields": {
-            "user": 3
-        }
-    },
-    {
-        "model": "enquiries.owner",
-        "pk": 4,
-        "fields": {
-            "user": 4
-        }
-    },
-    {
-        "model": "enquiries.owner",
-        "pk": 5,
-        "fields": {
-            "user": 5
         }
     }
 ]
