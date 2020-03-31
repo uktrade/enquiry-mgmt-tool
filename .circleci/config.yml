@@ -1,78 +1,30 @@
 version: 2
 
 aliases:
-  - &data_hub_api
-    image: quay.io/uktrade/data-hub-api:master
-    environment:
-      AWS_DEFAULT_REGION: eu-west-2
-      AWS_ACCESS_KEY_ID: foo
-      AWS_SECRET_ACCESS_KEY: bar
-      DATABASE_URL: postgresql://postgres:datahub@data-hub-api-postgres/datahub
-      MI_DATABASE_URL: postgresql://postgres:datahub@data-api-mi-postgres/mi
-      DEBUG: 'False'
-      DEFAULT_BUCKET: baz
-      DJANGO_SECRET_KEY: topSecret
-      DJANGO_SETTINGS_MODULE: config.settings.local
-      ENABLE_CELERY_ES_SYNC_OBJECT: 'True'
-      ES_INDEX_PREFIX: test_index
-      ES5_URL: http://es:9200
-      POSTGRES_URL: tcp://data-hub-api-postgres:5432
-      MI_POSTGRES_URL: tcp://data-api-mi-postgres:5432
-      REDIS_BASE_URL: redis://redis:6379
-      REDIS_CACHE_DB: 5
-      REDIS_CELERY_DB: 6
-      SSO_ENABLED: 'True'
-      RESOURCE_SERVER_INTROSPECTION_URL: http://localhost:8080/o/introspect # required but not used as user with token has been created in backend setup script
-      RESOURCE_SERVER_AUTH_TOKEN: sso-token
-      STAFF_SSO_BASE_URL: http://localhost:8080/
-      STAFF_SSO_AUTH_TOKEN: sso-token
-      WEB_CONCURRENCY: 2
-      ACTIVITY_STREAM_ACCESS_KEY_ID: some-id
-      ACTIVITY_STREAM_SECRET_ACCESS_KEY: some-secret
-      DISABLE_PAAS_IP_CHECK: 'True'
-      DATA_HUB_FRONTEND_ACCESS_KEY_ID: frontend-key-id
-      DATA_HUB_FRONTEND_SECRET_ACCESS_KEY: frontend-key
-      ADMIN_OAUTH2_ENABLED: 'False'
-      # Workaround for Docker/CircleCI compatibility problem with Python 3.8
-      COLUMNS: 80
-    command: ./setup-uat.sh
-  - &data_hub_api_celery
-    <<: *data_hub_api
-    # Note: By default Celery will default to the number of CPU cores, which can be a large number on CircleCI like 36
-    # which then ends up causing out-of-memory errors
-    command: celery worker -A config -l info -Q celery,long-running --concurrency 3
+  - &default_env
+    DEBUG: 'True'
+    DJANGO_SECRET_KEY: 'supersecretkey'
+    DATABASE_URL: postgres://postgres:password@db:5432/postgres
+    DATA_HUB_ACCESS_TOKEN: 'datahub-access-token'
+    DATA_HUB_METADATA_URL: 'http://dh-api-mock/metadata'
+    DATA_HUB_COMPANY_SEARCH_URL: 'http://dh-api-mock/company/search'
+    DATA_HUB_CONTACT_SEARCH_URL: 'http://dh-api-mock/contact/search'
+    DATA_HUB_HAWK_ID: 'hawk-id'
+    DATA_HUB_HAWK_KEY: 'hawk-key'
+    DATA_HUB_METADATA_FETCH_INTERVAL: '4'
+    FEATURE_ENFORCE_STAFF_SSO_ENABLED: 0
+    AUTHBROKER_URL: https://sso.trade.gov.uk
+    AUTHBROKER_CLIENT_ID: somestring
+    AUTHBROKER_CLIENT_SECRET: somestring
+    AUTHBROKER_TOKEN_SESSION_KEY: _authbroker_token
+    AUTHBROKER_STAFF_SSO_SCOPE: required-scope-values
+    REDIS_BASE_URL: redis://redis:6379
 
 jobs:
   build:
-    parameters:
-      python_image:
-        type: string
-
-      postgres_image:
-        type: string
-
-    environment:
-      DEBUG: 'True'
-      DJANGO_SECRET_KEY: 'supersecretkey'
-      POSTGRES_DB_PASSWORD: 'password'
-      POSTGRES_DB_HOST: 'localhost'
-      DATA_HUB_ACCESS_TOKEN: 'datahub-access-token'
-      DATA_HUB_METADATA_URL: 'https://datahub/metadata'
-      DATA_HUB_COMPANY_SEARCH_URL: 'https://datahub/company/search'
-      DATA_HUB_CONTACT_SEARCH_URL: 'https://datahub/contact/search'
-      DATA_HUB_HAWK_ID: 'hawk-id'
-      DATA_HUB_HAWK_KEY: 'hawk-key'
-      DATA_HUB_METADATA_FETCH_INTERVAL: '4'
-      DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
-      FEATURE_ENFORCE_STAFF_SSO_ENABLED: 1
-      AUTHBROKER_URL: https://sso.trade.gov.uk
-      AUTHBROKER_CLIENT_ID: somestring
-      AUTHBROKER_CLIENT_SECRET: somestring
-      AUTHBROKER_TOKEN_SESSION_KEY: _authbroker_token
-      AUTHBROKER_STAFF_SSO_SCOPE: required-scope-values
-
     docker:
       - image: quay.io/uktrade/enquiry-mgmt-tool
+        environment: *default_env
       - image: circleci/postgres:9.6
         environment:
           POSTGRES_USER: postgres
@@ -83,18 +35,8 @@ jobs:
         name: es
       - image: redis:3.2.10
         name: redis
-      - image: postgres:10
-        name: data-hub-api-postgres
-        environment:
-          POSTGRES_DB: datahub
-          POSTGRES_PASSWORD: datahub
-      - image: postgres:9.6
-        name: data-api-mi-postgres
-        environment:
-          POSTGRES_DB: mi
-          POSTGRES_PASSWORD: datahub
-      - <<: *data_hub_api
-      - <<: *data_hub_api_celery
+      - image: ukti/data-hub-sandbox:latest
+        name: dh-api-mock
 
     steps:
       - checkout

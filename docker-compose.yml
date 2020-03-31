@@ -4,33 +4,33 @@ services:
   db:
     image: postgres
     environment:
+      POSTGRES_DB: postgres
       POSTGRES_PASSWORD: password
-    network_mode: "host"
-    ports:
-      - "5432:5432"
-
-  api:
-    build: .
-    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/usr/src/app
-    network_mode: "host"
-    depends_on:
-      - celery
-      - db
-      - redis
-
-  celery:
-    build: .
-    volumes:
-      - .:/usr/src/app
-    command: celery worker -A app -l info -Q celery -B
-    network_mode: "host"
-    depends_on:
-      - redis
 
   redis:
     image: redis:3.2
-    restart: always
+
+  app:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+      - redis
+      - dh-api-mock
     ports:
-      - "6379:6379"
+      - "8000:8000"
+    entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -wait tcp://dh-api-mock:8001 -timeout 120s
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+  celery:
+    build: .
+    depends_on:
+      - redis
+    volumes:
+      - .:/usr/src/app
+    entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 120s
+    command: celery worker -A app -l info -Q celery -B
+
+  dh-api-mock:
+    image: ukti/data-hub-sandbox:latest
