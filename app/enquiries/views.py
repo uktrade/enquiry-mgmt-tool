@@ -1,28 +1,24 @@
 import codecs
 import csv
 import logging
-
 from datetime import datetime
-
-from django.contrib import messages
-from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect
+from io import BytesIO
 
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator as DjangoPaginator
-from django.db.models import Q
 from django.db import transaction
-from django.http import HttpResponse
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
+from django.views.generic import DeleteView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django_filters import rest_framework as filters
-from io import BytesIO
-
 from rest_framework import generics, status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -209,6 +205,19 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
 
+class EnquiryDeleteView(DeleteView):
+    """
+    View to delete enquiry
+    """
+
+    model = models.Enquiry
+    template_name = "enquiry_delete.html"
+
+    def post(self, request, **kwargs):
+        pk = kwargs["pk"]
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        enquiry.delete()
+        return redirect("enquiry-list")
 
 class ImportEnquiriesView(TemplateView):
     """
