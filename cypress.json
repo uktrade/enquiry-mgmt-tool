@@ -1,6 +1,6 @@
 {
   "integrationFolder": "app/enquiries/e2e_tests",
-  "baseUrl": "http://localhost:8000",
+  "baseUrl": "http://app:8000",
   "video": false,
   "videoUploadOnPasses": false,
   "screenshotOnRunFailure": false,
