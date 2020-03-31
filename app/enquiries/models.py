@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
 
@@ -28,15 +28,13 @@ class Enquirer(models.Model):
     )
 
 
-class Owner(models.Model):
+class Owner(AbstractUser):
     """
-    Model for the user assigned to an Enquiry
+    Customer user model user by the app. Each Enquiry has an owner.
     """
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
+        return f"{self.first_name} {self.last_name}"
 
 
 class Enquiry(TimeStampedModel):
@@ -134,7 +132,7 @@ class Enquiry(TimeStampedModel):
         default=ref_data.FirstResponseChannel.DEFAULT,
         verbose_name="First response channel",
     )
-    notes = models.TextField(verbose_name="Notes")
+    notes = models.TextField(blank=True, null=True, verbose_name="Notes")
     first_hpo_selection = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.HpoSelection.choices,
@@ -198,6 +196,8 @@ class Enquiry(TimeStampedModel):
     crm = models.CharField(
         max_length=MAX_LENGTH,
         help_text="Name of the relationship manager",
+        blank=True,
+        null=True,
         verbose_name="CRM",
     )
     project_code = models.CharField(
@@ -236,7 +236,7 @@ class Enquiry(TimeStampedModel):
         null=True,
         verbose_name="Duns number",
     )
-    dh_assigned_company = models.CharField(
+    dh_assigned_company_name = models.CharField(
         max_length=MAX_LENGTH,
         blank=True,
         null=True,

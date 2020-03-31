@@ -177,3 +177,4 @@ STATIC_URL = '/static/'
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
+UPLOAD_CHUNK_SIZE = 256000
