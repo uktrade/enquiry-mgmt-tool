@@ -32,7 +32,7 @@ $govuk-assets-path: '/static/assets/';
 
 .pagination__list {
     margin: auto;
-    width:  50%;
+    width:  fit-content;
 }
 
 .list-item-label {
@@ -50,29 +50,21 @@ $govuk-assets-path: '/static/assets/';
     color: #005ea5;
 }
 
-.entity__title {
-    display: inline-block;
-}
-
-.entity__badges {
-    float: right;
-}
-
-.entity__badges-list {
-    display: inline-block;
-}
-
 .entity__badges-item {
-    display: inline-block;
     border: 2px solid rgba(11,12,12,0.15);
     border-radius: 5px;
     font-weight: bold;
     padding: 3px;
+    margin: 0 2px;
 }
 
-.entity__subtitle {
-    margin: 5px 0;
-    color: #6f777b;
+.entity__badges {
+    margin-left: auto;
+    display: flex;
+}
+
+.entity__header {
+    display: flex;
 }
 
 .entity__content-item {

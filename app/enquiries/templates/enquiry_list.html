@@ -37,24 +37,23 @@
                                 </h3>
                             </div>
                             <div class="entity__badges">
-                                <div class="entity__badges-list">
-                                    <div class="entity__badges-item">
-                                        <span>{{ obj.enquiry_stage }}</span>
-                                    </div>
-                                    <div class="entity__badges-item">
-                                        <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</span>
-                                    </div>
-                                    <div class="entity__badges-item">
-                                        <span>{{ obj.country }}</span>
-                                    </div>
+                                <div class="entity__badges-item">
+                                    <span>{{ obj.enquiry_stage }}</span>
                                 </div>
-                            </div>
-                            <div class="entity__subtitle">
-                                Date received {{ obj.created }}
+                                <div class="entity__badges-item">
+                                    <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</span>
+                                </div>
+                                <div class="entity__badges-item">
+                                    <span>{{ obj.country }}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="entity__content">
                             <div class="entity__content-list">
+                                <div class="entity__content-item">
+                                    <span class="list-item-label">Date received</span>
+                                    <span class="list-item-value">{{ obj.created }}</span>
+                                </div>
                                 <div class="entity__content-item">
                                     <span class="list-item-label">Enquiry text</span>
                                     <span class="list-item-value">{{ obj.enquiry_text }}</span>

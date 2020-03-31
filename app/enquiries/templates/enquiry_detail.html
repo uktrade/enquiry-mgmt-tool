@@ -6,12 +6,17 @@
 <div class="govuk-width-container">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
 
-    <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
-
-    <button onclick="window.location.href = `{% url 'enquiry-edit' enquiry.id %}`" class="govuk-button
-    govuk-button--secondary govuk-!-margin-right-1 enquiry-edit__button" data-module="govuk-button">
-        Edit details
-    </button>
+    <div class="top-controls">
+        <div class="top-controls__back-container">
+            <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
+        </div>
+        <div class="top-controls__edit-button-container">
+            <button onclick="window.location.href = `{% url 'enquiry-edit' enquiry.id %}`" class="govuk-button
+            govuk-button--secondary govuk-!-margin-right-1 enquiry-edit__button" data-module="govuk-button">
+                Edit details
+            </button>
+        </div>
+    </div>
 
     <main class="govuk-main-wrapper">
         {% csrf_token %}

@@ -1,8 +1,15 @@
 $govuk-assets-path: '/static/assets/';
 
+.top-controls__edit-button-container {
+    margin-left: auto;
+}
+
+.top-controls {
+    display: flex;
+}
+
 .enquiry-edit__button {
-    float: right;
-    margin-bottom: govuk-spacing(8);
+    margin-bottom: 0;
 }
 
 .govuk-summary-list .govuk-summary-list__row:nth-child(odd) {
