@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Copy config
-          command: cp sample_env .env
+          command: cp sample_env app/settings/.env
       - run:
           name: Build docker stack
           command: docker-compose up -d
