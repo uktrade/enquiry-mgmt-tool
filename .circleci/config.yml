@@ -7,17 +7,17 @@ aliases:
       AWS_DEFAULT_REGION: eu-west-2
       AWS_ACCESS_KEY_ID: foo
       AWS_SECRET_ACCESS_KEY: bar
-      DATABASE_URL: postgresql://postgres:datahub@postgres/datahub
-      MI_DATABASE_URL: postgresql://postgres:datahub@mi-postgres/mi
+      DATABASE_URL: postgresql://postgres:datahub@data-hub-api-postgres/datahub
+      MI_DATABASE_URL: postgresql://postgres:datahub@data-api-mi-postgres/mi
       DEBUG: 'False'
       DEFAULT_BUCKET: baz
       DJANGO_SECRET_KEY: topSecret
       DJANGO_SETTINGS_MODULE: config.settings.local
       ENABLE_CELERY_ES_SYNC_OBJECT: 'True'
       ES_INDEX_PREFIX: test_index
-      ES5_URL: http://localhost:9200
-      POSTGRES_URL: tcp://postgres:5432
-      MI_POSTGRES_URL: tcp://mi-postgres:5432
+      ES5_URL: http://es:9200
+      POSTGRES_URL: tcp://data-hub-api-postgres:5432
+      MI_POSTGRES_URL: tcp://data-api-mi-postgres:5432
       REDIS_BASE_URL: redis://redis:6379
       REDIS_CACHE_DB: 5
       REDIS_CELERY_DB: 6
@@ -73,26 +73,26 @@ jobs:
 
     docker:
       - image: quay.io/uktrade/enquiry-mgmt-tool
-      - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
       - image: circleci/postgres:9.6
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: password
           DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
+      - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
+        name: es
       - image: redis:3.2.10
         name: redis
       - image: postgres:10
-        name: postgres
+        name: data-hub-api-postgres
         environment:
           POSTGRES_DB: datahub
           POSTGRES_PASSWORD: datahub
       - image: postgres:9.6
-        name: mi-postgres
+        name: data-api-mi-postgres
         environment:
           POSTGRES_DB: mi
           POSTGRES_PASSWORD: datahub
-      - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
       - <<: *data_hub_api
       - <<: *data_hub_api_celery
 
