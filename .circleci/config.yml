@@ -6,9 +6,9 @@ aliases:
     DJANGO_SECRET_KEY: 'supersecretkey'
     DATABASE_URL: postgres://postgres:password@db:5432/postgres
     DATA_HUB_ACCESS_TOKEN: 'datahub-access-token'
-    DATA_HUB_METADATA_URL: 'http://dh-api-mock/metadata'
-    DATA_HUB_COMPANY_SEARCH_URL: 'http://dh-api-mock/company/search'
-    DATA_HUB_CONTACT_SEARCH_URL: 'http://dh-api-mock/contact/search'
+    DATA_HUB_METADATA_URL: 'http://dh-api-mock:8001/metadata'
+    DATA_HUB_COMPANY_SEARCH_URL: 'http://dh-api-mock:8001/company/search'
+    DATA_HUB_CONTACT_SEARCH_URL: 'http://dh-api-mock:8001/contact/search'
     DATA_HUB_HAWK_ID: 'hawk-id'
     DATA_HUB_HAWK_KEY: 'hawk-key'
     DATA_HUB_METADATA_FETCH_INTERVAL: '4'
