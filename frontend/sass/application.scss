@@ -1,6 +1,6 @@
 $govuk-assets-path: '/static/assets/';
-$color-green-success: #00703C;
-$color-red-error: #d4351c;
+$color-green-success: govuk-colour("green");
+$color-red-error: govuk-colour("red");
 @import "node_modules/govuk-frontend/govuk/all";
 
 * {
