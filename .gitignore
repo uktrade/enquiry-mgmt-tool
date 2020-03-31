@@ -117,5 +117,5 @@ app/settings/.env
 celerybeat-schedule
 
 # cypress
-cypress/
-!cypress/support
+cypress/screenshots
+cypress/videos
