@@ -1,12 +1,24 @@
-{% extends 'base.html' %}
 {% load static %}
-{% csrf_token %}
-{% load widget_tweaks %}
-{% load rest_framework %}
 {% load enquiries_extras %}
+{% include 'base.html' %}
+{% include 'partials/govuk_header_partial.html' %}
 
-{% block main %}
-<div class="govuk-grid-row enquiry-details-row enquiry-details-header">
+<div class="govuk-width-container">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+    <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
+
+    <button onclick="window.location.href = `{% url 'enquiry-edit' enquiry.id %}`" class="govuk-button
+    govuk-button--secondary govuk-!-margin-right-1 enquiry-edit-button" data-module="govuk-button">
+        Edit details
+    </button>
+
+    <main class="govuk-main-wrapper">
+        {% csrf_token %}
+        {% load widget_tweaks %}
+        {% load rest_framework %}
+
+        <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
     <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
     <dl class="govuk-summary-list--no-border">
         <div class="govuk-summary-list__row">
@@ -117,8 +129,6 @@
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="notes" %}
     </dl>
 </div>
-<<<<<<< HEAD
+</main>
+</div>
 {% include 'partials/govuk_footer_partial.html' %}
-=======
-{% endblock main %}
->>>>>>> add filter controls
