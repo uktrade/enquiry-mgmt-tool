@@ -11,15 +11,24 @@ services:
       - dh-api-mock
     ports:
       - "8000:8000"
+    environment:
+      DJANGO_SUPERUSER_USERNAME: testuser
+      DJANGO_SUPERUSER_EMAIL: testuser@example.com
+      DJANGO_SUPERUSER_PASSWORD: testpass
     entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -wait tcp://dh-api-mock:8001 -timeout 120s
-    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-
+    command: |
+      bash -c " \
+      python manage.py migrate  && \
+      python manage.py createsuperuser --noinput && \
+      python manage.py runserver 0.0.0.0:8000"
   celery:
     build: .
-    depends_on:
-      - redis
     volumes:
       - .:/usr/src/app
+    depends_on:
+      - db
+      - redis
+      - dh-api-mock
     entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 120s
     command: celery worker -A app -l info -Q celery -B
 

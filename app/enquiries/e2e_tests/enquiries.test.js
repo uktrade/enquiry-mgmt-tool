@@ -1,6 +1,6 @@
 describe('Enquiries', () => {
   before(() => {
-    cy.visit('/enquiries/')
+    cy.login('/enquiries/')
   })
 
   it('should render the header', () => {
