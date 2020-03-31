@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Manual Ingest</title>
+    </head>
+    <body>
+        <h1>Manual ingest</h1>
+        {% if messages %}
+        <h2>{{ERROR_HEADER}}</h2>
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <th><label for="enquiries">Upload</label></th>
+                    <td><input type="file" name="enquiries" id="enquiries"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button>Submit</button></td>
+                </tr>
+            </table>
+            
+            
+        </form>
+    </body>
+</html>

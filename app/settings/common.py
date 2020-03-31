@@ -15,6 +15,12 @@ import logging.config
 import os
 import sentry_sdk
 
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from urllib.parse import urlencode
+
+from django.urls import reverse_lazy
+
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
 
@@ -44,7 +50,7 @@ logging.config.dictConfig({
     },
     'loggers': {
         '': {
-            'level': 'DEBUG' if env.bool('DEBUG') else 'INFO',
+            'level': 'INFO',
             'handlers': ['console', 'file']
         }
     }
@@ -56,35 +62,44 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Configure Sentry
 if not env.bool('DEBUG'):
     DJANGO_SENTRY_DSN = env('DJANGO_SENTRY_DSN')
-    sentry_sdk.init(DJANGO_SENTRY_DSN)
+    sentry_sdk.init(
+        dsn=DJANGO_SENTRY_DSN,
+        integrations=[
+            CeleryIntegration(),
+            DjangoIntegration(),
+        ],
+    )
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG')
+DEBUG = env.bool("DEBUG")
 
 # As app is running behind a host-based router supplied by Heroku or other
 # PaaS, we can open ALLOWED_HOSTS
 ALLOWED_HOSTS = ['*']
 
+FEATURE_FLAGS = {
+    "ENFORCE_STAFF_SSO_ON": env.bool("FEATURE_ENFORCE_STAFF_SSO_ENABLED", True),
+}
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_extensions',
-    'rest_framework',
-    'widget_tweaks',
-    'app.enquiries',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_extensions",
+    "rest_framework",
+    "widget_tweaks",
+    "app.enquiries",
 ]
 
 MIDDLEWARE = [
@@ -107,23 +122,46 @@ ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'app.wsgi.application'
+WSGI_APPLICATION = "app.wsgi.application"
 
+AUTH_USER_MODEL = "enquiries.Owner"
 
+# authbroker config
+if FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
+    INSTALLED_APPS.append("authbroker_client",)
+
+    AUTHBROKER_URL = env("AUTHBROKER_URL")
+    AUTHBROKER_CLIENT_ID = env("AUTHBROKER_CLIENT_ID")
+    AUTHBROKER_CLIENT_SECRET = env("AUTHBROKER_CLIENT_SECRET")
+    AUTHBROKER_TOKEN_SESSION_KEY = env("AUTHBROKER_TOKEN_SESSION_KEY")
+    AUTHBROKER_STAFF_SSO_SCOPE = env('AUTHBROKER_STAFF_SSO_SCOPE')
+    AUTHENTICATION_BACKENDS = [
+        "django.contrib.auth.backends.ModelBackend",
+        "authbroker_client.backends.AuthbrokerBackend",
+    ]
+
+    LOGIN_URL = reverse_lazy("authbroker_client:login")
+    LOGIN_REDIRECT_URL = reverse_lazy("index")
+    # MIDDLEWARE.append(
+    #     # middleware to check auth for all views, alternatively use login_required decorator
+    #     "authbroker_client.middleware.ProtectAllViewsMiddleware",
+    # )
+else:
+    LOGIN_URL = "/admin/login/"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -138,26 +176,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-gb"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -173,7 +205,74 @@ STATIC_URL = '/static/'
 APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 
-
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
+IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
+IMPORT_TEMPLATE_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+UPLOAD_CHUNK_SIZE = 256000
+EXPORT_OUTPUT_FILE_SLUG = 'rtt_enquiries_export'
+EXPORT_OUTPUT_FILE_EXT = 'csv'
+EXPORT_OUTPUT_FILE_MIMETYPE = 'text/csv'
+
+# Data Hub settings
+# TODO: Access token can be removed once SSO is integrated as it comes from SSO directly
+DATA_HUB_ACCESS_TOKEN = env('DATA_HUB_ACCESS_TOKEN', default='dh-access-token')
+DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
+DATA_HUB_COMPANY_SEARCH_URL = env('DATA_HUB_COMPANY_SEARCH_URL')
+DATA_HUB_CONTACT_SEARCH_URL = env('DATA_HUB_CONTACT_SEARCH_URL')
+
+DATA_HUB_HAWK_ID = env("DATA_HUB_HAWK_ID")
+DATA_HUB_HAWK_KEY = env("DATA_HUB_HAWK_KEY")
+
+# Celery and Redis
+CACHES = {}
+DATA_HUB_METADATA_FETCH_INTERVAL_HOURS=env.int('DATA_HUB_METADATA_FETCH_INTERVAL_HOURS', default=4)
+VCAP_SERVICES = env.json('VCAP_SERVICES', default={})
+
+if 'redis' in VCAP_SERVICES:
+    REDIS_BASE_URL = VCAP_SERVICES['redis'][0]['credentials']['uri']
+else:
+    REDIS_BASE_URL = env('REDIS_BASE_URL', default=None)
+
+if REDIS_BASE_URL:
+    REDIS_CACHE_DB = env('REDIS_CACHE_DB', default=0)
+    REDIS_CELERY_DB = env('REDIS_CELERY_DB', default=1)
+    is_secure_redis = REDIS_BASE_URL.startswith('rediss://')
+    redis_url_args = {'ssl_cert_reqs': 'required'} if is_secure_redis else {}
+    encoded_query_args = urlencode(redis_url_args)
+    BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}?{encoded_query_args}'
+    CELERY_RESULT_BACKEND = BROKER_URL
+    CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": f'{REDIS_BASE_URL}/{REDIS_CACHE_DB}',
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
+                "SOCKET_TIMEOUT": 5,  # in seconds
+            }
+        }
+    }
+
+# Activity stream settings
+#
+ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS = env('ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS', default=30)
+ACTIVITY_STREAM_KEY_ID = env('ACTIVITY_STREAM_KEY_ID')
+ACTIVITY_STREAM_KEY = env('ACTIVITY_STREAM_KEY')
+# Date from which we want to pull the enquiries data
+ACTIVITY_STREAM_INITIAL_LOAD_DATE = env('ACTIVITY_STREAM_INITIAL_LOAD_DATE')
+ACTIVITY_STREAM_SEARCH_URL = env('ACTIVITY_STREAM_SEARCH_URL')
+# search url for additional filtering as it is not part of the fields mapped for searching
+ACTIVITY_STREAM_SEARCH_TARGET_URL = env('ACTIVITY_STREAM_SEARCH_TARGET_URL')
+# Fields required to retrieve the relevant object in the search results
+# retrieved data is a list of nested objects and these fields allow us
+# to extract enquiry data and some assocoated metadata
+ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1')
+ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1')
+ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2')
+ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2')
+# key of the object that contains enquiry data
+ACTIVITY_STREAM_ENQUIRY_DATA_OBJ = env('ACTIVITY_STREAM_ENQUIRY_DATA_OBJ')

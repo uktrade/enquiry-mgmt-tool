@@ -1,106 +1,111 @@
 {% load static %}
-
 {% include 'base.html' %}
-
+{% load enquiries_extras %}
 {% include 'partials/govuk_header_partial.html' %}
-
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content">
 
         <h2 class="govuk-heading-l">Enquiries</h2>
+        <div class="govuk-grid-row">
 
-        {% load rest_framework %}
-        <article>
-            <header class="collection-header">
-                <!-- TODO: Add filter controls and data to header -->
-                <div class="collection-header__row">
-                    <div class="collection-header__intro">
-                        <span class="big-number-of-enquiries">{{ count }}</span> enquiries
-                        <div class="collection-header-actions">
-                            <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
+        <div class="govuk-grid-column-one-third">
+            {% include 'partials/enquiry_filters.html' %}
+        </div>
+
+        <div class="govuk-grid-column-two-thirds">
+            {% load rest_framework %}
+            <article>
+                <header class="collection-header">
+                    <!-- TODO: Add filter controls and data to header -->
+                    <div class="collection-header__row">
+                        <div class="collection-header__intro">
+                            <span class="big-number-of-enquiries">{{ count }}</span> enquiries
+                            <div class="collection-header-actions">
+                                <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
+                            </div>
                         </div>
+                        <!-- <div class="collection-filter-summary">Stage: New</div> -->
                     </div>
-                    <!-- <div class="collection-filter-summary">Stage: New</div> -->
-                </div>
-                <!-- <div class="collection-header__row">
-                    <span class="header-page-number">Page 1 of 5</span>
-                </div> -->
-            </header>
-            <ol class="entity__list">
-                {% for obj in results %}
-                <li class="entity__list-item">
-                    <div class="entity__enquiry">
-                        <div class="entity__header">
-                            <div class="entity__title">
-                                <h3>
-                                    <a class="entity__title-link" href="{% url 'enquiry-detail' obj.id %}">{{ obj.company_name }}</a>
-                                </h3>
+                    <!-- <div class="collection-header__row">
+                        <span class="header-page-number">Page 1 of 5</span>
+                    </div> -->
+                </header>
+                <ol class="entity__list">
+                    {% for obj in results %}
+                    <li class="entity__list-item">
+                        <div class="entity__enquiry">
+                            <div class="entity__header">
+                                <div class="entity__title">
+                                    <h3>
+                                        <a class="entity__title-link" href="{% url 'enquiry-detail' obj.id %}">{{ obj.company_name }}</a>
+                                    </h3>
+                                </div>
+                                <div class="entity__badges">
+                                    <div class="entity__badges-item">
+                                        <span>{{ obj.enquiry_stage }}</span>
+                                    </div>
+                                    <div class="entity__badges-item">
+                                        <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</span>
+                                    </div>
+                                    <div class="entity__badges-item">
+                                        <span>{{ obj.country }}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="entity__badges">
-                                <div class="entity__badges-item">
-                                    <span>{{ obj.enquiry_stage }}</span>
+                            <div class="entity__content">
+                                <div class="entity__content-list">
+                                    <div class="entity__content-item">
+                                        <span class="list-item-label">Date received</span>
+                                        <span class="list-item-value">{{ obj.created }}</span>
+                                    </div>
+                                    <div class="entity__content-item">
+                                        <span class="list-item-label">Enquiry text</span>
+                                        <span class="list-item-value">{{ obj.enquiry_text }}</span>
+                                    </div>
+                                    <div class="entity__content-item">
+                                        <span class="list-item-label">Date last updated</span>
+                                        <span class="list-item-value">{{ obj.modified }}</span>
+                                    </div>
+                                    <div class="entity__content-item">
+                                        <span class="list-item-label">Call requested</span>
+                                        <span class="list-item-value">{{ obj.enquirer.request_for_call }}</span>
+                                    </div>
                                 </div>
-                                <div class="entity__badges-item">
-                                    <span>{% if obj.owner %}{{ obj.owner.user }} {%else%} {{ "Unassigned" }} {%endif%}</span>
-                                </div>
-                                <div class="entity__badges-item">
-                                    <span>{{ obj.country }}</span>
-                                </div>
+                                <!-- <div class="collection-filter-summary">Stage: New</div> -->
                             </div>
                         </div>
-                        <div class="entity__content">
-                            <div class="entity__content-list">
-                                <div class="entity__content-item">
-                                    <span class="list-item-label">Date received</span>
-                                    <span class="list-item-value">{{ obj.created }}</span>
-                                </div>
-                                <div class="entity__content-item">
-                                    <span class="list-item-label">Enquiry text</span>
-                                    <span class="list-item-value">{{ obj.enquiry_text }}</span>
-                                </div>
-                                <div class="entity__content-item">
-                                    <span class="list-item-label">Date last updated</span>
-                                    <span class="list-item-value">{{ obj.modified }}</span>
-                                </div>
-                                <div class="entity__content-item">
-                                    <span class="list-item-label">Call requested</span>
-                                    <span class="list-item-value">{{ obj.enquirer.request_for_call }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                {% endfor %}
-            </ol>
-
-            <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
-
-            <nav class="pagination">
-
-                <ol class="pagination__list">
-                    {%if previous is not None %}
-                        <li class="pagination__list-item">
-                            <a class="pagination__link" href="{{ previous }}">Previous</a>
-                        </li>
-                    {%endif%}
-
-                    {% for page in page_range %}
-                        {% if page|stringformat:"s" == current_page %}
-                            <a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination__list-item pagination__list-item--current">{{ page }}</li></a>
-                        {% else %}
-                            <a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination__list-item">{{ page }}</li></a>
-                        {% endif %}
+                    </li>
                     {% endfor %}
-
-                    {%if next is not None %}
-                        <li class="pagination__list-item">
-                            <a class="pagination__link" href="{{ next }}">Next</a>
-                        </li>
-                    {%endif%}
                 </ol>
-            </nav>
-        </article>
+
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+                <nav class="pagination">
+
+                    <ol class="pagination__list">
+                        {%if previous is not None %}
+                            <li class="pagination__list-item">
+                                <a class="pagination__link" href="{{ previous }}">Previous</a>
+                            </li>
+                        {%endif%}
+
+                        {% for page in page_range %}
+                            {% if page|stringformat:"s" == current_page %}
+                                <a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination__list-item pagination__list-item--current">{{ page }}</li></a>
+                            {% else %}
+                                <a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination__list-item">{{ page }}</li></a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {%if next is not None %}
+                            <li class="pagination__list-item">
+                                <a class="pagination__link" href="{{ next }}">Next</a>
+                            </li>
+                        {%endif%}
+                    </ol>
+                </nav>
+            </article>
+        </div>
     </main>
 </div>
-
 {% include 'partials/govuk_footer_partial.html' %}

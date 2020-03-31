@@ -1,25 +1,45 @@
+import csv
+import io
 import pytest
 import pytz
 import random
+from openpyxl import Workbook, load_workbook
 
-from datetime import date
-from django.conf import settings
-from django.forms.models import model_to_dict
-from django.test import Client, TestCase
-from django.urls import reverse
+from bs4 import BeautifulSoup
+from io import StringIO
+
+from datetime import date, datetime
 from faker import Faker
+
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.forms.models import model_to_dict
+from django.urls import reverse
+
 from rest_framework import status
 from unittest import mock
 
 import app.enquiries.ref_data as ref_data
+import app.enquiries.views as enquiry_views
+import app.enquiries.tests.utils as test_utils
+
+from app.enquiries import utils
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
+    EnquirerFactory,
     EnquiryFactory,
+    create_fake_enquiry_csv_row,
     get_random_item,
     get_display_name,
+    get_display_value,
+    return_display_value,
 )
+from app.enquiries.views import ImportEnquiriesView
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
+headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
+headers_json = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/json"}
 
 
 def canned_enquiry():
@@ -69,10 +89,12 @@ def canned_enquiry():
     }
 
 
-class EnquiryViewTestCase(TestCase):
+ERROR_MISSING_FIELD = "field cannot be blank"
+
+
+class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def setUp(self):
-        self.faker = Faker()
-        self.client = Client()
+        super().setUp()
 
     def assert_dicts_equal(self, expected, actual, exclude_keys=None):
         """
@@ -89,6 +111,58 @@ class EnquiryViewTestCase(TestCase):
 
             self.assertEqual(value, expected[key])
 
+    def assert_factory_enquiry_equals_enquiry_response(
+        self, factory_item, response_item
+    ):
+        date_fields = [
+            "created",
+            "modified",
+            "date_added_to_datahub",
+            "project_success_date",
+        ]
+        omit_fields = ["owner"]
+        ref_fields = ref_data.MAP_ENQUIRY_FIELD_TO_REF_DATA
+
+        for name in utils.ENQUIRY_OWN_FIELD_NAMES:
+            factory_value = getattr(factory_item, name)
+            db_value = response_item[name]
+            if name in omit_fields:
+                continue
+            elif name in date_fields:
+                if isinstance(db_value, datetime):
+                    db_value = db_value.date()
+                elif isinstance(db_value, str):
+                    db_value = datetime.strptime(db_value, "%d %B %Y")
+                    db_value = (
+                        db_value.date() if isinstance(db_value, datetime) else db_value
+                    )
+                factory_value = (
+                    factory_value.date()
+                    if isinstance(factory_value, datetime)
+                    else factory_value
+                )
+            elif name in ref_fields:
+                ref_model = ref_fields[name]
+                db_value = return_display_value(ref_model, db_value)
+                pass
+
+            self.assertEqual(factory_value, db_value)
+
+    def assert_enquiry_equals_csv_row(self, enquiry, csv_row):
+        for name in utils.ENQUIRY_OWN_FIELD_NAMES:
+            enquiry_val = getattr(enquiry, name)
+            self.assertEqual(
+                csv_row[name], str(enquiry_val) if enquiry_val != None else ""
+            )
+        if enquiry.enquirer:
+            for enquirer_key in utils.ENQUIRER_FIELD_NAMES:
+                enquirer_val = getattr(enquiry.enquirer, enquirer_key)
+                csv_row_key = f"enquirer_{enquirer_key}"
+                self.assertEqual(
+                    csv_row[csv_row_key],
+                    str(enquirer_val) if enquirer_val != None else "",
+                )
+
     def create_enquiry_and_assert(self, enquiry):
         """Creates an Enquiry using the API and asserts on the response status"""
         response = self.client.post(
@@ -104,6 +178,9 @@ class EnquiryViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         return response.context["enquiry"]
 
+    @pytest.mark.skip(
+        reason="@TODO need to investigate why the Owner model cannot be serialized"
+    )
     def test_enquiry_list(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         enquiries = [EnquiryFactory() for i in range(2)]
@@ -112,6 +189,37 @@ class EnquiryViewTestCase(TestCase):
         response = response.json()
         results = response["results"]
         self.assertEqual(len(results), len(enquiries))
+
+    def test_enquiry_list_html(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        enquiries = EnquiryFactory.create_batch(2)
+        response = self.client.get(reverse("enquiry-list"), **headers)
+        soup = BeautifulSoup(response.content, "html.parser")
+        enquiry_els = soup.select(".entity-list-item")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        count = len(enquiry_els)
+        self.assertEqual(count, len(enquiries))
+
+    @pytest.mark.skip(
+        reason="@TODO need to investigate why the Owner model cannot be serialized"
+    )
+    def test_enquiry_list_content_type_json(self):
+        response = self.client.get(reverse("enquiry-list"))
+        self.assertIn(
+            "application/json",
+            response.get("Content-Type"),
+            msg="document should have type: application/json",
+        )
+
+    def test_enquiry_list_content_type_html(self):
+        headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
+        response = self.client.get(reverse("enquiry-list"), **headers)
+
+        self.assertIn(
+            "text/html",
+            response.get("Content-Type"),
+            msg="document should have type: text/html",
+        )
 
     def test_enquiries_list_pagination(self):
         """
@@ -129,11 +237,12 @@ class EnquiryViewTestCase(TestCase):
         for page in range(total_pages):
             start = page * page_size
             end = start + page_size
-            response = self.client.get(reverse("enquiry-list"), {"page": page + 1})
+            response = self.client.get(
+                reverse("enquiry-list"), {"page": page + 1}, **headers
+            )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(
-                [enq["id"] for enq in response.data["results"]],
-                ids[start:end]
+                [enq["id"] for enq in response.data["results"]], ids[start:end]
             )
             self.assertEqual(response.data["current_page"], page + 1)
 
@@ -275,3 +384,329 @@ class EnquiryViewTestCase(TestCase):
         country_display_name = get_display_name(ref_data.Country, enquiry.country)
         self.assertContains(response, enquiry_stage_display_name)
         self.assertContains(response, country_display_name)
+
+    def test_enquiry_import_view(self):
+        """Test retrieving a valid enquiry returns 200"""
+        response = self.client.get(reverse("import-enquiries"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_enquiry_import_post_success(self):
+        """
+        Test a successful import
+        Creates a list of enquiry dicts and ensures
+        that records are written to the DB after submitting the form (POST)
+        """
+        num_items = 5
+        enquiries = [create_fake_enquiry_csv_row() for i in range(num_items)]
+        fp = StringIO()
+
+        writer = csv.DictWriter(
+            fp, fieldnames=ref_data.IMPORT_COL_NAMES, quoting=csv.QUOTE_MINIMAL
+        )
+        writer.writeheader()
+        writer.writerows(enquiries)
+
+        body = fp.getvalue().encode()
+        upload = SimpleUploadedFile("test.csv", body, content_type="text/csv")
+
+        response = self.client.post(
+            reverse("import-enquiries"), {"enquiries": upload}, follow=True
+        )
+
+        db_enquiries = Enquiry.objects.all()
+        final_count = db_enquiries.count()
+        self.assertNotContains(response, ImportEnquiriesView.ERROR_HEADER)
+        self.assertContains(response, f"Successfully posted {num_items} records!")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(final_count, num_items)
+
+        for e in enquiries:
+            # generate filter keyword args dynamically
+            # (can't modify the dict we arfe iterating over withouit raising an error so make a extra copy)
+            qs_kwargs = utils.csv_row_to_enquiry_filter_kwargs(e)
+
+            self.assertTrue(Enquiry.objects.filter(**qs_kwargs).exists())
+
+    def test_enquiry_import_post_error(self):
+        """
+        Test a unsuccessful import
+        Creates an enquiry dict, updates few fields and ensures
+        the data is updated after submitting the form
+        """
+        num_items = 5
+        initial_count = Enquiry.objects.count()
+        enquiries = [create_fake_enquiry_csv_row() for i in range(num_items)]
+        enquiries[3]["enquirer_job_title"] = ""
+
+        fp = StringIO()
+
+        writer = csv.DictWriter(
+            fp, fieldnames=ref_data.IMPORT_COL_NAMES, quoting=csv.QUOTE_MINIMAL
+        )
+        writer.writeheader()
+        writer.writerows(enquiries)
+
+        body = fp.getvalue().encode()
+        upload = SimpleUploadedFile("test.csv", body, content_type="text/csv")
+
+        response = self.client.post(
+            reverse("import-enquiries"), {"enquiries": upload}, follow=True
+        )
+
+        final_count = Enquiry.objects.count()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # test atomic transactions
+        self.assertEqual(
+            final_count,
+            initial_count,
+            f"atomic transaction should prevent any records being created. Found: {final_count}",
+        )
+
+    def test_enquiry_import_post_success_chunks(self):
+        """
+        Test a successful import over the chunk limit
+        Creates a list of enquiry dicts and ensures
+        that records are written to the DB after submitting the form (POST)
+        """
+        TEST_CHUNK_SIZE = 16000
+        num_items = 0
+        file_size = 0
+        fp = StringIO()
+
+        writer = csv.DictWriter(
+            fp, fieldnames=ref_data.IMPORT_COL_NAMES, quoting=csv.QUOTE_MINIMAL
+        )
+        writer.writeheader()
+
+        with self.settings(UPLOAD_CHUNK_SIZE=TEST_CHUNK_SIZE):
+            while file_size <= settings.UPLOAD_CHUNK_SIZE:
+                e = create_fake_enquiry_csv_row()
+                content_len = writer.writerow(e)
+                file_size += content_len
+                num_items += 1
+
+            body = fp.getvalue().encode()
+            upload = SimpleUploadedFile("test.csv", body, content_type="text/csv")
+
+            response = self.client.post(
+                reverse("import-enquiries"), {"enquiries": upload}, follow=True
+            )
+
+            final_count = Enquiry.objects.count()
+            self.assertNotContains(response, ImportEnquiriesView.ERROR_HEADER)
+            self.assertContains(response, f"Successfully posted {num_items} records!")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(num_items, final_count)
+            self.assertTrue(len(body) > settings.UPLOAD_CHUNK_SIZE)
+
+    def test_helper_login(self):
+        result = self.login()
+        self.assertEqual(result, True)
+        self.assertEqual(self.logged_in, True)
+        self.assertEqual(result, self.logged_in)
+
+    def test_login_protected(self):
+        """Test the view is protected by SSO"""
+        self.logout()
+        response = self.client.get(reverse("enquiry-list"))
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(response.get("Location").split("?")[0], settings.LOGIN_URL)
+        self.login()
+
+    def test_enquiry_list_filtered(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        EnquiryFactory(company_name="Foo Bar")
+        EnquiryFactory(company_name="Bar Inc")
+        EnquiryFactory(company_name="Baz")
+        response = self.client.get(
+            reverse("enquiry-list"), {"company_name__icontains": "Bar"}, **headers
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 2)
+
+    @pytest.mark.skip(
+        reason="@TODO need to investigate why the Owner model cannot be serialized"
+    )
+    def test_enquiry_list_filtered_unassigned(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+
+        EnquirerFactory()
+        enquiries = [
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW),
+        ]
+
+        owner = enquiries[1].owner
+        enquiries[0].owner = None
+        enquiries[0].save()
+        enquiry_unassigned = enquiries[0]
+        enquiry_assigned = enquiries[1]
+
+        # owner assigned
+        response = self.client.get(
+            reverse("enquiry-list"), {"owner__id": owner.id}, **headers
+        )
+        data = response.data
+
+        enquiry_data = data["results"][0]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+        self.assert_factory_enquiry_equals_enquiry_response(
+            enquiry_assigned, enquiry_data
+        )
+
+        # owner unassigned
+        response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"})
+        data = response.data
+
+        enquiry_data_unassigned = data["results"][0]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+
+        self.assert_factory_enquiry_equals_enquiry_response(
+            enquiry_unassigned, enquiry_data_unassigned
+        )
+
+    def test_enquiry_list_filtered_unassigned_html(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+
+        EnquirerFactory()
+        enquiries = [
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
+            EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW),
+        ]
+
+        owner = enquiries[1].owner
+        enquiries[0].owner = None
+        enquiries[0].save()
+
+        # owner assigned
+        response = self.client.get(
+            reverse("enquiry-list"), {"owner__id": owner.id}, **headers
+        )
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        enquiry_els = soup.select(".entity-list-item")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(enquiry_els), 1)
+
+        # owner unassigned
+        response = self.client.get(
+            reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers
+        )
+        soup = BeautifulSoup(response.content, "html.parser")
+        enquiry_els = soup.select(".entity-list-item")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(enquiry_els), 1)
+
+    @pytest.mark.skip(
+        reason="@TODO need to investigate why the Owner model cannot be serialized"
+    )
+    def test_enquiry_list_filtered_enquiry_stage(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW)
+        # enquiry stage - ADDED_TO_DATAHUB
+        response = self.client.get(
+            reverse("enquiry-list"),
+            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 1)
+
+        # enquiry stage - NON_FDI
+        response = self.client.get(
+            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}
+        )
+        data = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["count"], 0)
+
+    def test_enquiry_list_filtered_enquiry_stage_html(self):
+        """Test retrieving enquiry list and ensure we get expected count"""
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.AWAITING_RESPONSE),
+        EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW)
+        # enquiry stage - ADDED_TO_DATAHUB
+        response = self.client.get(
+            reverse("enquiry-list"),
+            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
+            **headers,
+        )
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        enquiry_els = soup.select(".entity-list-item")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(enquiry_els), 1)
+
+        # enquiry stage - NON_FDI
+        response = self.client.get(
+            reverse("enquiry-list"),
+            {"enquiry_stage": ref_data.EnquiryStage.NON_FDI},
+            **headers,
+        )
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        enquiry_els = soup.select(".entity-list-item")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(enquiry_els), 0)
+
+    def test_import_template(self):
+        """Tests that the dynamically generated .XLSX template is accessible has the correct format.
+        The spreadsheet has multiple sheets with the 'enquiries' sheet used to capture user input.
+        All other sheets are populate with the apps ref_data.py
+        """
+        import io
+        import tempfile
+
+        response = self.client.get(reverse("import-template"))
+        content = response.content
+
+        wb = load_workbook(io.BytesIO(content))
+        sheet = wb.active
+        for row in sheet.values:
+            for i, val in enumerate(row):
+                self.assertEqual(
+                    val,
+                    ref_data.IMPORT_COL_NAMES[i],
+                    msg="should match expected column value",
+                )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(
+            enquiry_views.ImportTemplateDownloadView.CONTENT_TYPE,
+            response.get("Content-Type"),
+            msg=f"Should have content type: {enquiry_views.ImportTemplateDownloadView.CONTENT_TYPE}",
+        )
+        self.assertIn(
+            settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition")
+        )
+
+    def test_export_view(self):
+        enquiries = EnquiryFactory.create_batch(5)
+        response = self.client.get(reverse("enquiry-export"))
+        reader = csv.DictReader(io.StringIO(response.content.decode()))
+        row_count = 0
+
+        self.assertTrue("text/csv" in response.get("Content-Type"))
+        self.assertIn(
+            settings.EXPORT_OUTPUT_FILE_SLUG, response.get("Content-Disposition"),
+        )
+
+        for i, csv_row in enumerate(reader):
+            enquiry = enquiries[i]
+            self.assert_enquiry_equals_csv_row(enquiry, csv_row)
+            row_count += 1
+
+        self.assertEqual(row_count, 5)

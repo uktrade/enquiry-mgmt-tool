@@ -3,9 +3,46 @@ DEBUG=True
 DJANGO_SECRET_KEY=supersecretkey
 
 # Database settings
-DATABASE_URL=postgres://username:password@host:port/name
+DATABASE_URL=postgres://postgres:password@localhost:5432/postgres
 
 # Sentry
 DJANGO_SENTRY_DSN=sentry-dsn
 
 ENQUIRIES_PER_PAGE=10
+
+# Data Hub variables
+DATA_HUB_ACCESS_TOKEN=datahub-access-token
+DATA_HUB_METADATA_URL=https://datahub/metadata
+DATA_HUB_COMPANY_SEARCH_URL=https://datahub/company/search
+DATA_HUB_CONTACT_SEARCH_URL=https://datahub/contact/search
+
+# Hawk
+DATA_HUB_HAWK_ID=hawk-id
+DATA_HUB_HAWK_KEY=hawk-key
+
+# Celery and Redis
+DATA_HUB_METADATA_FETCH_INTERVAL=4      # in hours
+REDIS_BASE_URL=redis://redis:6379
+CELERY_TIMEZONE=Europe/london
+
+# Staff SSO/OAuth2 settings
+FEATURE_ENFORCE_STAFF_SSO_ENABLED=1
+
+AUTHBROKER_URL=contact-web-ops-for-details
+AUTHBROKER_CLIENT_ID=contact-web-ops-for-details
+AUTHBROKER_CLIENT_SECRET=contact-web-ops-for-details
+AUTHBROKER_TOKEN_SESSION_KEY=_authbroker_token
+AUTHBROKER_STAFF_SSO_SCOPE=additional-scope
+
+# Activity Stream
+ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS=30
+ACTIVITY_STREAM_KEY_ID=enquiry-mgmt-key-id
+ACTIVITY_STREAM_KEY=enquiry-mgmt-secret-key
+ACTIVITY_STREAM_INITIAL_LOAD_DATE=dd-month-yyyy
+ACTIVITY_STREAM_SEARCH_URL=https://activity-stream/search
+ACTIVITY_STREAM_SEARCH_TARGET_URL=https://activity-stream/search/target/
+ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1=enquiry-key-1
+ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1=enquiry-value-2
+ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2=enquiry-key-2
+ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2=enquiry-value-2
+ACTIVITY_STREAM_ENQUIRY_DATA_OBJ=enquiry-data-obj

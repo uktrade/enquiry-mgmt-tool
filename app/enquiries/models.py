@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
 
@@ -16,9 +16,7 @@ class Enquirer(models.Model):
     first_name = models.CharField(max_length=MAX_LENGTH, verbose_name="First name")
     last_name = models.CharField(max_length=MAX_LENGTH, verbose_name="Last name")
     job_title = models.CharField(max_length=MAX_LENGTH, verbose_name="Job title")
-    email = models.EmailField(
-        max_length=MAX_LENGTH, blank=True, verbose_name="Email"
-    )
+    email = models.EmailField(max_length=MAX_LENGTH, blank=True, verbose_name="Email")
     phone = models.CharField(max_length=MAX_LENGTH, verbose_name="Phone")
     email_consent = models.BooleanField(default=False, verbose_name="Email consent")
     phone_consent = models.BooleanField(default=False, verbose_name="Phone consent")
@@ -30,15 +28,13 @@ class Enquirer(models.Model):
     )
 
 
-class Owner(models.Model):
+class Owner(AbstractUser):
     """
-    Model for the user assigned to an Enquiry
+    Customer user model user by the app. Each Enquiry has an owner.
     """
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
+        return f"{self.first_name} {self.last_name}"
 
 
 class Enquiry(TimeStampedModel):
@@ -136,7 +132,7 @@ class Enquiry(TimeStampedModel):
         default=ref_data.FirstResponseChannel.DEFAULT,
         verbose_name="First response channel",
     )
-    notes = models.TextField(verbose_name="Notes")
+    notes = models.TextField(blank=True, null=True, verbose_name="Notes")
     first_hpo_selection = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.HpoSelection.choices,
@@ -200,6 +196,8 @@ class Enquiry(TimeStampedModel):
     crm = models.CharField(
         max_length=MAX_LENGTH,
         help_text="Name of the relationship manager",
+        blank=True,
+        null=True,
         verbose_name="CRM",
     )
     project_code = models.CharField(
@@ -221,3 +219,41 @@ class Enquiry(TimeStampedModel):
     class Meta:
         ordering = ["created"]
 
+
+class ReceivedEnquiryCursor(models.Model):
+    """
+    New Enquiries data is pulled from Activity Stream at regular intervals.
+    This model tracks the timestamp and object id of the last item received.
+    They are used to fetch the next set of results.
+    """
+    index = models.CharField(
+        max_length=MAX_LENGTH,
+        help_text="Index of the object",
+        blank=True,
+        null=True,
+    )
+    object_id = models.CharField(
+        max_length=MAX_LENGTH,
+        help_text="Id of the last object in the results returned by AS corresponding to the index",
+        blank=True,
+        null=True,
+    )
+
+class FailedEnquiry(models.Model):
+    """
+    Model to track failed enquiries when processing the data from AS
+    """
+    index = models.CharField(
+        max_length=MAX_LENGTH,
+        help_text="Index of the object",
+        blank=True,
+        null=True,
+    )
+    object_id = models.CharField(
+        max_length=MAX_LENGTH,
+        help_text="Id of the failed object",
+        blank=True,
+        null=True,
+    )
+    html_body = models.TextField(blank=True, null=True, verbose_name="HTML body")
+    text_body = models.TextField(blank=True, null=True, verbose_name="Text body")
