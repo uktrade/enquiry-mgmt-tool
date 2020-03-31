@@ -1,74 +1,22 @@
-version: 2
-
-aliases:
-  - &default_env
-    DEBUG: 'True'
-    DJANGO_SECRET_KEY: 'supersecretkey'
-    DATABASE_URL: postgres://postgres:password@db:5432/postgres
-    DATA_HUB_ACCESS_TOKEN: 'datahub-access-token'
-    DATA_HUB_METADATA_URL: 'http://dh-api-mock:8001/metadata'
-    DATA_HUB_COMPANY_SEARCH_URL: 'http://dh-api-mock:8001/company/search'
-    DATA_HUB_CONTACT_SEARCH_URL: 'http://dh-api-mock:8001/contact/search'
-    DATA_HUB_HAWK_ID: 'hawk-id'
-    DATA_HUB_HAWK_KEY: 'hawk-key'
-    DATA_HUB_METADATA_FETCH_INTERVAL: '4'
-    FEATURE_ENFORCE_STAFF_SSO_ENABLED: 0
-    AUTHBROKER_URL: https://sso.trade.gov.uk
-    AUTHBROKER_CLIENT_ID: somestring
-    AUTHBROKER_CLIENT_SECRET: somestring
-    AUTHBROKER_TOKEN_SESSION_KEY: _authbroker_token
-    AUTHBROKER_STAFF_SSO_SCOPE: required-scope-values
-    REDIS_BASE_URL: redis://redis:6379
-
+version: 2.1
 jobs:
   build:
-    docker:
-      - image: quay.io/uktrade/enquiry-mgmt-tool
-        environment: *default_env
-      - image: circleci/postgres:9.6
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: password
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
-      - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
-        name: es
-      - image: redis:3.2.10
-        name: redis
-      - image: ukti/data-hub-sandbox:latest
-        name: dh-api-mock
-
+    machine:
+      docker_layer_caching: true
+    working_directory: ~/emt
     steps:
       - checkout
       - run:
-          name: Wait for db to become available
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
-          paths:
-            - ./venv
+          name: Copy config
+          command: cp sample_env .env
       - run:
-          name: Install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
-      - save_cache:
-          name: Save pip cache
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
-          paths:
-            - ./venv
+          name: Build docker stack
+          command: docker-compose up -d
       - run:
-          name: Run tests
-          command: |
-            . venv/bin/activate
-            python -m pytest -s -vvv app/enquiries/tests
-      - run:
-          name: Wait for Data Hub API to become available
-          command: dockerize -wait tcp://localhost:8000 -timeout 5m
+          name: Run unit tests
+          command: docker-compose run app python -m pytest -s -vvv app/enquiries/tests
       - run:
           name: Run e2e tests
-          command: cypress run --browser chrome
+          command: docker-compose run app cypress run --browser chrome
       - store_artifacts:
           path: cypress/screenshots

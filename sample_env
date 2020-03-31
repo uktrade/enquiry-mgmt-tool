@@ -3,7 +3,7 @@ DEBUG=True
 DJANGO_SECRET_KEY=supersecretkey
 
 # Database settings
-DATABASE_URL=postgres://postgres:password@localhost:5432/postgres
+DATABASE_URL=postgres://postgres:password@db:5432/postgres
 
 # Sentry
 DJANGO_SENTRY_DSN=sentry-dsn
@@ -12,9 +12,9 @@ ENQUIRIES_PER_PAGE=10
 
 # Data Hub variables
 DATA_HUB_ACCESS_TOKEN=datahub-access-token
-DATA_HUB_METADATA_URL=https://datahub/metadata
-DATA_HUB_COMPANY_SEARCH_URL=https://datahub/company/search
-DATA_HUB_CONTACT_SEARCH_URL=https://datahub/contact/search
+DATA_HUB_METADATA_URL=http://dh-api-mock/metadata
+DATA_HUB_COMPANY_SEARCH_URL=http://dh-api-mock/company/search
+DATA_HUB_CONTACT_SEARCH_URL=http://dh-api-mock/contact/search
 
 # Hawk
 DATA_HUB_HAWK_ID=hawk-id
