@@ -1,57 +1,70 @@
 [
     {
         "model": "enquiries.owner",
-
         "pk": 1,
+        "fields": {
+            "username": "trusted_user",
+            "password": "pbkdf2_sha256$180000$fnsr6Q4Vd2ca$AN2MU0VvwCqih4H7qRl/gwtOB7/OWmEvPFS8RSPmJEw=",
+            "first_name": "Staff",
+            "last_name": "User",
+            "email": "staff@example.com",
+            "is_staff": true,
+            "is_active": true
+        }
+    },
+    {
+        "model": "enquiries.owner",
+        "pk": 2,
         "fields": {
             "username": "ist-user-1",
             "first_name": "IST",
             "last_name": "User 1",
-            "email": "ist.user.1@example.com"
+            "email": "ist.user.1@example.com",
+            "is_active": true
         }
     },
     {
         "model": "enquiries.owner",
-
-        "pk": 2,
+        "pk": 3,
         "fields": {
             "username": "ist-user-2",
             "first_name": "IST",
             "last_name": "User 2",
-            "email": "ist.user.2@example.com"
+            "email": "ist.user.2@example.com",
+            "is_active": true
         }
     },
     {
         "model": "enquiries.owner",
-
-        "pk": 3,
+        "pk": 4,
         "fields": {
             "username": "ist-user-3",
             "first_name": "IST",
             "last_name": "User 3",
-            "email": "ist.user.3@example.com"
+            "email": "ist.user.3@example.com",
+            "is_active": true
         }
     },
     {
         "model": "enquiries.owner",
-
-        "pk": 4,
+        "pk": 5,
         "fields": {
             "username": "ist-user-4",
             "first_name": "IST",
             "last_name": "User 4",
-            "email": "ist.user.4@example.com"
+            "email": "ist.user.4@example.com",
+            "is_active": true
         }
     },
     {
         "model": "enquiries.owner",
-
-        "pk": 5,
+        "pk": 6,
         "fields": {
             "username": "ist-user-5",
             "first_name": "IST",
             "last_name": "User 5",
-            "email": "ist.user.5@example.com"
+            "email": "ist.user.5@example.com",
+            "is_active": true
         }
     }
 ]
