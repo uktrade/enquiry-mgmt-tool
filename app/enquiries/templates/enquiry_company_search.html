@@ -37,7 +37,7 @@
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
 
         {% for company in search_results %}
-        {% include 'snippets/company_search_result.html' with company_name=company.name company_address=company.address datahub_id=company.datahub_id %}
+        {% include 'snippets/company_search_result.html' with company_name=company.name company_address=company.address datahub_id=company.datahub_id company_number=company.company_number duns_number=company.duns_number %}
         {% endfor %}
 
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break">

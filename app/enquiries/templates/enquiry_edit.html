@@ -49,10 +49,10 @@
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        {{ enquiry|get_field_verbose_name:"dh_assigned_company" }}
+                        {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {% if dh_assigned_company_name %}<a href="#">{{ dh_assigned_company_name }}</a>{% else %}<a href="#">{{ enquiry.dh_assigned_company }}</a>{% endif %}
+                        {% if dh_assigned_company_name %}<a href="#">{{ dh_assigned_company_name }}</a>{% else %}<a href="#">{{ enquiry.dh_assigned_company_name }}</a>{% endif %}
                     </dd>
                 </div>
             </dl>
@@ -90,7 +90,7 @@
 
                 <div class="govuk-form-group">
                     <label class="govuk-label label-inline">
-                        {{ enquiry|get_field_verbose_name:"dh_assigned_company" }}
+                        {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
                     </label>
                     <a class="govuk-link company-search-link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
 
@@ -98,9 +98,12 @@
 
                     <!-- Assign selected company from the above search results to below fields -->
                     <!-- They are readonly and hidden but required for form submission -->
-                    <input style="display: none;" name="dh_assigned_company" id="dh_assigned_company" value="{{ dh_assigned_company_name }}"> <br>
-                    <input style="display: none;" name="dh_company_address" id="dh_company_address" value="{{ dh_assigned_company_address }}">
-
+                    <input style="display: none;" name="dh_company_id" id="dh_company_id" value="{{ dh_company_id }}">
+                    <input style="display: none;" name="dh_company_number" id="dh_company_number" value="{{ dh_company_number }}">
+                    <input style="display: none;" name="dh_duns_number" id="dh_duns_number" value="{{ dh_duns_number }}">
+                    <input style="display: none;" name="dh_assigned_company_name" id="dh_assigned_company_name" value="{{ dh_assigned_company_name }}"> <br>
+                    <input style="display: none;" name="dh_company_address" id="dh_company_address" value="{{ dh_company_address }}">
+                    
                 </div>
 
             </div>

@@ -29,6 +29,7 @@ from rest_framework.views import APIView
 import app.enquiries.ref_data as ref_data
 from app.enquiries import forms, models, serializers, utils
 from app.enquiries.utils import row_to_enquiry
+from app.enquiries.common.datahub_utils import dh_company_search
 
 UNASSIGNED = "UNASSIGNED"
 
@@ -222,24 +223,37 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
     template_name = "enquiry_edit.html"
 
     def get_context_data(self, **kwargs):
+        # these are populated when a company is selected from the list of
+        # search results in the company search view
+        data = self.request.GET
+        selected_company_id = data.get("dh_id")
+        enquiry_obj = self.get_object()
         context = super().get_context_data(**kwargs)
-        # TODO: perform company search here
-        context["companies"] = get_companies()
-        if self.dh_assigned_company is not '':
-            context["dh_assigned_company_name"] = self.dh_assigned_company['name']
-            context["dh_assigned_company_address"] = self.dh_assigned_company['address']
+        if selected_company_id:
+            context["dh_company_id"] = selected_company_id
+            context["dh_company_number"] = data.get("dh_number")
+            context["dh_duns_number"] = data.get("duns_number")
+            context["dh_assigned_company_name"] = data.get("dh_name")
+            context["dh_company_address"] = data.get("dh_address")
+        elif enquiry_obj.dh_company_id:
+            context["dh_company_id"] = enquiry_obj.dh_company_id
+            context["dh_company_number"] = enquiry_obj.dh_company_number
+            context["dh_duns_number"] = enquiry_obj.dh_duns_number
+            context["dh_assigned_company_name"] = enquiry_obj.dh_assigned_company_name
+            context["dh_company_address"] = enquiry_obj.dh_company_address
+
         return context
 
-    def get(self, request, *args, **kwargs):
-        dhacid = request.GET.get('dhacid', '')
-        if dhacid is '':
-            self.dh_assigned_company = ''
-        else:
-            self.dh_assigned_company = [c for c in get_companies() if dhacid in c["datahub_id"]][0]
-        self.object = self.get_object()
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        return self.render_to_response(self.get_context_data(form=form))
+    # def get(self, request, *args, **kwargs):
+    #     dhacid = request.GET.get('dhacid', '')
+    #     if dhacid is '':
+    #         self.dh_assigned_company = ''
+    #     else:
+    #         self.dh_assigned_company = [c for c in get_companies() if dhacid in c["datahub_id"]][0]
+    #     self.object = self.get_object()
+    #     form_class = self.get_form_class()
+    #     form = self.get_form(form_class)
+    #     return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
         enquiry_obj = self.get_object()
@@ -279,10 +293,23 @@ class EnquiryCompanySearchView(TemplateView):
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         search_term = request.POST["search_term"].lower()
-        # TODO: perform company search here
-        context["search_results"] = [
-            c for c in get_companies() if search_term in c["name"].lower()
-        ]
+        context["search_results"] = []
+        companies, error = dh_company_search(search_term)
+        print(companies)
+        print(error)
+        if not error:
+            for company in companies:
+                addr = company["address"]
+                formatted_addr = f'{company["name"]}, {addr["line_1"]}, {addr["line_2"]}, {addr["town"]}, {addr["county"]}, {addr["postcode"]}, {addr["country"]}'
+                context["search_results"].append({
+                    "datahub_id": company["datahub_id"],
+                    "name": company["name"],
+                    "company_number": company["company_number"],
+                    "duns_number": company["duns_number"],
+                    "address": formatted_addr,
+                })
+        print(context["search_results"])
+
         return render(request, self.template_name, context)
 
 

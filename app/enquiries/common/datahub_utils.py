@@ -173,6 +173,8 @@ def dh_company_search(company_name):
             {
                 "datahub_id": company["id"],
                 "name": company["name"],
+                "company_number": company["company_number"],
+                "duns_number": company["duns_number"],
                 "address": {
                     "line_1": address["line_1"],
                     "line_2": address["line_2"],

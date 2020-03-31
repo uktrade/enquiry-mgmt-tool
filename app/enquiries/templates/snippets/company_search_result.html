@@ -1,4 +1,4 @@
-<a class="govuk-link link-no-visited link-no-decoration" href="{% url 'enquiry-edit' enquiry.id %}?dhacid={{ datahub_id }}">
+<a class="govuk-link link-no-visited link-no-decoration" href="{% url 'enquiry-edit' enquiry.id %}?dh_id={{ datahub_id }}&dh_number={{ company_number }}&duns_number={{ duns_number }}&dh_name={{ company_name }}&dh_address={{ company_address }}">
 <div class="company-search-result">
     <div class="company-search-result-name">
         {{ company_name }}
