@@ -18,7 +18,7 @@ aliases:
       ES5_URL: http://localhost:9200
       POSTGRES_URL: tcp://postgres:5432
       MI_POSTGRES_URL: tcp://mi-postgres:5432
-      REDIS_BASE_URL: redis://localhost:6379
+      REDIS_BASE_URL: redis://redis:6379
       REDIS_CACHE_DB: 5
       REDIS_CELERY_DB: 6
       SSO_ENABLED: 'True'
@@ -73,6 +73,7 @@ jobs:
 
     docker:
       - image: quay.io/uktrade/enquiry-mgmt-tool
+      - image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
       - image: circleci/postgres:9.6
         environment:
           POSTGRES_USER: postgres

@@ -106,13 +106,13 @@ Run the following from the project root to delete __pycache__ directories:
     docker tag enquiry-mgmt-tool:latest quay.io/uktrade/enquiry-mgmt-tool:latest
     ```
     
-3. Log in to quay.io
+3. Log in to quay.io:
 
     ```shell
     docker login quay.io
     ```
    
-4. Push the container to quay.io
+4. Push the container to quay.io:
 
     ```shell
     docker push quay.io/uktrade/enquiry-mgmt-tool:latest
