@@ -21,12 +21,13 @@
                     </div>
                 </div>
             </div>
-            <div class="entity-subtitle">
-                Date received {{ enquiry.created }}
-            </div>
         </div>
         <div class="entity-content">
             <div class="entity-content-list">
+                <div class="entity-content-item">
+                    <span class="list-item-label">Date received</span>
+                    <span class="list-item-value">{{ enquiry.created }}</span>
+                </div>
                 <div class="entity-content-item">
                     <span class="list-item-label">Enquiry text</span>
                     <span class="list-item-value">{{ enquiry.enquiry_text }}</span>
@@ -36,7 +37,7 @@
                     <span class="list-item-value">{{ enquiry.updated }}</span>
                 </div>
                 <div class="entity-content-item">
-                    <span class="list-item-label">Call?</span>
+                    <span class="list-item-label">Call requested</span>
                     <span class="list-item-value">{{ enquiry.request_for_call }}</span>
                 </div>
             </div>
