@@ -209,7 +209,11 @@ STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
 IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
+IMPORT_TEMPLATE_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 UPLOAD_CHUNK_SIZE = 256000
+EXPORT_OUTPUT_FILE_SLUG = 'rtt_enquiries_export'
+EXPORT_OUTPUT_FILE_EXT = 'csv'
+EXPORT_OUTPUT_FILE_MIMETYPE = 'text/csv'
 
 # Data Hub settings
 # TODO: Access token can be removed once SSO is integrated as it comes from SSO directly
@@ -252,3 +256,23 @@ if REDIS_BASE_URL:
             }
         }
     }
+
+# Activity stream settings
+#
+ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS = env('ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS', default=30)
+ACTIVITY_STREAM_KEY_ID = env('ACTIVITY_STREAM_KEY_ID')
+ACTIVITY_STREAM_KEY = env('ACTIVITY_STREAM_KEY')
+# Date from which we want to pull the enquiries data
+ACTIVITY_STREAM_INITIAL_LOAD_DATE = env('ACTIVITY_STREAM_INITIAL_LOAD_DATE')
+ACTIVITY_STREAM_SEARCH_URL = env('ACTIVITY_STREAM_SEARCH_URL')
+# search url for additional filtering as it is not part of the fields mapped for searching
+ACTIVITY_STREAM_SEARCH_TARGET_URL = env('ACTIVITY_STREAM_SEARCH_TARGET_URL')
+# Fields required to retrieve the relevant object in the search results
+# retrieved data is a list of nested objects and these fields allow us
+# to extract enquiry data and some assocoated metadata
+ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1')
+ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1')
+ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2')
+ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2')
+# key of the object that contains enquiry data
+ACTIVITY_STREAM_ENQUIRY_DATA_OBJ = env('ACTIVITY_STREAM_ENQUIRY_DATA_OBJ')
