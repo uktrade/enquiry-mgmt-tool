@@ -130,7 +130,7 @@ a.entity-title-link {
 
 button.enquiry-edit-button {
     float: right;
-    margin: govuk-spacing(8);
+    margin-bottom: govuk-spacing(8);
 }
 
 
@@ -213,3 +213,18 @@ ol.pagination-list {
         }
     }
 } 
+button.enquiry-delete-button {
+    float: right;
+}
+
+form.delete-form {
+    display: inline;
+}
+
+.delete-warning {
+    display: inline-block;
+}
+
+.filters-column {
+    padding: 0;
+}
