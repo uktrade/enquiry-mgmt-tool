@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='enquiry',
-            name='dh_assigned_company',
+            name='dh_assigned_company_name',
             field=models.CharField(blank=True, help_text='Name of the company in Data Hub', max_length=255, null=True, verbose_name='Company in Data Hub'),
         ),
         migrations.AddField(

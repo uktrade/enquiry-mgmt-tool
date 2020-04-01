@@ -275,6 +275,7 @@ class ReceivedEnquiryCursor(models.Model):
         null=True,
     )
 
+
 class FailedEnquiry(models.Model):
     """
     Model to track failed enquiries when processing the data from AS

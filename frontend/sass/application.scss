@@ -129,37 +129,58 @@ a.entity-title-link {
 
 button.enquiry-edit-button {
     float: right;
-    margin-bottom: govuk-spacing(8);
 }
 
-a.pagination-link {
-    text-decoration: none;
-    font-size: large;
+.company-search-result, .company-search-assigned-company {
+    padding: 1em;
+    border: 1px solid $govuk-border-colour;
+    margin-top: 1em;
+}
+
+.company-search-result:hover {
+    background-color: rgba(govuk-colour("light-grey"), 0.5);
+    border: 1px solid govuk-colour("light-blue");
+
+    .company-search-result-name {
+        color: govuk-colour("light-blue");
+    }
+}
+
+.company-search-result-name {
     font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.company-search-link {
+    float: right;
+}
+
+.label-inline {
+    display: inline;
+}
+
+.company-search-details-text {
+    margin-left: 1.5em;
+}
+
+a.link-no-visited:visited {
     color: #005ea5;
 }
 
-li.pagination-list-item {
-    display: inline-block;
-    background-color: #fafafa;
-    min-width: 22px;
-    text-align: center;
-    padding: 0.5em;
-    margin: 3px;
+a.link-no-decoration {
+    text-decoration: none;
 }
 
-li:hover.pagination-list-item {
-    background-color: #dee0e2;
+button.company-search-button {
+    margin-top: 1em;
 }
 
-li:active.pagination-list-item {
-    border: 3px solid #ffbf47;
-    margin: 0px;
+span.company-search-result-address-label {
+    color: govuk-colour("dark-grey")
 }
 
-li.pagination-list-item-current, li:hover.pagination-list-item-current {
-    background-color: white;
-    color: black;
+span.company-search-result-address-value {
+    color: govuk-colour("black")
 }
 
 ol.pagination-list {

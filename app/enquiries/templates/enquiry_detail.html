@@ -45,6 +45,45 @@
             <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
                 {{ "Unassigned" }} {%endif%}</dd>
         </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+                {%if enquiry.dh_assigned_company_name %}
+                <a href="#">
+                     {{ enquiry.dh_assigned_company_name }}
+                </a>
+                {% else %} {{ "----" }} {% endif %}
+            </dd>
+        </div>
+    </dl>
+</div>
+<div class="govuk-grid-row enquiry-details-row">
+    <h3 class="govuk-heading-m">Enquiry overview</h3>
+    <dl class="govuk-summary-list">
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_name" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_hq_address" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_stage" %}
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Owner
+            </dt>
+            <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
+                {{ "Unassigned" }} {%endif%}</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+                {%if enquiry.dh_assigned_company_name %}
+                <a href="#">
+                     {{ enquiry.dh_assigned_company_name }}
+                </a>
+                {% else %} {{ "----" }} {% endif %}
+            </dd>
+        </div>
     </dl>
 </div>
 <div class="govuk-grid-row enquiry-details-row">

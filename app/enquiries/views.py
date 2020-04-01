@@ -1,6 +1,7 @@
 import json
 import codecs
 import csv
+import json
 import logging
 from datetime import datetime
 from io import BytesIO
@@ -31,8 +32,10 @@ import app.enquiries.ref_data as ref_data
 from app.enquiries import forms, models, serializers, utils
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries.utils import row_to_enquiry
+from app.enquiries.common.datahub_utils import dh_company_search
 
 UNASSIGNED = "UNASSIGNED"
+
 
 def get_filter_config():
     filter_fields = [
@@ -74,6 +77,14 @@ class PaginationWithPaginationMeta(PageNumberPagination):
             },
             template_name="enquiry_list.html",
         )
+
+    def post(self, request, format=None):
+        serializer = serializers.EnquirySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def is_valid_id(v) -> bool:
@@ -206,6 +217,28 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
     form_class = forms.EnquiryForm
     template_name = "enquiry_edit.html"
 
+    def get_context_data(self, **kwargs):
+        # these are populated when a company is selected from the list of
+        # search results in the company search view
+        data = self.request.GET
+        selected_company_id = data.get("dh_id")
+        enquiry_obj = self.get_object()
+        context = super().get_context_data(**kwargs)
+        if selected_company_id:
+            context["dh_company_id"] = selected_company_id
+            context["dh_company_number"] = data.get("dh_number")
+            context["dh_duns_number"] = data.get("duns_number")
+            context["dh_assigned_company_name"] = data.get("dh_name")
+            context["dh_company_address"] = data.get("dh_address")
+        elif enquiry_obj.dh_company_id:
+            context["dh_company_id"] = enquiry_obj.dh_company_id
+            context["dh_company_number"] = enquiry_obj.dh_company_number
+            context["dh_duns_number"] = enquiry_obj.dh_duns_number
+            context["dh_assigned_company_name"] = enquiry_obj.dh_assigned_company_name
+            context["dh_company_address"] = enquiry_obj.dh_company_address
+
+        return context
+
     def form_valid(self, form):
         enquiry_obj = self.get_object()
         enquirer_form = forms.EnquirerForm(form.data, instance=enquiry_obj.enquirer)
@@ -230,6 +263,7 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
 
+
 class EnquiryDeleteView(DeleteView):
     """
     View to delete enquiry
@@ -243,6 +277,41 @@ class EnquiryDeleteView(DeleteView):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         enquiry.delete()
         return redirect("enquiry-list")
+
+class EnquiryCompanySearchView(TemplateView):
+    """
+    Company search view
+    """
+
+    model = models.Enquiry
+    template_name = "enquiry_company_search.html"
+
+    def get_context_data(self, **kwargs):
+        pk = kwargs["pk"]
+        context = super().get_context_data(**kwargs)
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        context["enquiry"] = enquiry
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        search_term = request.POST["search_term"].lower()
+        context["search_results"] = []
+        companies, error = dh_company_search(search_term)
+        print(error)
+        if not error:
+            for company in companies:
+                addr = company["address"]
+                formatted_addr = f'{company["name"]}, {addr["line_1"]}, {addr["line_2"]}, {addr["town"]}, {addr["county"]}, {addr["postcode"]}, {addr["country"]}'
+                context["search_results"].append({
+                    "datahub_id": company["datahub_id"],
+                    "name": company["name"],
+                    "company_number": company["company_number"],
+                    "duns_number": company["duns_number"],
+                    "address": formatted_addr,
+                })
+
+        return render(request, self.template_name, context)
 
 
 class ImportEnquiriesView(TemplateView):
