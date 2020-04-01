@@ -32,6 +32,7 @@ from app.enquiries.utils import row_to_enquiry
 
 UNASSIGNED = "UNASSIGNED"
 
+
 def get_filter_config():
     filter_fields = [
         field for field in models.Enquiry._meta.get_fields() if field.choices
@@ -45,10 +46,7 @@ def get_filter_config():
 def get_enquiry_field(name):
     filter_config = get_filter_config()
 
-    return {
-        "name": name,
-        "choices": filter_config[name].choices
-    }
+    return {"name": name, "choices": filter_config[name].choices}
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -125,7 +123,23 @@ class EnquiryFilter(filters.FilterSet):
         }
 
 
-class EnquiryListView(LoginRequiredMixin, ListAPIView):
+class NoLoginRequiredMixin:
+    """
+    Used for disabling login when SSO is disabled,
+    this is useful for running Cypress tests
+    """
+
+    pass
+
+
+LoginMixin = (
+    LoginRequiredMixin
+    if settings.FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]
+    else NoLoginRequiredMixin
+)
+
+
+class EnquiryListView(LoginMixin, ListAPIView):
     """
     List all enquiries.
 
@@ -146,7 +160,7 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
         return models.Enquiry.objects.all()
 
 
-class EnquiryCreateView(LoginRequiredMixin, APIView):
+class EnquiryCreateView(LoginMixin, APIView):
     """
     Creates new Enquiry
     """
@@ -160,7 +174,7 @@ class EnquiryCreateView(LoginRequiredMixin, APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EnquiryDetailView(LoginRequiredMixin, TemplateView):
+class EnquiryDetailView(LoginMixin, TemplateView):
     """
     View to provide complete details of an Enquiry
     """
@@ -177,7 +191,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class EnquiryEditView(LoginRequiredMixin, UpdateView):
+class EnquiryEditView(LoginMixin, UpdateView):
     """
     View to provide complete details of an Enquiry
     """
@@ -205,6 +219,7 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
 
+
 class EnquiryDeleteView(DeleteView):
     """
     View to delete enquiry
@@ -218,6 +233,7 @@ class EnquiryDeleteView(DeleteView):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         enquiry.delete()
         return redirect("enquiry-list")
+
 
 class ImportEnquiriesView(TemplateView):
     """
@@ -244,7 +260,10 @@ class ImportEnquiriesView(TemplateView):
     def process_upload(self, uploaded_file):
         records = []
         with uploaded_file as f:
-            if not f.name.endswith(".csv") or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE:
+            if (
+                not f.name.endswith(".csv")
+                or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE
+            ):
                 messages.error(
                     self.request,
                     f"File is not of type: text/csv with  extension .csv. Detected type: {f.content_type}",
@@ -262,9 +281,7 @@ class ImportEnquiriesView(TemplateView):
 
         try:
             if enquiries_key in request.FILES:
-                payload = (
-                    request.FILES.get(enquiries_key)
-                )
+                payload = request.FILES.get(enquiries_key)
                 records = self.process_upload(payload)
             else:
                 messages.error(request, f"File is not detected")
@@ -280,7 +297,11 @@ class ImportEnquiriesView(TemplateView):
         )
 
     def get(self, request, *args, **kwargs):
-        status_code = status.HTTP_400_BAD_REQUEST if "errors" in request.GET else status.HTTP_200_OK
+        status_code = (
+            status.HTTP_400_BAD_REQUEST
+            if "errors" in request.GET
+            else status.HTTP_200_OK
+        )
         return render(
             request,
             "import-enquiries-form.html",
@@ -316,9 +337,7 @@ class ExportEnquiriesView(TemplateView):
         date_str = datetime.now().isoformat(timespec="minutes")
         filename = f"{settings.EXPORT_OUTPUT_FILE_SLUG}_{date_str}.{settings.EXPORT_OUTPUT_FILE_EXT}"
         response = HttpResponse(content_type=self.CONTENT_TYPE)
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="{filename}"'
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
         utils.export_to_csv(qs, response)
         return response

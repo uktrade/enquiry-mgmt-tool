@@ -47,7 +47,7 @@
         "fields": {
             "created": "2019-10-28T23:31:03+00:00",
             "modified": "2020-02-25T12:50:05.421Z",
-            "owner": 1,
+            "owner": null,
             "company_name": "ABC Electronics Co.",
             "enquiry_stage": "POST_PROGRESSING",
             "enquiry_text": "ABC Electronics are looking to expand our presence in the UK by opening a new production facility in Dartford, Kent to complement our existing UK site in Derby. We have secured a site and are looking to...",
@@ -176,7 +176,7 @@
         "fields": {
             "created": "2018-01-13T16:06:07+00:00",
             "modified": "2020-02-25T12:48:32.492Z",
-            "owner": 5,
+            "owner": null,
             "company_name": "MARS EXPORTS (UAE)",
             "enquiry_stage": "AWAITING_RESPONSE",
             "enquiry_text": "New zoo (LEP)",
@@ -262,7 +262,7 @@
         "fields": {
             "created": "2019-11-12T06:09:29+00:00",
             "modified": "2020-02-25T12:48:45.506Z",
-            "owner": 4,
+            "owner": null,
             "company_name": "Testing Company Ltd",
             "enquiry_stage": "NON_RESPONSIVE",
             "enquiry_text": "Project Zeus",
@@ -348,7 +348,7 @@
         "fields": {
             "created": "2018-10-25T12:27:21+00:00",
             "modified": "2020-02-25T12:48:57.848Z",
-            "owner": 3,
+            "owner": null,
             "company_name": "ABC Electronics Co.",
             "enquiry_stage": "NON_FDI",
             "enquiry_text": "ABC Electronics are looking to expand our presence in the UK by opening a new production facility in Dartford, Kent to complement our existing UK site in Derby. We have secured a site and are looking to...",
@@ -434,7 +434,7 @@
         "fields": {
             "created": "2017-08-08T08:28:03+00:00",
             "modified": "2020-02-25T12:48:32.499Z",
-            "owner": 5,
+            "owner": null,
             "company_name": "Alphabet Projects",
             "enquiry_stage": "AWAITING_RESPONSE",
             "enquiry_text": "This is a description of the big project",
@@ -477,7 +477,7 @@
         "fields": {
             "created": "2018-12-29T14:52:28+00:00",
             "modified": "2020-02-25T12:48:45.510Z",
-            "owner": 4,
+            "owner": null,
             "company_name": "MARS EXPORTS (UAE)",
             "enquiry_stage": "NON_RESPONSIVE",
             "enquiry_text": "New zoo (LEP)",
@@ -520,7 +520,7 @@
         "fields": {
             "created": "2019-10-29T01:54:09+00:00",
             "modified": "2020-02-25T12:49:10.084Z",
-            "owner": 2,
+            "owner": null,
             "company_name": "Venus Ltd",
             "enquiry_stage": "ADDED_TO_DATAHUB",
             "enquiry_text": "Green tea plantation",
@@ -606,7 +606,7 @@
         "fields": {
             "created": "2017-06-06T16:33:33+00:00",
             "modified": "2020-02-25T12:48:32.506Z",
-            "owner": 5,
+            "owner": null,
             "company_name": "1Company",
             "enquiry_stage": "AWAITING_RESPONSE",
             "enquiry_text": "Internet startup company",
@@ -649,7 +649,7 @@
         "fields": {
             "created": "2020-01-04T01:49:31+00:00",
             "modified": "2020-02-25T12:48:57.852Z",
-            "owner": 3,
+            "owner": null,
             "company_name": "ABC Electronics Co.",
             "enquiry_stage": "NON_FDI",
             "enquiry_text": "ABC Electronics are looking to expand our presence in the UK by opening a new production facility in Dartford, Kent to complement our existing UK site in Derby. We have secured a site and are looking to...",
@@ -692,7 +692,7 @@
         "fields": {
             "created": "2017-10-24T21:46:32+00:00",
             "modified": "2020-02-25T12:48:45.513Z",
-            "owner": 4,
+            "owner": null,
             "company_name": "MATCHBOX LTD",
             "enquiry_stage": "NON_RESPONSIVE",
             "enquiry_text": "Matchbox are looking to expand our presence in the UK by opening a new central London office to complement our existing UK office in Edinburgh. We have secured a site in west London and are looking to...",
@@ -778,7 +778,7 @@
         "fields": {
             "created": "2018-09-02T04:11:01+00:00",
             "modified": "2020-02-25T12:48:32.513Z",
-            "owner": 5,
+            "owner": null,
             "company_name": "MARS EXPORTS (UAE)",
             "enquiry_stage": "AWAITING_RESPONSE",
             "enquiry_text": "New zoo (LEP)",
@@ -864,7 +864,7 @@
         "fields": {
             "created": "2017-01-16T12:57:29+00:00",
             "modified": "2020-02-25T12:49:50.880Z",
-            "owner": 2,
+            "owner": null,
             "company_name": "Testing Company Ltd",
             "enquiry_stage": "NEW",
             "enquiry_text": "Project Zeus",
@@ -907,7 +907,7 @@
         "fields": {
             "created": "2017-01-12T23:20:38+00:00",
             "modified": "2020-02-25T12:48:57.855Z",
-            "owner": 3,
+            "owner": null,
             "company_name": "Test Company",
             "enquiry_stage": "NEW",
             "enquiry_text": "Internet startup company",
@@ -993,7 +993,7 @@
         "fields": {
             "created": "2019-06-20T23:10:20+00:00",
             "modified": "2020-02-25T12:49:10.087Z",
-            "owner": 2,
+            "owner": null,
             "company_name": "MATCHBOX LTD",
             "enquiry_stage": "ADDED_TO_DATAHUB",
             "enquiry_text": "Matchbox are looking to expand our presence in the UK by opening a new central London office to complement our existing UK office in Edinburgh. We have secured a site in west London and are looking to...",
@@ -1036,7 +1036,7 @@
         "fields": {
             "created": "2018-01-07T10:27:02+00:00",
             "modified": "2020-02-25T12:50:05.426Z",
-            "owner": 1,
+            "owner": null,
             "company_name": "Alphabet Projects",
             "enquiry_stage": "NEW",
             "enquiry_text": "This is a description of the big project",

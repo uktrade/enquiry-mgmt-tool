@@ -1,6 +1,6 @@
 describe('Enquiries Summary view', () => {
   before(() => {
-    cy.login('/enquiries/')
+    cy.visit('/enquiries/')
   })
 
   it('should render the header', () => {
@@ -8,7 +8,7 @@ describe('Enquiries Summary view', () => {
   })
 
   it('should render the filters', () => {
-    cy.get('.govuk-checkboxes__input').should('have.length', 14)
+    cy.get('.govuk-checkboxes__input').should('have.length', 8)
   })
 
   it('should render enquiries count', () => {
@@ -27,49 +27,35 @@ describe('Enquiries Summary view', () => {
 
 describe('Enquiry Detail view', () => {
   before(() => {
-    cy.login('/enquiries/')
+    cy.visit('/enquiries/')
     cy.viewEnquiry(2)
   })
 
-  it('should render the header', () => {
+  it('should render the header and back link', () => {
     cy.contains('Ready to Trade')
-  })
-
-  it('should have one back link to summary page', () => {
     cy.get('.govuk-back-link').should('have.length', 1)
   })
 
-  it('should have one large heading', () => {
+  it('should have one large heading with expectd name', () => {
     cy.get('.govuk-heading-l').should('have.length', 1)
-  })
-
-  it('should have correct company name', () => {
     cy.contains('MATCHBOX LTD')
   })
 })
 
 
-describe('Enquiry edit view', () => {
+describe('Enquiry edit company name', () => {
   before(() => {
-    cy.login('/enquiries/')
-    cy.editEnquiry(2)
+    cy.viewEnquiry(2)
   })
 
-  it('should render the header', () => {
-    cy.contains('Ready to Trade')
-  })
-
-  it('should have one back link to summary page', () => {
-    cy.get('.govuk-back-link').should('have.length', 1)
-  })
-
-  it('should have one large heading with expected value for this id', () => {
-    cy.get('.govuk-heading-l').should('have.length', 1)
-    cy.contains('MATCHBOX LTD')
-  })
-
-  it('should update company name', () => {
-    cy.get('input[name=company_name]').type('Matchbox Corp')
+  it('should update company name using edit button', () => {
+    cy.contains('Edit details').click()
+    cy.get('input[name=company_name]').clear().type('Matchbox Corp')
     cy.contains('Save and return').click()
+  })
+
+  it('should have updated company name', () => {
+    cy.get('.govuk-heading-l').should('have.length', 1)
+    cy.contains('Matchbox Corp')
   })
 })

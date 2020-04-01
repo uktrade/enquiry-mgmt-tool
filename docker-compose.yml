@@ -15,7 +15,6 @@ services:
     command: |
       bash -c " \
       python manage.py migrate  && \
-      python manage.py loaddata app/enquiries/fixtures/users.json && \
       python manage.py loaddata app/enquiries/fixtures/enquiries_cypress.json && \
       python manage.py runserver 0.0.0.0:8000"
 
