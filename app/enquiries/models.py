@@ -133,7 +133,7 @@ class Enquiry(TimeStampedModel):
         default=ref_data.FirstResponseChannel.DEFAULT,
         verbose_name="First response channel",
     )
-    notes = models.TextField(verbose_name="Notes")
+    notes = models.TextField(blank=True, null=True, verbose_name="Notes")
     first_hpo_selection = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.HpoSelection.choices,
@@ -197,6 +197,8 @@ class Enquiry(TimeStampedModel):
     crm = models.CharField(
         max_length=MAX_LENGTH,
         help_text="Name of the relationship manager",
+        blank=True,
+        null=True,
         verbose_name="CRM",
     )
     project_code = models.CharField(
@@ -252,3 +254,42 @@ class Enquiry(TimeStampedModel):
 
     class Meta:
         ordering = ["created"]
+
+
+class ReceivedEnquiryCursor(models.Model):
+    """
+    New Enquiries data is pulled from Activity Stream at regular intervals.
+    This model tracks the timestamp and object id of the last item received.
+    They are used to fetch the next set of results.
+    """
+    index = models.CharField(
+        max_length=MAX_LENGTH,
+        help_text="Index of the object",
+        blank=True,
+        null=True,
+    )
+    object_id = models.CharField(
+        max_length=MAX_LENGTH,
+        help_text="Id of the last object in the results returned by AS corresponding to the index",
+        blank=True,
+        null=True,
+    )
+
+class FailedEnquiry(models.Model):
+    """
+    Model to track failed enquiries when processing the data from AS
+    """
+    index = models.CharField(
+        max_length=MAX_LENGTH,
+        help_text="Index of the object",
+        blank=True,
+        null=True,
+    )
+    object_id = models.CharField(
+        max_length=MAX_LENGTH,
+        help_text="Id of the failed object",
+        blank=True,
+        null=True,
+    )
+    html_body = models.TextField(blank=True, null=True, verbose_name="HTML body")
+    text_body = models.TextField(blank=True, null=True, verbose_name="Text body")

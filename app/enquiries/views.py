@@ -1,15 +1,25 @@
 import json
-from django.db import transaction
+import codecs
+import csv
+import logging
+from datetime import datetime
+from io import BytesIO
+
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db import transaction
 from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views import View
+from django.views.generic import DeleteView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django_filters import rest_framework as filters
-
 from rest_framework import generics, status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -17,11 +27,31 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+import app.enquiries.ref_data as ref_data
+from app.enquiries import forms, models, serializers, utils
 from app.enquiries.common.datahub_utils import dh_investment_create
-from app.enquiries import forms
-from app.enquiries import models, serializers
+from app.enquiries.utils import row_to_enquiry
 
 UNASSIGNED = "UNASSIGNED"
+
+def get_filter_config():
+    filter_fields = [
+        field for field in models.Enquiry._meta.get_fields() if field.choices
+    ]
+    filter_config = {}
+    for field in filter_fields:
+        filter_config[field.name] = field
+    return filter_config
+
+
+def get_enquiry_field(name):
+    filter_config = get_filter_config()
+
+    return {
+        "name": name,
+        "choices": filter_config[name].choices
+    }
+
 
 class PaginationWithPaginationMeta(PageNumberPagination):
     """
@@ -38,7 +68,11 @@ class PaginationWithPaginationMeta(PageNumberPagination):
                 "page_range": list(self.page.paginator.page_range),
                 "current_page": self.page.number,
                 "results": data,
-            }
+                "filter_enquiry_stage": get_enquiry_field("enquiry_stage"),
+                "owners": models.Owner.objects.all(),
+                "query_params": self.request.GET,
+            },
+            template_name="enquiry_list.html",
         )
 
 
@@ -57,12 +91,12 @@ def is_valid_int(v) -> bool:
 
 
 class EnquiryFilter(filters.FilterSet):
-    
+
     owner__id = filters.CharFilter(field_name="owner__id", method="filter_owner_id")
 
     def filter_owner_id(self, queryset, name, value):
         """
-        This filter handles the owner__id parameter with can either be an int
+        This filter handles the owner__id parameter which can either be an int
         of the string 'UNASSIGNED'. In the case of UNASSIGNED to filter for enquirires where owner == None
         """
         vals = value.split(",")
@@ -141,9 +175,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
-
-        res = self.request.session.get(settings.AUTHBROKER_TOKEN_SESSION_KEY, None)
-        print(res)
+        context["back_url"] = reverse("enquiry-list")
         return context
 
     def post(self, request, *args, **kwargs):
@@ -196,4 +228,123 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
             form.add_error(None, f'{field}: {msg[0]["message"]}')
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
+        return response
+
+class EnquiryDeleteView(DeleteView):
+    """
+    View to delete enquiry
+    """
+
+    model = models.Enquiry
+    template_name = "enquiry_delete.html"
+
+    def post(self, request, **kwargs):
+        pk = kwargs["pk"]
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        enquiry.delete()
+        return redirect("enquiry-list")
+
+
+class ImportEnquiriesView(TemplateView):
+    """
+    View handles submission of CSV files containing enquiries
+    """
+
+    http_method_names = ["get", "post"]
+    ERROR_HEADER = "Error - File import has failed"
+
+    @property
+    def ERROR_URL(self):
+        return reverse("import-enquiries") + "?errors=1"
+
+    def _build_records(self, file_obj):
+        records = []
+        with transaction.atomic():
+            for c in file_obj.chunks(chunk_size=settings.UPLOAD_CHUNK_SIZE):
+                csv_file = csv.DictReader(codecs.iterdecode(BytesIO(c), "utf-8"))
+                for row in csv_file:
+                    records.append(row_to_enquiry(row))
+
+        return records
+
+    def process_upload(self, uploaded_file):
+        records = []
+        with uploaded_file as f:
+            if not f.name.endswith(".csv") or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE:
+                messages.error(
+                    self.request,
+                    f"File is not of type: text/csv with  extension .csv. Detected type: {f.content_type}",
+                )
+                return HttpResponseRedirect(reverse("import-enquiries"))
+
+            records = self._build_records(f)
+
+        logging.info(f"Successfully ingested {len(records)} records")
+        return records
+
+    def post(self, request, *args, **kwargs):
+        records = []
+        enquiries_key = "enquiries"
+
+        try:
+            if enquiries_key in request.FILES:
+                payload = (
+                    request.FILES.get(enquiries_key)
+                )
+                records = self.process_upload(payload)
+            else:
+                messages.error(request, f"File is not detected")
+                return HttpResponseRedirect(self.ERROR_URL)
+        except Exception as err:
+            messages.add_message(request, messages.ERROR, str(err))
+            logging.error(err)
+            return HttpResponseRedirect(self.ERROR_URL)
+        return render(
+            self.request,
+            "import-enquiries-confirmation.html",
+            {"enquiries": records, "ERROR_HEADER": self.ERROR_HEADER},
+        )
+
+    def get(self, request, *args, **kwargs):
+        status_code = status.HTTP_400_BAD_REQUEST if "errors" in request.GET else status.HTTP_200_OK
+        return render(
+            request,
+            "import-enquiries-form.html",
+            {"ERROR_HEADER": self.ERROR_HEADER},
+            status=status_code,
+        )
+
+
+class ImportTemplateDownloadView(View):
+    methods = ["get"]
+    CONTENT_TYPE = settings.IMPORT_TEMPLATE_MIMETYPE
+
+    def get(self, request):
+        response = HttpResponse(content_type=self.CONTENT_TYPE)
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="{settings.IMPORT_TEMPLATE_FILENAME}"'
+        utils.generate_import_template(response)
+        return response
+
+
+class ExportEnquiriesView(TemplateView):
+    """
+    Generates a CSV download of exported enquiries
+    """
+
+    methods = ["get"]
+
+    CONTENT_TYPE = settings.EXPORT_OUTPUT_FILE_MIMETYPE
+
+    def get(self, request):
+        qs = models.Enquiry.objects.all()
+        date_str = datetime.now().isoformat(timespec="minutes")
+        filename = f"{settings.EXPORT_OUTPUT_FILE_SLUG}_{date_str}.{settings.EXPORT_OUTPUT_FILE_EXT}"
+        response = HttpResponse(content_type=self.CONTENT_TYPE)
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="{filename}"'
+
+        utils.export_to_csv(qs, response)
         return response
