@@ -41,3 +41,8 @@ services:
 
   dh-api-mock:
     image: ukti/data-hub-sandbox:latest
+
+  cypress:
+    image: cypress/included:4.3.0
+    depends_on:
+      - app
