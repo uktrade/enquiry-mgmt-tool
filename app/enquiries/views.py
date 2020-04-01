@@ -1,24 +1,24 @@
 import codecs
 import csv
 import logging
+from datetime import datetime
+from io import BytesIO
 
-from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator as DjangoPaginator
-from django.db.models import Q
 from django.db import transaction
-from django.http import HttpResponse
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
+from django.views.generic import DeleteView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django_filters import rest_framework as filters
-from io import BytesIO
-
 from rest_framework import generics, status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -274,6 +274,19 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
 
+class EnquiryDeleteView(DeleteView):
+    """
+    View to delete enquiry
+    """
+
+    model = models.Enquiry
+    template_name = "enquiry_delete.html"
+
+    def post(self, request, **kwargs):
+        pk = kwargs["pk"]
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        enquiry.delete()
+        return redirect("enquiry-list")
 
 class EnquiryCompanySearchView(TemplateView):
     """
@@ -338,7 +351,7 @@ class ImportEnquiriesView(TemplateView):
     def process_upload(self, uploaded_file):
         records = []
         with uploaded_file as f:
-            if not f.name.endswith(".csv") or f.content_type != "text/csv":
+            if not f.name.endswith(".csv") or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE:
                 messages.error(
                     self.request,
                     f"File is not of type: text/csv with  extension .csv. Detected type: {f.content_type}",
@@ -385,7 +398,7 @@ class ImportEnquiriesView(TemplateView):
 
 class ImportTemplateDownloadView(View):
     methods = ["get"]
-    CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    CONTENT_TYPE = settings.IMPORT_TEMPLATE_MIMETYPE
 
     def get(self, request):
         response = HttpResponse(content_type=self.CONTENT_TYPE)
@@ -393,4 +406,26 @@ class ImportTemplateDownloadView(View):
             "Content-Disposition"
         ] = f'attachment; filename="{settings.IMPORT_TEMPLATE_FILENAME}"'
         utils.generate_import_template(response)
+        return response
+
+
+class ExportEnquiriesView(TemplateView):
+    """
+    Generates a CSV download of exported enquiries
+    """
+
+    methods = ["get"]
+
+    CONTENT_TYPE = settings.EXPORT_OUTPUT_FILE_MIMETYPE
+
+    def get(self, request):
+        qs = models.Enquiry.objects.all()
+        date_str = datetime.now().isoformat(timespec="minutes")
+        filename = f"{settings.EXPORT_OUTPUT_FILE_SLUG}_{date_str}.{settings.EXPORT_OUTPUT_FILE_EXT}"
+        response = HttpResponse(content_type=self.CONTENT_TYPE)
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="{filename}"'
+
+        utils.export_to_csv(qs, response)
         return response

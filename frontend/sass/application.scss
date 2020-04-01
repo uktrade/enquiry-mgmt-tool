@@ -182,3 +182,20 @@ span.company-search-result-address-label {
 span.company-search-result-address-value {
     color: govuk-colour("black")
 }
+
+ol.pagination-list {
+    margin: auto;
+    width:  50%;
+}
+
+button.enquiry-delete-button {
+    float: right;
+}
+
+form.delete-form {
+    display: inline;
+}
+
+.delete-warning {
+    display: inline-block;
+}
