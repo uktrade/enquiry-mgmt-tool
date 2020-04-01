@@ -44,5 +44,11 @@ services:
 
   cypress:
     image: cypress/included:4.3.0
+    working_dir: /e2e
+    volumes:
+      - .:/e2e
     depends_on:
       - app
+    environment:
+      CYPRESS_BASE_URL: http://app:8000
+    entrypoint: cypress
