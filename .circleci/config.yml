@@ -17,6 +17,6 @@ jobs:
           command: docker-compose run app python -m pytest -s -vvv app/enquiries/tests
       - run:
           name: Run e2e tests
-          command: docker run -it -v $PWD:/e2e -w /e2e cypress/included:4.3.0 --config baseUrl=http://app:8000 --browser chrome
+          command: docker run -it -v $PWD:/e2e -w /e2e cypress/included:4.3.0 --config baseUrl=http://localhost:8000 --browser chrome
       - store_artifacts:
           path: cypress/screenshots
