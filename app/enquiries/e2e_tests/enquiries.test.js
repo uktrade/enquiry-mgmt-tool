@@ -27,7 +27,7 @@ describe('Enquiries Summary view', () => {
 
 describe('Enquiry Detail view', () => {
   before(() => {
-    // cy.login('/enquiries/')
+    cy.login('/enquiries/')
     cy.viewEnquiry(2)
   })
 
