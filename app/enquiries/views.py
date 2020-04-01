@@ -297,7 +297,7 @@ class EnquiryCompanySearchView(TemplateView):
         context = self.get_context_data(**kwargs)
         search_term = request.POST["search_term"].lower()
         context["search_results"] = []
-        companies, error = dh_company_search(search_term)
+        companies, error = dh_company_search(self.request, None, search_term)
         print(error)
         if not error:
             for company in companies:
