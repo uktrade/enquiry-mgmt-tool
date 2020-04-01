@@ -40,32 +40,3 @@
   </script>
 
   <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
-  {% include 'partials/govuk_header_partial.html' %}
-  <div class="govuk-width-container">
-
-    <main class="govuk-main-wrapper">
-      <div class="govuk-grid-row">
-        <div class="topbar">
-          <div class="topbar__left">
-            {% if back_url %}
-            <a href="{{back_url}}" class="govuk-back-link">Back</a>
-            {% endif %}
-          </div>
-          <div class="topbar__right">
-            {% if main_bar_right_btn %}
-            {% with params=main_bar_right_btn %}
-            <a class="template-download-button govuk-button govuk-button--secondary" data-module="govuk-button" href="{{params.href}}">
-                {{params.text}}
-            </a>
-            {% endwith %}
-            {% endif %}
-          </div>
-        </div>
-
-      </div>
-
-      {% block main %}
-      {% endblock main %}
-    </main>
-  </div>
-  {% include 'partials/govuk_footer_partial.html' %} 

@@ -1,11 +1,15 @@
-{% extends 'base.html' %}
 {% load static %}
+{% include 'base.html' %}
 {% load widget_tweaks %}
 {% load rest_framework %}
+{% include 'partials/govuk_header_partial.html' %}
 
-{% block main %}
 {% csrf_token %}
-<div class="govuk-grid-row">
+<div class="govuk-width-container">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+    <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
+    <div class="govuk-grid-row">
     <h1 class="govuk-heading-l">Import enquiries</h1>
     {% if messages %}
     <div class="govuk-error-summary {% if has_success%}govuk-error-summary--success{% endif %}" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
@@ -51,5 +55,5 @@
         </div>
     </form>
 </div>
-
-{% endblock main %}
+</div>
+{% include 'partials/govuk_footer_partial.html' %}
