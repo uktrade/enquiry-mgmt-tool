@@ -1,5 +1,6 @@
 import codecs
 import csv
+import json
 import logging
 from datetime import datetime
 from io import BytesIO
@@ -32,32 +33,6 @@ from app.enquiries.utils import row_to_enquiry
 from app.enquiries.common.datahub_utils import dh_company_search
 
 UNASSIGNED = "UNASSIGNED"
-
-
-def get_companies():
-    return [
-        {
-            "datahub_id": "4859",
-            "name": "ALPHABET PROJECTS UK LTD",
-            "company_number": "87654",
-            "duns_number": "abc345",
-            "address": "Alphabet Projects UK Ltd, 50 High Street, London, United Kingdom",
-        },
-        {
-            "datahub_id": "7575",
-            "name": "ALPHABET PROJECTS INC",
-            "company_number": "87876",
-            "duns_number": "abc456",
-            "address": "Alphabet Projects Inc, 50 Main Street, New York, United States",
-        },
-        {
-            "datahub_id": "9685",
-            "name": "ALPHABET PROJECTS DEUTSCHLAND GMBH",
-            "company_number": "87887",
-            "duns_number": "abc567",
-            "address": "Alphabet Projects DE GMBH, Hauptstraße 50, Berlin, Germany",
-        },
-    ]
 
 
 def get_filter_config():
@@ -244,17 +219,6 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
 
         return context
 
-    # def get(self, request, *args, **kwargs):
-    #     dhacid = request.GET.get('dhacid', '')
-    #     if dhacid is '':
-    #         self.dh_assigned_company = ''
-    #     else:
-    #         self.dh_assigned_company = [c for c in get_companies() if dhacid in c["datahub_id"]][0]
-    #     self.object = self.get_object()
-    #     form_class = self.get_form_class()
-    #     form = self.get_form(form_class)
-    #     return self.render_to_response(self.get_context_data(form=form))
-
     def form_valid(self, form):
         enquiry_obj = self.get_object()
         enquirer_form = forms.EnquirerForm(form.data, instance=enquiry_obj.enquirer)
@@ -270,9 +234,15 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
             return self.form_invalid(form)
 
     def form_invalid(self, form):
+        enquiry_obj = self.get_object()
+        enquirer_form = forms.EnquirerForm(form.data, instance=enquiry_obj.enquirer)
+        errors_dict = json.loads(enquirer_form.errors.as_json())
+        for field, msg in errors_dict.items():
+            form.add_error(None, field)
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
+
 
 class EnquiryDeleteView(DeleteView):
     """
