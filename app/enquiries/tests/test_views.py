@@ -151,9 +151,11 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
     def assert_enquiry_equals_csv_row(self, enquiry, csv_row):
         for name in utils.ENQUIRY_OWN_FIELD_NAMES:
+            if name in ["id", "created", "modified"]:
+                continue
             enquiry_val = getattr(enquiry, name)
             self.assertEqual(
-                csv_row[name], str(enquiry_val) if enquiry_val != None else ""
+                csv_row[name], str(enquiry_val) if enquiry_val else ""
             )
         if enquiry.enquirer:
             for enquirer_key in utils.ENQUIRER_FIELD_NAMES:
@@ -230,9 +232,11 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         It will be same for all pages except for the last page
         if num_enquiries is not a multiple of page_size
         """
-        num_enquiries = 13
+        num_enquiries = 3
         enquiries = EnquiryFactory.create_batch(num_enquiries)
         ids = [e.id for e in enquiries]
+        # reverse the ids because we order by latest first
+        ids = ids[::-1]
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
         total_pages = (num_enquiries + page_size - 1) // page_size
         for page in range(total_pages):
@@ -696,19 +700,19 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
     def test_export_view(self):
-        enquiries = EnquiryFactory.create_batch(5)
+        num_enquiries = 5
+        enquiries = EnquiryFactory.create_batch(num_enquiries)
         response = self.client.get(reverse("enquiry-export"))
         reader = csv.DictReader(io.StringIO(response.content.decode()))
-        row_count = 0
 
         self.assertTrue("text/csv" in response.get("Content-Type"))
         self.assertIn(
             settings.EXPORT_OUTPUT_FILE_SLUG, response.get("Content-Disposition"),
         )
 
-        for i, csv_row in enumerate(reader):
-            enquiry = enquiries[i]
+        for csv_row in reader:
+            enquiry = Enquiry.objects.get(id=int(csv_row["id"]))
             self.assert_enquiry_equals_csv_row(enquiry, csv_row)
-            row_count += 1
+            num_enquiries -= 1
 
-        self.assertEqual(row_count, 5)
+        self.assertEqual(num_enquiries, 0)
