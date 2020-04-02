@@ -6,6 +6,7 @@ import requests
 from datetime import datetime, date
 from django.conf import settings
 from django.core.cache import cache
+from django.forms.models import model_to_dict
 from mohawk import Sender
 from requests.exceptions import RequestException
 from rest_framework import status
@@ -344,9 +345,27 @@ def dh_enquiry_readiness(request, access_token, enquiry):
         )
         return response
 
-    if not enquiry.crm:
+    enquiry_dict = model_to_dict(enquiry)
+    empty_values = False
+    for field in [
+        "crm",
+        "project_name",
+        "project_description",
+        "anonymised_project_description",
+        "estimated_land_date",
+    ]:
+        if not enquiry_dict[field]:
+            response["errors"].append(
+                {field: "This value is required, should not be empty"}
+            )
+            empty_values = True
+
+    if empty_values:
+        return response
+
+    if enquiry.investment_type == "DEFAULT":
         response["errors"].append(
-            {"adviser": "Adviser name required, should not be empty"}
+            {"investment_type": "Please select investment type, it cannot be empty"}
         )
         return response
 
@@ -364,7 +383,9 @@ def dh_enquiry_readiness(request, access_token, enquiry):
     return response
 
 
-def prepare_dh_payload(enquiry, dh_metadata, company_id, contact_id, adviser_id, crm_id):
+def prepare_dh_payload(
+    enquiry, dh_metadata, company_id, contact_id, adviser_id, crm_id
+):
     """ Prepares the payload for investment create request """
 
     payload = {}
