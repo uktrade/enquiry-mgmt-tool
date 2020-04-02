@@ -1,87 +1,24 @@
-version: 2
-
+version: 2.1
 jobs:
   build:
-    parameters:
-      python_image:
-        type: string
-
-      postgres_image:
-        type: string
-
-    environment:
-      DEBUG: 'True'
-      DJANGO_SECRET_KEY: 'supersecretkey'
-      POSTGRES_DB_PASSWORD: 'password'
-      POSTGRES_DB_HOST: 'localhost'
-      DATA_HUB_ACCESS_TOKEN: 'datahub-access-token'
-      DATA_HUB_METADATA_URL: 'https://datahub/metadata'
-      DATA_HUB_COMPANY_SEARCH_URL: 'https://datahub/company/search'
-      DATA_HUB_CONTACT_SEARCH_URL: 'https://datahub/contact/search'
-      DATA_HUB_CONTACT_CREATE_URL: 'https://datahub/contact/create'
-      DATA_HUB_INVESTMENT_CREATE_URL: 'https://datahub/investment/create'
-      DATA_HUB_ADVISER_SEARCH_URL: 'https://adviser/search'
-      DATA_HUB_WHOAMI_URL: 'https://datahub/whoami/'
-      DATA_HUB_FRONTEND: 'https://datahub/frontend'
-      DATA_HUB_HAWK_ID: 'hawk-id'
-      DATA_HUB_HAWK_KEY: 'hawk-key'
-      DATA_HUB_METADATA_FETCH_INTERVAL: '4'
-      DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
-      FEATURE_ENFORCE_STAFF_SSO_ENABLED: 1
-      AUTHBROKER_URL: https://sso.trade.gov.uk
-      AUTHBROKER_CLIENT_ID: somestring
-      AUTHBROKER_CLIENT_SECRET: somestring
-      AUTHBROKER_TOKEN_SESSION_KEY: _authbroker_token
-      AUTHBROKER_STAFF_SSO_SCOPE: required-scope-values
-      ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS: '30'
-      ACTIVITY_STREAM_KEY_ID: key-id
-      ACTIVITY_STREAM_KEY: secret-key
-      ACTIVITY_STREAM_INITIAL_LOAD_DATE: 01-January-2020
-      ACTIVITY_STREAM_SEARCH_URL: https://activity-stream/search
-      ACTIVITY_STREAM_SEARCH_TARGET_URL: /international/invest/contact/
-      ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1: enquiry-key-1
-      ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1: enquiry-value-2
-      ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2: enquiry-key-2
-      ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2: enquiry-value-2
-      ACTIVITY_STREAM_ENQUIRY_DATA_OBJ: enquiry-data-obj
-
-    docker:
-      - image: circleci/python:3.6.4
-
-      - image: circleci/postgres:9.6
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: password
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
-
+    machine:
+      docker_layer_caching: true
+    working_directory: ~/emt
     steps:
       - checkout
       - run:
-          name: Wait for db to become available
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
-          paths:
-            - ./venv
-
+          name: Copy config
+          command: cp sample_env app/settings/.env
       - run:
-          name: Install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
-
-      - save_cache:
-          name: Save pip cache
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
-          paths:
-            - ./venv
-
+          name: Build docker stack
+          command: docker-compose up -d
       - run:
-          name: Run tests
-          command: |
-            . venv/bin/activate
-            python -m pytest -s -vvv app/enquiries/tests
+          name: Run unit tests
+          command: docker-compose run app python -m pytest -s -vvv app/enquiries/tests
+      - run:
+          name: Run e2e tests
+          # Chrome freezes when redirecting on the login page.
+          # See: https://github.com/cypress-io/cypress/issues/3594
+          command: docker-compose run cypress run --browser firefox
+      - store_artifacts:
+          path: cypress/screenshots

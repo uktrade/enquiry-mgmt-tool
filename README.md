@@ -73,17 +73,23 @@ For testing, you might want to load sample enquiries into the database. Sample d
 
 ### Running tests
 
-To run all tests,
+To run all unit tests:
 
 ```
-docker-compose run api bash
-pytest -s -vvv app/enquiries
+docker-compose run app python -m pytest -s -vvv app/enquiries/tests
 ```
 
+To run an individual unit test, execute the following command:
 
-To run an individual test run the following command:
+```
+pytest -s -vvv -k test_name app/enquiries
+```
 
-`pytest -s -vvv -k test_name app/enquiries`
+To run e2e tests:
+
+```
+docker-compose run cypress run --browser firefox
+```
 
 ### Switching branches
 

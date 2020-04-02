@@ -96,6 +96,7 @@ conf/env/secrets-do-not-commit
 
 # Dynamically created
 .venv
+venv/
 staticfiles
 
 # node and npm
@@ -108,9 +109,12 @@ app/**/static
 
 # dummy database data
 *.diff
-app/enquiries/fixtures/
 
 # app specific env files
 app/.env
 app/settings/.env
 celerybeat-schedule
+
+# cypress
+cypress/screenshots
+cypress/videos
