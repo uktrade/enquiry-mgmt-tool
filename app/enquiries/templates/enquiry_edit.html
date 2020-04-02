@@ -217,6 +217,8 @@
             <button class="govuk-button" data-module="govuk-button" type="submit">Save and return</button>
             <button onclick="window.location.href=`{% url 'enquiry-detail' enquiry.id %}`" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button">Cancel</button>
 
+            <button onclick="window.location.href=`{% url 'enquiry-delete' enquiry.id %}`" class="enquiry-delete-button govuk-button govuk-button--secondary" type="button">Delete enquiry</button>
+
         </form>
 
     </main>

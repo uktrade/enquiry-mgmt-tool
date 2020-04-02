@@ -129,7 +129,7 @@ a.entity-title-link {
 
 button.enquiry-edit-button {
     float: right;
-    margin: govuk-spacing(8);
+    margin-bottom: govuk-spacing(8);
 }
 
 a.pagination-link {
@@ -165,4 +165,20 @@ li.pagination-list-item-current, li:hover.pagination-list-item-current {
 ol.pagination-list {
     margin: auto;
     width:  50%;
+}
+
+button.enquiry-delete-button {
+    float: right;
+}
+
+form.delete-form {
+    display: inline;
+}
+
+.delete-warning {
+    display: inline-block;
+}
+
+.filters-column {
+    padding: 0;
 }

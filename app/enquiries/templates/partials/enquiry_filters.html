@@ -1,0 +1,69 @@
+{% load enquiries_extras %}
+<form method="GET" action="{% url 'enquiry-list' %}" data-qa="search-filters">
+  {% include 'snippets/enquiry_field_checkbox.html' with group_id='enquiry_stage_container' heading='Enquiry stage' field=filter_enquiry_stage query_params=query_params %}
+  <div class="govuk-form-group" id="users" data-qa="search-filter-users">
+    <fieldset class="govuk-fieldset">
+      <label class="govuk-label" for="owner">
+        Owner
+      </label>
+      <div class="govuk-checkboxes govuk-checkboxes--small">
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="owner__id" name="owner__id" type="checkbox" value="UNASSIGNED" {% query_params_value_selected 'UNASSIGNED' 'owner' query_params ' checked'  %}>
+          <label class="govuk-label govuk-checkboxes__label" for="owner__id">
+            Unassigned
+          </label>
+        </div>
+        {% for owner in owners%}
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="owner__id_{{owner.id}}" name="owner__id" type="checkbox" value="{{owner.id}}"{% query_params_value_selected owner.id 'owner' query_params ' checked'  %}>
+          <label class="govuk-label govuk-checkboxes__label" for="owner__id_{{owner.id}}">
+             {{owner.get_full_name}}
+          </label>
+        </div>
+        {% endfor %}
+      </div>
+    </fieldset>
+  </div>
+    <div class="govuk-form-group">
+    <label class="govuk-label" for="created__lt">
+      Received before
+    </label>
+    <input class="govuk-input" id="created__lt" name="created__lt" type="date" value="{{query_params.date_created_before}}">
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="created__gt">
+      Received after
+    </label>
+    <input class="govuk-input" id="created__gt" name="created__gt" type="date" value="{{query_params.date_created_after}}">
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="company_name__icontains">
+      Company name
+    </label>
+    <input class="govuk-input" id="company_name__icontains" name="company_name__icontains" type="search" value={{query_params.company_name}}>
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="enquirer_email">
+      Enquirer email address
+    </label>
+    <input class="govuk-input" id="enquirer_email" name="enquirer_email" type="search" value="{{query_params.enquirer_email}}">
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="date_added_to_datahub__lt">
+      Company added to Data Hub before
+    </label>
+    <input class="govuk-input" id="date_added_to_datahub__lt" name="date_added_to_datahub__lt" type="date" value="{{query_params.date_added_to_datahub_before}}">
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="date_added_to_datahub__gt">
+      Company added to Data Hub after
+    </label>
+    <input class="govuk-input" id="date_added_to_datahub__gt" name="date_added_to_datahub__gt" type="date" value="{{query_params.date_added_to_datahub_after}}">
+  </div>
+  <button id="btn_submit" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" accesskey="s">
+    Apply filters
+  </button>
+  <a href="{% url 'enquiry-list' %}" class="govuk-button govuk-button--secondary" data-module="govuk-button" id="btn_clear" type="button" accesskey="c">
+    Clear filters
+  </a>
+</form>
