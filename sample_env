@@ -18,6 +18,7 @@ DATA_HUB_CONTACT_CREATE_URL=https://datahub/contact/create
 DATA_HUB_INVESTMENT_CREATE_URL=https://datahub/investment/create
 DATA_HUB_ADVISER_SEARCH_URL=https://adviser/search
 DATA_HUB_WHOAMI_URL=https://datahub/whoami
+DATA_HUB_FRONTEND=https://datahub/frontend
 
 # Hawk
 DATA_HUB_HAWK_ID=hawk-id
