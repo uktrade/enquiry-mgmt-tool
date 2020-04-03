@@ -16,8 +16,7 @@ FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS}"
 
 
 @periodic_task(
-    run_every=(crontab(minute="*/5")),
-    # run_every=(crontab(hour=FETCH_INTERVAL_HOURS, minute="0")),
+    run_every=(crontab(hour=FETCH_INTERVAL_HOURS, minute="0")),
     name="refresh_datahub_metadata",
     ignore_result=True,
 )
@@ -33,7 +32,7 @@ def refresh_datahub_metadata():
 
 
 @periodic_task(
-    run_every=(crontab(minute=f"*/{settings.ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS}")),
+    run_every=(crontab(minute="*/5")),
     name="fetch_new_enquiries",
     ignore_result=True,
 )
