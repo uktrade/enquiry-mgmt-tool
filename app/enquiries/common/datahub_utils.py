@@ -379,7 +379,7 @@ def dh_enquiry_readiness(request, access_token, enquiry):
         return response
 
     if not advisers:
-        response["errors"].append({"adviser": f"Adviser {enquiry.crm} not found"})
+        response["errors"].append({"adviser": f"CRM {enquiry.crm} not found"})
         return response
 
     response["adviser"] = advisers[0]["datahub_id"]
