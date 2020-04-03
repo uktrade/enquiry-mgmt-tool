@@ -186,11 +186,14 @@ class DataHubIntegrationTests(TestCase):
         post_req.session = {
             settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
         }
-        response = dh_investment_create(post_req, enquiry)
-        self.assertEqual(feature/RTT-57-Company-search-full-search-view
-            response["errors"][0]["company"],
-            f"{enquiry.company_name} doesn't exist in Data Hub",
-        )
+        with requests_mock.Mocker() as m:
+            url = settings.DATA_HUB_WHOAMI_URL
+            m.get(url, json={"user": "details"})
+            response = dh_investment_create(post_req, enquiry)
+            self.assertEqual(
+                response["errors"][0]["company"],
+                f"{enquiry.company_name} doesn't exist in Data Hub",
+            )
 
     def test_investment_enquiry_cannot_submit_twice(self):
         """ If an enquiry is already submitted ensure it cannot be sent again """
@@ -203,10 +206,13 @@ class DataHubIntegrationTests(TestCase):
         enquiry.dh_company_id = "1234-2468"
         enquiry.date_added_to_datahub = date.today()
         enquiry.save()
-        response = dh_investment_create(post_req, enquiry)
-        prev_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")
-        stage = enquiry.get_datahub_project_status_display()
-        self.assertEqual(
-            response["errors"][0]["enquiry"],
-            f"Enquiry can only be submitted once, previously submitted on {prev_date}, stage {stage}",
-        )
+        with requests_mock.Mocker() as m:
+            url = settings.DATA_HUB_WHOAMI_URL
+            m.get(url, json={"user": "details"})
+            response = dh_investment_create(post_req, enquiry)
+            prev_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")
+            stage = enquiry.get_datahub_project_status_display()
+            self.assertEqual(
+                response["errors"][0]["enquiry"],
+                f"Enquiry can only be submitted once, previously submitted on {prev_date}, stage {stage}",
+            )

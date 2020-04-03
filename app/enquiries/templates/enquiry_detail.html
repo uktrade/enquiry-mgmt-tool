@@ -18,9 +18,26 @@
         {% load widget_tweaks %}
         {% load rest_framework %}
 
-        {% for error in errors %}
-        {{ error }}
-        {% endfor %}
+        {% if errors %}
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+              Please correct below errors before submitting again,
+            </h2>
+            {% for error in errors %}
+                <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                    {% for key,value in error.items %}
+                    <li> {{ key.capitalize }}: {{ value}} </li>
+                    {% endfor %}
+                </ul>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if success %}
+            <h2>{{ success }}</h2><br>
+        </div>
+        {% endif %}
 
         <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
     <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
@@ -113,7 +130,7 @@
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="last_name" %}
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="job_title" %}
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="email" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="country_code" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="phone_country_code" %}
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="phone" %}
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="request_for_call" %}
     </dl>
@@ -144,7 +161,8 @@
     <h3 class="govuk-heading-m">HPO details</h3>
     <dl class="govuk-summary-list">
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="first_hpo_selection" %}
-        
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="second_hpo_selection" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="third_hpo_selection" %}        
     </dl>
 </div>
 
@@ -179,8 +197,6 @@
 
         {% if not enquiry.date_added_to_datahub %}
         <button class="govuk-button" data-module="govuk-button" type="submit">Submit to Data Hub</button>
-        {% else %}
-        <h3 class="govuk-heading-m">Already submitted to Data Hub</h3>
         {% endif %}
     </form>
 </div>

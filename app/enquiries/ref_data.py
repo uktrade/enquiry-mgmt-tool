@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 class EnquiryStage(models.TextChoices):
     NEW = "NEW", _("New")
     AWAITING_RESPONSE = "AWAITING_RESPONSE", _("Awaiting response from Investor")
+    ENGAGED = "ENGAGED", _("Engaged in dialogue")
     NON_RESPONSIVE = "NON_RESPONSIVE", _("Non-responsive")
     NON_FDI = "NON_FDI", _("Non-FDI")
     ADDED_TO_DATAHUB = "ADDED_TO_DATAHUB", _("Added to Data Hub")
@@ -426,11 +427,20 @@ class DatahubProjectStatus(models.TextChoices):
     DELAYED = "DELAYED", _("Delayed")
 
 
+# Data Hub metadata
+DATA_HUB_BUSINESS_ACTIVITIES_SERVICES = "2f51ea6a-ca2f-466a-87fd-5f79ebfec125"
+DATA_HUB_INVESTMENT_TYPE_FDI = "FDI"
+DATA_HUB_PROJECT_STAGE_PROSPECT = "Prospect"
+DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE = "Website"
+DATA_HUB_REFERRAL_SOURCE_WEBSITE = "Invest in GREAT Britain"
+
+
 IMPORT_COL_NAMES = [
     "enquirer_first_name",
     "enquirer_last_name",
     "enquirer_job_title",
     "enquirer_email",
+    "enquirer_phone_country_code",
     "enquirer_phone",
     "enquirer_request_for_call",
     "country",
@@ -464,9 +474,3 @@ MAP_ENQUIRY_FIELD_TO_REF_DATA = {
     "specific_investment_programme": InvestmentProgramme,
     "datahub_project_status": DatahubProjectStatus,
 }
-
-
-# Data Hub metadata
-DATA_HUB_BUSINESS_ACTIVITIES_SERVICES = "2f51ea6a-ca2f-466a-87fd-5f79ebfec125"
-DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE = "Website"
-DATA_HUB_REFERRAL_SOURCE_WEBSITE = "Invest in GREAT Britain"

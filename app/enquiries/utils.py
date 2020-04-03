@@ -46,6 +46,7 @@ def row_to_enquiry(row: dict) -> Enquirer:
         last_name=row["enquirer_last_name"],
         job_title=row["enquirer_job_title"],
         email=row["enquirer_email"],
+        phone_country_code=row["enquirer_phone_country_code"],
         phone=row["enquirer_phone"],
         request_for_call=row["enquirer_request_for_call"],
     )
