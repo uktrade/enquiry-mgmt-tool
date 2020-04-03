@@ -20,6 +20,11 @@
                         <div class="collection-header-row">
                             <div class="collection-header-intro">
                                 <span class="big-number-of-enquiries">{{ count }}</span> enquiries
+                                <a href="{% url 'enquiries-import' %}"
+                                    class="add-enquiries-button govuk-button govuk-button--secondary"
+                                    data-module="govuk-button">
+                                    Add enquiries
+                                </a>
                                 <div class="collection-header-actions">
                                     <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
                                 </div>

@@ -1,5 +1,6 @@
 $govuk-assets-path: '/static/assets/';
-
+$color-green-success: govuk-colour("green");
+$color-red-error: govuk-colour("red");
 @import "node_modules/govuk-frontend/govuk/all";
 
 * {
@@ -132,6 +133,7 @@ button.enquiry-edit-button {
     margin-bottom: govuk-spacing(8);
 }
 
+
 a.pagination-link {
     text-decoration: none;
     font-size: large;
@@ -167,6 +169,50 @@ ol.pagination-list {
     width:  50%;
 }
 
+.edit-details-button {
+    float: right;
+    transform: translateY(-80px);
+}
+
+.add-enquiries-button {
+    float: right;
+}
+
+.topbar {
+    height: 100px;
+    position: relative;
+
+    &__left, &__right {
+        position: absolute;
+        top: 0;
+    }
+
+    &__left {
+        left: 0;
+    }
+
+    &__right {
+        right: 0;
+    }
+    a, button {
+        transform: translate3d(0, 50%, 0);
+    }
+}
+
+// Error Summary
+.govuk-error-summary {
+    color: govuk-colour("red");
+        li {
+            color: govuk-colour("red");
+        }
+    &--success {
+        border-color: govuk-colour("green");
+        color: govuk-colour("green");
+        li {
+            color: govuk-colour("green");
+        }
+    }
+} 
 button.enquiry-delete-button {
     float: right;
 }
