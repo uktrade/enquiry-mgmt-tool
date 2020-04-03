@@ -110,10 +110,10 @@
                 </div>
 
                 <div class="govuk-form-group">
-                    <label class="govuk-label label-inline">
+                    <label class="govuk-label label--inline">
                         {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
                     </label>
-                    <a class="govuk-link company-search-link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
+                    <a class="govuk-link company-search__link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
 
                     {% include 'snippets/company_search_assigned_company.html' %}
 
@@ -265,7 +265,7 @@
             <button class="govuk-button" data-module="govuk-button" type="submit">Save and return</button>
             <button onclick="window.location.href=`{% url 'enquiry-detail' enquiry.id %}`" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button">Cancel</button>
 
-            <button onclick="window.location.href=`{% url 'enquiry-delete' enquiry.id %}`" class="enquiry-delete-button govuk-button govuk-button--secondary" type="button">Delete enquiry</button>
+            <button onclick="window.location.href=`{% url 'enquiry-delete' enquiry.id %}`" class="enquiry-delete__button govuk-button govuk-button--secondary" type="button">Delete enquiry</button>
 
         </form>
 
