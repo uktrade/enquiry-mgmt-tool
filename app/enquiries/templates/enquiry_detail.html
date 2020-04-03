@@ -100,7 +100,8 @@
     <h3 class="govuk-heading-m">HPO details</h3>
     <dl class="govuk-summary-list">
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="first_hpo_selection" %}
-        
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="second_hpo_selection" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="third_hpo_selection" %}        
     </dl>
 </div>
 
