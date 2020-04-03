@@ -189,7 +189,7 @@ class DataHubIntegrationTests(TestCase):
             settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
         }
         with requests_mock.Mocker() as m:
-            url = settings.DATA_HUB_WHOAMI
+            url = settings.DATA_HUB_WHOAMI_URL
             m.get(url, json={"user": "details"})
             response = dh_investment_create(post_req, enquiry)
             self.assertEqual(
@@ -209,7 +209,7 @@ class DataHubIntegrationTests(TestCase):
         enquiry.date_added_to_datahub = date.today()
         enquiry.save()
         with requests_mock.Mocker() as m:
-            url = settings.DATA_HUB_WHOAMI
+            url = settings.DATA_HUB_WHOAMI_URL
             m.get(url, json={"user": "details"})
             response = dh_investment_create(post_req, enquiry)
             prev_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")

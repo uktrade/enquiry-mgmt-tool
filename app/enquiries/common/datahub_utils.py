@@ -36,7 +36,7 @@ def dh_request(
     url,
     payload,
     request_headers=None,
-    params={},
+    params=None,
     timeout=15,
 ):
     """
@@ -62,6 +62,8 @@ def dh_request(
             "Content-Type": "application/json",
             "Authorization": f"Bearer {access_token}",
         }
+
+    params = params if params else {}
 
     try:
         if method == "GET":
@@ -172,7 +174,7 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
 def dh_get_user_details(request, access_token):
     """ Gets the currently logged in user details """
 
-    url = settings.DATA_HUB_WHOAMI
+    url = settings.DATA_HUB_WHOAMI_URL
 
     response = dh_request(request, access_token, "GET", url, {})
     if not response.ok:
@@ -426,6 +428,11 @@ def prepare_dh_payload(
     payload["sector"] = map_to_datahub_id(
         enquiry.get_primary_sector_display(), dh_metadata, "sector"
     )
+    # There is a mismatch in the sector data coming from the website vs
+    # the metadata in DH, hence bail out if we don't get uuid because of mismatch
+    if not payload["sector"]:
+        return payload, "sector"
+
     payload["business_activities"] = [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES]
     payload["referral_source_adviser"] = adviser_id
     payload["referral_source_activity"] = get_dh_id(
@@ -437,7 +444,7 @@ def prepare_dh_payload(
         ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE,
     )
 
-    return payload
+    return payload, None
 
 
 def dh_investment_create(request, enquiry, metadata=None):
@@ -498,9 +505,12 @@ def dh_investment_create(request, enquiry, metadata=None):
     crm_id = dh_status["adviser"]
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
-    payload = prepare_dh_payload(
+    payload, error_key = prepare_dh_payload(
         enquiry, dh_metadata, company_id, contact_id, referral_adviser, crm_id
     )
+    if error_key:
+        response["errors"].append({error_key: "Reference data mismatch in Data Hub"})
+        return response
 
     try:
         result = dh_request(request, access_token, "POST", url, payload)

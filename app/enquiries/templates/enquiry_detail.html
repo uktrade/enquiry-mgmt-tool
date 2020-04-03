@@ -21,7 +21,7 @@
         {% if errors %}
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
             <h2 class="govuk-error-summary__title" id="error-summary-title">
-              There is a problem
+              Please correct below errors before submitting again,
             </h2>
             {% for error in errors %}
                 <div class="govuk-error-summary__body">
@@ -32,6 +32,10 @@
                 </ul>
                 </div>
             {% endfor %}
+        </div>
+        {% endif %}
+        {% if success %}
+            <h2>{{ success }}</h2><br>
         </div>
         {% endif %}
 

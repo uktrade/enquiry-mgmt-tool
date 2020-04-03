@@ -32,6 +32,7 @@ from app.enquiries.utils import row_to_enquiry
 
 UNASSIGNED = "UNASSIGNED"
 
+
 def get_filter_config():
     filter_fields = [
         field for field in models.Enquiry._meta.get_fields() if field.choices
@@ -45,10 +46,7 @@ def get_filter_config():
 def get_enquiry_field(name):
     filter_config = get_filter_config()
 
-    return {
-        "name": name,
-        "choices": filter_config[name].choices
-    }
+    return {"name": name, "choices": filter_config[name].choices}
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -181,9 +179,12 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         enquiry = context["enquiry"]
 
         create_response = dh_investment_create(request, enquiry)
-        if create_response.get("result"):
+        if create_response.get("result") and create_response["result"]["id"]:
             enquiry.refresh_from_db()
             context["enquiry"] = enquiry
+            context[
+                "success"
+            ] = f"Enquiry for {enquiry.company_name} successfully submitted to Data Hub"
         else:
             context["errors"] = create_response["errors"]
         response = render(request, self.template_name, context)
@@ -264,7 +265,10 @@ class ImportEnquiriesView(TemplateView):
     def process_upload(self, uploaded_file):
         records = []
         with uploaded_file as f:
-            if not f.name.endswith(".csv") or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE:
+            if (
+                not f.name.endswith(".csv")
+                or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE
+            ):
                 messages.error(
                     self.request,
                     f"File is not of type: text/csv with  extension .csv. Detected type: {f.content_type}",
@@ -282,9 +286,7 @@ class ImportEnquiriesView(TemplateView):
 
         try:
             if enquiries_key in request.FILES:
-                payload = (
-                    request.FILES.get(enquiries_key)
-                )
+                payload = request.FILES.get(enquiries_key)
                 records = self.process_upload(payload)
             else:
                 messages.error(request, f"File is not detected")
@@ -300,7 +302,11 @@ class ImportEnquiriesView(TemplateView):
         )
 
     def get(self, request, *args, **kwargs):
-        status_code = status.HTTP_400_BAD_REQUEST if "errors" in request.GET else status.HTTP_200_OK
+        status_code = (
+            status.HTTP_400_BAD_REQUEST
+            if "errors" in request.GET
+            else status.HTTP_200_OK
+        )
         return render(
             request,
             "import-enquiries-form.html",
@@ -336,9 +342,7 @@ class ExportEnquiriesView(TemplateView):
         date_str = datetime.now().isoformat(timespec="minutes")
         filename = f"{settings.EXPORT_OUTPUT_FILE_SLUG}_{date_str}.{settings.EXPORT_OUTPUT_FILE_EXT}"
         response = HttpResponse(content_type=self.CONTENT_TYPE)
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="{filename}"'
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
         utils.export_to_csv(qs, response)
         return response
