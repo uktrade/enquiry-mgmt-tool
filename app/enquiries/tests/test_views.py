@@ -478,23 +478,21 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiries[3]["enquirer_job_title"] = ""
 
         fp = StringIO()
-
         writer = csv.DictWriter(
             fp, fieldnames=ref_data.IMPORT_COL_NAMES, quoting=csv.QUOTE_MINIMAL
         )
         writer.writeheader()
         writer.writerows(enquiries)
-
         body = fp.getvalue().encode()
         upload = SimpleUploadedFile("test.csv", body, content_type="text/csv")
 
         response = self.client.post(
             reverse("import-enquiries"), {"enquiries": upload}, follow=True
         )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         final_count = Enquiry.objects.count()
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # test atomic transactions
         self.assertEqual(
             final_count,

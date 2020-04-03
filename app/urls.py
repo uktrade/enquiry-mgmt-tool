@@ -34,7 +34,7 @@ urlpatterns = [
         views.ImportTemplateDownloadView.as_view(),
         name="import-template",
     ),
-    path('enquiries/import/', views.ImportEnquiriesView.as_view(), name="import-enquiries"),
+    path('enquiries/import', views.ImportEnquiriesView.as_view(), name="import-enquiries"),
     path(
         "enquiries/<int:pk>/", views.EnquiryDetailView.as_view(), name="enquiry-detail"
     ),
