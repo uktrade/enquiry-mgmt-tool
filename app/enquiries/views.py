@@ -206,38 +206,6 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class EnquiryAdd(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-
-    def get(self, request):
-        if "errors" in request.GET:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                "The selected file could not be uploaded - please try again.",
-            )
-        elif "success" in request.GET:
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                "Please return back to the enquiry summary page.",
-            )
-        return Response(
-            {
-                "data": "goes here",
-                "back_url": reverse("enquiry-list"),
-                "main_bar_right_btn": {
-                    "text": "Download template",
-                    "href": "",
-                    "element": "a",
-                },
-                # @TODO integration with real backend and errors
-                # currently using query variables just to illustrate the different states (success|errors)
-                "has_errors": "errors" in request.GET,
-                "has_success": "success" in request.GET,
-            },
-            template_name="enquiry_import.html",
-        )
 class EnquiryDeleteView(DeleteView):
     """
     View to delete enquiry
@@ -251,6 +219,7 @@ class EnquiryDeleteView(DeleteView):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         enquiry.delete()
         return redirect("enquiry-list")
+
 
 class ImportEnquiriesView(TemplateView):
     """
@@ -316,7 +285,7 @@ class ImportEnquiriesView(TemplateView):
         status_code = status.HTTP_400_BAD_REQUEST if "errors" in request.GET else status.HTTP_200_OK
         return render(
             request,
-            "import-enquiries-form.html",
+            "enquiry_import.html",
             {"ERROR_HEADER": self.ERROR_HEADER},
             status=status_code,
         )
