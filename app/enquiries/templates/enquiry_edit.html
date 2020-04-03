@@ -77,7 +77,7 @@
                         {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {% if dh_assigned_company_name %}<a href="#">{{ dh_assigned_company_name }}</a>{% else %}<a href="#">{{ enquiry.dh_assigned_company_name }}</a>{% endif %}
+                        {% if dh_assigned_company_name %}<a href="{{ enquiry|get_dh_company_url }}">{{ dh_assigned_company_name }}</a>{% else %}<a href="#">{{ enquiry.dh_assigned_company_name }}</a>{% endif %}
                     </dd>
                 </div>
             </dl>

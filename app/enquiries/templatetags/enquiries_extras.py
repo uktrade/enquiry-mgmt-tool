@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from django import template
 
 from app.enquiries import models
@@ -21,6 +24,12 @@ field_error_msgs = {
 def enquiry_field_error_msg(field):
     return field_error_msgs.get(field)
 
+@register.filter
+def get_dh_company_url(enquiry):
+    if not enquiry.dh_company_id:
+        return "#"
+
+    return os.path.join(settings.DATA_HUB_FRONTEND, 'companies', enquiry.dh_company_id)
 
 def get_instance_field(instance, field_name):
     fields = instance._meta.fields

@@ -47,7 +47,7 @@
             </dt>
             <dd class="govuk-summary-list__value">
                 {%if enquiry.dh_assigned_company_name %}
-                <a href="#">
+                <a href="{{ enquiry|get_dh_company_url }}">
                      {{ enquiry.dh_assigned_company_name }}
                 </a>
                 {% else %} {{ "----" }} {% endif %}
@@ -74,7 +74,7 @@
             </dt>
             <dd class="govuk-summary-list__value">
                 {%if enquiry.dh_assigned_company_name %}
-                <a href="#">
+                <a href="{{ enquiry|get_dh_company_url }}">
                      {{ enquiry.dh_assigned_company_name }}
                 </a>
                 {% else %} {{ "----" }} {% endif %}
