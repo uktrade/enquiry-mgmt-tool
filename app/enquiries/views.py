@@ -258,7 +258,7 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         enquirer_form = forms.EnquirerForm(form.data, instance=enquiry_obj.enquirer)
         errors_dict = json.loads(enquirer_form.errors.as_json())
         for field, msg in errors_dict.items():
-            form.add_error(None, f'{field}: {msg[0]["message"]}')
+            form.add_error(None, field)
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
@@ -298,7 +298,6 @@ class EnquiryCompanySearchView(TemplateView):
         search_term = request.POST["search_term"].lower()
         context["search_results"] = []
         companies, error = dh_company_search(self.request, None, search_term)
-        print(error)
         if not error:
             for company in companies:
                 addr = company["address"]

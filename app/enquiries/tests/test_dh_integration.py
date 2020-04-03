@@ -87,9 +87,7 @@ class DataHubIntegrationTests(TestCase):
         payload = {"name": "test"}
 
         with pytest.raises(Timeout):
-            response = dh_request(
-                post_req, "access_token", "POST", url, payload, timeout=2
-            )
+            response = dh_request(None, "access-token", "POST", url, payload, timeout=2)
 
     @mock.patch("django.core.cache.cache.get")
     def test_dh_fetch_metada_exception(self, mock_cache_get):
@@ -189,7 +187,7 @@ class DataHubIntegrationTests(TestCase):
             settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
         }
         response = dh_investment_create(post_req, enquiry)
-        self.assertEqual(
+        self.assertEqual(feature/RTT-57-Company-search-full-search-view
             response["errors"][0]["company"],
             f"{enquiry.company_name} doesn't exist in Data Hub",
         )
