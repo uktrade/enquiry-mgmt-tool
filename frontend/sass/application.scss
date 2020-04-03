@@ -131,24 +131,34 @@ button.enquiry-edit-button {
     float: right;
 }
 
-.company-search__result, .company-search__assigned-company {
+@mixin company-search__result {
     padding: 1em;
     border: 1px solid $govuk-border-colour;
     margin-top: 1em;
 }
 
-.company-search__result:hover {
-    background-color: rgba(govuk-colour("light-grey"), 0.5);
-    border: 1px solid govuk-colour("light-blue");
-
-    .company-search__result-name {
-        color: govuk-colour("light-blue");
-    }
+.company-search__result {
+    @include company-search__result()
 }
 
-.company-search__result-name {
-    font-weight: bold;
-    margin-bottom: 0.5em;
+.company-search__assigned-company {
+    @include company-search__result()
+}
+
+.company-search__result {
+    &:hover {
+        background-color: rgba(govuk-colour("light-grey"), 0.5);
+        border: 1px solid govuk-colour("light-blue");
+
+        &-name {
+            color: govuk-colour("light-blue");
+        }
+    }
+
+    &-name {
+        font-weight: bold;
+        margin-bottom: 0.5em;
+    }
 }
 
 .company-search__link {

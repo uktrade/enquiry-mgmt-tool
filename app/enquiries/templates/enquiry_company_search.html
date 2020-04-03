@@ -28,9 +28,9 @@
         <form class="form" action="{% url 'enquiry-company-search' enquiry.id %}" method="post">
             {% csrf_token %}
             <div class="govuk-grid-row">
-            <label class="govuk-label">Search for Data Hub company</label>
-            <input class="govuk-input" name="search_term" id="search_term" type="search">
-            <button class="govuk-button company-search__button">Search</button>
+                <label for="search_term" class="govuk-label">Search for Data Hub company</label>
+                <input class="govuk-input" name="search_term" id="search_term" type="search">
+                <button class="govuk-button company-search__button">Search</button>
             </div>
         </form>
 
@@ -51,13 +51,13 @@
             <div class="govuk-details__text">
                 <p>Try:</p>
                 <div class="company-search__details-text">
-                <ul>
-                    <li>checking for spelling errors</li>
-                    <li>checking if the right country was selected</li>
-                    <li>check you're using the company's registered name</li>
-                    <li>checking or removing the postcode</li>
-                    <li>removing "limited" or "ltd"</li>
-                </ul>
+                    <ul>
+                        <li>checking for spelling errors</li>
+                        <li>checking if the right country was selected</li>
+                        <li>check you're using the company's registered name</li>
+                        <li>checking or removing the postcode</li>
+                        <li>removing "limited" or "ltd"</li>
+                    </ul>
                 </div>
                 <p></p>
                 <div>
