@@ -174,8 +174,17 @@ ol.pagination-list {
     transform: translateY(-80px);
 }
 
-.add-enquiries-button {
+.additional-actions {
     float: right;
+}
+
+.additional-actions-list {
+    display: inline-block;
+}
+
+.additional-actions-item {
+    display: inline-block;
+    padding: 3px;
 }
 
 .topbar {

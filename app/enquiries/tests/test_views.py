@@ -713,7 +713,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def test_export_view(self):
         num_enquiries = 5
         enquiries = EnquiryFactory.create_batch(num_enquiries)
-        response = self.client.get(reverse("enquiry-export"))
+        response = self.client.get(reverse("export-enquiries"))
         reader = csv.DictReader(io.StringIO(response.content.decode()))
 
         self.assertTrue("text/csv" in response.get("Content-Type"))
