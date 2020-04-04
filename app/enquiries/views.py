@@ -1,7 +1,7 @@
 import codecs
 import csv
 import logging
-from datetime import datetime
+from datetime import date, datetime
 from io import BytesIO
 
 from django.conf import settings
@@ -89,13 +89,25 @@ def is_valid_int(v) -> bool:
 class EnquiryFilter(filters.FilterSet):
 
     owner__id = filters.CharFilter(field_name="owner__id", method="filter_owner_id")
+    created__lt = filters.DateFilter(field_name="create", method="filter_created_lt")
+    created__gt = filters.DateFilter(field_name="create", method="filter_created_gt")
+    enquiry_stage = filters.CharFilter(
+        field_name="enquiry_stage",
+        lookup_expr="in",
+        method="filter_enquiry_stage"
+    )
+    enquirer__email = filters.CharFilter(field_name="enquirer__email", lookup_expr="icontains")
+
+    def filter_enquiry_stage(self, queryset, name, value):
+        values = self.request.GET.getlist(name)
+        return queryset.filter(enquiry_stage__in=values)
 
     def filter_owner_id(self, queryset, name, value):
         """
         This filter handles the owner__id parameter which can either be an int
         of the string 'UNASSIGNED'. In the case of UNASSIGNED to filter for enquirires where owner == None
         """
-        vals = value.split(",")
+        vals = self.request.GET.getlist(name)
         # filter out valid values (int|'UNASSIGNED')
         valid_vals = list(filter(is_valid_id, vals))
         int_vals = list(filter(is_valid_int, valid_vals))
@@ -112,13 +124,18 @@ class EnquiryFilter(filters.FilterSet):
 
         return queryset.filter(q)
 
+    def filter_created_lt(self, queryset, name, value):
+        created = datetime.combine(value, datetime.min.time())
+        return queryset.filter(created__lt=created)
+
+    def filter_created_gt(self, queryset, name, value):
+        created = datetime.combine(value, datetime.min.time())
+        return queryset.filter(created__gt=created)
+
     class Meta:
         model = models.Enquiry
         fields = {
             "company_name": ["icontains"],
-            "enquirer__email": ["exact"],
-            "enquiry_stage": ["exact"],
-            "created": ["lt", "gt"],
             "date_added_to_datahub": ["lt", "gt"],
         }
 

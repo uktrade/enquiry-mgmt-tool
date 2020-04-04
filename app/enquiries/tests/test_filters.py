@@ -95,7 +95,7 @@ class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
             msg="should render date_added_to_datahub__gt control",
         )
         self.assertIsNotNone(
-            soup.find(id="enquirer_email"), msg="should render enquirer_email control",
+            soup.find(id="enquirer__email"), msg="should render enquirer__email control",
         )
         self.assertIsNotNone(
             soup.find(id="btn_submit"), msg="should render btn_submit control"
