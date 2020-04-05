@@ -436,7 +436,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             db_enquiries = Enquiry.objects.all()
             final_count = db_enquiries.count()
             self.assertNotContains(response, ImportEnquiriesView.ERROR_HEADER)
-            self.assertContains(response, f"Successfully posted {num_items} records!")
+            self.assertContains(response, f"Summary of {num_items} imported records")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(final_count, num_items)
 
@@ -517,7 +517,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
             final_count = Enquiry.objects.count()
             self.assertNotContains(response, ImportEnquiriesView.ERROR_HEADER)
-            self.assertContains(response, f"Successfully posted {num_items} records!")
+            self.assertContains(response, f"Summary of {num_items} imported records")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(num_items, final_count)
             self.assertTrue(len(body) > settings.UPLOAD_CHUNK_SIZE)
