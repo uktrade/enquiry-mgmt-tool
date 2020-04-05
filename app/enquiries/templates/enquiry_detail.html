@@ -21,19 +21,22 @@
         {% if errors %}
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
             <h2 class="govuk-error-summary__title" id="error-summary-title">
-              Please correct below errors before submitting again,
+              There is a problem,
             </h2>
             {% for error in errors %}
                 <div class="govuk-error-summary__body">
                 <ul class="govuk-list govuk-error-summary__list">
                     {% for key,value in error.items %}
-                    <li> {{ key.capitalize }}: {{ value}} </li>
+                    <li>
+                        <a href="#{{ key }}">{{key }}: {{ value }}</a>
+                    </li>
                     {% endfor %}
                 </ul>
                 </div>
             {% endfor %}
         </div>
         {% endif %}
+        <div>
         {% if success %}
             <h2>{{ success }}</h2><br>
         </div>

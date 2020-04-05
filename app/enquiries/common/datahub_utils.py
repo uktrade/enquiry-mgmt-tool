@@ -431,7 +431,7 @@ def prepare_dh_payload(
     # There is a mismatch in the sector data coming from the website vs
     # the metadata in DH, hence bail out if we don't get uuid because of mismatch
     if not payload["sector"]:
-        return payload, "sector"
+        return payload, "primary_sector"
 
     payload["business_activities"] = [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES]
     payload["referral_source_adviser"] = adviser_id
