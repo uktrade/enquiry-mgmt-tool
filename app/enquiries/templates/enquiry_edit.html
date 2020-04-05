@@ -18,17 +18,21 @@
     {% if form.errors %}
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
             <h2 class="govuk-error-summary__title" id="error-summary-title">
-            Please correct below errors and submit again,
+            There is a problem
             </h2>
             <div class="govuk-error-summary__body">
                 <ul class="govuk-list govuk-error-summary__list">
                     {% for field in form %}
                         {% for error in field.errors %}
-                        <li>{{ field.name|enquiry_field_error_msg }}</li>
+                        <li>
+                            <a href="#{{ field.name }}">{{ field.name|enquiry_field_error_msg }}</a>
+                        </li>
                         {% endfor %}
                     {% endfor %}
                     {% for field in form.non_field_errors %}
-                        <li>{{ field|enquiry_field_error_msg }}</li>
+                        <li>
+                            <a href="#{{ field }}">{{ field|enquiry_field_error_msg }}</a>
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
@@ -112,10 +116,10 @@
                 </div>
 
                 <div class="govuk-form-group">
-                    <label class="govuk-label label-inline">
+                    <label class="govuk-label label--inline">
                         {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
                     </label>
-                    <a class="govuk-link company-search-link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
+                    <a class="govuk-link company-search__link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
 
                     {% include 'snippets/company_search_assigned_company.html' %}
 
@@ -268,7 +272,7 @@
             <button class="govuk-button" data-module="govuk-button" type="submit">Save and return</button>
             <button onclick="window.location.href=`{% url 'enquiry-detail' enquiry.id %}`" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button">Cancel</button>
 
-            <button onclick="window.location.href=`{% url 'enquiry-delete' enquiry.id %}`" class="enquiry-delete-button govuk-button govuk-button--secondary" type="button">Delete enquiry</button>
+            <button onclick="window.location.href=`{% url 'enquiry-delete' enquiry.id %}`" class="enquiry-delete__button govuk-button govuk-button--secondary" type="button">Delete enquiry</button>
 
         </form>
 
