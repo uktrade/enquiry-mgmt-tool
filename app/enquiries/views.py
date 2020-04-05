@@ -51,10 +51,7 @@ def get_filter_config():
 def get_enquiry_field(name):
     filter_config = get_filter_config()
 
-    return {
-        "name": name,
-        "choices": filter_config[name].choices
-    }
+    return {"name": name, "choices": filter_config[name].choices}
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -282,6 +279,7 @@ class EnquiryDeleteView(DeleteView):
         enquiry.delete()
         return redirect("enquiry-list")
 
+
 class EnquiryCompanySearchView(TemplateView):
     """
     Company search view
@@ -329,30 +327,41 @@ class ImportEnquiriesView(TemplateView):
     def ERROR_URL(self):
         return reverse("import-enquiries") + "?errors=1"
 
-    def _build_records(self, file_obj):
+    def _build_records(self, csv_lines):
         records = []
+        if len(csv_lines) <= 1:
+            raise Exception(
+                "Empty CSV file or only header row detected, no records imported"
+            )
+
+        # import all or none
         with transaction.atomic():
-            for c in file_obj.chunks(chunk_size=settings.UPLOAD_CHUNK_SIZE):
-                csv_file = csv.DictReader(codecs.iterdecode(BytesIO(c), "utf-8"))
-                for row in csv_file:
-                    records.append(row_to_enquiry(row))
+            records = [row_to_enquiry(row) for row in csv.DictReader(csv_lines)]
 
         return records
 
     def process_upload(self, uploaded_file):
         records = []
         with uploaded_file as f:
-            if (
-                not f.name.endswith(".csv")
-                or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE
-            ):
-                messages.error(
-                    self.request,
-                    f"File is not of type: text/csv with  extension .csv. Detected type: {f.content_type}",
-                )
-                return HttpResponseRedirect(reverse("import-enquiries"))
+            # Accumulate file content by reading in chunks
+            # We should not process the chunk straightaway because depending on the
+            # chunk size last line of csv could be partial
+            buf = BytesIO()
+            for c in f.chunks(chunk_size=settings.UPLOAD_CHUNK_SIZE):
+                buf.write(c)
 
-            records = self._build_records(f)
+            # Since the processing happens on PaaS we cannot determine User OS
+            # so assume utf-8 by default and switch to windows encoding in case of error
+            try:
+                buf.seek(0)
+                decoded = buf.read().decode("utf-8")
+            except Exception:
+                buf.seek(0)
+                decoded = buf.read().decode("windows-1252")
+            finally:
+                csv_lines = decoded.split("\n")
+
+            records = self._build_records(csv_lines)
 
         logging.info(f"Successfully ingested {len(records)} records")
         return records
@@ -361,17 +370,21 @@ class ImportEnquiriesView(TemplateView):
         records = []
         enquiries_key = "enquiries"
 
+        file_obj = request.FILES.get(enquiries_key)
+        if not(file_obj and file_obj.name.endswith(".csv") and file_obj.content_type == settings.EXPORT_OUTPUT_FILE_MIMETYPE):
+            messages.error(
+                self.request,
+                f"Input file is not a CSV file, detected type: {file_obj.content_type}",
+            )
+            return HttpResponseRedirect(reverse("import-enquiries"))
+
         try:
-            if enquiries_key in request.FILES:
-                payload = request.FILES.get(enquiries_key)
-                records = self.process_upload(payload)
-            else:
-                messages.error(request, f"File is not detected")
-                return HttpResponseRedirect(self.ERROR_URL)
+            records = self.process_upload(file_obj)
         except Exception as err:
             messages.add_message(request, messages.ERROR, str(err))
             logging.error(err)
             return HttpResponseRedirect(self.ERROR_URL)
+
         return render(
             self.request,
             "import-enquiries-confirmation.html",
@@ -386,7 +399,7 @@ class ImportEnquiriesView(TemplateView):
         )
         return render(
             request,
-            "import-enquiries-form.html",
+            "enquiry_import.html",
             {"ERROR_HEADER": self.ERROR_HEADER},
             status=status_code,
         )

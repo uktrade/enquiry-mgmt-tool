@@ -54,9 +54,7 @@ urlpatterns = [
         views.EnquiryDeleteView.as_view(),
         name="enquiry-delete",
     ),
-    path(
-        "enquiries/export/", views.ExportEnquiriesView.as_view(), name="enquiry-export"
-    ),
+    path('enquiries/export/', views.ExportEnquiriesView.as_view(), name="export-enquiries"),
     path("healthcheck/ping", ping.ping, name="ping"),
 ]
 
