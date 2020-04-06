@@ -38,10 +38,12 @@
                     <span class="list-item-label">Date last updated</span>
                     <span class="list-item-value">{{ enquiry.modified }}</span>
                 </div>
+                {% if enquiry.enquirer.request_for_call != "----" %}
                 <div class="entity-content-item">
                     <span class="list-item-label">Call requested</span>
-                    <span class="list-item-value">{{ enquiry.request_for_call }}</span>
+                    <span class="list-item-value">{{ enquiry.enquirer.request_for_call }}</span>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

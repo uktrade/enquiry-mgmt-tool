@@ -17,6 +17,7 @@ class Enquirer(models.Model):
     last_name = models.CharField(max_length=MAX_LENGTH, verbose_name="Last name")
     job_title = models.CharField(max_length=MAX_LENGTH, verbose_name="Job title")
     email = models.EmailField(max_length=MAX_LENGTH, blank=True, verbose_name="Email")
+    phone_country_code = models.CharField(max_length=5, blank=True, null=True, verbose_name="Telephone country code")
     phone = models.CharField(max_length=MAX_LENGTH, verbose_name="Phone")
     email_consent = models.BooleanField(default=False, verbose_name="Email consent")
     phone_consent = models.BooleanField(default=False, verbose_name="Phone consent")
@@ -216,6 +217,41 @@ class Enquiry(TimeStampedModel):
         blank=True, null=True, verbose_name="Project success date"
     )
 
+    # If the Enquiry for the company that already exists in DH then user can assign
+    # that company details to below fields when editing an Enquiry
+    dh_company_id = models.CharField(
+        max_length=MAX_LENGTH,
+        blank=True,
+        null=True,
+        verbose_name="Company id in Data Hub",
+    )
+    dh_company_number = models.CharField(
+        max_length=MAX_LENGTH,
+        blank=True,
+        null=True,
+        verbose_name="Company number in Data Hub",
+    )
+    dh_duns_number = models.CharField(
+        max_length=MAX_LENGTH,
+        blank=True,
+        null=True,
+        verbose_name="Duns number",
+    )
+    dh_assigned_company_name = models.CharField(
+        max_length=MAX_LENGTH,
+        blank=True,
+        null=True,
+        verbose_name="Company in Data Hub",
+        help_text="Name of the company in Data Hub",
+    )
+    dh_company_address = models.CharField(
+        max_length=MAX_LENGTH,
+        blank=True,
+        null=True,
+        verbose_name="Company address in Data Hub",
+        help_text="Address of the company in Data Hub",
+    )
+
     class Meta:
         ordering = ["-created"]
 
@@ -238,6 +274,7 @@ class ReceivedEnquiryCursor(models.Model):
         blank=True,
         null=True,
     )
+
 
 class FailedEnquiry(models.Model):
     """

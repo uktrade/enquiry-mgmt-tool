@@ -18,6 +18,30 @@
         {% load widget_tweaks %}
         {% load rest_framework %}
 
+        {% if errors %}
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+              There is a problem,
+            </h2>
+            {% for error in errors %}
+                <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                    {% for key,value in error.items %}
+                    <li>
+                        <a href="#{{ key }}">{{key }}: {{ value }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div>
+        {% if success %}
+            <h2>{{ success }}</h2><br>
+        </div>
+        {% endif %}
+
         <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
     <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
     <dl class="govuk-summary-list--no-border">
@@ -40,6 +64,43 @@
             </dt>
             <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
                 {{ "Unassigned" }} {%endif%}</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+                {%if enquiry.dh_assigned_company_name %}
+                <a href="{{ enquiry|get_dh_company_url }}">
+                     {{ enquiry.dh_assigned_company_name }}</a>
+                {% else %} {{ "----" }} {% endif %}
+            </dd>
+        </div>
+    </dl>
+</div>
+<div class="govuk-grid-row enquiry-details-row">
+    <h3 class="govuk-heading-m">Enquiry overview</h3>
+    <dl class="govuk-summary-list">
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_name" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_hq_address" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_stage" %}
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Owner
+            </dt>
+            <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
+                {{ "Unassigned" }} {%endif%}</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+                {%if enquiry.dh_assigned_company_name %}
+                <a href="{{ enquiry|get_dh_company_url }}">
+                     {{ enquiry.dh_assigned_company_name }}</a>
+                {% else %} {{ "----" }} {% endif %}
+            </dd>
         </div>
     </dl>
 </div>
@@ -70,6 +131,7 @@
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="last_name" %}
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="job_title" %}
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="email" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="phone_country_code" %}
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="phone" %}
         {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="request_for_call" %}
     </dl>
@@ -105,31 +167,38 @@
     </dl>
 </div>
 
-<div class="govuk-grid-row enquiry-details-row">
-    <h3 class="govuk-heading-m">Data Hub details</h3>
-    <dl class="govuk-summary-list">
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="organisation_type" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="investment_type" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_name" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_description" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="anonymised_project_description" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="estimated_land_date" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="new_existing_investor" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="investor_involvement_level" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="specific_investment_programme" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="crm" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="date_added_to_datahub" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_code" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="datahub_project_status" %}
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_success_date" %}
-    </dl>
-</div>
-<div class="govuk-grid-row enquiry-details-row">
-    <h3 class="govuk-heading-m">Notes</h3>
-    <dl class="govuk-summary-list">
-        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="notes" %}
-    </dl>
-</div>
-</main>
+        <div class="govuk-grid-row enquiry-details-row">
+            <h3 class="govuk-heading-m">Data Hub details</h3>
+            <dl class="govuk-summary-list">
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="organisation_type" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="investment_type" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_name" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_description" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="anonymised_project_description" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="estimated_land_date" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="new_existing_investor" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="investor_involvement_level" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="specific_investment_programme" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="crm" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="date_added_to_datahub" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_code" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="datahub_project_status" %}
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_success_date" %}
+            </dl>
+        </div>
+        <div class="govuk-grid-row enquiry-details-row">
+            <h3 class="govuk-heading-m">Notes</h3>
+            <dl class="govuk-summary-list">
+                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="notes" %}
+            </dl>
+        </div>
+    </main>
+    <form class="form" action="{% url 'enquiry-detail' pk=enquiry.id %}" method="post">
+        {% csrf_token %}
+
+        {% if not enquiry.date_added_to_datahub %}
+        <button class="govuk-button" data-module="govuk-button" type="submit">Submit to Data Hub</button>
+        {% endif %}
+    </form>
 </div>
 {% include 'partials/govuk_footer_partial.html' %}

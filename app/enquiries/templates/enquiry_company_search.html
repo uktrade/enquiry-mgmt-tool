@@ -1,0 +1,71 @@
+{% load static %}
+
+{% include 'base.html' %}
+
+{% include 'partials/govuk_header_partial.html' %}
+
+{% load widget_tweaks %}
+{% load rest_framework %}
+{% load enquiries_extras %}
+
+<div class="govuk-width-container">
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+    <a href="{% url 'enquiry-edit' enquiry.id %}" class="govuk-back-link">Back</a>
+
+    <main class="govuk-main-wrapper">
+
+        <div class="govuk-inset-text">
+            <label class="govuk-label">Company HQ address</label>
+            {{ enquiry.company_hq_address }}
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+        <h4 class="govuk-heading-m">Company search</h2>
+
+        <form class="form" action="{% url 'enquiry-company-search' enquiry.id %}" method="post">
+            {% csrf_token %}
+            <div class="govuk-grid-row">
+                <label for="search_term" class="govuk-label">Search for Data Hub company</label>
+                <input class="govuk-input" name="search_term" id="search_term" type="search">
+                <button class="govuk-button company-search__button">Search</button>
+            </div>
+        </form>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+        {% for company in search_results %}
+        {% include 'snippets/company_search_result.html' with company_name=company.name company_address=company.address datahub_id=company.datahub_id company_number=company.company_number duns_number=company.duns_number %}
+        {% endfor %}
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+        <details class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                    I can't find what I'm looking for
+                </span>
+            </summary>
+            <div class="govuk-details__text">
+                <p>Try:</p>
+                <div class="company-search__details-text">
+                    <ul>
+                        <li>checking for spelling errors</li>
+                        <li>checking if the right country was selected</li>
+                        <li>check you're using the company's registered name</li>
+                        <li>checking or removing the postcode</li>
+                        <li>removing "limited" or "ltd"</li>
+                    </ul>
+                </div>
+                <div class="company-search__details-link">
+                    <a href="https://www.datahub.dev.uktrade.io/companies/create" class="govuk-link link--no-visited">I still can't find what I'm looking for</a>
+                </div>
+            </div>
+          </details>
+
+    </main>
+</div>
+
+{% include 'partials/govuk_footer_partial.html' %}
