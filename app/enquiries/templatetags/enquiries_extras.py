@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from django import template
 
 from app.enquiries import models
@@ -5,6 +8,28 @@ from app.enquiries import serializers
 
 register = template.Library()
 
+field_error_msgs = {
+    "company_name": "Company name cannot be left blank",
+    "company_hq_address": "Company address cannot be left blank",
+    "enquiry_text": "Enquiry text cannot be left blank",
+    "website": "Enter a valid website eg http://www.example.com",
+    "first_name": "Enquirer first name is required",
+    "last_name": "Enquirer last name is required",
+    "job_title": "Enquirer job title is required",
+    "email": "Enquirer email is required",
+    "phone": "Enquirer phone is required",
+}
+
+@register.filter
+def enquiry_field_error_msg(field):
+    return field_error_msgs.get(field)
+
+@register.filter
+def get_dh_company_url(enquiry):
+    if not enquiry.dh_company_id:
+        return "#"
+
+    return os.path.join(settings.DATA_HUB_FRONTEND, 'companies', enquiry.dh_company_id)
 
 def get_instance_field(instance, field_name):
     fields = instance._meta.fields
