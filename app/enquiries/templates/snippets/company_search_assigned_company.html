@@ -1,8 +1,8 @@
-<div class="company-search__assigned-company" id="company-search__assigned-company">
+<div class="company-search__assigned-company">
     <div class="company-search__result-name">
-        {% if dh_assigned_company_name %}{{ dh_assigned_company_name }}{% else %}{{ enquiry.dh_assigned_company_name }}{% endif %}
+        {{ dh_assigned_company_name|default:enquiry.dh_assigned_company_name }}
     </div>
     <div class="company-search__result-address">
-        <span class="company-search__result-address-label">Address </span><span class="company-search__result-address-value">{% if dh_company_address %}{{ dh_company_address }}{% else %}{{ enquiry.dh_company_address }}{% endif %}</span>
+        <span class="company-search__result-address-label">Address </span><span class="company-search__result-address-value">{{ dh_company_address|default:enquiry.dh_company_address }}</span>
     </div>
 </div>

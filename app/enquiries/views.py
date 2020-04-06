@@ -48,10 +48,7 @@ def get_filter_config():
 def get_enquiry_field(name):
     filter_config = get_filter_config()
 
-    return {
-        "name": name,
-        "choices": filter_config[name].choices
-    }
+    return {"name": name, "choices": filter_config[name].choices}
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -258,10 +255,8 @@ class EnquiryDeleteView(DeleteView):
         enquiry.delete()
         return redirect("enquiry-list")
 
+
 class EnquiryCompanySearchView(TemplateView):
-    """
-    Company search view
-    """
 
     model = models.Enquiry
     template_name = "enquiry_company_search.html"
@@ -281,14 +276,18 @@ class EnquiryCompanySearchView(TemplateView):
         if not error:
             for company in companies:
                 addr = company["address"]
-                formatted_addr = f'{company["name"]}, {addr["line_1"]}, {addr["line_2"]}, {addr["town"]}, {addr["county"]}, {addr["postcode"]}, {addr["country"]}'
-                context["search_results"].append({
-                    "datahub_id": company["datahub_id"],
-                    "name": company["name"],
-                    "company_number": company["company_number"],
-                    "duns_number": company["duns_number"],
-                    "address": formatted_addr,
-                })
+                formatted_addr = f'{company["name"]}, {addr["line_1"]}, \
+                    {addr["line_2"]}, {addr["town"]}, {addr["county"]}, \
+                    {addr["postcode"]}, {addr["country"]}'
+                context["search_results"].append(
+                    {
+                        "datahub_id": company["datahub_id"],
+                        "name": company["name"],
+                        "company_number": company["company_number"],
+                        "duns_number": company["duns_number"],
+                        "address": formatted_addr,
+                    }
+                )
 
         return render(request, self.template_name, context)
 
@@ -318,7 +317,10 @@ class ImportEnquiriesView(TemplateView):
     def process_upload(self, uploaded_file):
         records = []
         with uploaded_file as f:
-            if not f.name.endswith(".csv") or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE:
+            if (
+                not f.name.endswith(".csv")
+                or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE
+            ):
                 messages.error(
                     self.request,
                     f"File is not of type: text/csv with  extension .csv. Detected type: {f.content_type}",
@@ -336,9 +338,7 @@ class ImportEnquiriesView(TemplateView):
 
         try:
             if enquiries_key in request.FILES:
-                payload = (
-                    request.FILES.get(enquiries_key)
-                )
+                payload = request.FILES.get(enquiries_key)
                 records = self.process_upload(payload)
             else:
                 messages.error(request, f"File is not detected")
@@ -354,7 +354,11 @@ class ImportEnquiriesView(TemplateView):
         )
 
     def get(self, request, *args, **kwargs):
-        status_code = status.HTTP_400_BAD_REQUEST if "errors" in request.GET else status.HTTP_200_OK
+        status_code = (
+            status.HTTP_400_BAD_REQUEST
+            if "errors" in request.GET
+            else status.HTTP_200_OK
+        )
         return render(
             request,
             "import-enquiries-form.html",
@@ -390,9 +394,7 @@ class ExportEnquiriesView(TemplateView):
         date_str = datetime.now().isoformat(timespec="minutes")
         filename = f"{settings.EXPORT_OUTPUT_FILE_SLUG}_{date_str}.{settings.EXPORT_OUTPUT_FILE_EXT}"
         response = HttpResponse(content_type=self.CONTENT_TYPE)
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="{filename}"'
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
         utils.export_to_csv(qs, response)
         return response

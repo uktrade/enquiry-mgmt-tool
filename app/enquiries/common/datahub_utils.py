@@ -45,7 +45,7 @@ def dh_request(request, access_token, method, url, payload, request_headers=None
         # Extract access token
         if not access_token:
             session = get_oauth_payload(request)
-            access_token = session["access_token"] if session else 'invalid-token'
+            access_token = session["access_token"]
 
         headers = {
             "Content-Type": "application/json",
