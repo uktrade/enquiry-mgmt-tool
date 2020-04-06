@@ -39,7 +39,7 @@
 
     <main class="govuk-main-wrapper">
 
-        <div class="govuk-grid-row enquiry-detail__row enquiry-detail__header">
+        <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
 
             <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
 
@@ -84,7 +84,7 @@
         <form class="form" action="{% url 'enquiry-edit' enquiry.id %}" method="post">
             {% csrf_token %}
 
-            <div class="govuk-grid-row enquiry-detail__row">
+            <div class="govuk-grid-row enquiry-details-row">
 
                 <h3 class="govuk-heading-m">Enquiry overview</h3>
 
@@ -131,7 +131,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-detail__row">
+            <div class="govuk-grid-row enquiry-details-row">
 
                 <h3 class="govuk-heading-m">Enquiry details</h3>
 
@@ -145,7 +145,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-detail__row">
+            <div class="govuk-grid-row enquiry-details-row">
 
                 <h3 class="govuk-heading-m">Company details</h3>
 
@@ -162,7 +162,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-detail__row">
+            <div class="govuk-grid-row enquiry-details-row">
 
                 <h3 class="govuk-heading-m">Contact</h3>
 
@@ -183,7 +183,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-detail__row">
+            <div class="govuk-grid-row enquiry-details-row">
 
                 <h3 class="govuk-heading-m">Marketing</h3>
 
@@ -202,7 +202,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-detail__row">
+            <div class="govuk-grid-row enquiry-details-row">
 
                 <h3 class="govuk-heading-m">HPO details</h3>
 
@@ -218,7 +218,7 @@
             </div>
 
 
-            <div class="govuk-grid-row enquiry-detail__row">
+            <div class="govuk-grid-row enquiry-details-row">
 
                 <h3 class="govuk-heading-m">Data Hub</h3>
 
@@ -259,7 +259,7 @@
 
             </div>
 
-            <div class="govuk-grid-row enquiry-detail__row">
+            <div class="govuk-grid-row enquiry-details-row">
 
                 {% include 'snippets/enquiry_field_textarea.html' with instance=enquiry field="notes" %}
 
