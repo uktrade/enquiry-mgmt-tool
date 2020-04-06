@@ -1,23 +1,23 @@
-<li class="entity-list-item">
+<li class="entity__list-item">
     <div class="entity-enquiry">
         <div class="entity-header">
-            <div class="entity-title">
+            <div class="entity__title">
                 <h3>
-                    <a class="entity-title-link"
+                    <a class="entity__title-link"
                         href="{% url 'enquiry-detail' obj.id %}">{{ enquiry.company_name }}</a>
                 </h3>
             </div>
-            <div class="entity-badges">
-                <div class="entity-badges-list">
-                    <div class="entity-badges-item">
+            <div class="entity__badges">
+                <div class="entity__badges-list">
+                    <div class="entity__badges-item">
                         <span>{{ enquiry.enquiry_stage }}</span>
                     </div>
-                    <div class="entity-badges-item">
+                    <div class="entity__badges-item">
                         <span>{% if enquiry.owner %}{{ enquiry.owner.first_name }} {{ enquiry.owner.last_name }} {%else%} {{ "Unassigned" }}
                             {%endif%}</span>
                     </div>
                     {% if enquiry.country != "----" %}
-                    <div class="entity-badges-item">
+                    <div class="entity__badges-item">
                         <span>{{ enquiry.country }}</span>
                     </div>
                     {% endif %}
@@ -26,20 +26,20 @@
         </div>
         <div class="entity-content">
             <div class="entity-content-list">
-                <div class="entity-content-item">
+                <div class="entity__content-item">
                     <span class="list-item-label">Date received</span>
                     <span class="list-item-value">{{ enquiry.created }}</span>
                 </div>
-                <div class="entity-content-item">
+                <div class="entity__content-item">
                     <span class="list-item-label">Enquiry text</span>
                     <span class="list-item-value">{{ enquiry.enquiry_text }}</span>
                 </div>
-                <div class="entity-content-item">
+                <div class="entity__content-item">
                     <span class="list-item-label">Date last updated</span>
                     <span class="list-item-value">{{ enquiry.modified }}</span>
                 </div>
                 {% if enquiry.enquirer.request_for_call != "----" %}
-                <div class="entity-content-item">
+                <div class="entity__content-item">
                     <span class="list-item-label">Call requested</span>
                     <span class="list-item-value">{{ enquiry.enquirer.request_for_call }}</span>
                 </div>
