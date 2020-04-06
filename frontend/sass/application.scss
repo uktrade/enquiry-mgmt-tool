@@ -232,3 +232,12 @@ form.delete-form {
 .pagination {
     margin-top: govuk-spacing(6);
 }
+
+.collection-header-page-number {
+    padding: govuk-spacing(3) 0;
+    border-bottom: 1px solid #6f777b;
+}
+
+.header-page-number {
+    color: #6f777b;
+}
