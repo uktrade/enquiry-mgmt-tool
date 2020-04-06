@@ -1,5 +1,6 @@
 import codecs
 import csv
+import json
 import logging
 from datetime import date, datetime
 from io import BytesIO
@@ -29,6 +30,7 @@ from rest_framework.views import APIView
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms, models, serializers, utils
 from app.enquiries.utils import row_to_enquiry
+from app.enquiries.common.datahub_utils import dh_company_search
 
 UNASSIGNED = "UNASSIGNED"
 
@@ -70,6 +72,14 @@ class PaginationWithPaginationMeta(PageNumberPagination):
             },
             template_name="enquiry_list.html",
         )
+
+    def post(self, request, format=None):
+        serializer = serializers.EnquirySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def is_valid_id(v) -> bool:
@@ -222,6 +232,28 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
     form_class = forms.EnquiryForm
     template_name = "enquiry_edit.html"
 
+    def get_context_data(self, **kwargs):
+        # these are populated when a company is selected from the list of
+        # search results in the company search view
+        data = self.request.GET
+        selected_company_id = data.get("dh_id")
+        enquiry_obj = self.get_object()
+        context = super().get_context_data(**kwargs)
+        if selected_company_id:
+            context["dh_company_id"] = selected_company_id
+            context["dh_company_number"] = data.get("dh_number")
+            context["dh_duns_number"] = data.get("duns_number")
+            context["dh_assigned_company_name"] = data.get("dh_name")
+            context["dh_company_address"] = data.get("dh_address")
+        elif enquiry_obj.dh_company_id:
+            context["dh_company_id"] = enquiry_obj.dh_company_id
+            context["dh_company_number"] = enquiry_obj.dh_company_number
+            context["dh_duns_number"] = enquiry_obj.dh_duns_number
+            context["dh_assigned_company_name"] = enquiry_obj.dh_assigned_company_name
+            context["dh_company_address"] = enquiry_obj.dh_company_address
+
+        return context
+
     def form_valid(self, form):
         enquiry_obj = self.get_object()
         enquirer_form = forms.EnquirerForm(form.data, instance=enquiry_obj.enquirer)
@@ -237,9 +269,48 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
             return self.form_invalid(form)
 
     def form_invalid(self, form):
+        enquiry_obj = self.get_object()
+        enquirer_form = forms.EnquirerForm(form.data, instance=enquiry_obj.enquirer)
+        errors_dict = json.loads(enquirer_form.errors.as_json())
+        for field, msg in errors_dict.items():
+            form.add_error(None, field)
         response = super().form_invalid(form)
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
+
+
+class EnquiryAdd(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def get(self, request):
+        if "errors" in request.GET:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "The selected file could not be uploaded - please try again.",
+            )
+        elif "success" in request.GET:
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "Please return back to the enquiry summary page.",
+            )
+        return Response(
+            {
+                "data": "goes here",
+                "back_url": reverse("enquiry-list"),
+                "main_bar_right_btn": {
+                    "text": "Download template",
+                    "href": "",
+                    "element": "a",
+                },
+                # @TODO integration with real backend and errors
+                # currently using query variables just to illustrate the different states (success|errors)
+                "has_errors": "errors" in request.GET,
+                "has_success": "success" in request.GET,
+            },
+            template_name="enquiry_import.html",
+        )
 
 
 class EnquiryDeleteView(DeleteView):
@@ -255,6 +326,42 @@ class EnquiryDeleteView(DeleteView):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         enquiry.delete()
         return redirect("enquiry-list")
+
+
+class EnquiryCompanySearchView(TemplateView):
+
+    model = models.Enquiry
+    template_name = "enquiry_company_search.html"
+
+    def get_context_data(self, **kwargs):
+        pk = kwargs["pk"]
+        context = super().get_context_data(**kwargs)
+        enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
+        context["enquiry"] = enquiry
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        search_term = request.POST["search_term"].lower()
+        context["search_results"] = []
+        companies, error = dh_company_search(self.request, None, search_term)
+        if not error:
+            for company in companies:
+                addr = company["address"]
+                formatted_addr = f'{company["name"]}, {addr["line_1"]}, \
+                    {addr["line_2"]}, {addr["town"]}, {addr["county"]}, \
+                    {addr["postcode"]}, {addr["country"]}'
+                context["search_results"].append(
+                    {
+                        "datahub_id": company["datahub_id"],
+                        "name": company["name"],
+                        "company_number": company["company_number"],
+                        "duns_number": company["duns_number"],
+                        "address": formatted_addr,
+                    }
+                )
+
+        return render(request, self.template_name, context)
 
 
 class ImportEnquiriesView(TemplateView):

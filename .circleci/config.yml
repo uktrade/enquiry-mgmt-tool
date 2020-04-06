@@ -22,6 +22,7 @@ jobs:
       DATA_HUB_INVESTMENT_CREATE_URL: 'https://datahub/investment/create'
       DATA_HUB_ADVISER_SEARCH_URL: 'https://adviser/search'
       DATA_HUB_WHOAMI_URL: 'https://datahub/whoami/'
+      DATA_HUB_FRONTEND: 'https://datahub/frontend'
       DATA_HUB_HAWK_ID: 'hawk-id'
       DATA_HUB_HAWK_KEY: 'hawk-key'
       DATA_HUB_METADATA_FETCH_INTERVAL: '4'

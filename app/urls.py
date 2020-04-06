@@ -28,20 +28,36 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("enquiry/", views.EnquiryCreateView.as_view(), name="enquiry-create"),
     path("enquiries/", views.EnquiryListView.as_view(), name="enquiry-list"),
+    path('enquiries/import/', views.EnquiryAdd.as_view(), name="enquiries-import"),
     path(
         "enquiries/template/",
         views.ImportTemplateDownloadView.as_view(),
         name="import-template",
     ),
-    path('enquiries/import/', views.ImportEnquiriesView.as_view(), name="import-enquiries"),
+    path(
+        "enquiries/import",
+        views.ImportEnquiriesView.as_view(),
+        name="import-enquiries",
+    ),
     path(
         "enquiries/<int:pk>/", views.EnquiryDetailView.as_view(), name="enquiry-detail"
     ),
     path(
         "enquiries/<int:pk>/edit", views.EnquiryEditView.as_view(), name="enquiry-edit"
     ),
-    path('enquiries/<int:pk>/delete', views.EnquiryDeleteView.as_view(), name="enquiry-delete"),
-    path('enquiries/export/', views.ExportEnquiriesView.as_view(), name="enquiry-export"),
+    path(
+        "enquiries/<int:pk>/company-search",
+        views.EnquiryCompanySearchView.as_view(),
+        name="enquiry-company-search",
+    ),
+    path(
+        "enquiries/<int:pk>/delete",
+        views.EnquiryDeleteView.as_view(),
+        name="enquiry-delete",
+    ),
+    path(
+        "enquiries/export/", views.ExportEnquiriesView.as_view(), name="enquiry-export"
+    ),
     path("healthcheck/ping", ping.ping, name="ping"),
 ]
 
