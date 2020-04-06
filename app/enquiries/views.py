@@ -6,6 +6,7 @@ import logging
 from datetime import date, datetime
 from io import BytesIO
 
+from chardet import UniversalDetector
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -367,14 +368,20 @@ class ImportEnquiriesView(TemplateView):
             for c in f.chunks(chunk_size=settings.UPLOAD_CHUNK_SIZE):
                 buf.write(c)
 
-            # Since the processing happens on PaaS we cannot determine User OS
-            # so assume utf-8 by default and switch to windows encoding in case of error
+            encoding_detector = UniversalDetector()
+            buf.seek(0)
+            encoding_detector.feed(buf.read())
+            detection_result = encoding_detector.close()
+            encoding = detection_result["encoding"]
+            logging.info(f"Encoding detection result: {detection_result}")
+
+            # Use the encoding detected by chardet, in case of failure use utf-8
             try:
                 buf.seek(0)
-                decoded = buf.read().decode("utf-8")
+                decoded = buf.read().decode(encoding)
             except Exception:
                 buf.seek(0)
-                decoded = buf.read().decode("windows-1252")
+                decoded = buf.read().decode("utf-8")
             finally:
                 csv_lines = decoded.split("\n")
 
@@ -388,7 +395,11 @@ class ImportEnquiriesView(TemplateView):
         enquiries_key = "enquiries"
 
         file_obj = request.FILES.get(enquiries_key)
-        if not(file_obj and file_obj.name.endswith(".csv") and file_obj.content_type == settings.EXPORT_OUTPUT_FILE_MIMETYPE):
+        if not (
+            file_obj
+            and file_obj.name.endswith(".csv")
+            and file_obj.content_type in settings.IMPORT_ENQUIRIES_MIME_TYPES
+        ):
             messages.error(
                 self.request,
                 f"Input file is not a CSV file, detected type: {file_obj.content_type}",

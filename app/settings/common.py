@@ -208,6 +208,7 @@ STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
+IMPORT_ENQUIRIES_MIME_TYPES = ["text/csv", "application/vnd.ms-excel"]
 IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
 IMPORT_TEMPLATE_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 UPLOAD_CHUNK_SIZE = 256000
