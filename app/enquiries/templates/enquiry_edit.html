@@ -14,6 +14,29 @@
 
     <a href="{% url 'enquiry-detail' enquiry.id %}" class="govuk-back-link">Back</a>
 
+    <br>
+    {% if form.errors %}
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+            <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                        <li>
+                            <a href="#{{ field.name }}">{{ field.name|enquiry_field_error_msg }}</a>
+                        </li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for field in form.non_field_errors %}
+                        <li>
+                            <a href="#{{ field }}">{{ field|enquiry_field_error_msg }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
     <main class="govuk-main-wrapper">
 
         <div class="govuk-grid-row enquiry-detail__row enquiry-detail__header">
@@ -47,6 +70,14 @@
                     <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
                         {{ "Unassigned" }} {%endif%}</dd>
                 </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        {% if dh_assigned_company_name %}<a href="{{ enquiry|get_dh_company_url }}">{{ dh_assigned_company_name }}</a>{% else %}<a href="#">{{ enquiry.dh_assigned_company_name }}</a>{% endif %}
+                    </dd>
+                </div>
             </dl>
         </div>
 
@@ -55,7 +86,11 @@
 
             <div class="govuk-grid-row enquiry-detail__row">
 
+                <h3 class="govuk-heading-m">Enquiry overview</h3>
+
                 {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="company_name" %}
+
+                {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="company_hq_address" %}
 
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="enquiry_stage" %}
 
@@ -74,6 +109,24 @@
                         </option>
                         {% endfor %}
                     </select>
+                </div>
+
+                <div class="govuk-form-group">
+                    <label for="company-search__assigned-company" class="govuk-label label--inline">
+                        {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
+                    </label>
+                    <a class="govuk-link company-search__link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
+
+                    {% include 'snippets/company_search_assigned_company.html' %}
+
+                    <!-- Assign selected company from the above search results to below fields -->
+                    <!-- They are readonly and hidden but required for form submission -->
+                    <input type="hidden" name="dh_company_id" id="dh_company_id" value="{{ dh_company_id }}">
+                    <input type="hidden" name="dh_company_number" id="dh_company_number" value="{{ dh_company_number }}">
+                    <input type="hidden" name="dh_duns_number" id="dh_duns_number" value="{{ dh_duns_number }}">
+                    <input type="hidden" name="dh_assigned_company_name" id="dh_assigned_company_name" value="{{ dh_assigned_company_name }}"> <br>
+                    <input type="hidden" name="dh_company_address" id="dh_company_address" value="{{ dh_company_address }}">
+                    
                 </div>
 
             </div>
@@ -101,8 +154,6 @@
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="country" %}
 
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="region" %}
-
-                {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="company_hq_address" %}
 
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="primary_sector" %}
 
@@ -203,7 +254,7 @@
 
                 {% include 'snippets/enquiry_field_input_date.html' with instance=enquiry field="project_success_date" %}
 
-                <input style="display: none;" name="enquirer" value="{{ enquiry.enquirer.id }}">
+                <input type="hidden" name="enquirer" value="{{ enquiry.enquirer.id }}">
 
             </div>
 

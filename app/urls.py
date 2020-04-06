@@ -34,15 +34,30 @@ urlpatterns = [
         views.ImportTemplateDownloadView.as_view(),
         name="import-template",
     ),
-    path('enquiries/import', views.ImportEnquiriesView.as_view(), name="import-enquiries"),
+    path(
+        "enquiries/import",
+        views.ImportEnquiriesView.as_view(),
+        name="import-enquiries",
+    ),
     path(
         "enquiries/<int:pk>/", views.EnquiryDetailView.as_view(), name="enquiry-detail"
     ),
     path(
         "enquiries/<int:pk>/edit", views.EnquiryEditView.as_view(), name="enquiry-edit"
     ),
-    path('enquiries/<int:pk>/delete', views.EnquiryDeleteView.as_view(), name="enquiry-delete"),
-    path('enquiries/export/', views.ExportEnquiriesView.as_view(), name="enquiry-export"),
+    path(
+        "enquiries/<int:pk>/company-search",
+        views.EnquiryCompanySearchView.as_view(),
+        name="enquiry-company-search",
+    ),
+    path(
+        "enquiries/<int:pk>/delete",
+        views.EnquiryDeleteView.as_view(),
+        name="enquiry-delete",
+    ),
+    path(
+        "enquiries/export/", views.ExportEnquiriesView.as_view(), name="enquiry-export"
+    ),
     path("healthcheck/ping", ping.ping, name="ping"),
 ]
 

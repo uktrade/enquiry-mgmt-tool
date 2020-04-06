@@ -10,6 +10,8 @@ from mohawk import Sender
 from requests.exceptions import RequestException
 from rest_framework import status
 
+from app.enquiries.utils import get_oauth_payload
+
 
 DATA_HUB_METADATA_ENDPOINTS = (
     "country",
@@ -24,7 +26,8 @@ DATA_HUB_METADATA_ENDPOINTS = (
     "sector",
 )
 
-def dh_request(method, url, payload, request_headers=None, timeout=15):
+
+def dh_request(request, access_token, method, url, payload, request_headers=None, timeout=15):
     """
     Helper function to perform Data Hub request
 
@@ -39,11 +42,14 @@ def dh_request(method, url, payload, request_headers=None, timeout=15):
     if request_headers:
         headers = request_headers
     else:
-        # TODO: We don't need to send the access token in the headers
-        # once SSO is integrated as it comes from SSO directly
+        # Extract access token
+        if not access_token:
+            session = get_oauth_payload(request)
+            access_token = session["access_token"]
+
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {settings.DATA_HUB_ACCESS_TOKEN}",
+            "Authorization": f"Bearer {access_token}",
         }
 
     try:
@@ -148,7 +154,7 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
     return dh_data[0]["id"] if dh_data else None
 
 
-def dh_company_search(company_name):
+def dh_company_search(request, access_token, company_name):
     """
     Peforms a Company name search using Data hub API.
 
@@ -158,12 +164,11 @@ def dh_company_search(company_name):
     url = settings.DATA_HUB_COMPANY_SEARCH_URL
     payload = {"name": company_name}
 
-    response = dh_request("POST", url, payload)
+    response = dh_request(request, access_token, "POST", url, payload)
 
     # It is not an error for us if the request fails, this can happen if the
     # Access token is invalid, consider that there are no matches however
     # user is notified of the error to take appropriate action
-    # TODO: revisit once SSO integration is completed
     if not response.ok:
         return companies, response.json()
 
@@ -173,6 +178,8 @@ def dh_company_search(company_name):
             {
                 "datahub_id": company["id"],
                 "name": company["name"],
+                "company_number": company["company_number"],
+                "duns_number": company["duns_number"],
                 "address": {
                     "line_1": address["line_1"],
                     "line_2": address["line_2"],
@@ -187,7 +194,7 @@ def dh_company_search(company_name):
     return companies, None
 
 
-def dh_contact_search(contact_name):
+def dh_contact_search(request, access_token, contact_name, company_id):
     """
     Peforms a Contact name search using Data hub API.
 
@@ -197,7 +204,7 @@ def dh_contact_search(contact_name):
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
     payload = {"name": contact_name}
 
-    response = dh_request("POST", url, payload)
+    response = dh_request(request, access_token, "POST", url, payload)
 
     if not response.ok:
         return contacts, response.json()
