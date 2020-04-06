@@ -1,6 +1,6 @@
 <li class="entity__list-item">
-    <div class="entity-enquiry">
-        <div class="entity-header">
+    <div class="entity__enquiry">
+        <div class="entity__header">
             <div class="entity__title">
                 <h3>
                     <a class="entity__title-link"
@@ -8,24 +8,22 @@
                 </h3>
             </div>
             <div class="entity__badges">
-                <div class="entity__badges-list">
-                    <div class="entity__badges-item">
-                        <span>{{ enquiry.enquiry_stage }}</span>
-                    </div>
-                    <div class="entity__badges-item">
-                        <span>{% if enquiry.owner %}{{ enquiry.owner.first_name }} {{ enquiry.owner.last_name }} {%else%} {{ "Unassigned" }}
-                            {%endif%}</span>
-                    </div>
-                    {% if enquiry.country != "----" %}
-                    <div class="entity__badges-item">
-                        <span>{{ enquiry.country }}</span>
-                    </div>
-                    {% endif %}
+                <div class="entity__badges-item">
+                    <span>{{ enquiry.enquiry_stage }}</span>
                 </div>
+                <div class="entity__badges-item">
+                    <span>{% if enquiry.owner %}{{ enquiry.owner.first_name }} {{ enquiry.owner.last_name }} {%else%} {{ "Unassigned" }}
+                        {%endif%}</span>
+                </div>
+                {% if enquiry.country != "----" %}
+                <div class="entity__badges-item">
+                    <span>{{ enquiry.country }}</span>
+                </div>
+                {% endif %}
             </div>
         </div>
-        <div class="entity-content">
-            <div class="entity-content-list">
+        <div class="entity__content">
+            <div class="entity__content-list">
                 <div class="entity__content-item">
                     <span class="list-item-label">Date received</span>
                     <span class="list-item-value">{{ enquiry.created }}</span>
