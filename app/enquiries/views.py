@@ -5,6 +5,7 @@ import logging
 from datetime import date, datetime
 from io import BytesIO
 
+from chardet import UniversalDetector
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -279,40 +280,6 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class EnquiryAdd(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-
-    def get(self, request):
-        if "errors" in request.GET:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                "The selected file could not be uploaded - please try again.",
-            )
-        elif "success" in request.GET:
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                "Please return back to the enquiry summary page.",
-            )
-        return Response(
-            {
-                "data": "goes here",
-                "back_url": reverse("enquiry-list"),
-                "main_bar_right_btn": {
-                    "text": "Download template",
-                    "href": "",
-                    "element": "a",
-                },
-                # @TODO integration with real backend and errors
-                # currently using query variables just to illustrate the different states (success|errors)
-                "has_errors": "errors" in request.GET,
-                "has_success": "success" in request.GET,
-            },
-            template_name="enquiry_import.html",
-        )
-
-
 class EnquiryDeleteView(DeleteView):
     """
     View to delete enquiry
@@ -376,49 +343,74 @@ class ImportEnquiriesView(TemplateView):
     def ERROR_URL(self):
         return reverse("import-enquiries") + "?errors=1"
 
-    def _build_records(self, file_obj):
+    def _build_records(self, csv_lines):
         records = []
+        if len(csv_lines) <= 1:
+            raise Exception(
+                "Empty CSV file or only header row detected, no records imported"
+            )
+
+        # import all or none
         with transaction.atomic():
-            for c in file_obj.chunks(chunk_size=settings.UPLOAD_CHUNK_SIZE):
-                csv_file = csv.DictReader(codecs.iterdecode(BytesIO(c), "utf-8"))
-                for row in csv_file:
-                    records.append(row_to_enquiry(row))
+            records = [row_to_enquiry(row) for row in csv.DictReader(csv_lines)]
 
         return records
 
     def process_upload(self, uploaded_file):
         records = []
         with uploaded_file as f:
-            if (
-                not f.name.endswith(".csv")
-                or f.content_type != settings.EXPORT_OUTPUT_FILE_MIMETYPE
-            ):
-                messages.error(
-                    self.request,
-                    f"File is not of type: text/csv with  extension .csv. Detected type: {f.content_type}",
-                )
-                return HttpResponseRedirect(reverse("import-enquiries"))
+            # Accumulate file content by reading in chunks
+            # We should not process the chunk straightaway because depending on the
+            # chunk size last line of csv could be partial
+            buf = BytesIO()
+            for c in f.chunks(chunk_size=settings.UPLOAD_CHUNK_SIZE):
+                buf.write(c)
 
-            records = self._build_records(f)
+            encoding_detector = UniversalDetector()
+            buf.seek(0)
+            encoding_detector.feed(buf.read())
+            detection_result = encoding_detector.close()
+            encoding = detection_result["encoding"]
+            logging.info(f"Encoding detection result: {detection_result}")
 
-        logging.info(f"Successfully ingested {len(records)} records")
+            # Use the encoding detected by chardet, in case of failure use utf-8
+            try:
+                buf.seek(0)
+                decoded = buf.read().decode(encoding)
+            except Exception:
+                buf.seek(0)
+                decoded = buf.read().decode("utf-8")
+            finally:
+                csv_lines = decoded.split("\n")
+
+            records = self._build_records(csv_lines)
+
+        logging.info(f"Successfully imported {len(records)} records")
         return records
 
     def post(self, request, *args, **kwargs):
         records = []
         enquiries_key = "enquiries"
 
+        file_obj = request.FILES.get(enquiries_key)
+        if not (
+            file_obj
+            and file_obj.name.endswith(".csv")
+            and file_obj.content_type in settings.IMPORT_ENQUIRIES_MIME_TYPES
+        ):
+            messages.error(
+                self.request,
+                f"Input file is not a CSV file, detected type: {file_obj.content_type}",
+            )
+            return HttpResponseRedirect(reverse("import-enquiries"))
+
         try:
-            if enquiries_key in request.FILES:
-                payload = request.FILES.get(enquiries_key)
-                records = self.process_upload(payload)
-            else:
-                messages.error(request, f"File is not detected")
-                return HttpResponseRedirect(self.ERROR_URL)
+            records = self.process_upload(file_obj)
         except Exception as err:
             messages.add_message(request, messages.ERROR, str(err))
             logging.error(err)
             return HttpResponseRedirect(self.ERROR_URL)
+
         return render(
             self.request,
             "import-enquiries-confirmation.html",
@@ -433,7 +425,7 @@ class ImportEnquiriesView(TemplateView):
         )
         return render(
             request,
-            "import-enquiries-form.html",
+            "enquiry_import.html",
             {"ERROR_HEADER": self.ERROR_HEADER},
             status=status_code,
         )

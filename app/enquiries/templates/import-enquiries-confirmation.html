@@ -1,55 +1,40 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Manual Ingest</title>
-    </head>
-    <body>
-        <h1>Successfully posted {{enquiries|length}} records!</h1>
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+{% load static %}
+{% include 'base.html' %}
+{% include 'partials/govuk_header_partial.html' %}
+
+<div class="govuk-width-container">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+    <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
+
+    <h3>Summary of {{enquiries|length}} imported records</h3>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+    <table>
+        <thead>
+            <th>Company name</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Job title</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Request for call</th>
+            <th>Country</th>
+        </thead>
+        <tbody>
+            {% for e in enquiries %}
+            <tr>
+                <td>{{e.company_name}}</td>
+                <td>{{e.enquirer.first_name}}</td>
+                <td>{{e.enquirer.last_name}}</td>
+                <td>{{e.enquirer.job_title}}</td>
+                <td>{{e.enquirer.email}}</td>
+                <td>{{e.enquirer.phone}}</td>
+                <td>{{e.enquirer.request_for_call}}</td>
+                <td>{{e.get_country_display}}</td>
+            </tr>
             {% endfor %}
-        </ul>
-        {% endif %}
-        <table>
-            <thead>
-                <th>enquirer_first_name</th>
-                <th>enquirer_last_name</th>
-                <th>enquirer_job_title</th>
-                <th>enquirer_email</th>
-                <th>enquirer_phone</th>
-                <th>enquirer_request_for_call</th>
-                <th>country</th>
-                <th>company_name</th>
-                <th>primary_sector</th>
-                <th>company_hq_address</th>
-                <th>website</th>
-                <th>investment_readiness</th>
-                <th>enquiry_text</th>
-                <th>notes</th>
-            </thead>
-            <tbody>
-                {% for e in enquiries %}
-                <tr>
-                    <td>{{e.enquirer.first_name}}</td>
-                    <td>{{e.enquirer.last_name}}</td>
-                    <td>{{e.enquirer.job_title}}</td>
-                    <td>{{e.enquirer.email}}</td>
-                    <td>{{e.enquirer.phone}}</td>
-                    <td>{{e.enquirer.request_for_call}}</td>
-                    <td>{{e.country}}</td>
-                    <td>{{e.company_name}}</td>
-                    <td>{{e.primary_sector}}</td>
-                    <td>{{e.company_hq_address}}</td>
-                    <td>{{e.website}}</td>
-                    <td>{{e.investment_readiness}}</td>
-                    <td>{{e.enquiry_text}}</td>
-                    <td>{{e.notes}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            
-        </table>
-    </body>
-</html>
+        </tbody>
+    </table>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+</div>
+{% include 'partials/govuk_footer_partial.html' %}
