@@ -47,12 +47,23 @@ def row_to_enquiry(row: dict) -> Enquirer:
     enquirer_items = {}
     for key, value in row.items():
         if key.startswith("enquirer_"):
-            enquirer_items[key.split('_', 1)[1]] = row_data.pop(key)
+            value = row_data.pop(key)
+
+            # this is an optional field so if the value is not available
+            # then skip it to assign the specified default in model
+            if key == "enquirer_request_for_call" and value == "":
+                continue
+            enquirer_items[key.split('_', 1)[1]] = value
 
     enquirer = models.Enquirer(**enquirer_items)
 
     # validate enquirer before saving - https://docs.djangoproject.com/en/3.0/ref/models/instances/#django.db.models.Model.full_clean
     enquirer.full_clean()
+
+    # this is an optional field, if the value is blank ensure it gets default choice
+    if row_data.get("marketing_channel") == "":
+        row_data["marketing_channel"] = ref_data.MarketingChannel.DEFAULT
+
     enquiry = Enquiry(enquirer=enquirer, **row_data)
 
     # validate enquiry before saving (but exclude enquirer)
@@ -106,6 +117,7 @@ def generate_import_template(file_obj):
         ref_data.InvestmentReadiness,
         ref_data.PrimarySector,
         ref_data.RequestForCall,
+        ref_data.MarketingChannel,
     ]
 
     # setup enquiries sheet
