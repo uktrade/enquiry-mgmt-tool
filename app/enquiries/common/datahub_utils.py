@@ -287,7 +287,7 @@ def dh_adviser_search(request, access_token, adviser_name):
     Returns list of subset of fields for each Adviser found
     """
     advisers = []
-    url = f"{settings.DATA_HUB_ADVISER_SEARCH_URL}"
+    url = settings.DATA_HUB_ADVISER_SEARCH_URL
     params = {"autocomplete": adviser_name}
 
     response = dh_request(request, access_token, "GET", url, {}, params=params)
