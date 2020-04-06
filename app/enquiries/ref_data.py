@@ -427,11 +427,20 @@ class DatahubProjectStatus(models.TextChoices):
     DELAYED = "DELAYED", _("Delayed")
 
 
+# Data Hub metadata
+DATA_HUB_BUSINESS_ACTIVITIES_SERVICES = "2f51ea6a-ca2f-466a-87fd-5f79ebfec125"
+DATA_HUB_INVESTMENT_TYPE_FDI = "FDI"
+DATA_HUB_PROJECT_STAGE_PROSPECT = "Prospect"
+DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE = "Website"
+DATA_HUB_REFERRAL_SOURCE_WEBSITE = "Invest in GREAT Britain"
+
+
 IMPORT_COL_NAMES = [
     "enquirer_first_name",
     "enquirer_last_name",
     "enquirer_job_title",
     "enquirer_email",
+    "enquirer_phone_country_code",
     "enquirer_phone",
     "enquirer_request_for_call",
     "country",

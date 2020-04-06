@@ -8,14 +8,14 @@
       </label>
       <div class="govuk-checkboxes govuk-checkboxes--small">
         <div class="govuk-checkboxes__item">
-          <input class="govuk-checkboxes__input" id="owner__id" name="owner__id" type="checkbox" value="UNASSIGNED" {% query_params_value_selected 'UNASSIGNED' 'owner' query_params ' checked'  %}>
+          <input class="govuk-checkboxes__input" id="owner__id" name="owner__id" type="checkbox" value="UNASSIGNED" {% query_params_value_selected 'UNASSIGNED' 'owner__id' query_params ' checked'  %}>
           <label class="govuk-label govuk-checkboxes__label" for="owner__id">
             Unassigned
           </label>
         </div>
         {% for owner in owners%}
         <div class="govuk-checkboxes__item">
-          <input class="govuk-checkboxes__input" id="owner__id_{{owner.id}}" name="owner__id" type="checkbox" value="{{owner.id}}"{% query_params_value_selected owner.id 'owner' query_params ' checked'  %}>
+          <input class="govuk-checkboxes__input" id="owner__id_{{owner.id}}" name="owner__id" type="checkbox" value="{{owner.id}}"{% query_params_value_selected owner.id 'owner__id' query_params ' checked'  %}>
           <label class="govuk-label govuk-checkboxes__label" for="owner__id_{{owner.id}}">
              {{owner.get_full_name}}
           </label>
@@ -28,37 +28,37 @@
     <label class="govuk-label" for="created__lt">
       Received before
     </label>
-    <input class="govuk-input" id="created__lt" name="created__lt" type="date" value="{{query_params.date_created_before}}">
+    <input class="govuk-input" id="created__lt" name="created__lt" type="date" value="{{query_params.created__lt}}">
   </div>
   <div class="govuk-form-group">
     <label class="govuk-label" for="created__gt">
       Received after
     </label>
-    <input class="govuk-input" id="created__gt" name="created__gt" type="date" value="{{query_params.date_created_after}}">
+    <input class="govuk-input" id="created__gt" name="created__gt" type="date" value="{{query_params.created__gt}}">
   </div>
   <div class="govuk-form-group">
     <label class="govuk-label" for="company_name__icontains">
       Company name
     </label>
-    <input class="govuk-input" id="company_name__icontains" name="company_name__icontains" type="search" value={{query_params.company_name}}>
+    <input class="govuk-input" id="company_name__icontains" name="company_name__icontains" type="search" value={{query_params.company_name__icontains}}>
   </div>
   <div class="govuk-form-group">
-    <label class="govuk-label" for="enquirer_email">
+    <label class="govuk-label" for="enquirer__email">
       Enquirer email address
     </label>
-    <input class="govuk-input" id="enquirer_email" name="enquirer_email" type="search" value="{{query_params.enquirer_email}}">
+    <input class="govuk-input" id="enquirer__email" name="enquirer__email" type="search" value="{{query_params.enquirer__email}}">
   </div>
   <div class="govuk-form-group">
     <label class="govuk-label" for="date_added_to_datahub__lt">
       Company added to Data Hub before
     </label>
-    <input class="govuk-input" id="date_added_to_datahub__lt" name="date_added_to_datahub__lt" type="date" value="{{query_params.date_added_to_datahub_before}}">
+    <input class="govuk-input" id="date_added_to_datahub__lt" name="date_added_to_datahub__lt" type="date" value="{{query_params.date_added_to_datahub__lt}}">
   </div>
   <div class="govuk-form-group">
     <label class="govuk-label" for="date_added_to_datahub__gt">
       Company added to Data Hub after
     </label>
-    <input class="govuk-input" id="date_added_to_datahub__gt" name="date_added_to_datahub__gt" type="date" value="{{query_params.date_added_to_datahub_after}}">
+    <input class="govuk-input" id="date_added_to_datahub__gt" name="date_added_to_datahub__gt" type="date" value="{{query_params.date_added_to_datahub__gt}}">
   </div>
   <button id="btn_submit" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" accesskey="s">
     Apply filters

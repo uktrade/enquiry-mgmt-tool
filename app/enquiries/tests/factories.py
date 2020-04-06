@@ -53,6 +53,7 @@ class EnquirerFactory(factory.django.DjangoModelFactory):
     last_name = factory.Faker("last_name")
     job_title = random.choice(["CEO", "COO", "Founder", "CFO"])
     email = factory.Faker("email")
+    phone_country_code = random.randint(1, 100)
     phone = factory.Faker("phone_number")
     request_for_call = get_random_item(ref_data.RequestForCall)
 
@@ -104,6 +105,7 @@ def create_fake_enquiry_csv_row():
         "enquirer_last_name": fake.name(),
         "enquirer_job_title": fake.job(),
         "enquirer_email": fake.email(),
+        "enquirer_phone_country_code": random.randint(1, 100),
         "enquirer_phone": fake.phone_number(),
         "enquirer_request_for_call": get_random_item(ref_data.RequestForCall),
         "country": get_random_item(ref_data.Country),

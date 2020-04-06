@@ -3,19 +3,23 @@ import requests
 import requests_mock
 import time
 
+from datetime import date
 from django.conf import settings
 from django.core.cache import cache
 from django.test import Client, TestCase
+from django.test.client import RequestFactory
 from django.urls import reverse
 from requests.exceptions import Timeout
 from rest_framework import status
 from unittest import mock
+from app.enquiries.tests.factories import EnquiryFactory
 
 from app.enquiries.common.datahub_utils import (
     dh_request,
     dh_fetch_metadata,
     dh_company_search,
     dh_contact_search,
+    dh_investment_create,
     DATA_HUB_METADATA_ENDPOINTS,
 )
 
@@ -75,10 +79,17 @@ class DataHubIntegrationTests(TestCase):
         """ Tests to ensure data hub requests raise exception """
         mock_post.side_effect = Timeout
         url = settings.DATA_HUB_COMPANY_SEARCH_URL
+        req = RequestFactory()
+        post_req = req.post("/investment/", {"name": "test"})
+        post_req.session = {
+            settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
+        }
         payload = {"name": "test"}
 
         with pytest.raises(Timeout):
-            response = dh_request(None, "access-token", "POST", url, payload, timeout=2)
+            response = dh_request(
+                post_req, "access_token", "POST", url, payload, timeout=2
+            )
 
     @mock.patch("django.core.cache.cache.get")
     def test_dh_fetch_metada_exception(self, mock_cache_get):
@@ -123,7 +134,7 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, json=company_search_response()["success"])
             expected = company_search_response()["success"]["results"]
 
-            response, error = dh_company_search(None, "access-token", "test")
+            response, error = dh_company_search("mock_request", "access_token", "test")
             self.assertIsNone(error)
             self.assertEqual(len(response), 1)
             self.assertEqual(response[0]["datahub_id"], expected[0]["id"])
@@ -136,7 +147,7 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, status_code=400, json=company_search_response()["error"])
             expected = company_search_response()["error"]
 
-            response, error = dh_company_search(None, "access-token", "")
+            response, error = dh_company_search("mock_request", "access_token", "")
             self.assertIsNotNone(error)
             self.assertEqual(error["name"], expected["name"])
 
@@ -147,7 +158,9 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, json=contact_search_response()["success"])
             expected = contact_search_response()["success"]["results"]
 
-            response, error = dh_contact_search(None, "access-token", "User", "1234")
+            response, error = dh_contact_search(
+                "mock_request", "access_token", "User", "company_id"
+            )
             self.assertIsNone(error)
             self.assertEqual(len(response), 1)
             self.assertEqual(response[0]["datahub_id"], expected[0]["id"])
@@ -161,6 +174,47 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, status_code=400, json=contact_search_response()["error"])
             expected = contact_search_response()["error"]
 
-            response, error = dh_contact_search(None, "access-token", "", "1234")
+            response, error = dh_contact_search(
+                "mock_request", "access_token", "", "company_id"
+            )
             self.assertIsNotNone(error)
             self.assertEqual(error["name"], expected["name"])
+
+    def test_investment_creation_fails_company_not_in_dh(self):
+        """ Test that we cannot create investment if company doesn't exist in Data Hub """
+        enquiry = EnquiryFactory()
+        req = RequestFactory()
+        post_req = req.post("/investment/", {"name": "test"})
+        post_req.session = {
+            settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
+        }
+        with requests_mock.Mocker() as m:
+            url = settings.DATA_HUB_WHOAMI_URL
+            m.get(url, json={"user": "details"})
+            response = dh_investment_create(post_req, enquiry)
+            self.assertEqual(
+                response["errors"][0]["company"],
+                f"{enquiry.company_name} doesn't exist in Data Hub",
+            )
+
+    def test_investment_enquiry_cannot_submit_twice(self):
+        """ If an enquiry is already submitted ensure it cannot be sent again """
+        enquiry = EnquiryFactory()
+        req = RequestFactory()
+        post_req = req.post("/investment/", {"name": "test"})
+        post_req.session = {
+            settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
+        }
+        enquiry.dh_company_id = "1234-2468"
+        enquiry.date_added_to_datahub = date.today()
+        enquiry.save()
+        with requests_mock.Mocker() as m:
+            url = settings.DATA_HUB_WHOAMI_URL
+            m.get(url, json={"user": "details"})
+            response = dh_investment_create(post_req, enquiry)
+            prev_date = enquiry.date_added_to_datahub.strftime("%d %B %Y")
+            stage = enquiry.get_datahub_project_status_display()
+            self.assertEqual(
+                response["errors"][0]["enquiry"],
+                f"Enquiry can only be submitted once, previously submitted on {prev_date}, stage {stage}",
+            )
