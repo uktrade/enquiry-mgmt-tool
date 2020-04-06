@@ -17,9 +17,7 @@
     <br>
     {% if form.errors %}
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
-            <h2 class="govuk-error-summary__title" id="error-summary-title">
-            There is a problem
-            </h2>
+            <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
             <div class="govuk-error-summary__body">
                 <ul class="govuk-list govuk-error-summary__list">
                     {% for field in form %}
@@ -36,7 +34,7 @@
                     {% endfor %}
                 </ul>
             </div>
-    </div>
+        </div>
     {% endif %}
 
     <main class="govuk-main-wrapper">
@@ -114,7 +112,7 @@
                 </div>
 
                 <div class="govuk-form-group">
-                    <label class="govuk-label label--inline">
+                    <label for="company-search__assigned-company" class="govuk-label label--inline">
                         {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
                     </label>
                     <a class="govuk-link company-search__link" href="{% url 'enquiry-company-search' enquiry.id %}">Search for Data Hub company</a>
@@ -123,11 +121,11 @@
 
                     <!-- Assign selected company from the above search results to below fields -->
                     <!-- They are readonly and hidden but required for form submission -->
-                    <input style="display: none;" name="dh_company_id" id="dh_company_id" value="{{ dh_company_id }}">
-                    <input style="display: none;" name="dh_company_number" id="dh_company_number" value="{{ dh_company_number }}">
-                    <input style="display: none;" name="dh_duns_number" id="dh_duns_number" value="{{ dh_duns_number }}">
-                    <input style="display: none;" name="dh_assigned_company_name" id="dh_assigned_company_name" value="{{ dh_assigned_company_name }}"> <br>
-                    <input style="display: none;" name="dh_company_address" id="dh_company_address" value="{{ dh_company_address }}">
+                    <input type="hidden" name="dh_company_id" id="dh_company_id" value="{{ dh_company_id }}">
+                    <input type="hidden" name="dh_company_number" id="dh_company_number" value="{{ dh_company_number }}">
+                    <input type="hidden" name="dh_duns_number" id="dh_duns_number" value="{{ dh_duns_number }}">
+                    <input type="hidden" name="dh_assigned_company_name" id="dh_assigned_company_name" value="{{ dh_assigned_company_name }}"> <br>
+                    <input type="hidden" name="dh_company_address" id="dh_company_address" value="{{ dh_company_address }}">
                     
                 </div>
 
@@ -256,7 +254,7 @@
 
                 {% include 'snippets/enquiry_field_input_date.html' with instance=enquiry field="project_success_date" %}
 
-                <input style="display: none;" name="enquirer" value="{{ enquiry.enquirer.id }}">
+                <input type="hidden" name="enquirer" value="{{ enquiry.enquirer.id }}">
 
             </div>
 

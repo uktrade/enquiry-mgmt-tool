@@ -259,9 +259,6 @@ class EnquiryDeleteView(DeleteView):
         return redirect("enquiry-list")
 
 class EnquiryCompanySearchView(TemplateView):
-    """
-    Company search view
-    """
 
     model = models.Enquiry
     template_name = "enquiry_company_search.html"
