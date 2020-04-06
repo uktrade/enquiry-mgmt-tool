@@ -2,11 +2,315 @@ $govuk-assets-path: '/static/assets/';
 $color-green-success: govuk-colour("green");
 $color-red-error: govuk-colour("red");
 @import "node_modules/govuk-frontend/govuk/all";
-@import "frontend/sass/_settings";
-@import "frontend/sass/_enquiries";
-@import "frontend/sass/_enquiry_list";
-@import "frontend/sass/_enquiry_detail";
-@import "frontend/sass/_enquiry_edit";
-@import "frontend/sass/_enquiry_delete";
-@import "frontend/sass/_enquiry_import";
-@import "frontend/sass/_enquiry_company_search";
+
+* {
+    font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif !important;
+    margin: 0;
+    padding: 0;
+}
+
+.govuk-grid-row {
+    margin: 0;
+}
+
+.govuk-header__logo, .govuk-header__content {
+    display: inline-block;
+}
+
+.govuk-header__container {
+    border-bottom: 10px solid white;
+}
+
+.govuk-header__link--service-name {
+    font-size: 30px;
+}
+
+.govuk-tag {
+    transform: translate(5px, -5px);
+}
+
+.govuk-header__content {
+    padding-left: 0px;
+}
+
+span.big-number-of-enquiries {
+    font-size: 3rem;
+}
+
+.collection-header-intro {
+    font-size: 1.5rem;
+}
+
+.collection-header-row {
+    border-bottom: 5px solid black;
+}
+
+ol {
+    list-style-type: none;
+}
+
+li.entity-list-item {
+    padding: 20px 0;
+    border-bottom: 1px solid #6f777b;
+}
+
+a.entity-title-link {
+    text-decoration: none;
+    font-size: x-large;
+    color: #005ea5;
+}
+
+.entity-title {
+    display: inline-block;
+}
+
+.entity-badges {
+    float: right;
+}
+
+.entity-badges-list {
+    display: inline-block;
+}
+
+.entity-badges-item {
+    display: inline-block;
+    border: 2px solid rgba(11,12,12,0.15);
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 3px;
+}
+
+.entity-subtitle {
+    margin: 5px 0;
+    color: #6f777b;
+}
+
+.entity-content-item {
+    margin: 10px 0;
+    font-size: large;
+}
+
+.list-item-label {
+    color: #6f777b;
+}
+
+.govuk-summary-list .govuk-summary-list__row:nth-child(odd) {
+    background-color: rgba(govuk-colour("light-grey"), 0.5);
+}
+
+.govuk-summary-list {
+    border-top: 2px solid govuk-colour("mid-grey");
+}
+
+.govuk-summary-list__key {
+    padding: 0 0.5em;
+}
+
+.enquiry-details-header {
+    background-color: govuk-colour("light-grey");
+    padding: 2em;
+}
+
+.enquiry-details-row {
+    margin-bottom: govuk-spacing(8);
+}
+
+.govuk-fieldset__legend {
+    font-weight: bold;
+    margin-bottom: govuk-spacing(1);
+}
+
+.govuk-label {
+    font-weight: bold;
+}
+
+.govuk-radios__label {
+    font-weight: normal;
+}
+
+button.enquiry-edit-button {
+    float: right;
+}
+
+@mixin company-search__result {
+    padding: 1em;
+    border: 1px solid $govuk-border-colour;
+    margin-top: 1em;
+}
+
+.company-search__result {
+    @include company-search__result()
+}
+
+.company-search__assigned-company {
+    @include company-search__result()
+}
+
+.company-search__result {
+    &:hover {
+        background-color: rgba(govuk-colour("light-grey"), 0.5);
+        border: 1px solid govuk-colour("light-blue");
+
+        &-name {
+            color: govuk-colour("light-blue");
+        }
+    }
+
+    &-name {
+        font-weight: bold;
+        margin-bottom: 0.5em;
+    }
+}
+
+.company-search__link {
+    float: right;
+}
+
+.label--inline {
+    display: inline;
+}
+
+.company-search__details-text {
+    margin-left: 1.5em;
+}
+
+.link--no-visited:visited {
+    color: #005ea5;
+}
+
+.link--no-decoration {
+    text-decoration: none;
+}
+
+.company-search__button {
+    margin-top: 1em;
+}
+
+.company-search__result-address-label {
+    color: govuk-colour("dark-grey")
+}
+
+.company-search__result-address-value {
+    color: govuk-colour("black")
+}
+
+a.pagination-link {
+    text-decoration: none;
+    font-size: large;
+    font-weight: bold;
+    color: #005ea5;
+}
+
+li.pagination-list-item {
+    display: inline-block;
+    background-color: #fafafa;
+    min-width: 22px;
+    text-align: center;
+    padding: 0.5em;
+    margin: 3px;
+}
+
+li:hover.pagination-list-item {
+    background-color: #dee0e2;
+}
+
+li:active.pagination-list-item {
+    border: 3px solid #ffbf47;
+    margin: 0px;
+}
+
+li.pagination-list-item-current, li:hover.pagination-list-item-current {
+    background-color: white;
+    color: black;
+}
+
+ol.pagination-list {
+    margin: auto;
+    width:  50%;
+}
+
+.edit-details-button {
+    float: right;
+    transform: translateY(-80px);
+}
+
+.additional-actions {
+    float: right;
+}
+
+.additional-actions-list {
+    display: inline-block;
+}
+
+.additional-actions-item {
+    display: inline-block;
+    padding: 3px;
+}
+
+.topbar {
+    height: 100px;
+    position: relative;
+
+    &__left, &__right {
+        position: absolute;
+        top: 0;
+    }
+
+    &__left {
+        left: 0;
+    }
+
+    &__right {
+        right: 0;
+    }
+    a, button {
+        transform: translate3d(0, 50%, 0);
+    }
+}
+
+// Error Summary
+.govuk-error-summary {
+    color: govuk-colour("red");
+        li {
+            color: govuk-colour("red");
+        }
+    &--success {
+        border-color: govuk-colour("green");
+        color: govuk-colour("green");
+        li {
+            color: govuk-colour("green");
+        }
+    }
+} 
+button.enquiry-delete-button {
+    float: right;
+}
+
+.enquiry-delete__form {
+    display: inline;
+}
+
+.enquiry-delete__warning {
+    display: inline-block;
+}
+
+.company-search__details-link {
+    margin-top: govuk-spacing(4);
+}
+
+.filters-column {
+    padding: 0;
+}
+
+.pagination {
+    margin-top: govuk-spacing(6);
+}
+
+.collection-header-page-number {
+    padding: govuk-spacing(3) 0;
+    border-bottom: 1px solid #6f777b;
+}
+
+.header-page-number {
+    color: #6f777b;
+}

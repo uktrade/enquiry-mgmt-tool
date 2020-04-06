@@ -451,6 +451,8 @@ IMPORT_COL_NAMES = [
     "investment_readiness",
     "enquiry_text",
     "notes",
+    "google_campaign",
+    "marketing_channel",
 ]
 
 MAP_ENQUIRY_FIELD_TO_REF_DATA = {

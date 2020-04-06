@@ -3,7 +3,7 @@
         <div class="entity__header">
             <div class="entity__title">
                 <h3>
-                    <a class="entity__title-link"
+                    <a class="entity-title-link"
                         href="{% url 'enquiry-detail' obj.id %}">{{ enquiry.company_name }}</a>
                 </h3>
             </div>
@@ -28,16 +28,16 @@
                     <span class="list-item-label">Date received</span>
                     <span class="list-item-value">{{ enquiry.created }}</span>
                 </div>
-                <div class="entity__content-item">
+                <div class="entity-content-item">
                     <span class="list-item-label">Enquiry text</span>
                     <span class="list-item-value">{{ enquiry.enquiry_text }}</span>
                 </div>
-                <div class="entity__content-item">
+                <div class="entity-content-item">
                     <span class="list-item-label">Date last updated</span>
                     <span class="list-item-value">{{ enquiry.modified }}</span>
                 </div>
                 {% if enquiry.enquirer.request_for_call != "----" %}
-                <div class="entity__content-item">
+                <div class="entity-content-item">
                     <span class="list-item-label">Call requested</span>
                     <span class="list-item-value">{{ enquiry.enquirer.request_for_call }}</span>
                 </div>

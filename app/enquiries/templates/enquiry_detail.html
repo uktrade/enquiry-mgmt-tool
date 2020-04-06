@@ -6,17 +6,12 @@
 <div class="govuk-width-container">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
 
-    <div class="top-controls">
-        <div class="top-controls__back-container">
-            <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
-        </div>
-        <div class="top-controls__edit-button-container">
-            <button onclick="window.location.href = `{% url 'enquiry-edit' enquiry.id %}`" class="govuk-button
-            govuk-button--secondary govuk-!-margin-right-1 enquiry-edit__button" data-module="govuk-button">
-                Edit details
-            </button>
-        </div>
-    </div>
+    <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
+
+    <button onclick="window.location.href = `{% url 'enquiry-edit' enquiry.id %}`" class="govuk-button
+    govuk-button--secondary govuk-!-margin-right-1 enquiry-edit-button" data-module="govuk-button">
+        Edit details
+    </button>
 
     <main class="govuk-main-wrapper">
         {% csrf_token %}
@@ -47,105 +42,132 @@
         </div>
         {% endif %}
 
-        <div class="govuk-grid-row enquiry-detail__row enquiry-detail__header">
-            <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
-            <dl class="govuk-summary-list--no-border">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Date received
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"created" }}</dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Date last updated
-                    </dt>
-                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"modified" }}</dd>
-                </div>
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_stage" %}
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        {{ enquiry|get_field_verbose_name:"owner" }}
-                    </dt>
-                    <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
-                        {{ "Unassigned" }} {%endif%}</dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        {%if enquiry.dh_assigned_company_name %}
-                        <a href="{{ enquiry|get_dh_company_url }}">
-                             {{ enquiry.dh_assigned_company_name }}</a>
-                        {% else %} {{ "----" }} {% endif %}
-                    </dd>
-                </div>
-            </dl>
+        <div class="govuk-grid-row enquiry-details-row enquiry-details-header">
+    <h2 class="govuk-heading-l">{{ enquiry.company_name }}</h2>
+    <dl class="govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Date received
+            </dt>
+            <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"created" }}</dd>
         </div>
-        
-        <div class="govuk-grid-row enquiry-detail__row">
-            <h3 class="govuk-heading-m">Enquiry details</h3>
-            <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_text" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="investment_readiness" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="quality" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="first_response_channel" %}
-            </dl>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Date last updated
+            </dt>
+            <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"modified" }}</dd>
         </div>
-        <div class="govuk-grid-row enquiry-detail__row">
-            <h3 class="govuk-heading-m">Company details</h3>
-            <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="website" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="country" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="region" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_hq_address" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="primary_sector" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="ist_sector" %}
-            </dl>
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_stage" %}
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                {{ enquiry|get_field_verbose_name:"owner" }}
+            </dt>
+            <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
+                {{ "Unassigned" }} {%endif%}</dd>
         </div>
-        <div class="govuk-grid-row enquiry-detail__row">
-            <h3 class="govuk-heading-m">Contact details</h3>
-            <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="first_name" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="last_name" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="job_title" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="email" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="phone" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="request_for_call" %}
-            </dl>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+                {%if enquiry.dh_assigned_company_name %}
+                <a href="{{ enquiry|get_dh_company_url }}">
+                     {{ enquiry.dh_assigned_company_name }}</a>
+                {% else %} {{ "----" }} {% endif %}
+            </dd>
         </div>
-        <div class="govuk-grid-row enquiry-detail__row">
-            <h3 class="govuk-heading-m">Marketing information</h3>
-            <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="google_campaign" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="marketing_channel" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="how_they_heard_dit" %}
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Consent (email)
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        {% if enquiry.email_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Consent (telephone)
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        {% if enquiry.phone_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
-                </div>
-            </dl>
+    </dl>
+</div>
+<div class="govuk-grid-row enquiry-details-row">
+    <h3 class="govuk-heading-m">Enquiry overview</h3>
+    <dl class="govuk-summary-list">
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_name" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_hq_address" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_stage" %}
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Owner
+            </dt>
+            <dd class="govuk-summary-list__value">{% if enquiry.owner %}{{ enquiry.owner }} {%else%}
+                {{ "Unassigned" }} {%endif%}</dd>
         </div>
-        <div class="govuk-grid-row enquiry-detail__row">
-            <h3 class="govuk-heading-m">HPO details</h3>
-            <dl class="govuk-summary-list">
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="first_hpo_selection" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="second_hpo_selection" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="third_hpo_selection" %}
-            </dl>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                {{ enquiry|get_field_verbose_name:"dh_assigned_company_name" }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+                {%if enquiry.dh_assigned_company_name %}
+                <a href="{{ enquiry|get_dh_company_url }}">
+                     {{ enquiry.dh_assigned_company_name }}</a>
+                {% else %} {{ "----" }} {% endif %}
+            </dd>
         </div>
-        <div class="govuk-grid-row enquiry-detail__row">
+    </dl>
+</div>
+<div class="govuk-grid-row enquiry-details-row">
+    <h3 class="govuk-heading-m">Enquiry details</h3>
+    <dl class="govuk-summary-list">
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="enquiry_text" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="investment_readiness" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="quality" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="first_response_channel" %}
+    </dl>
+</div>
+<div class="govuk-grid-row enquiry-details-row">
+    <h3 class="govuk-heading-m">Company details</h3>
+    <dl class="govuk-summary-list">
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="website" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="country" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="region" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="company_hq_address" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="primary_sector" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="ist_sector" %}
+    </dl>
+</div>
+<div class="govuk-grid-row enquiry-details-row">
+    <h3 class="govuk-heading-m">Contact details</h3>
+    <dl class="govuk-summary-list">
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="first_name" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="last_name" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="job_title" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="email" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="phone_country_code" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="phone" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry.enquirer field="request_for_call" %}
+    </dl>
+</div>
+<div class="govuk-grid-row enquiry-details-row">
+    <h3 class="govuk-heading-m">Marketing information</h3>
+    <dl class="govuk-summary-list">
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="google_campaign" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="marketing_channel" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="how_they_heard_dit" %}
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Consent (email)
+            </dt>
+            <dd class="govuk-summary-list__value">
+                {% if enquiry.email_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Consent (telephone)
+            </dt>
+            <dd class="govuk-summary-list__value">
+                {% if enquiry.phone_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
+        </div>
+    </dl>
+</div>
+<div class="govuk-grid-row enquiry-details-row">
+    <h3 class="govuk-heading-m">HPO details</h3>
+    <dl class="govuk-summary-list">
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="first_hpo_selection" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="second_hpo_selection" %}
+        {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="third_hpo_selection" %}        
+    </dl>
+</div>
+
+        <div class="govuk-grid-row enquiry-details-row">
             <h3 class="govuk-heading-m">Data Hub details</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="organisation_type" %}
@@ -164,7 +186,7 @@
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_success_date" %}
             </dl>
         </div>
-        <div class="govuk-grid-row enquiry-detail__row">
+        <div class="govuk-grid-row enquiry-details-row">
             <h3 class="govuk-heading-m">Notes</h3>
             <dl class="govuk-summary-list">
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="notes" %}
