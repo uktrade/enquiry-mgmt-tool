@@ -31,9 +31,9 @@
                             </div>
                             <!-- <div class="collection-filter-summary">Stage: New</div> -->
                         </div>
-                        <!-- <div class="collection-header-row">
-                    <span class="header-page-number">Page 1 of 5</span>
-                </div> -->
+                        <div class="collection-header-page-number">
+                            <span class="header-page-number">Page {{ current_page }} of {{ page_range|length }}</span>
+                        </div>
                     </header>
                     <ol class="entity-list">
                         {% for obj in results %}
