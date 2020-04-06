@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 class EnquiryStage(models.TextChoices):
     NEW = "NEW", _("New")
     AWAITING_RESPONSE = "AWAITING_RESPONSE", _("Awaiting response from Investor")
+    ENGAGED = "ENGAGED", _("Engaged in dialogue")
     NON_RESPONSIVE = "NON_RESPONSIVE", _("Non-responsive")
     NON_FDI = "NON_FDI", _("Non-FDI")
     ADDED_TO_DATAHUB = "ADDED_TO_DATAHUB", _("Added to Data Hub")

@@ -1,5 +1,6 @@
 $govuk-assets-path: '/static/assets/';
-
+$color-green-success: govuk-colour("green");
+$color-red-error: govuk-colour("red");
 @import "node_modules/govuk-frontend/govuk/all";
 @import "frontend/sass/_settings";
 @import "frontend/sass/_enquiries";

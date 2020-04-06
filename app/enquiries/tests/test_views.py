@@ -150,9 +150,11 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
     def assert_enquiry_equals_csv_row(self, enquiry, csv_row):
         for name in utils.ENQUIRY_OWN_FIELD_NAMES:
+            if name in ["id", "created", "modified"]:
+                continue
             enquiry_val = getattr(enquiry, name)
             self.assertEqual(
-                csv_row[name], str(enquiry_val) if enquiry_val != None else ""
+                csv_row[name], str(enquiry_val) if enquiry_val else ""
             )
         if enquiry.enquirer:
             for enquirer_key in utils.ENQUIRER_FIELD_NAMES:
@@ -195,7 +197,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiries = EnquiryFactory.create_batch(2)
         response = self.client.get(reverse("enquiry-list"), **headers)
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         count = len(enquiry_els)
         self.assertEqual(count, len(enquiries))
@@ -229,9 +231,11 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         It will be same for all pages except for the last page
         if num_enquiries is not a multiple of page_size
         """
-        num_enquiries = 13
+        num_enquiries = 3
         enquiries = EnquiryFactory.create_batch(num_enquiries)
         ids = [e.id for e in enquiries]
+        # reverse the ids because we order by latest first
+        ids = ids[::-1]
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
         total_pages = (num_enquiries + page_size - 1) // page_size
         for page in range(total_pages):
@@ -385,6 +389,41 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertContains(response, enquiry_stage_display_name)
         self.assertContains(response, country_display_name)
 
+    def test_enquiry_import_rendered(self):
+        response = self.client.get(reverse("enquiries-import"))
+        self.assertContains(response, "Import enquiries")
+        self.assertContains(response, "<form")
+        self.assertContains(response, "Upload file")
+        self.assertContains(response, "Choose a file to upload")
+        self.assertNotContains(
+            response,
+            "govuk-error-summary",
+            msg_prefix="Should not render message summary",
+        )
+        self.assertNotContains(response, "File import successfully completed.")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_enquiry_import_rendered_with_error(self):
+        url = reverse("enquiries-import") + "?errors"
+        response = self.client.get(url)
+        self.assertContains(
+            response,
+            "govuk-error-summary",
+            msg_prefix="Should not render message summary",
+        )
+        self.assertContains(response, "Error - File import has failed:")
+        self.assertNotContains(response, "File import successfully completed.")
+
+    def test_enquiry_import_rendered_with_success(self):
+        url = reverse("enquiries-import") + "?success"
+        response = self.client.get(url)
+        self.assertContains(
+            response,
+            "govuk-error-summary",
+            msg_prefix="Should not render message summary",
+        )
+        self.assertNotContains(response, "Error - File import has failed:")
+        self.assertContains(response, "File import successfully completed.")
     def test_enquiry_import_view(self):
         """Test retrieving a valid enquiry returns 200"""
         response = self.client.get(reverse("import-enquiries"))
@@ -439,23 +478,21 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiries[3]["enquirer_job_title"] = ""
 
         fp = StringIO()
-
         writer = csv.DictWriter(
             fp, fieldnames=ref_data.IMPORT_COL_NAMES, quoting=csv.QUOTE_MINIMAL
         )
         writer.writeheader()
         writer.writerows(enquiries)
-
         body = fp.getvalue().encode()
         upload = SimpleUploadedFile("test.csv", body, content_type="text/csv")
 
         response = self.client.post(
             reverse("import-enquiries"), {"enquiries": upload}, follow=True
         )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         final_count = Enquiry.objects.count()
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # test atomic transactions
         self.assertEqual(
             final_count,
@@ -592,7 +629,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
@@ -602,7 +639,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers
         )
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
@@ -645,7 +682,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
@@ -658,7 +695,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 0)
@@ -694,19 +731,19 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
     def test_export_view(self):
-        enquiries = EnquiryFactory.create_batch(5)
+        num_enquiries = 5
+        enquiries = EnquiryFactory.create_batch(num_enquiries)
         response = self.client.get(reverse("enquiry-export"))
         reader = csv.DictReader(io.StringIO(response.content.decode()))
-        row_count = 0
 
         self.assertTrue("text/csv" in response.get("Content-Type"))
         self.assertIn(
             settings.EXPORT_OUTPUT_FILE_SLUG, response.get("Content-Disposition"),
         )
 
-        for i, csv_row in enumerate(reader):
-            enquiry = enquiries[i]
+        for csv_row in reader:
+            enquiry = Enquiry.objects.get(id=int(csv_row["id"]))
             self.assert_enquiry_equals_csv_row(enquiry, csv_row)
-            row_count += 1
+            num_enquiries -= 1
 
-        self.assertEqual(row_count, 5)
+        self.assertEqual(num_enquiries, 0)

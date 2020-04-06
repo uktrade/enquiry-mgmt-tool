@@ -83,3 +83,24 @@ $govuk-assets-path: '/static/assets/';
 .collection-header__row {
     border-bottom: 5px solid black;
 }
+
+.pagination {
+    margin-top: govuk-spacing(6);
+}
+
+.collection-header__page-number {
+    padding: govuk-spacing(3) 0;
+    border-bottom: 1px solid #6f777b;
+}
+
+.header-page-number {
+    color: #6f777b;
+}
+
+.filters-column {
+    padding: 0;
+}
+
+.add-enquiries-button {
+    float: right;
+}
