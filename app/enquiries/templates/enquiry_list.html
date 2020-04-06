@@ -8,7 +8,7 @@
         <h2 class="govuk-heading-l">Enquiries</h2>
         <div class="govuk-grid-row">
 
-            <div class="govuk-grid-column-one-third">
+            <div class="govuk-grid-column-one-third filters-column">
                 {% include 'partials/enquiry_filters.html' %}
             </div>
 
@@ -20,46 +20,53 @@
                         <div class="collection-header-row">
                             <div class="collection-header-intro">
                                 <span class="big-number-of-enquiries">{{ count }}</span> enquiries
+                                <a href="{% url 'enquiries-import' %}"
+                                    class="add-enquiries-button govuk-button govuk-button--secondary"
+                                    data-module="govuk-button">
+                                    Add enquiries
+                                </a>
                                 <div class="collection-header-actions">
                                     <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
                                 </div>
                             </div>
                             <!-- <div class="collection-filter-summary">Stage: New</div> -->
                         </div>
-                        <!-- <div class="collection-header-row">
-                    <span class="header-page-number">Page 1 of 5</span>
-                </div> -->
+                        <div class="collection-header-page-number">
+                            <span class="header-page-number">Page {{ current_page }} of {{ page_range|length }}</span>
+                        </div>
                     </header>
                     <ol class="entity-list">
                         {% for obj in results %}
                         {% include 'snippets/enquiry_item.html' with enquiry=obj %}
                         {% endfor %}
                     </ol>
-                    <nav class="pagination">
-                        <ol class="pagination-list">
-                            {%if previous is not None %}
-                                <li class="pagination-list-item">
-                                    <a class="pagination-link" href="{{ previous }}">Previous</a>
-                                </li>
-                            {%endif%}
-
-                            {% for page in page_range %}
-                                {% if page|stringformat:"s" == current_page %}
-                                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item pagination-list-item-current">{{ page }}</li></a>
-                                {% else %}
-                                    <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item">{{ page }}</li></a>
-                                {% endif %}
-                            {% endfor %}
-
-                            {%if next is not None %}
-                                <li class="pagination-list-item">
-                                    <a class="pagination-link" href="{{ next }}">Next</a>
-                                </li>
-                            {%endif%}
-                        </ol>
-                    </nav>
                 </article>
             </div>
+        </div>
+        <div class="govuk-grid-row">
+            <nav class="pagination">
+                <ol class="pagination-list">
+                    {%if previous is not None %}
+                        <li class="pagination-list-item">
+                            <a class="pagination-link" href="{{ previous }}">Previous</a>
+                        </li>
+                    {%endif%}
+
+                    {% for page in page_range %}
+                        {% if page|stringformat:"s" == current_page %}
+                            <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item pagination-list-item-current">{{ page }}</li></a>
+                        {% else %}
+                            <a class="pagination-link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination-list-item">{{ page }}</li></a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {%if next is not None %}
+                        <li class="pagination-list-item">
+                            <a class="pagination-link" href="{{ next }}">Next</a>
+                        </li>
+                    {%endif%}
+                </ol>
+            </nav>
         </div>
     </main>
 </div>

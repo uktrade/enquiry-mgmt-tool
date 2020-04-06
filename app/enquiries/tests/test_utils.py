@@ -71,7 +71,7 @@ class UtilsTestCase(test_utils.BaseEnquiryTestCase):
         """
         Tests that the export to csv util writes the expected data to file
         """
-        enquiries = [EnquiryFactory() for i in range(5)]
+        enquiries = EnquiryFactory.create_batch(5)
         qs = models.Enquiry.objects.all()
         fp = io.StringIO()
 
@@ -82,7 +82,7 @@ class UtilsTestCase(test_utils.BaseEnquiryTestCase):
         fp.seek(0)
 
         for i, enquiry_row in enumerate(reader):
-            enquiry = enquiries[i]
+            enquiry = models.Enquiry.objects.get(id=int(enquiry_row["id"]))
             for name in utils.ENQUIRY_OWN_FIELD_NAMES:
                 enquiry_val = getattr(enquiry, name)
                 self.assertEqual(

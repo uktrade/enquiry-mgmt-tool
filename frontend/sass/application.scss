@@ -1,5 +1,6 @@
 $govuk-assets-path: '/static/assets/';
-
+$color-green-success: govuk-colour("green");
+$color-red-error: govuk-colour("red");
 @import "node_modules/govuk-frontend/govuk/all";
 
 * {
@@ -193,12 +194,86 @@ button.enquiry-edit-button {
     color: govuk-colour("black")
 }
 
+a.pagination-link {
+    text-decoration: none;
+    font-size: large;
+    font-weight: bold;
+    color: #005ea5;
+}
+
+li.pagination-list-item {
+    display: inline-block;
+    background-color: #fafafa;
+    min-width: 22px;
+    text-align: center;
+    padding: 0.5em;
+    margin: 3px;
+}
+
+li:hover.pagination-list-item {
+    background-color: #dee0e2;
+}
+
+li:active.pagination-list-item {
+    border: 3px solid #ffbf47;
+    margin: 0px;
+}
+
+li.pagination-list-item-current, li:hover.pagination-list-item-current {
+    background-color: white;
+    color: black;
+}
+
 ol.pagination-list {
     margin: auto;
     width:  50%;
 }
 
-.enquiry-delete__button {
+.edit-details-button {
+    float: right;
+    transform: translateY(-80px);
+}
+
+.add-enquiries-button {
+    float: right;
+}
+
+.topbar {
+    height: 100px;
+    position: relative;
+
+    &__left, &__right {
+        position: absolute;
+        top: 0;
+    }
+
+    &__left {
+        left: 0;
+    }
+
+    &__right {
+        right: 0;
+    }
+    a, button {
+        transform: translate3d(0, 50%, 0);
+    }
+}
+
+// Error Summary
+.govuk-error-summary {
+    color: govuk-colour("red");
+        li {
+            color: govuk-colour("red");
+        }
+    &--success {
+        border-color: govuk-colour("green");
+        color: govuk-colour("green");
+        li {
+            color: govuk-colour("green");
+        }
+    }
+} 
+button.enquiry-delete-button {
     float: right;
 }
 
@@ -212,4 +287,21 @@ ol.pagination-list {
 
 .company-search__details-link {
     margin-top: govuk-spacing(4);
+}
+
+.filters-column {
+    padding: 0;
+}
+
+.pagination {
+    margin-top: govuk-spacing(6);
+}
+
+.collection-header-page-number {
+    padding: govuk-spacing(3) 0;
+    border-bottom: 1px solid #6f777b;
+}
+
+.header-page-number {
+    color: #6f777b;
 }

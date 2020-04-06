@@ -252,7 +252,7 @@ class Enquiry(TimeStampedModel):
     )
 
     class Meta:
-        ordering = ["created"]
+        ordering = ["-created"]
 
 
 class ReceivedEnquiryCursor(models.Model):

@@ -241,6 +241,40 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         return response
 
 
+class EnquiryAdd(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def get(self, request):
+        if "errors" in request.GET:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "The selected file could not be uploaded - please try again.",
+            )
+        elif "success" in request.GET:
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "Please return back to the enquiry summary page.",
+            )
+        return Response(
+            {
+                "data": "goes here",
+                "back_url": reverse("enquiry-list"),
+                "main_bar_right_btn": {
+                    "text": "Download template",
+                    "href": "",
+                    "element": "a",
+                },
+                # @TODO integration with real backend and errors
+                # currently using query variables just to illustrate the different states (success|errors)
+                "has_errors": "errors" in request.GET,
+                "has_success": "success" in request.GET,
+            },
+            template_name="enquiry_import.html",
+        )
+
+
 class EnquiryDeleteView(DeleteView):
     """
     View to delete enquiry
