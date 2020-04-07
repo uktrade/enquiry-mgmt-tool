@@ -1,0 +1,18 @@
+// Error Summary
+.govuk-error-summary {
+    color: govuk-colour("red");
+        li {
+            color: govuk-colour("red");
+        }
+    &--success {
+        border-color: govuk-colour("green");
+        color: govuk-colour("green");
+        li {
+            color: govuk-colour("green");
+        }
+    }
+} 
+
+.import-enquiries-heading {
+    margin-top: govuk-spacing(4);
+}
