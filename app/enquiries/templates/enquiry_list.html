@@ -23,7 +23,7 @@
                                 <a href="{% url 'import-enquiries' %}"
                                     class="add-enquiries-button govuk-button govuk-button--secondary"
                                     data-module="govuk-button">
-                                    Add enquiries
+                                    Import enquiries
                                 </a>
                                 <div class="collection-header__actions">
                                     <!-- <a class="header-link-remove-all-filters" href="#">Remove all filters</a> -->
@@ -33,6 +33,16 @@
                         <div class="collection-header__page-number">
                             <span class="header-page-number">Page {{ current_page }} of {{ page_range|length }}</span>
                         </div>
+                        {% if count != 0 %}
+                            <div class="collection-header__download">
+                                {% if count == 1 %}
+                                    <span class="download-message">You can now download this 1 enquiry</span>
+                                {% else %}
+                                    <span class="download-message">You can now download these {{ count }} enquiries</span>
+                                {% endif %}
+                                <button onclick="window.location.href = `{% url 'export-enquiries' %}`" class="govuk-button download-enquiries-button">Download</button>
+                            </div>
+                        {% endif %}
                     </header>
                     <ol class="entity-list">
                         {% for obj in results %}

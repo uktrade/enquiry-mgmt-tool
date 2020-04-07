@@ -9,7 +9,7 @@
 
     <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
     <div class="govuk-grid-row">
-    <h1 class="govuk-heading-l">Import Enquiries</h1>
+    <h1 class="govuk-heading-l import-enquiries-heading">Import enquiries</h1>
     {% if messages %}
     <div class="govuk-error-summary {% if has_success%}govuk-error-summary--success{% endif %}" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
         <h2 class="govuk-error-summary__title" id="error-summary-title">
@@ -46,7 +46,7 @@
             </label>
             <input class="govuk-file-upload" id="enquiries" name="enquiries" type="file">
             <button class="govuk-button govuk-!-margin-top-6" type="submit" data-module="govuk-button" style="display: block">
-                Upload File
+                Upload file
             </button>
         </div>
     </form>

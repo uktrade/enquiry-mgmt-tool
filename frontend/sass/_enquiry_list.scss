@@ -101,3 +101,18 @@ $govuk-assets-path: '/static/assets/';
 .add-enquiries-button {
     float: right;
 }
+
+.collection-header__download {
+    display: flex;
+    padding: govuk-spacing(3) 0;
+    border-bottom: 1px solid #6f777b;
+}
+
+.download-enquiries-button {
+    margin-left: auto;
+    margin-bottom: 0;
+}
+
+.download-message {
+    margin: 0.5rem 0;
+}
