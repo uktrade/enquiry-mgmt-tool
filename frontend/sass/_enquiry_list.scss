@@ -1,0 +1,102 @@
+$govuk-assets-path: '/static/assets/';
+
+.pagination__link {
+    text-decoration: none;
+    font-size: large;
+    font-weight: bold;
+    color: #005ea5;
+}
+
+.pagination__list-item {
+    display: inline-block;
+    background-color: #fafafa;
+    min-width: 22px;
+    text-align: center;
+    padding: 0.5em;
+    margin: 3px;
+}
+
+.pagination__list-item:hover {
+    background-color: #dee0e2;
+}
+
+.pagination__list-item:active {
+    border: 3px solid #ffbf47;
+    margin: 0px;
+}
+
+.pagination__list-item--current, .pagination__list-item--current:hover {
+    background-color: white;
+    color: black;
+}
+
+.pagination__list {
+    margin: auto;
+    width:  fit-content;
+}
+
+.list-item-label {
+    color: #6f777b;
+}
+
+.entity__list-item {
+    padding: 20px 0;
+    border-bottom: 1px solid #6f777b;
+}
+
+.entity__title-link {
+    text-decoration: none;
+    font-size: x-large;
+    color: #005ea5;
+}
+
+.entity__badges-item {
+    border: 2px solid rgba(11,12,12,0.15);
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 3px;
+    margin: 0 2px;
+}
+
+.entity__badges {
+    margin-left: auto;
+    display: flex;
+}
+
+.entity__header {
+    display: flex;
+}
+
+.entity__content-item {
+    margin: 10px 0;
+    font-size: large;
+}
+
+.big-number-of-enquiries {
+    font-size: 3rem;
+}
+
+.collection-header__intro {
+    font-size: 1.5rem;
+}
+
+.collection-header__row {
+    border-bottom: 5px solid black;
+}
+
+.pagination {
+    margin-top: govuk-spacing(6);
+}
+
+.collection-header__page-number {
+    padding: govuk-spacing(3) 0;
+    border-bottom: 1px solid #6f777b;
+}
+
+.filters-column {
+    padding: 0;
+}
+
+.add-enquiries-button {
+    float: right;
+}

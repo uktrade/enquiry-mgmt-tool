@@ -198,7 +198,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiries = EnquiryFactory.create_batch(2)
         response = self.client.get(reverse("enquiry-list"), **headers)
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         count = len(enquiry_els)
         self.assertEqual(count, len(enquiries))
@@ -616,7 +616,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
@@ -626,7 +626,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers
         )
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
@@ -669,7 +669,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
@@ -682,7 +682,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
-        enquiry_els = soup.select(".entity-list-item")
+        enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 0)
