@@ -81,7 +81,7 @@ $govuk-assets-path: '/static/assets/';
     font-size: 1.5rem;
 }
 
-.collection-header__row {
+.collection-header__top-row {
     border-bottom: 5px solid black;
 }
 
@@ -89,23 +89,20 @@ $govuk-assets-path: '/static/assets/';
     margin-top: govuk-spacing(6);
 }
 
-.collection-header__page-number {
+.collection-header__row {
+    display: flex;
     padding: govuk-spacing(3) 0;
     border-bottom: 1px solid #6f777b;
+    margin-right: 0;
 }
 
 .filters-column {
     padding: 0;
 }
 
-.add-enquiries-button {
+.import-enquiries-button {
     float: right;
-}
-
-.collection-header__download {
-    display: flex;
-    padding: govuk-spacing(3) 0;
-    border-bottom: 1px solid #6f777b;
+    margin-bottom: 0;
 }
 
 .download-enquiries-button {
@@ -113,6 +110,10 @@ $govuk-assets-path: '/static/assets/';
     margin-bottom: 0;
 }
 
-.download-message {
-    margin: 0.5rem 0;
+.header-page-number-container {
+    padding: 0.5rem 0;
+}
+
+.download-button-container {
+    margin-left: auto;
 }
