@@ -1,6 +1,6 @@
 # Enquiry Management Tool
 
-This is tool mainly used by IST users to manage investment enquiries. They can review enquiries, update them during their engagement with the potential investors and submit the information to Data Hub.
+This is tool mainly used by Service team to manage investment enquiries. They can review enquiries, update them during their engagement with the potential investors and submit the qualified ones to Data Hub.
 
 ## Installation with Docker
 
@@ -29,16 +29,16 @@ This project uses Docker compose to setup and run all the necessary components. 
     docker run -it --rm --name frontend -v "$(pwd):/app" node:10 bash -c 'cd /app && npm rebuild node-sass && npm install && npm run sass'
     ```
 
-1.  Load sample users data using fixtures:
-
-    ```shell
-    docker-compose run api bash
-    python manage.py loaddata app/enquiries/fixtures/users.json
-    ```
-
 You can view the app at `http://localhost:8000/enquiries/`
 
+The application uses SSO by default. When you access the above link for the first time you will be redirected to SSO login page. After authentication it will create a user in the database.
+
 ## Configuration
+
+### sample_env
+This file contains all the required environment variable for the application. Sample values are provided in this file but the actual values are to be included in the `.env` file at the appropriate location.
+
+The actual values are added to `ready-to-trade` vault. Please use the values corresponding to the `dev` environment.
 
 ### SSO
 Use the following ENV variable to toggle SSO:
@@ -51,15 +51,8 @@ Or in app/settings/*
     ENFORCE_STAFF_SSO_ENABLED=True on
     ENFORCE_STAFF_SSO_ENABLED=False off
 
-## Management commands
-### Import template
-To generate a import `.xlsx` template run the following command:
+It is possible to run the app with SSO disabled but it will redirect to Django admin page for login so a superuser needs to be created first.
 
-`python manage.py generate_import_template`
-
-The following file will be created in the root of the project directory:
-
-`rtt_enquiries_import_template.xlsx`
 
 ## More useful info
 
@@ -79,6 +72,14 @@ To build the styles and watch for changes use the `sass:watch` script instead (t
 For testing, you might want to load sample enquiries into the database. Sample data is available in json format, please ask the development team for more information.
 
 ### Running tests
+
+To run all tests,
+
+```
+docker-compose run api bash
+pytest -s -vvv app/enquiries
+```
+
 
 To run an individual test run the following command:
 
