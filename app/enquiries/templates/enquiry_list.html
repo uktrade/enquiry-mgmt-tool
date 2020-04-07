@@ -17,11 +17,11 @@
                 <article>
                     <header class="collection-header">
                         <!-- TODO: Add filter controls and data to header -->
-                        <div class="collection-header__row">
+                        <div class="collection-header__top-row">
                             <div class="collection-header__intro">
                                 <span class="big-number-of-enquiries">{{ count }}</span> enquiries
                                 <a href="{% url 'import-enquiries' %}"
-                                    class="add-enquiries-button govuk-button govuk-button--secondary"
+                                    class="import-enquiries-button govuk-button govuk-button--secondary"
                                     data-module="govuk-button">
                                     Import enquiries
                                 </a>
@@ -30,19 +30,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="collection-header__page-number">
-                            <span class="header-page-number">Page {{ current_page }} of {{ page_range|length }}</span>
-                        </div>
-                        {% if count != 0 %}
-                            <div class="collection-header__download">
-                                {% if count == 1 %}
-                                    <span class="download-message">You can now download this 1 enquiry</span>
-                                {% else %}
-                                    <span class="download-message">You can now download these {{ count }} enquiries</span>
-                                {% endif %}
-                                <button onclick="window.location.href = `{% url 'export-enquiries' %}`" class="govuk-button download-enquiries-button">Download</button>
+                        <div class="collection-header__row">
+                            <div class="header-page-number-container">
+                                <span class="header-page-number">Page {{ current_page }} of {{ page_range|length }}</span>
                             </div>
-                        {% endif %}
+                            <div class="download-button-container">
+                                <button onclick="window.location.href = `{% url 'export-enquiries' %}`" class="govuk-button download-enquiries-button">Download all</button>
+                            </div>
+                        </div>
                     </header>
                     <ol class="entity-list">
                         {% for obj in results %}
