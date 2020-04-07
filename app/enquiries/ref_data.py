@@ -40,7 +40,7 @@ class Quality(models.TextChoices):
     NON_FDI = "NON_FDI", _("Non-FDI")
     POTENTIALLY_NON_FDI = "POTENTIALLY_NON_FDI", _("Potentially Non-FDI")
     POTENTIALLY_FDI = "POTENTIALLY_FDI", _("Potentially FDI")
-    LIKELY_FDI = "LIKELY_FDI", _("FDI or likely FDI")
+    FDI = "FDI", _("FDI")
 
 
 class MarketingChannel(models.TextChoices):
