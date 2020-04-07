@@ -393,9 +393,9 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
     def test_enquiry_import_rendered(self):
         response = self.client.get(reverse("import-enquiries"))
-        self.assertContains(response, "Import Enquiries")
+        self.assertContains(response, "Import enquiries")
         self.assertContains(response, "<form")
-        self.assertContains(response, "Upload File")
+        self.assertContains(response, "Upload file")
         self.assertContains(response, "Choose a file to upload")
         self.assertNotContains(
             response,
