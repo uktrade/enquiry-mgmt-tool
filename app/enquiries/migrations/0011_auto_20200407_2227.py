@@ -6,13 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('enquiries', '0010_auto_20200406_1456'),
+        ("enquiries", "0010_auto_20200406_1456"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='enquiry',
-            name='quality',
-            field=models.CharField(choices=[('DEFAULT', '----'), ('NON_APPLICABLE', 'Non-applicable'), ('NON_FDI', 'Non-FDI'), ('POTENTIALLY_NON_FDI', 'Potentially Non-FDI'), ('POTENTIALLY_FDI', 'Potentially FDI'), ('FDI', 'FDI')], default='DEFAULT', max_length=255, verbose_name='Enquiry quality'),
+            model_name="enquiry",
+            name="quality",
+            field=models.CharField(
+                choices=[
+                    ("DEFAULT", "----"),
+                    ("NON_APPLICABLE", "Non-applicable"),
+                    ("NON_FDI", "Non-FDI"),
+                    ("POTENTIALLY_NON_FDI", "Potentially Non-FDI"),
+                    ("POTENTIALLY_FDI", "Potentially FDI"),
+                    ("FDI", "FDI"),
+                ],
+                default="DEFAULT",
+                max_length=255,
+                verbose_name="Enquiry quality",
+            ),
         ),
     ]
