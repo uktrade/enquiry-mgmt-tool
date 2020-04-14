@@ -91,3 +91,31 @@ def query_params_has_value(value, param_key, query_params):
 @register.simple_tag
 def query_params_value_selected(value, param_key, query_params, text='selected'):
     return f' {text}' if str(value) in query_params.getlist(param_key) else ''
+
+
+@register.simple_tag
+def query_params_with_pagination(query_params, page):
+    filter_params = '&'.join([f"{key}={value}" for key, value in query_params.items() if key != "page"])
+
+    if page and filter_params:
+        return f"page={page}&{filter_params}"
+    elif filter_params:
+        return filter_params
+    else:
+        return f"page={page}"
+
+
+@register.simple_tag
+def query_params_with_previous_page(query_params, current_page):
+    if current_page > 1:
+        current_page = current_page - 1
+
+    return query_params_with_pagination(query_params, current_page)
+
+
+@register.simple_tag
+def query_params_with_next_page(query_params, current_page, total_pages):
+    if current_page < total_pages:
+        current_page = int(current_page) + 1
+
+    return query_params_with_pagination(query_params, current_page)

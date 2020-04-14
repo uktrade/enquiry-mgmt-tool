@@ -52,21 +52,21 @@
                 <ol class="pagination__list">
                     {%if previous is not None %}
                         <li class="pagination__list-item">
-                            <a class="pagination__link" href="{{ previous }}">Previous</a>
+                            <a class="pagination__link" href="{% url 'enquiry-list' %}?{% query_params_with_previous_page query_params current_page %}">Previous</a>
                         </li>
                     {%endif%}
 
                     {% for page in page_range %}
                         {% if page|stringformat:"s" == current_page %}
-                            <a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination__list-item pagination__list-item-current">{{ page }}</li></a>
+                            <a class="pagination__link" href="{% url 'enquiry-list' %}?{% query_params_with_pagination query_params page %}"><li class="pagination__list-item pagination__list-item-current">{{ page }}</li></a>
                         {% else %}
-                            <a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination__list-item">{{ page }}</li></a>
+                            <a class="pagination__link" href="{% url 'enquiry-list' %}?{% query_params_with_pagination query_params page %}"><li class="pagination__list-item">{{ page }}</li></a>
                         {% endif %}
                     {% endfor %}
 
                     {%if next is not None %}
                         <li class="pagination__list-item">
-                            <a class="pagination__link" href="{{ next }}">Next</a>
+                            <a class="pagination__link" href="{% url 'enquiry-list' %}?{% query_params_with_next_page query_params current_page page_range|length %}">Next</a>
                         </li>
                     {%endif%}
                 </ol>
