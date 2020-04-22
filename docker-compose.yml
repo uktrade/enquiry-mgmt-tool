@@ -16,11 +16,7 @@ services:
       DJANGO_SUPERUSER_EMAIL: testuser@example.com
       DJANGO_SUPERUSER_PASSWORD: testpass
     entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -wait tcp://dh-api-mock:8001 -timeout 120s
-    command: |
-      bash -c " \
-      python manage.py migrate  && \
-      python manage.py createsuperuser --noinput || true && \
-      python manage.py runserver 0.0.0.0:8000"
+    command: ./start.sh
 
   celery:
     build: .

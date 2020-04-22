@@ -58,9 +58,9 @@
 
                     {% for page in page_range %}
                         {% if page|stringformat:"s" == current_page %}
-                            <a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination__list-item pagination__list-item-current">{{ page }}</li></a>
+                            <li class="pagination__list-item pagination__list-item-current"><a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}">{{ page }}</a></li>
                         {% else %}
-                            <a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}"><li class="pagination__list-item">{{ page }}</li></a>
+                            <li class="pagination__list-item"><a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}">{{ page }}</a></li>
                         {% endif %}
                     {% endfor %}
 
