@@ -1,5 +1,6 @@
 module.exports = {
   pagination: require('./pagination'),
   results: require('./results'),
-  details: require('./details')
+  details: require('./details'),
+  editControls: require('./editControls')
 }
