@@ -255,13 +255,9 @@
 
                 {% include 'snippets/enquiry_field_input_date.html' with instance=enquiry field="project_success_date" %}
 
+                 {% include 'snippets/enquiry_field_textarea.html' with instance=enquiry field="notes" %}
+
                 <input type="hidden" name="enquirer" value="{{ enquiry.enquirer.id }}">
-
-            </div>
-
-            <div class="govuk-grid-row enquiry-detail__row">
-
-                {% include 'snippets/enquiry_field_textarea.html' with instance=enquiry field="notes" %}
 
             </div>
 
