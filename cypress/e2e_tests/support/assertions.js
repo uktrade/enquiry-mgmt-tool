@@ -26,7 +26,6 @@ const assertEnquiryForm = specs => {
         sectionFields.type === 'address'
           ? cy
               .wrap($div)
-              .find('label')
               .contains('label', sectionFields.label)
               .parent()
               .find('div')
@@ -34,7 +33,6 @@ const assertEnquiryForm = specs => {
               .should('contain', sectionFields.address)
           : cy
               .wrap($div)
-              .find('label')
               .contains('label', sectionFields.label)
               .next()
               .should(...inputType(sectionFields.type), sectionFields.value)
