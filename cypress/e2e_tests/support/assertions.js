@@ -1,3 +1,14 @@
+const assertSummaryDetails = specs => {
+  cy.get('main div > div').each(($div, i) => {
+    const header = i === 0 ? 'h2' : 'h3'
+    cy.wrap($div)
+      .find(header)
+      .contains(specs[i].title)
+      .next()
+      .then($dl => assertSummaryList($dl, specs[i].summaryList))
+  })
+}
+
 const assertSummaryList = ($element, specs) => {
   cy.wrap($element)
     .find('div')
@@ -43,4 +54,5 @@ const assertEnquiryForm = specs => {
 module.exports = {
   assertSummaryList,
   assertEnquiryForm,
+  assertSummaryDetails,
 }

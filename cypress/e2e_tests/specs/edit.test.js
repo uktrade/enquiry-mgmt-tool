@@ -1,14 +1,19 @@
+const moment = require('moment')
 require('../support/commands')
 const {
-  assertSummaryList,
+  assertSummaryDetails,
   assertEnquiryForm,
 } = require('../support/assertions')
-const { results, details, editControls } = require('../selectors')
+const { results, details } = require('../selectors')
 
 describe('Edit', () => {
   before(() => {
     cy.login('/enquiries/')
+  })
+
+  beforeEach(() => {
     Cypress.Cookies.preserveOnce('sessionid')
+    Cypress.Cookies.preserveOnce('csrftoken')
   })
 
   context('when viewing the enquiry details', () => {
@@ -23,13 +28,10 @@ describe('Edit', () => {
         .find('button')
         .should('contain', 'Edit details')
 
-      cy.get('main')
-        .find('div')
-        .find('h2')
-        .should('have.text', '1Company')
-        .next()
-        .then($element =>
-          assertSummaryList($element, [
+      assertSummaryDetails([
+        {
+          title: '1Company',
+          summaryList: [
             { dt: 'Date received', dd: '21 February 2020' },
             {
               dt: 'Date last updated',
@@ -41,14 +43,11 @@ describe('Edit', () => {
             },
             { dt: 'Owner', dd: 'IST User 5' },
             { dt: 'Company in Data Hub', dd: '----' },
-          ])
-        )
-
-      cy.findDetailsSection(1)
-        .should('have.text', 'Enquiry details')
-        .next()
-        .then($element =>
-          assertSummaryList($element, [
+          ],
+        },
+        {
+          title: 'Enquiry details',
+          summaryList: [
             { dt: 'Enquiry text', dd: 'Internet startup company' },
             {
               dt: 'Investment readiness',
@@ -56,14 +55,11 @@ describe('Edit', () => {
             },
             { dt: 'Enquiry quality', dd: 'FDI or likely FDI' },
             { dt: 'First response channel', dd: 'Email' },
-          ])
-        )
-
-      cy.findDetailsSection(2)
-        .should('have.text', 'Company details')
-        .next()
-        .then($element =>
-          assertSummaryList($element, [
+          ],
+        },
+        {
+          title: 'Company details',
+          summaryList: [
             { dt: 'Website', dd: 'https://www.example.com/' },
             {
               dt: 'Country',
@@ -77,14 +73,11 @@ describe('Edit', () => {
             },
             { dt: 'Primary sector', dd: 'Advanced Engineering' },
             { dt: 'IST sector', dd: 'ITECH' },
-          ])
-        )
-
-      cy.findDetailsSection(3)
-        .should('have.text', 'Contact details')
-        .next()
-        .then($element =>
-          assertSummaryList($element, [
+          ],
+        },
+        {
+          title: 'Contact details',
+          summaryList: [
             { dt: 'First name', dd: 'Jeff' },
             {
               dt: 'Last name',
@@ -97,14 +90,11 @@ describe('Edit', () => {
             },
             { dt: 'Phone', dd: '+1 202 334 6000' },
             { dt: 'Call requested', dd: 'Yes - afternoon' },
-          ])
-        )
-
-      cy.findDetailsSection(4)
-        .should('have.text', 'Marketing information')
-        .next()
-        .then($element =>
-          assertSummaryList($element, [
+          ],
+        },
+        {
+          title: 'Marketing information',
+          summaryList: [
             { dt: 'Google campaign', dd: '#r.4142563726849_345374257' },
             {
               dt: 'Marketing channel',
@@ -116,28 +106,22 @@ describe('Edit', () => {
               dd: 'No',
             },
             { dt: 'Consent (telephone)', dd: 'No' },
-          ])
-        )
-
-      cy.findDetailsSection(5)
-        .should('have.text', 'HPO details')
-        .next()
-        .then($element =>
-          assertSummaryList($element, [
+          ],
+        },
+        {
+          title: 'HPO details',
+          summaryList: [
             { dt: 'First HPO selection', dd: '----' },
             {
               dt: 'Second HPO selection',
               dd: '----',
             },
             { dt: 'Third HPO selection', dd: '----' },
-          ])
-        )
-
-      cy.findDetailsSection(6)
-        .should('have.text', 'Data Hub details')
-        .next()
-        .then($element =>
-          assertSummaryList($element, [
+          ],
+        },
+        {
+          title: 'Data Hub details',
+          summaryList: [
             { dt: 'Organisation type', dd: 'Limited company' },
             {
               dt: 'Investment type',
@@ -164,21 +148,19 @@ describe('Edit', () => {
             { dt: 'Project code', dd: '42901' },
             { dt: 'Data Hub project status', dd: 'Active' },
             { dt: 'Project success date', dd: '03 February 2022' },
-          ])
-        )
-
-      cy.findDetailsSection(7)
-        .should('have.text', 'Notes')
-        .next()
-        .then($element =>
-          assertSummaryList($element, [
+          ],
+        },
+        {
+          title: 'Notes',
+          summaryList: [
             {
               dt: 'Notes',
               dd:
                 'This is the notes section. The IST user can add any notes relating to the enquiry. This is a textarea and the user can input multiple lines of text.',
             },
-          ])
-        )
+          ],
+        },
+      ])
     })
   })
 
@@ -444,9 +426,366 @@ describe('Edit', () => {
           ],
         },
       ])
-      cy.get(editControls.save).should('contain', 'Save and return')
-      cy.get(editControls.cancel).should('contain', 'Cancel')
-      cy.get(editControls.delete).should('contain', 'Delete enquiry')
+      cy.get('form button').eq(0).should('contain', 'Save and return')
+      cy.get('form button').eq(1).should('contain', 'Cancel')
+      cy.get('form button').eq(2).should('contain', 'Delete enquiry')
+    })
+  })
+
+  context('when submitting new enquiry details', () => {
+    it('should render the new details', () => {
+      cy.populateForm([
+        {
+          type: 'text',
+          name: 'company_name',
+          value: '2Company',
+        },
+        {
+          type: 'text',
+          name: 'company_hq_address',
+          value: 'DEF Electronics, USA',
+        },
+        {
+          type: 'select',
+          name: 'enquiry_stage',
+          value: 'ENGAGED',
+        },
+        {
+          type: 'select',
+          name: 'owner',
+          value: '2',
+        },
+        {
+          type: 'textarea',
+          name: 'enquiry_text',
+          value: 'A different internet startup company',
+        },
+        {
+          type: 'select',
+          name: 'investment_readiness',
+          value: 'EXPLORING',
+        },
+        {
+          type: 'select',
+          name: 'quality',
+          value: 'POTENTIALLY_NON_FDI',
+        },
+        {
+          type: 'select',
+          name: 'first_response_channel',
+          value: 'EMAIL',
+        },
+        {
+          type: 'text',
+          name: 'website',
+          value: 'https://www.caravans.com/',
+        },
+        {
+          type: 'select',
+          name: 'country',
+          value: 'US',
+        },
+        {
+          type: 'select',
+          name: 'region',
+          value: 'AMERICAS',
+        },
+        {
+          type: 'select',
+          name: 'primary_sector',
+          value: 'AUTOMOTIVE',
+        },
+        {
+          type: 'select',
+          name: 'ist_sector',
+          value: 'ENERGY',
+        },
+        {
+          type: 'text',
+          name: 'first_name',
+          value: 'Johnny',
+        },
+        {
+          type: 'text',
+          name: 'last_name',
+          value: 'Cakeman',
+        },
+        {
+          type: 'text',
+          name: 'email',
+          value: 'johnny@cakeman.com',
+        },
+        {
+          type: 'text',
+          name: 'phone_country_code',
+          value: '1234',
+        },
+        {
+          type: 'text',
+          name: 'phone',
+          value: '+1 304 314 7000',
+        },
+        {
+          type: 'select',
+          name: 'request_for_call',
+          value: 'YES_MORNING',
+        },
+        {
+          type: 'text',
+          name: 'google_campaign',
+          value: '#r.4123426849_34553257',
+        },
+        {
+          type: 'select',
+          name: 'marketing_channel',
+          value: 'LINKEDIN',
+        },
+        {
+          type: 'select',
+          name: 'how_they_heard_dit',
+          value: 'SOCIAL_MEDIA',
+        },
+        {
+          type: 'select',
+          name: 'email_consent',
+          value: 'no',
+        },
+        {
+          type: 'select',
+          name: 'phone_consent',
+          value: 'yes',
+        },
+        {
+          type: 'select',
+          name: 'first_hpo_selection',
+          value: 'FOOD_PRODUCTION',
+        },
+        {
+          type: 'select',
+          name: 'second_hpo_selection',
+          value: 'UK_RAIL',
+        },
+        {
+          type: 'select',
+          name: 'third_hpo_selection',
+          value: 'LIGHTWEIGHT_STRUCTURES',
+        },
+        {
+          type: 'select',
+          name: 'organisation_type',
+          value: 'LIMITED_COMPANY',
+        },
+        {
+          type: 'select',
+          name: 'investment_type',
+          value: 'RETENTION',
+        },
+        {
+          type: 'text',
+          name: 'project_name',
+          value: 'DEF Hummingbird',
+        },
+        {
+          type: 'textarea',
+          name: 'project_description',
+          value: 'Expansion of DEF Hummingbird factory sites',
+        },
+        {
+          type: 'textarea',
+          name: 'anonymised_project_description',
+          value: 'Expansion of more factory sites',
+        },
+        {
+          type: 'date',
+          name: 'estimated_land_date',
+          value: '2020-01-02',
+        },
+        {
+          type: 'select',
+          name: 'new_existing_investor',
+          value: 'EXISTING',
+        },
+        {
+          type: 'select',
+          name: 'investor_involvement_level',
+          value: 'FDI_HUB_HQ_POST_LEP',
+        },
+        {
+          type: 'select',
+          name: 'specific_investment_programme',
+          value: 'BUSINESS_PARTNER',
+        },
+        {
+          type: 'text',
+          name: 'crm',
+          value: 'Data Hub user 2',
+        },
+        {
+          type: 'date',
+          name: 'date_added_to_datahub',
+          value: '2020-08-10',
+        },
+        {
+          type: 'text',
+          name: 'project_code',
+          value: '67542',
+        },
+        {
+          type: 'select',
+          name: 'datahub_project_status',
+          value: 'VERIFY',
+        },
+        {
+          type: 'date',
+          name: 'project_success_date',
+          value: '2026-02-01',
+        },
+        {
+          type: 'textarea',
+          name: 'notes',
+          value: 'This is the notes section thats all',
+        },
+      ])
+      cy.get('form button').eq(0).click()
+
+      assertSummaryDetails([
+        {
+          title: '2Company',
+          summaryList: [
+            { dt: 'Date received', dd: '21 February 2020' },
+            {
+              dt: 'Date last updated',
+              dd: moment().format('D MMMM YYYY'),
+            },
+            {
+              dt: 'Enquiry stage',
+              dd: 'Engaged in dialogue',
+            },
+            { dt: 'Owner', dd: 'IST User 2' },
+            { dt: 'Company in Data Hub', dd: '----' },
+          ],
+        },
+        {
+          title: 'Enquiry details',
+          summaryList: [
+            { dt: 'Enquiry text', dd: 'A different internet startup company' },
+            {
+              dt: 'Investment readiness',
+              dd:
+                'I’m still exploring where to expand my business and would like to know more about the UK’s offer',
+            },
+            { dt: 'Enquiry quality', dd: 'Potentially Non-FDI' },
+            { dt: 'First response channel', dd: 'Email' },
+          ],
+        },
+        {
+          title: 'Company details',
+          summaryList: [
+            { dt: 'Website', dd: 'https://www.caravans.com/' },
+            {
+              dt: 'Country',
+              dd: 'United States',
+            },
+            { dt: 'Region', dd: 'Americas' },
+            {
+              dt: 'Company HQ address',
+              dd: 'DEF Electronics, USA',
+            },
+            { dt: 'Primary sector', dd: 'Automotive' },
+            { dt: 'IST sector', dd: 'Energy and Environment' },
+          ],
+        },
+        {
+          title: 'Contact details',
+          summaryList: [
+            { dt: 'First name', dd: 'Johnny' },
+            {
+              dt: 'Last name',
+              dd: 'Cakeman',
+            },
+            { dt: 'Job title', dd: 'Editor' },
+            {
+              dt: 'Email',
+              dd: 'johnny@cakeman.com',
+            },
+            { dt: 'Phone', dd: '+1 304 314 7000' },
+            { dt: 'Call requested', dd: 'Yes - morning' },
+          ],
+        },
+        {
+          title: 'Marketing information',
+          summaryList: [
+            { dt: 'Google campaign', dd: '#r.4123426849_34553257' },
+            {
+              dt: 'Marketing channel',
+              dd: 'LinkedInLeadGen',
+            },
+            {
+              dt: 'How did they hear about DIT?',
+              dd: 'Other social media (e.g. Twitter/Facebook)',
+            },
+            {
+              dt: 'Consent (email)',
+              dd: 'No',
+            },
+            { dt: 'Consent (telephone)', dd: 'Yes' },
+          ],
+        },
+        {
+          title: 'HPO details',
+          summaryList: [
+            { dt: 'First HPO selection', dd: 'Food production' },
+            {
+              dt: 'Second HPO selection',
+              dd: 'UK rail',
+            },
+            { dt: 'Third HPO selection', dd: 'Lightweight structures' },
+          ],
+        },
+        {
+          title: 'Data Hub details',
+          summaryList: [
+            { dt: 'Organisation type', dd: 'Limited company' },
+            {
+              dt: 'Investment type',
+              dd: 'Retention',
+            },
+            { dt: 'Project name', dd: 'DEF Hummingbird' },
+            {
+              dt: 'Project description',
+              dd: 'Expansion of DEF Hummingbird factory sites',
+            },
+            {
+              dt: 'Anonymised project description',
+              dd: 'Expansion of more factory sites',
+            },
+            { dt: 'Estimated land date', dd: '02 January 2020' },
+            { dt: 'New or existing investor', dd: 'Existing investor' },
+            {
+              dt: 'Investor level of involvement',
+              dd: 'FDI Hub + HQ + Post + LEP',
+            },
+            {
+              dt: 'Specific investment programme',
+              dd: 'Business Partnership (Non-FDI)',
+            },
+            { dt: 'CRM', dd: 'Data Hub user 2' },
+            { dt: 'Date added to Data Hub', dd: '10 August 2020' },
+            { dt: 'Project code', dd: '67542' },
+            { dt: 'Data Hub project status', dd: 'Verify Win' },
+            { dt: 'Project success date', dd: '01 February 2026' },
+          ],
+        },
+        {
+          title: 'Notes',
+          summaryList: [
+            {
+              dt: 'Notes',
+              dd: 'This is the notes section thats all',
+            },
+          ],
+        },
+      ])
     })
   })
 })
