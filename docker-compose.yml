@@ -42,7 +42,7 @@ services:
     image: ukti/data-hub-sandbox:latest
 
   cypress:
-    image: cypress/included:4.3.0
+    image: cypress/included:4.5.0
     working_dir: /e2e
     volumes:
       - .:/e2e
