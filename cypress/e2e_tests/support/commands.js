@@ -1,18 +1,20 @@
-Cypress.Commands.add('findDetailsSection', number => {
-  return number === 0
-    ? cy.get('main').find('div > div').eq(number).find('h2')
-    : cy.get('main').find('div > div').eq(number).find('h3')
-})
+Cypress.Commands.add('findDetailsSection', number =>
+  cy
+    .get('main')
+    .find('div > div')
+    .eq(number)
+    .find(number === 0 ? 'h2' : 'h3')
+)
 
 const populateField = (type, name, value) => {
-  const fieldTypes = {
-    select: () => cy.get(`select[name=${name}]`).select(value),
-    textarea: () => cy.get(`textarea[name=${name}]`).clear().type(value),
-    default: () => cy.get(`input[name=${name}]`).clear().type(value),
+  switch (type) {
+    case 'select':
+      return cy.get(`select[name=${name}]`).select(value)
+    case 'textarea':
+      return cy.get(`textarea[name=${name}]`).clear().type(value)
+    default:
+      return cy.get(`input[name=${name}]`).clear().type(value)
   }
-  return typeof fieldTypes[type] !== 'function'
-    ? fieldTypes['default']()
-    : fieldTypes[type]()
 }
 
 Cypress.Commands.add('populateForm', formFieldsData => {
