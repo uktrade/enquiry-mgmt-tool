@@ -16,6 +16,10 @@ describe('Edit', () => {
     Cypress.Cookies.preserveOnce('csrftoken')
   })
 
+  after(() => {
+    cy.exec('docker-compose exec -T app ./setup-fixtures.sh')
+  })
+
   context('when viewing the enquiry details', () => {
     it('should render the details', () => {
       cy.get(results.number(1)).find('h3 a').click()
