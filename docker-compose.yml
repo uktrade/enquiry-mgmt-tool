@@ -51,3 +51,4 @@ services:
     environment:
       CYPRESS_BASE_URL: http://app:8000
     entrypoint: cypress
+    command: npm install moment@2.24.0
