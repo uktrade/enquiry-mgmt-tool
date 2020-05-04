@@ -8,9 +8,6 @@ jobs:
     working_directory: ~/emt
     steps:
       - checkout
-      - run: 
-          name: Install npm dependencies
-          command: npm install --dev
       - run:
           name: Copy config
           command: cp sample_env app/settings/.env
