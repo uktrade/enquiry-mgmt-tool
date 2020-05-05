@@ -17,7 +17,7 @@ describe('Edit', () => {
   })
 
   after(() => {
-    cy.exec('docker-compose exec -T app ./setup-fixtures.sh')
+    cy.exec('./setup-fixtures.sh')
   })
 
   context('when viewing the enquiry details', () => {
