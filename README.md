@@ -63,7 +63,7 @@ docker-compose down -v -t0 && docker-compose up -d && docker-compose logs -f api
 ```
 
 
-To build the styles and watch for changes use the `sass:watch` script instead (this process will stay open in your shell): 
+To build the styles and watch for changes use the `sass:watch` script instead (this process will stay open in your shell):
 
     ```shell
     docker run -it --rm --name frontend -v "$(pwd):/app" node:10 bash -c 'cd /app && npm rebuild node-sass && npm install && npm run sass:watch'
@@ -76,7 +76,7 @@ For testing, you might want to load sample enquiries into the database. Sample d
 To run all unit tests:
 
 ```
-docker-compose run app python -m pytest -s -vvv app/enquiries/tests
+docker-compose run app python -m pytest -s -vvv app
 ```
 
 To run an individual unit test, execute the following command:

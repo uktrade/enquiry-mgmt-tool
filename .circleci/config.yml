@@ -14,8 +14,8 @@ jobs:
           command: docker-compose up -d
       - run:
           name: Run unit tests
-          command: docker-compose run app python -m pytest -s -vvv app/enquiries/tests
-      - run: 
+          command: docker-compose run app python -m pytest -s -vvv app
+      - run:
           name: Setup test fixtures
           command: docker-compose exec app ./setup-fixtures.sh
       - run:
