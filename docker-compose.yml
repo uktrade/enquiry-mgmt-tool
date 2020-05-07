@@ -13,11 +13,12 @@ services:
       - "8000:8000"
     environment:
       ALLOW_TEST_FIXTURE_API_URLS: allow
+      DJANGO_SETTINGS_MODULE: app.settings.dev
       DJANGO_SUPERUSER_USERNAME: testuser
       DJANGO_SUPERUSER_EMAIL: testuser@example.com
       DJANGO_SUPERUSER_PASSWORD: testpass
     entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -wait tcp://dh-api-mock:8001 -timeout 120s
-    command: ./start.sh
+    command: ./start_dev.sh
 
   celery:
     build: .
