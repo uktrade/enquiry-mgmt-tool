@@ -19,9 +19,6 @@ jobs:
           name: Run unit tests
           command: docker-compose run app python -m pytest -s --ds=app.settings.djangotest -vvv app
       - run:
-          name: Setup test fixtures
-          command: docker-compose exec app ./setup-fixtures.sh
-      - run:
           name: Install dependencies
           command: docker-compose run --entrypoint npm cypress install moment@2.24.0
       - run:
