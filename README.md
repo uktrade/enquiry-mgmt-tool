@@ -104,6 +104,12 @@ Naturally this endpoint is not exposed by default. To enable it you must:
   - Set the environment variable `ALLOW_TEST_FIXTURE_API_URLS` to have the explicit
     exact value `allow`.
 
+Under these conditions (and only these conditions) when this endpoint receives a `POST` request
+(with no payload required) it will reset the application database to the state frozen in the files:
+
+  - [app/enquiries/fixtures/enquiries.json](app/enquiries/fixtures/enquiries.json)
+  - [app/enquiries/fixtures/users.json](app/enquiries/fixtures/users.json)
+
 ### Switching branches
 
 Remember to rebuild images (where dependancies have changed) and deleting __pycache__ directories
