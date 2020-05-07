@@ -12,6 +12,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      ALLOW_TEST_FIXTURE_API_URLS: allow
       DJANGO_SUPERUSER_USERNAME: testuser
       DJANGO_SUPERUSER_EMAIL: testuser@example.com
       DJANGO_SUPERUSER_PASSWORD: testpass
