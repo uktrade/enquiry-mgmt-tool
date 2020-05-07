@@ -205,6 +205,12 @@ STATIC_URL = '/static/'
 APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 
+# This setting alone will NOT enable the "Test Fixture API" facility -
+# By default the URL to it is not enabled. See README.md section
+# "Allowing for Fixture Reset during e2e tests" for details how to
+# enable the URL and turn on the Test Fixture API.
+ALLOW_TEST_FIXTURE_SETUP = env('ALLOW_TEST_FIXTURE_SETUP', default=None) == 'allow'
+
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)

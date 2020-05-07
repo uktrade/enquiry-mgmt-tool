@@ -12,9 +12,12 @@ jobs:
       - run:
           name: Build docker stack
           command: docker-compose up -d
+          environment:
+            ALLOW_TEST_FIXTURE_SETUP: allow
+            DJANGO_SETTINGS_MODULE: app.settings.e2etest
       - run:
           name: Run unit tests
-          command: docker-compose run app python -m pytest -s -vvv app
+          command: docker-compose run app python -m pytest -s --ds=app.settings.djangotest -vvv app
       - run:
           name: Setup test fixtures
           command: docker-compose exec app ./setup-fixtures.sh

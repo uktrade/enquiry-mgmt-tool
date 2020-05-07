@@ -76,7 +76,7 @@ For testing, you might want to load sample enquiries into the database. Sample d
 To run all unit tests:
 
 ```
-docker-compose run app python -m pytest -s -vvv app
+docker-compose run app python -m pytest --ds=app.settings.djangotest -s -vvv app
 ```
 
 To run e2e tests:
@@ -84,6 +84,20 @@ To run e2e tests:
 ```
 docker-compose run cypress run --browser firefox
 ```
+
+### Allowing for Fixture Reset during e2e tests
+
+It is possible to expose a URL method which enables an external testing agent (e.g. Cypress) to
+reset the database to a known fixture state.
+
+Naturally this endpoint is not exposed by default. To enable it you must:
+
+  - Run Django with `ROOT_URLCONF` set to `app.testfixtureapi_urls` which includes the "reset" endpoint.
+    This can be achieved by running Django with `DJANGO_SETTINGS_MODULE` set to either
+    `app.settings.djangotest` (which is already set to be the case in pytest.ini) or
+    `app.settings.e2etest` (which is already set to be the case in docker-compose.yml)
+  - Set the environment variable `ALLOW_TEST_FIXTURE_SETUP` to have the explicit
+    exact value `allow`.
 
 ### Switching branches
 

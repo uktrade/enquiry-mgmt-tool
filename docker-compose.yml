@@ -12,6 +12,8 @@ services:
     ports:
       - "8000:8000"
     environment:
+      ALLOW_TEST_FIXTURE_SETUP: allow
+      DJANGO_SETTINGS_MODULE: app.settings.e2etest
       DJANGO_SUPERUSER_USERNAME: testuser
       DJANGO_SUPERUSER_EMAIL: testuser@example.com
       DJANGO_SUPERUSER_PASSWORD: testpass
