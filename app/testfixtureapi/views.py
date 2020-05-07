@@ -12,8 +12,16 @@ from app.enquiries.models import (
 )
 
 class ResetFixturesView(View):
+    """
+    Allow for reset of db to 'fixtures' state.
+
+    """
     @method_decorator(csrf_exempt)
     def post(self, request):
+        """
+        Process the request to reset the state.
+
+        """
         if settings.ALLOW_TEST_FIXTURE_API_URLS != True:
             return HttpResponseNotFound()
         Enquiry.objects.all().delete()
