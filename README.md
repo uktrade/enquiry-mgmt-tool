@@ -100,10 +100,28 @@ Naturally this endpoint is not exposed by default. To enable it you must:
     exact value `allow`.
 
 Under these conditions (and only these conditions) when this endpoint receives a `POST` request
-(with no payload required) it will reset the application database to the state frozen in the files:
+it will reset the application database to the state frozen in the files:
 
   - [app/enquiries/fixtures/enquiries.json](app/enquiries/fixtures/enquiries.json)
   - [app/enquiries/fixtures/users.json](app/enquiries/fixtures/users.json)
+
+Because this method removes all user data it will also invalidate any active session which your
+test client holds.
+
+For this reason the method also creates a standard user (`Owner` object) of your specification,
+logs them in and returns the session info in the cookie headers of the response.
+
+You must therefor supply this method with  JSON which describes a new seed user like this:
+```json
+{
+    "username": "user123",
+    "first_name": "Evelyn",
+    "last_name": "User",
+    "email": "evelyn@example.com"
+}
+```
+
+The `Content-Type` for the call must therefore be `application/json`.
 
 ### Switching branches
 
