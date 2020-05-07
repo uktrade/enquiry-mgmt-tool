@@ -91,6 +91,19 @@ To run e2e tests:
 docker-compose run cypress run --browser firefox
 ```
 
+### Allowing for Fixture Reset during e2e tests
+
+It is possible to expose a URL method which enables an external testing agent (e.g. Cypress) to
+reset the database to a known fixture state.
+
+Naturally this endpoint is not exposed by default. To enable it you must:
+
+  - Run Django with `ROOT_URLCONF` set to `app.test_urls` which includes the "reset" endpoint.
+    This can be achieved by running Django with `DJANGO_SETTINGS_MODULE` set to `app.settings.test`
+    (which is already set to be the case in pytest.ini)
+  - Set the environment variable `ALLOW_TEST_FIXTURE_API_URLS` to have the explicit
+    exact value `allow`.
+
 ### Switching branches
 
 Remember to rebuild images (where dependancies have changed) and deleting __pycache__ directories

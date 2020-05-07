@@ -12,6 +12,8 @@ jobs:
       - run:
           name: Build docker stack
           command: docker-compose up -d
+          environment:
+            ALLOW_TEST_FIXTURE_API_URLS: allow
       - run:
           name: Run unit tests
           command: docker-compose run app python -m pytest -s -vvv app
