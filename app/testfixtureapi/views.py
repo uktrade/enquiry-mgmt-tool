@@ -18,12 +18,12 @@ class ResetFixturesView(View):
         Owner.objects.all().delete()
         call_command(
             'loaddata',
-            'app/enquiries/fixtures/users.json',
+            'app/enquiries/fixtures/test_users.json',
             app_label='enquiries',
         )
         call_command(
             'loaddata',
-            'app/enquiries/fixtures/enquiries.json',
+            'app/enquiries/fixtures/test_enquiries.json',
             app_label='enquiries',
         )
         return HttpResponse(status=201)

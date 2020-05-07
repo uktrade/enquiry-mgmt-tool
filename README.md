@@ -107,8 +107,8 @@ Naturally this endpoint is not exposed by default. To enable it you must:
 Under these conditions (and only these conditions) when this endpoint receives a `POST` request
 (with no payload required) it will reset the application database to the state frozen in the files:
 
-  - [app/enquiries/fixtures/enquiries.json](app/enquiries/fixtures/enquiries.json)
-  - [app/enquiries/fixtures/users.json](app/enquiries/fixtures/users.json)
+  - [app/enquiries/fixtures/test_enquiries.json](app/enquiries/fixtures/test_enquiries.json)
+  - [app/enquiries/fixtures/test_users.json](app/enquiries/fixtures/test_users.json)
 
 ### Switching branches
 
