@@ -79,12 +79,6 @@ To run all unit tests:
 docker-compose run app python -m pytest -s -vvv app
 ```
 
-To run an individual unit test, execute the following command:
-
-```
-pytest -s -vvv -k test_name app/enquiries
-```
-
 To run e2e tests:
 
 ```
