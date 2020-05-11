@@ -126,14 +126,16 @@
                         Consent (email)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {% if enquiry.email_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
+                        {{ enquiry.enquirer.email_consent|yesno|capfirst }}
+                    </dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Consent (telephone)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {% if enquiry.phone_consent.value %}{{ 'Yes' }}{% else %}{{ 'No' }}{% endif %}</dd>
+                        {{ enquiry.enquirer.phone_consent|yesno|capfirst }}
+                    </dd>
                 </div>
             </dl>
         </div>
