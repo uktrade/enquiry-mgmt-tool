@@ -76,7 +76,7 @@ For testing, you might want to load sample enquiries into the database. Sample d
 To run all unit tests:
 
 ```
-docker-compose run app python -m pytest --ds=app.settings.djangotest -s -vvv app
+./test.sh app
 ```
 
 To run e2e tests:
