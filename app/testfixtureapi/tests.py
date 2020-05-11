@@ -153,3 +153,29 @@ def test_seed_user_is_logged_in(settings):
         content_type='application/json'
     )
     assert SESSION_KEY in client.session
+
+
+@pytest.mark.django_db
+def test_reset_method_ignores_csrf_for_authenticated_user(settings):
+    """
+    Test CSRF ignored if session is present.
+
+    DRF by default ignores CSRF for anonymous calls but enforces it for
+    POST etc if the user is authenticated. We want tests to be able to
+    call this Reset method multiple times during one suite, so the
+    method needs to side-step CSRF checks in order to enable this.
+
+    """
+    settings.ALLOW_TEST_FIXTURE_SETUP = True
+    client = Client(enforce_csrf_checks=True)
+    client.post(
+        RESET_URL,
+        SEED_USER_DATA,
+        content_type='application/json',
+    )
+    response = client.post(
+        RESET_URL,
+        SEED_USER_DATA,
+        content_type='application/json',
+    )
+    assert response.status_code == status.HTTP_201_CREATED

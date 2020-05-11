@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import login
 from django.core.management import call_command
-from rest_framework import status
+from rest_framework import authentication, status
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,6 +11,22 @@ from app.enquiries.models import (
     Enquiry,
     Owner,
 )
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    """
+    Stop CSRF checks.
+
+    The view we are implementing needs to be CSRF exempt. While DRF
+    avoids CSRF checks for anonymous calls it enforces them for non-read
+    calls made by logged in API clients. Subsequent calls to the same
+    reset URL may be made with a session cookie in the header and so
+    DRF will enforce CSRF (unless we stop it).
+
+    """
+    def enforce_csrf(self, request):
+        return
+
 
 class TestFixtureResetView(APIView):
     """
@@ -34,6 +51,8 @@ class TestFixtureResetView(APIView):
     be automatically logged in (to simplify the e2e testing cycle).
 
     """
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
     def post(self, request, *args, **kwargs):
         if not settings.ALLOW_TEST_FIXTURE_SETUP:
             return Response(status=status.HTTP_404_NOT_FOUND)
