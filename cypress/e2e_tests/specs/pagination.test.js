@@ -1,8 +1,12 @@
+require('../support/commands')
 const { pagination, results } = require('../selectors')
 
 describe('Pagination', () => {
   before(() => {
-    cy.login('/enquiries/')
+    cy.reseed('/enquiries/')
+  })
+
+  beforeEach(() => {
     Cypress.Cookies.preserveOnce('sessionid')
   })
 

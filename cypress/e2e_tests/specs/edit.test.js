@@ -8,16 +8,12 @@ const { results, details } = require('../selectors')
 
 describe('Edit', () => {
   before(() => {
-    cy.login('/enquiries/')
+    cy.reseed('/enquiries/')
   })
 
   beforeEach(() => {
     Cypress.Cookies.preserveOnce('sessionid')
     Cypress.Cookies.preserveOnce('csrftoken')
-  })
-
-  after(() => {
-    cy.exec('./setup-fixtures.sh')
   })
 
   context('when viewing the enquiry details', () => {
@@ -107,7 +103,7 @@ describe('Edit', () => {
             { dt: 'How did they hear about DIT?', dd: 'Internet search' },
             {
               dt: 'Consent (email)',
-              dd: 'No',
+              dd: 'Yes',
             },
             { dt: 'Consent (telephone)', dd: 'No' },
           ],
@@ -319,12 +315,12 @@ describe('Edit', () => {
             {
               type: 'select',
               label: 'Email consent',
-              value: 'yes',
+              value: 'True',
             },
             {
               type: 'select',
               label: 'Phone consent',
-              value: 'no',
+              value: 'False',
             },
           ],
         },
@@ -430,9 +426,9 @@ describe('Edit', () => {
           ],
         },
       ])
-      cy.get('form button').eq(0).should('contain', 'Save and return')
-      cy.get('form button').eq(1).should('contain', 'Cancel')
-      cy.get('form button').eq(2).should('contain', 'Delete enquiry')
+      cy.get('input[type=submit]').should('contain', 'Save and return')
+      cy.get('form > a').eq(0).should('contain', 'Cancel')
+      cy.get('form > a').eq(1).should('contain', 'Delete enquiry')
     })
   })
 
@@ -552,12 +548,12 @@ describe('Edit', () => {
         {
           type: 'select',
           name: 'email_consent',
-          value: 'no',
+          value: 'False',
         },
         {
           type: 'select',
           name: 'phone_consent',
-          value: 'yes',
+          value: 'True',
         },
         {
           type: 'select',
@@ -650,7 +646,7 @@ describe('Edit', () => {
           value: 'This is the notes section thats all',
         },
       ])
-      cy.get('form button').eq(0).click()
+      cy.get('input[type=submit]').eq(0).click()
 
       assertSummaryDetails([
         {
