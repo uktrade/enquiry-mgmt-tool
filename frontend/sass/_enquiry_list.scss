@@ -25,7 +25,7 @@ $govuk-assets-path: '/static/assets/';
     margin: 0px;
 }
 
-.pagination__list-item--current, .pagination__list-item--current:hover {
+.pagination__list-item--current > a {
     background-color: white;
     color: black;
 }

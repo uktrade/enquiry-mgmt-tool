@@ -26,7 +26,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.utils.urls import replace_query_param
 from rest_framework.views import APIView
+
 
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms, models, serializers, utils
@@ -63,13 +65,17 @@ class PaginationWithPaginationMeta(PageNumberPagination):
                 "next": self.get_next_link(),
                 "previous": self.get_previous_link(),
                 "count": self.page.paginator.count,
-                "num_pages": self.page.paginator.num_pages,
-                "page_range": list(self.page.paginator.page_range),
                 "current_page": self.page.number,
                 "results": data,
                 "filter_enquiry_stage": get_enquiry_field("enquiry_stage"),
                 "owners": models.Owner.objects.all(),
                 "query_params": self.request.GET,
+                "pages": [(page_number,
+                           page_number == self.page.number,
+                           replace_query_param(self.request.get_full_path(),
+                                               'page',
+                                               page_number))
+                          for page_number in self.page.paginator.page_range],
             },
             template_name="enquiry_list.html",
         )

@@ -32,7 +32,7 @@
                         </div>
                         <div class="collection-header__row">
                             <div class="header-page-number-container">
-                                <span class="header-page-number">Page {{ current_page }} of {{ page_range|length }}</span>
+                                <span class="header-page-number">Page {{ current_page }} of {{ pages|length }}</span>
                             </div>
                             <div class="download-button-container">
                                 <button onclick="window.location.href = `{% url 'export-enquiries' %}`" class="govuk-button download-enquiries-button">Download all</button>
@@ -56,12 +56,16 @@
                         </li>
                     {%endif%}
 
-                    {% for page in page_range %}
-                        {% if page|stringformat:"s" == current_page %}
-                            <li class="pagination__list-item pagination__list-item-current"><a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}">{{ page }}</a></li>
-                        {% else %}
-                            <li class="pagination__list-item"><a class="pagination__link" href="{% url 'enquiry-list' %}?page={{ page }}">{{ page }}</a></li>
-                        {% endif %}
+                    {% for page_number, current, link in pages %}
+                        <li class="pagination__list-item {{ current|yesno:'pagination__list-item--current,' }}">
+                            <a class="pagination__link"
+                                {% if not current %}
+                                    href="{{ link }}"
+                                {% endif %}
+                                >
+                                {{ page_number }} 
+                            </a>
+                        </li>
                     {% endfor %}
 
                     {%if next is not None %}
