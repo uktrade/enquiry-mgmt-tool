@@ -63,7 +63,7 @@ docker-compose down -v -t0 && docker-compose up -d && docker-compose logs -f api
 ```
 
 
-To build the styles and watch for changes use the `sass:watch` script instead (this process will stay open in your shell): 
+To build the styles and watch for changes use the `sass:watch` script instead (this process will stay open in your shell):
 
     ```shell
     docker run -it --rm --name frontend -v "$(pwd):/app" node:10 bash -c 'cd /app && npm rebuild node-sass && npm install && npm run sass:watch'
@@ -76,13 +76,7 @@ For testing, you might want to load sample enquiries into the database. Sample d
 To run all unit tests:
 
 ```
-docker-compose run app python -m pytest -s -vvv app/enquiries/tests
-```
-
-To run an individual unit test, execute the following command:
-
-```
-pytest -s -vvv -k test_name app/enquiries
+./test.sh app
 ```
 
 To run e2e tests:
@@ -90,6 +84,44 @@ To run e2e tests:
 ```
 docker-compose run cypress run --browser firefox
 ```
+
+### Allowing for Fixture Reset during e2e tests
+
+It is possible to expose a URL method which enables an external testing agent (e.g. Cypress) to
+reset the database to a known fixture state.
+
+Naturally this endpoint is not exposed by default. To enable it you must:
+
+  - Run Django with `ROOT_URLCONF` set to `app.testfixtureapi_urls` which includes the "reset" endpoint.
+    This can be achieved by running Django with `DJANGO_SETTINGS_MODULE` set to either
+    `app.settings.djangotest` (which is already set to be the case in pytest.ini) or
+    `app.settings.e2etest` (which is already set to be the case in docker-compose.yml)
+  - Set the environment variable `ALLOW_TEST_FIXTURE_SETUP` to have the explicit
+    exact value `allow`.
+
+Under these conditions (and only these conditions) when this endpoint receives a `POST` request
+it will reset the application database to the state frozen in the files:
+
+  - [app/enquiries/fixtures/test_enquiries.json](app/enquiries/fixtures/test_enquiries.json)
+  - [app/enquiries/fixtures/test_users.json](app/enquiries/fixtures/test_users.json)
+
+Because this method removes all user data it will also invalidate any active session which your
+test client holds.
+
+For this reason the method also creates a standard user (`Owner` object) of your specification,
+logs them in and returns the session info in the cookie headers of the response.
+
+You must therefor supply this method with  JSON which describes a new seed user like this:
+```json
+{
+    "username": "user123",
+    "first_name": "Evelyn",
+    "last_name": "User",
+    "email": "evelyn@example.com"
+}
+```
+
+The `Content-Type` for the call must therefore be `application/json`.
 
 ### Switching branches
 

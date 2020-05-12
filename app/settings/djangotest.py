@@ -1,5 +1,7 @@
 from app.settings.common import *
 
+ROOT_URLCONF = 'app.testfixtureapi_urls'
+
 FEATURE_FLAGS = {
     "ENFORCE_STAFF_SSO_ON": True,
 }

@@ -1,5 +1,5 @@
-const usersFixture = require('../../../app/enquiries/fixtures/users.json')
-const enquiriesFixture = require('../../../app/enquiries/fixtures/enquiries.json')
+const usersFixture = require('../../../app/enquiries/fixtures/test_users.json')
+const enquiriesFixture = require('../../../app/enquiries/fixtures/test_enquiries.json')
 
 const USERS = usersFixture.reduce(
   (a, {pk, fields: {first_name, last_name}}) => ({
