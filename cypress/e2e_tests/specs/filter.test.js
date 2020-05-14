@@ -1,3 +1,4 @@
+require('../support/commands')
 const usersFixture = require('../../../app/enquiries/fixtures/test_users.json')
 const enquiriesFixture = require('../../../app/enquiries/fixtures/test_enquiries.json')
 
@@ -99,7 +100,9 @@ const testFilters = ({ filters, assertItem, expectedTotal, only }) => {
 }
 
 describe('Filters', () => {
-  before(() => cy.login('/enquiries/'))
+  before(() => {
+    cy.reseed('/enquiries/')
+  })
   beforeEach(() => Cypress.Cookies.preserveOnce('sessionid'))
 
   testFilters({

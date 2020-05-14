@@ -22,3 +22,13 @@ Cypress.Commands.add('populateForm', formFieldsData => {
     populateField(type, name, value)
   })
 })
+
+Cypress.Commands.add('reseed', path => {
+  cy.request('POST', '/testfixtureapi/reset-fixtures/', {
+    username: 'testuser',
+    first_name: 'testuserfirstname',
+    last_name: 'testuserlastname',
+    email: 'test@test.com',
+  })
+  cy.visit(path)
+})
