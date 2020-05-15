@@ -137,15 +137,11 @@ const testFilters = ({
   filters,
   assertItem,
   expectedTotal,
-  only,
   testFilteredPages,
   testUnfilteredPages,
   testUnfiltered,
 }) => {
-  ;(only
-    ? describe.only
-    : describe
-  )(`Filter by: ${filterLabels(filters)}`, () => {
+  describe(`Filter by: ${filterLabels(filters)}`, () => {
     context('With filters applied', () => {
       it('Set filters', () => {
         setFilters(filters)
