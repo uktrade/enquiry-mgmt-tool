@@ -45,36 +45,43 @@
                         {% endfor %}
                     </ol>
                 </article>
+                <div class="govuk-grid-row">
+                    <nav class="pagination" aria-label="pagination">
+                        <ol>
+                            {% if previous %}
+                                <li class="pagination__item">
+                                    <a class="pagination__link" href="{{ previous }}">
+                                        Previous
+                                    </a>
+                                </li>
+                            {%endif%}
+
+                            {% for page_number, current, link in pages %}
+                                    {% if current %}
+                                        <li class="pagination__item pagination__item--active"
+                                            aria-current="page">
+                                            {{ page_number }} 
+                                        </li>
+                                    {% else %}
+                                        <li class="pagination__item">
+                                            <a class="pagination__link" href="{{ link }}">
+                                                {{ page_number }} 
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                            {% endfor %}
+
+                            {%if next %}
+                                <li class="pagination__item">
+                                    <a class="pagination__link" href="{{ next }}">
+                                        Next
+                                    </a>
+                                </li>
+                            {%endif%}
+                        </ol>
+                    </nav>
+                </div>
             </div>
-        </div>
-        <div class="govuk-grid-row">
-            <nav class="pagination">
-                <ol class="pagination__list">
-                    {%if previous is not None %}
-                        <li class="pagination__list-item">
-                            <a class="pagination__link" href="{{ previous }}">Previous</a>
-                        </li>
-                    {%endif%}
-
-                    {% for page_number, current, link in pages %}
-                        <li class="pagination__list-item {{ current|yesno:'pagination__list-item--current,' }}">
-                            <a class="pagination__link"
-                                {% if not current %}
-                                    href="{{ link }}"
-                                {% endif %}
-                                >
-                                {{ page_number }} 
-                            </a>
-                        </li>
-                    {% endfor %}
-
-                    {%if next is not None %}
-                        <li class="pagination__list-item">
-                            <a class="pagination__link" href="{{ next }}">Next</a>
-                        </li>
-                    {%endif%}
-                </ol>
-            </nav>
         </div>
     </main>
 </div>
