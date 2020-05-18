@@ -47,7 +47,12 @@ const getInputByLabel = (label) =>
     .parent()
     .find('input')
 
-const setFilters = filters =>
+const clearFilters = () =>
+  cy.contains('Clear filters')
+    .click()
+
+const setFilters = filters => {
+  clearFilters()
   Object.entries(filters).forEach(([label, val]) => {
     const input = getInputByLabel(label)
     typeof val === 'string'
@@ -58,46 +63,117 @@ const setFilters = filters =>
       : val
         ? input.check()
         : input.uncheck()
-
   })
+}
 
-const assertResults = (assert, expectedTotal) => {
-  cy.get('header')
-    .contains(`${expectedTotal} enquiries`)
+const assertFiltersSet = filters =>
+  Object.entries(filters).forEach(([label, val]) =>
+    typeof val === 'string'
+      ? getInputByLabel(label).should('have.value', val)
+      : getInputByLabel(label).should('have.prop', 'checked', val)
+  )
 
-  expectedTotal && cy.get('article')
+const submitFilters = () =>
+  cy.contains('Apply filters')
+    .as('submit')
+    .click()
+
+const assertPage = (itemsPerPage, assert = () => {}) =>
+  cy.get('article')
     .find('ol li')
     .as('items')
-    .should('have.length', expectedTotal > 10 ? 10 : expectedTotal)
+    .should('have.length', itemsPerPage)
     .each(assert)
-}
 
-const testFilters = ({ filters, assertItem, expectedTotal, only }) => {
-  // const test = only ? it.only : it
-  describe(`Filter by: ${filterLabels(filters)}`, () => {
-    ;(only ? it.only : it)('Applying filters should return matching values', () => {
-      setFilters(filters)
+const testResults = (assert, expectedTotal, testPages) => {
+  context('Results', () => {
+    it(`Should show ${expectedTotal} total results`, () =>
+      cy.get('header')
+        .contains(`${expectedTotal} enquiries`)
+    )
 
-      cy.contains('Apply filters')
-        .as('submit')
-        .click()
+    if (!testPages) {
+      return
+    }
 
-      assertResults(assertItem, expectedTotal)
+    const r = expectedTotal % 10
+    const pages = [...Array((expectedTotal - r) / 10).fill(10), r]
+
+    pages.forEach((itemsPerPage, i) => {
+      const currentPage = i + 1
+      const nextPage = i + 2
+
+      it(`Page ${currentPage}`, () => {
+        assertPage(itemsPerPage, assert)
+        currentPage < pages.length && cy.get('.pagination')
+          .contains('a', `${nextPage}`)
+          .click()
+      })
     })
 
-    it('Removing filters should bring back unfiltered results', () => {
-      setFilters(Object.fromEntries(Object.entries(filters).map(
-        ([label, value]) => [label, typeof value === 'string' ? '' : false],
-      )))
+    pages.slice(0, -1).reverse().forEach(itemsPerPage =>
+      it(`Should show ${itemsPerPage} when clicking Previous`, () => {
+        cy.get('.pagination')
+          .contains('Previous')
+          .click()
 
-      cy.contains('Apply filters')
-        .as('submit')
-        .click()
+        assertPage(itemsPerPage, assert)
+      })
+    )
 
-      assertResults(() => {}, Object.keys(ENQUIRIES).length)
-    })
+    pages.slice(1).forEach(itemsPerPage =>
+      it(`Should show ${itemsPerPage} when clicking Next`, () => {
+        cy.get('.pagination')
+          .contains('Next')
+          .click()
+
+        assertPage(itemsPerPage, assert)
+      })
+    )
   })
 }
+
+const testFilters = ({
+  filters,
+  assertItem,
+  expectedTotal,
+  testFilteredPages,
+  testUnfilteredPages,
+  testUnfiltered,
+}) => {
+  describe(`Filter by: ${filterLabels(filters)}`, () => {
+    context('With filters applied', () => {
+      it('Set filters', () => {
+        setFilters(filters)
+        submitFilters()
+      })
+
+      testResults(assertItem, expectedTotal, testFilteredPages)
+    })
+
+    testUnfiltered && context(
+      'Removing filters should bring back unfiltered results',
+      () => {
+        it('Reset filters', () => {
+          clearFilters()
+          submitFilters()
+        })
+
+        testResults(() => {}, Object.keys(ENQUIRIES).length, testUnfilteredPages)
+      })
+    })
+}
+
+const testPagination = ({ filters, totalPages, pages }) =>
+  it('Should preserve filter when paginating', () => {
+    setFilters(filters)
+    submitFilters()
+    pages.forEach(({ linkLabel, pageNo }) => {
+      cy.get('.pagination').contains(linkLabel).click()
+      cy.get('header').contains(`Page ${pageNo} of ${totalPages}`)
+      assertFiltersSet(filters)
+    })
+  })
 
 describe('Filters', () => {
   before(() => {
@@ -105,11 +181,54 @@ describe('Filters', () => {
   })
   beforeEach(() => Cypress.Cookies.preserveOnce('sessionid'))
 
+  testPagination({
+    filters: {
+      'Received before': '2020-01-01',
+      'New': true,
+      'Awaiting response from Investor': true,
+      'Engaged in dialogue': true,
+      'Non-responsive': true,
+      'Added to Data Hub': true,
+      'Post progressing': true,
+    },
+    totalPages: 3,
+    pages: [
+      {linkLabel: 'Next', pageNo: 2},
+      {linkLabel: 'Previous', pageNo: 1},
+      {linkLabel: 3, pageNo: 3},
+      {linkLabel: 2, pageNo: 2},
+      {linkLabel: 1, pageNo: 1},
+    ],
+  })
+
+  testPagination({
+    filters: {
+      'Received after': '2000-01-01',
+      'Company added to Data Hub before': '2020-05-31',
+      'Company added to Data Hub after': '1970-01-01',
+      'Unassigned': true,
+      [USERS[1]]: true,
+      [USERS[3]]: true,
+      [USERS[5]]: true,
+    },
+    totalPages: 3,
+    pages: [
+      {linkLabel: 'Next', pageNo: 2},
+      {linkLabel: 'Previous', pageNo: 1},
+      {linkLabel: 3, pageNo: 3},
+      {linkLabel: 2, pageNo: 2},
+      {linkLabel: 1, pageNo: 1},
+    ],
+  })
+
   testFilters({
     filters: {
       New: true,
     },
     expectedTotal: 11,
+    testFilteredPages: true,
+    testUnfiltered: true,
+    testUnfilteredPages: true,
     assertItem: ($li) => cy.wrap($li).contains(/^New$/),
   })
   testFilters({
@@ -422,6 +541,7 @@ describe('Filters', () => {
       'Received before': '2018-01-01',
     },
     expectedTotal: 11,
+    testFilteredPages: true,
     assertItem: ($li) =>
       cy.wrap($li)
         .contains('Date received')
@@ -436,6 +556,7 @@ describe('Filters', () => {
       'Received after': '2019-01-01',
     },
     expectedTotal: 13,
+    testFilteredPages: true,
     assertItem: ($li) =>
       cy.wrap($li)
         .contains('Date received')
@@ -543,6 +664,7 @@ describe('Filters', () => {
       'Company added to Data Hub after': '2020-02-02',
     },
     expectedTotal: 37,
+    testFilteredPages: true,
     assertItem: ($li) => {
       cy.wrap($li).find('a').then($el => {
         const pk = $el.attr('href').match(/\d+/)[0]

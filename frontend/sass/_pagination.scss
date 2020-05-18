@@ -1,0 +1,36 @@
+@mixin pagination-item-dimensions {
+    padding: 0.5em;
+    margin: 3px;
+    min-width: 22px;
+    text-align: center;
+    font-size: large;
+    font-weight: bold;
+}
+
+.pagination {
+    margin-top: govuk-spacing(6);
+
+    &__item {
+        display: inline-block;
+
+        &--active {
+          @include pagination-item-dimensions();
+        }
+    }
+
+    &__link {
+        @include pagination-item-dimensions();
+        display: block;
+        background: #fafafa;
+        text-decoration: none;
+        color: #005ea5;
+        
+        &:hover {
+            background-color: #dee0e2;
+        }
+
+        &--active {
+            background: none;
+        }
+    }
+}
