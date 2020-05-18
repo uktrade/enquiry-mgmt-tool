@@ -87,7 +87,7 @@ const assertPage = (itemsPerPage, assert = () => {}) =>
 
 const testResults = (assert, expectedTotal, testPages) => {
   context('Results', () => {
-    it('Total', () =>
+    it(`Should show ${expectedTotal} total results`, () =>
       cy.get('header')
         .contains(`${expectedTotal} enquiries`)
     )
@@ -112,7 +112,7 @@ const testResults = (assert, expectedTotal, testPages) => {
     })
 
     pages.slice(0, -1).reverse().forEach(itemsPerPage =>
-      it('Previous', () => {
+      it(`Should show ${itemsPerPage} when clicking Previous`, () => {
         cy.get('.pagination')
           .contains('Previous')
           .click()
@@ -122,7 +122,7 @@ const testResults = (assert, expectedTotal, testPages) => {
     )
 
     pages.slice(1).forEach(itemsPerPage =>
-      it('Next', () => {
+      it(`Should show ${itemsPerPage} when clicking Next`, () => {
         cy.get('.pagination')
           .contains('Next')
           .click()
@@ -165,7 +165,7 @@ const testFilters = ({
 }
 
 const testPagination = ({ filters, totalPages, pages }) =>
-  it(`Filters should be preserved on pagination`, () => {
+  it('Should preserve filter when paginating', () => {
     setFilters(filters)
     submitFilters()
     pages.forEach(({ linkLabel, pageNo }) => {
