@@ -19,6 +19,13 @@ jobs:
           name: Run unit tests
           command: docker-compose run app python -m pytest -s --ds=app.settings.djangotest -vvv app
       - run:
+        name: Bring down docker stack
+        command: docker-compose down
+      - run: 
+        name: Build up full stack including API
+      # bring up end to end stack with override yml file
+      # how to bring everything up at once?
+      - run:
           name: Install dependencies
           command: docker-compose run --entrypoint npm cypress install moment@2.24.0
       - run:

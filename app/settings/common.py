@@ -60,7 +60,7 @@ logging.config.dictConfig({
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Configure Sentry
-if not env.bool('DEBUG'):
+if not env.bool('DEBUG') and False:
     DJANGO_SENTRY_DSN = env('DJANGO_SENTRY_DSN')
     sentry_sdk.init(
         dsn=DJANGO_SENTRY_DSN,

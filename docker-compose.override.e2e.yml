@@ -1,0 +1,165 @@
+version: '3'
+
+services:
+  mock-sso:
+    image: quay.io/uktrade/mock-sso:latest
+    environment:
+        MOCK_SSO_SCOPE: data-hub:internal-front-end
+        MOCK_SSO_TOKEN: 123
+        MOCK_SSO_EMAIL_USER_ID: dit_staff@id.test
+    ports: 
+      - 8080:8080
+
+  dh-api:
+    image: quay.io/uktrade/data-hub-api:master
+    environment:
+      AWS_DEFAULT_REGION: eu-west-2
+      AWS_ACCESS_KEY_ID: foo
+      AWS_SECRET_ACCESS_KEY: bar
+      DATABASE_URL: postgresql://postgres:datahub@postgres/datahub
+      MI_DATABASE_URL: postgresql://postgres:mi@mi-postgres/mi
+      DEBUG: 'False'
+      DEFAULT_BUCKET: baz
+      DJANGO_SECRET_KEY: topSecret
+      DJANGO_SETTINGS_MODULE: config.settings.local
+      ENABLE_CELERY_ES_SYNC_OBJECT: 'True'
+      ES_INDEX_PREFIX: test_index
+      ES5_URL: http://elasticsearch:9200
+      POSTGRES_URL: tcp://postgres:5432
+      MI_POSTGRES_URL: tcp://mi-postgres:5432
+      REDIS_BASE_URL: redis://dh-redis:6379
+      REDIS_CACHE_DB: 5
+      REDIS_CELERY_DB: 6
+      SSO_ENABLED: 'True'
+      RESOURCE_SERVER_INTROSPECTION_URL: http://mock-sso:8080/o/introspect # required but not used as user with token has been created in backend setup script
+      RESOURCE_SERVER_AUTH_TOKEN: sso-token
+      STAFF_SSO_BASE_URL: http://mock-sso:8080/
+      STAFF_SSO_AUTH_TOKEN: sso-token
+      WEB_CONCURRENCY: 2
+      ACTIVITY_STREAM_ACCESS_KEY_ID: some-id
+      ACTIVITY_STREAM_SECRET_ACCESS_KEY: some-secret
+      DISABLE_PAAS_IP_CHECK: 'True'
+      ADMIN_OAUTH2_ENABLED: 'False'
+      # Workaround for Docker/CircleCI compatibility problem with Python 3.8
+      COLUMNS: 80
+    command: /app/setup-uat.sh
+    depends_on:
+      - dh-celery
+    ports:
+      - 8800:8000
+
+  dh-celery:
+    image: data-hub-api:miriam # Replace with quay.io path when it's running
+    entrypoint: dockerize -wait tcp://postgres:5432 -wait tcp://mi-postgres:5432 -wait tcp://elasticsearch:9200 -wait tcp://dh-redis:6379 -timeout 480s
+    environment: 
+      AWS_DEFAULT_REGION: eu-west-2
+      AWS_ACCESS_KEY_ID: foo
+      AWS_SECRET_ACCESS_KEY: bar
+      DATABASE_URL: postgresql://postgres:datahub@postgres/datahub
+      MI_DATABASE_URL: postgresql://postgres:mi@mi-postgres/mi
+      DEBUG: 'False'
+      DEFAULT_BUCKET: baz
+      DJANGO_SECRET_KEY: topSecret
+      DJANGO_SETTINGS_MODULE: config.settings.local
+      ENABLE_CELERY_ES_SYNC_OBJECT: 'True'
+      ES_INDEX_PREFIX: test_index
+      ES5_URL: http://elasticsearch:9200
+      POSTGRES_URL: tcp://postgres:5432
+      MI_POSTGRES_URL: tcp://mi-postgres:5432
+      REDIS_BASE_URL: redis://dh-redis:6379
+      REDIS_CACHE_DB: 5
+      REDIS_CELERY_DB: 6
+      SSO_ENABLED: 'True'
+      RESOURCE_SERVER_INTROSPECTION_URL: http://mock-sso:8080/o/introspect # required but not used as user with token has been created in backend setup script
+      RESOURCE_SERVER_AUTH_TOKEN: sso-token
+      STAFF_SSO_BASE_URL: http://mock-sso:8080/
+      STAFF_SSO_AUTH_TOKEN: sso-token
+      WEB_CONCURRENCY: 2
+      ACTIVITY_STREAM_ACCESS_KEY_ID: some-id
+      ACTIVITY_STREAM_SECRET_ACCESS_KEY: some-secret
+      DISABLE_PAAS_IP_CHECK: 'True'
+      ADMIN_OAUTH2_ENABLED: 'False'
+    depends_on:
+      - elasticsearch
+      - postgres
+      - mi-postgres
+      - dh-redis
+    entrypoint: dockerize -wait tcp://dh-api:8000 -timeout 480s
+    command: watchmedo auto-restart -d . -R -p '*.py' -- celery worker -A config -l info -Q celery -B 
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.2
+
+  postgres:
+    image: postgres:10
+    environment:
+      - POSTGRES_DB=datahub
+      - POSTGRES_PASSWORD=datahub
+
+  mi-postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_DB=mi
+      - POSTGRES_PASSWORD=mi
+
+  dh-redis:
+    image: redis:3.2.10
+
+  app:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+      - redis
+      - dh-api
+    ports:
+      - "8000:8000"
+    environment:
+      ALLOW_TEST_FIXTURE_SETUP: allow
+      DJANGO_SETTINGS_MODULE: app.settings.e2etest
+      DJANGO_SUPERUSER_USERNAME: testuser
+      DJANGO_SUPERUSER_EMAIL: testuser@example.com
+      DJANGO_SUPERUSER_PASSWORD: testpass
+      FEATURE_ENFORCE_STAFF_SSO_ENABLED: 1
+      AUTHBROKER_URL: http://localhost:8080
+      AUTHBROKER_CLIENT_ID: contact-web-ops-for-details
+      AUTHBROKER_CLIENT_SECRET: contact-web-ops-for-details
+      AUTHBROKER_TOKEN_SESSION_KEY: _authbroker_token
+      AUTHBROKER_STAFF_SSO_SCOPE: additional-scope
+      DEBUG: 'False'
+      OAUTHLIB_INSECURE_TRANSPORT: 'True'
+    entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -wait tcp://dh-api:8000 -timeout 480s
+    command: ./start.sh
+
+  celery:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+      - redis
+      - dh-api
+      - app
+    entrypoint: dockerize -wait tcp://app:8000 -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 480s
+    command: celery worker -A app -l info -Q celery -B
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: password
+
+  redis:
+    image: redis:3.2
+
+  cypress:
+    image: cypress/included:4.5.0
+    working_dir: /e2e
+    volumes:
+      - .:/e2e
+    depends_on:
+      - app
+    environment:
+      CYPRESS_BASE_URL: http://app:8000
+    entrypoint: cypress # add dockerize
