@@ -47,7 +47,7 @@ services:
       - dh-celery
 
   dh-celery:
-    image: data-hub-api:miriam # Replace with quay.io path when it's running
+    image: quay.io/uktrade/data-hub-api:master
     entrypoint: dockerize -wait tcp://postgres:5432 -wait tcp://mi-postgres:5432 -wait tcp://elasticsearch:9200 -wait tcp://dh-redis:6379 -timeout 480s
     environment: 
       AWS_DEFAULT_REGION: eu-west-2
