@@ -33,11 +33,24 @@ CELERY_TIMEZONE=Europe/london
 # Staff SSO/OAuth2 settings
 FEATURE_ENFORCE_STAFF_SSO_ENABLED=1
 
-AUTHBROKER_URL=contact-web-ops-for-details
+# The AUTHBROKER_URL needs to be accessible from the browser for the
+# authorization redirect and also from the Docker container for the access token
+# POST request, and the only way to do this is to use the
+# docker.for.mac.localhost host provided by Docker.
+AUTHBROKER_URL=http://docker.for.mac.localhost:8080
 AUTHBROKER_CLIENT_ID=contact-web-ops-for-details
 AUTHBROKER_CLIENT_SECRET=contact-web-ops-for-details
 AUTHBROKER_TOKEN_SESSION_KEY=_authbroker_token
-AUTHBROKER_STAFF_SSO_SCOPE=additional-scope
+AUTHBROKER_STAFF_SSO_SCOPE=dummy-scope
+
+MOCK_SSO_TOKEN=dummy-token
+MOCK_SSO_SCOPE=dummy-scope
+MOCK_SSO_USERNAME=testuser
+MOCK_SSO_EMAIL_USER_ID=testuser@example.com
+COMPOSE_PROJECT_NAME=enquiry-mgmt-tool
+
+# Allow http for the OAuth flow (only in local development!)
+OAUTHLIB_INSECURE_TRANSPORT=1
 
 # Activity Stream
 ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS=1
