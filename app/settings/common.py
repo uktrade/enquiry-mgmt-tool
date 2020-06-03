@@ -142,6 +142,7 @@ AUTH_USER_MODEL = "enquiries.Owner"
 
 # authbroker config
 if FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
+    TEST_SSO_PROVIDER_SET_RETURNED_ACCESS_TOKEN = env("MOCK_SSO_TOKEN")
     INSTALLED_APPS.append("authbroker_client",)
 
     AUTHBROKER_URL = env("AUTHBROKER_URL")

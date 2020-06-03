@@ -40,8 +40,24 @@ This file contains all the required environment variable for the application. Sa
 
 The actual values are added to `ready-to-trade` vault. Please use the values corresponding to the `dev` environment.
 
-### SSO
-Use the following ENV variable to toggle SSO:
+### Single Sign On (SSO)
+
+The app works out of the box with
+[mock-sso](https://github.com/uktrade/mock-sso), which is part of the
+docker-compose setup. The OAuth flow however only works locally when you
+set the `AUTHBROKER_URL` to
+[`host.docker.internal:8000`](http://docker.for.mac.localhost:8000/).
+This is because the SSO service (configured with the `AUTHBROKER_URL`) must be
+accessible from outside of docker-compose for the authorization redirect, and
+also from within docker-compose to make the access token POST request.
+The problem though is that the service can only be accessed from another docker
+container as `http://mock-sso:8080`, which however is not available outside of
+docker-compose. The special
+[`host.docker.internal`](https://docs.docker.com/docker-for-mac/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host)
+host name should be accessible from everywhere. Should it for any reason not
+work, try `docker.for.mac.localhost`. The value varies across platforms.
+
+You can disable the SSO with the `FEATURE_ENFORCE_STAFF_SSO_ENABLED` env var:
 
     FEATURE_ENFORCE_STAFF_SSO_ENABLED=1 on
     FEATURE_ENFORCE_STAFF_SSO_ENABLED=0 off
@@ -51,8 +67,8 @@ Or in app/settings/*
     ENFORCE_STAFF_SSO_ENABLED=True on
     ENFORCE_STAFF_SSO_ENABLED=False off
 
-It is possible to run the app with SSO disabled but it will redirect to Django admin page for login so a superuser needs to be created first.
-
+In which case, it will redirect to Django admin page for login so a superuser
+needs to be created first.
 
 ## More useful info
 

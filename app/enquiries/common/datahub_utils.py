@@ -34,7 +34,7 @@ def dh_request(
     access_token,
     method,
     url,
-    payload,
+    payload=None,
     request_headers=None,
     params=None,
     timeout=15,

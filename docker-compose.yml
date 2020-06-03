@@ -9,8 +9,9 @@ services:
       - db
       - redis
       - dh-api-mock
+      - mock-sso
     ports:
-      - "8000:8000"
+      - 8000:8000
     environment:
       ALLOW_TEST_FIXTURE_SETUP: allow
       DJANGO_SETTINGS_MODULE: app.settings.e2etest
@@ -42,6 +43,12 @@ services:
 
   dh-api-mock:
     image: ukti/data-hub-sandbox:latest
+
+  mock-sso:
+    image: ukti/mock-sso
+    ports:
+      - 8080:8080
+    env_file: ./app/settings/.env
 
   cypress:
     image: cypress/included:4.5.0
