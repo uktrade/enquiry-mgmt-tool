@@ -7,6 +7,9 @@ Cypress.Commands.add('findDetailsSection', number =>
 )
 
 const populateField = (type, name, value) => {
+  if (typeof type === 'function') {
+    return type()
+  }
   switch (type) {
     case 'select':
       return cy.get(`select[name=${name}]`).select(value)
@@ -31,4 +34,25 @@ Cypress.Commands.add('reseed', path => {
     email: 'test@test.com',
   })
   cy.visit(path)
+})
+
+Cypress.Commands.add('autocompleteFakeSelect', (name, label, value, path) => {
+    cy.server()
+    cy.route({
+      method: 'GET',
+      url: path,
+      response: {
+        results: [
+          {text: label, id: value},
+        ],
+      }
+    })
+
+    cy.get(`#select2-id_${name}-container`)
+      .click()
+
+    cy.get(`#select2-id_${name}-results`)
+      .within(() => {
+        cy.contains(label).click()
+      })
 })

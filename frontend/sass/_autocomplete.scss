@@ -1,0 +1,89 @@
+/*
+This module overrides the styles of the django-autocomplete-light form widget.
+Most values are derived by way of manual experimentation.
+*/
+
+// These values are from measuring other inputs
+$autocomplete-height: 40px;
+$autocomplete-font-size: 1.1875rem;
+
+$autocomplete-focus-color: $govuk-focus-colour;
+$autocomplete-rendered-height: $autocomplete-height - 2px;
+
+@mixin focus {
+  &:focus {
+    outline: $govuk-focus-width solid $autocomplete-focus-color;
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 2px;
+  }
+}
+
+.select2 {
+  // The element has width 28px set through style
+  width: 100% !important;
+
+  &-selection {
+    // This selector is a way to repeat the parent selector for the sake of
+    // increasing specificity instead of using the !important directive.
+    &#{&}#{&} {
+      height: $autocomplete-height;
+      border: 2px solid black;
+      border-radius: 0;
+      @include focus;
+    }
+
+    &__rendered {
+      &#{&}#{&}#{&} {
+        height: $autocomplete-rendered-height;
+        line-height: $autocomplete-rendered-height - 1;
+        margin-right: 16px;
+      }
+    }
+
+    &__clear {
+      &#{&}#{&}#{&} {
+        line-height: initial;
+        top: 4px;
+      }
+    }
+
+    &__arrow {
+      &#{&}#{&}#{&} {
+        top: 7px;
+        border-left: 1px solid #{$govuk-border-colour};
+        padding: 0 4px;
+
+        b {
+          border-color: black transparent;
+          border-width: 7px 4px 0;
+          margin-top: -3px;
+        }
+      }
+    }
+  }
+  &-dropdown {
+    &#{&}#{&} {
+      line-height: 0;
+      border: none;
+      top: -$autocomplete-height;
+    }
+  }
+  &-search {
+    &#{&}#{&} {
+      padding: 0;
+      border: none;
+      input {
+        height: $autocomplete-height;
+        font-size: $autocomplete-font-size;
+        border: 2px solid black;
+        @include focus;
+      }
+    }
+  }
+  &-results {
+    &#{&}#{&} {
+      line-height: initial;
+      border: 1px solid black;
+    }
+  }
+}

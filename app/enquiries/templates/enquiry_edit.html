@@ -242,8 +242,12 @@
 
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="specific_investment_programme" %}
 
-                <!-- TODO: Full implementation searches Data Hub for users -->
-                {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="crm" %}
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="crm">
+                        {{ enquiry|get_field_verbose_name:"crm" }}
+                    </label>
+                    {{ form.crm }}
+                </div>
 
                 <!-- TODO: Change label to 'Date added to Data Hub' -->
                 {% include 'snippets/enquiry_field_input_date.html' with instance=enquiry field="date_added_to_datahub" %}
@@ -283,3 +287,4 @@
 </div>
 
 {% include 'partials/govuk_footer_partial.html' %}
+{{ form.media }}

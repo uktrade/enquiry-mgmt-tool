@@ -10,4 +10,5 @@ $color-red-error: govuk-colour("red");
 @import "_enquiry_delete";
 @import "_enquiry_import";
 @import "_enquiry_company_search";
-@import "_pagination"
+@import "_pagination";
+@import "_autocomplete";

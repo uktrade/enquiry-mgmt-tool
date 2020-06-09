@@ -393,7 +393,13 @@ describe('Edit', () => {
               value: 'IIGB',
             },
             {
-              type: 'text',
+              type: () =>
+                cy.autocompleteFakeSelect(
+                  'crm',
+                  'Data Hub user 2',
+                  'Data Hub user 2',
+                  '/dh-adviser-search',
+                ),
               label: 'CRM',
               value: 'Data Hub user 1',
             },
@@ -616,7 +622,14 @@ describe('Edit', () => {
           value: 'BUSINESS_PARTNER',
         },
         {
-          type: 'text',
+          type: () => {
+            cy.autocompleteFakeSelect(
+              'crm',
+              'Data Hub user 2',
+              'Data Hub user 2',
+              '/dh-adviser-search',
+            )
+          },
           name: 'crm',
           value: 'Data Hub user 2',
         },
