@@ -143,7 +143,7 @@ describe('Edit', () => {
               dt: 'Specific investment programme',
               dd: 'Invest in Great Britain',
             },
-            { dt: 'CRM', dd: 'Data Hub user 1' },
+            { dt: 'Client Relationship Manager', dd: 'Data Hub user 1' },
             { dt: 'Date added to Data Hub', dd: '03 February 2020' },
             { dt: 'Project code', dd: '42901' },
             { dt: 'Data Hub project status', dd: 'Active' },
@@ -395,12 +395,12 @@ describe('Edit', () => {
             {
               type: () =>
                 cy.autocompleteFakeSelect(
-                  'crm',
+                  'client_relationship_manager',
                   'Data Hub user 2',
                   'Data Hub user 2',
-                  '/dh-adviser-search',
+                  '/dh-adviser-search'
                 ),
-              label: 'CRM',
+              label: 'Client Relationship Manager',
               value: 'Data Hub user 1',
             },
             {
@@ -624,13 +624,13 @@ describe('Edit', () => {
         {
           type: () => {
             cy.autocompleteFakeSelect(
-              'crm',
+              'client_relationship_manager',
               'Data Hub user 2',
               'Data Hub user 2',
-              '/dh-adviser-search',
+              '/dh-adviser-search'
             )
           },
-          name: 'crm',
+          name: 'client_relationship_manager',
           value: 'Data Hub user 2',
         },
         {
@@ -782,7 +782,7 @@ describe('Edit', () => {
               dt: 'Specific investment programme',
               dd: 'Business Partnership (Non-FDI)',
             },
-            { dt: 'CRM', dd: 'Data Hub user 2' },
+            { dt: 'Client Relationship Manager', dd: 'Data Hub user 2' },
             { dt: 'Date added to Data Hub', dd: '10 August 2020' },
             { dt: 'Project code', dd: '67542' },
             { dt: 'Data Hub project status', dd: 'Verify Win' },

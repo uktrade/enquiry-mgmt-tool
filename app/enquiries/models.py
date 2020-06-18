@@ -194,12 +194,12 @@ class Enquiry(TimeStampedModel):
         default=ref_data.InvestmentProgramme.IIGB,
         verbose_name="Specific investment programme",
     )
-    crm = models.CharField(
+    client_relationship_manager = models.CharField(
         max_length=MAX_LENGTH,
-        help_text="Name of the relationship manager",
+        help_text="Name of the client relationship manager",
         blank=True,
         null=True,
-        verbose_name="CRM",
+        verbose_name="Client Relationship Manager",
     )
     project_code = models.CharField(
         max_length=MAX_LENGTH, blank=True, null=True, verbose_name="Project code"

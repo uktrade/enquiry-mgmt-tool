@@ -82,7 +82,7 @@ def canned_enquiry():
         "new_existing_investor": get_random_item(ref_data.NewExistingInvestor),
         "investor_involvement_level": ref_data.InvestorInvolvement.FDI_HUB_POST,
         "specific_investment_programme": ref_data.InvestmentProgramme.IIGB,
-        "crm": "Data Hub user 1",
+        "client_relationship_manager": "Data Hub user 1",
         "project_code": "42901",
         "date_added_to_datahub": date(2020, 2, 3),
         "datahub_project_status": get_random_item(ref_data.DatahubProjectStatus),

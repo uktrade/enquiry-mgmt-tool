@@ -36,15 +36,15 @@ class EnquiryForm(ModelForm):
         # choices, the field will not be prepopulated with it.
         # The workaround is to add both the initial and the new value as valid
         # choices dynamically.
-        crm_initial = self.initial.get('crm')
-        crm_data = self.data.get('crm')
+        client_relationship_manager_initial = self.initial.get('client_relationship_manager')
+        client_relationship_manager_data = self.data.get('client_relationship_manager')
 
-        self.fields['crm'].choices = (
-            (crm_data, crm_data),
-            (crm_initial, crm_initial),
+        self.fields['client_relationship_manager'].choices = (
+            (client_relationship_manager_data, client_relationship_manager_data),
+            (client_relationship_manager_initial, client_relationship_manager_initial),
         )
 
-    crm = AutocompleteField(required=False)
+    client_relationship_manager = AutocompleteField(required=False)
 
     class Meta:
         model = Enquiry

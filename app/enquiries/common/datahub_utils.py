@@ -316,8 +316,8 @@ def dh_enquiry_readiness(request, access_token, enquiry):
     """
     Check whether the given enquiry is ready to be submitted to Data Hub
 
-    Criteria is that the company should exist in Data Hub, crm is valid user,
-    given user is available etc
+    Criteria is that the company should exist in Data Hub, client relationship manager 
+    is a valid user, given user is available etc
 
     Returns json response with error description.
     """
@@ -352,7 +352,7 @@ def dh_enquiry_readiness(request, access_token, enquiry):
     enquiry_dict = model_to_dict(enquiry)
     empty_values = False
     for field in [
-        "crm",
+        "client_relationship_manager",
         "project_name",
         "project_description",
         "anonymised_project_description",
@@ -373,13 +373,13 @@ def dh_enquiry_readiness(request, access_token, enquiry):
         )
         return response
 
-    advisers, error = dh_adviser_search(request, access_token, enquiry.crm)
+    advisers, error = dh_adviser_search(request, access_token, enquiry.client_relationship_manager)
     if error:
         response["errors"].append({"adviser_search": error})
         return response
 
     if not advisers:
-        response["errors"].append({"adviser": f"Adviser {enquiry.crm} not found"})
+        response["errors"].append({"adviser": f"Adviser {enquiry.client_relationship_manager} not found"})
         return response
 
     response["adviser"] = advisers[0]["datahub_id"]
@@ -388,7 +388,7 @@ def dh_enquiry_readiness(request, access_token, enquiry):
 
 
 def prepare_dh_payload(
-    enquiry, dh_metadata, company_id, contact_id, adviser_id, crm_id
+    enquiry, dh_metadata, company_id, contact_id, adviser_id, client_relationship_manager_id
 ):
     """ Prepares the payload for investment create request """
 
@@ -426,7 +426,7 @@ def prepare_dh_payload(
         "investment-specific-programme",
     )
     payload["client_contacts"] = [contact_id]
-    payload["client_relationship_manager"] = crm_id
+    payload["client_relationship_manager"] = client_relationship_manager_id
     payload["sector"] = map_to_datahub_id(
         enquiry.get_primary_sector_display(), dh_metadata, "sector"
     )
@@ -504,11 +504,11 @@ def dh_investment_create(request, enquiry, metadata=None):
 
     contact_id = contact_response["id"]
     referral_adviser = user_details["id"]
-    crm_id = dh_status["adviser"]
+    client_relationship_manager_id = dh_status["adviser"]
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
     payload, error_key = prepare_dh_payload(
-        enquiry, dh_metadata, company_id, contact_id, referral_adviser, crm_id
+        enquiry, dh_metadata, company_id, contact_id, referral_adviser, client_relationship_manager_id
     )
     if error_key:
         response["errors"].append({error_key: "Reference data mismatch in Data Hub"})
