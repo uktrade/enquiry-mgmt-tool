@@ -1,19 +1,16 @@
-import codecs
 import csv
 import json
 import logging
-from datetime import date, datetime
+from datetime import datetime
 from io import BytesIO
 
 from chardet import UniversalDetector
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator as DjangoPaginator
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
@@ -21,7 +18,7 @@ from django.views.generic import DeleteView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django_filters import rest_framework as filters
-from rest_framework import generics, status, viewsets
+from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
@@ -32,10 +29,25 @@ from rest_framework.views import APIView
 
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms, models, serializers, utils
-from app.enquiries.utils import row_to_enquiry
-from app.enquiries.common.datahub_utils import dh_company_search
+from app.enquiries.utils import row_to_enquiry, get_oauth_payload
+from app.enquiries.common.datahub_utils import dh_company_search, dh_request
 
 UNASSIGNED = "UNASSIGNED"
+
+
+class DataHubAdviserSearch(LoginRequiredMixin, View):
+    def get(self, request):
+        session = get_oauth_payload(request)
+        access_token = session["access_token"]
+
+        res = dh_request(request, access_token, method='GET',
+                         url=settings.DATA_HUB_ADVISER_SEARCH_URL,
+                         params=dict(autocomplete=request.GET.get('q')))
+
+        return JsonResponse(dict(results=[
+            dict(text=adviser['name'], id=adviser['name'])
+            for adviser in res.json()['results']
+        ]))
 
 
 def get_filter_config():

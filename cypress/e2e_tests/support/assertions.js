@@ -13,11 +13,17 @@ const assertSummaryList = ($element, specs) => {
   cy.wrap($element)
     .find('div')
     .each(($el, i) => {
+      const spec = specs[i]
+
+      if (!spec.dd) {
+          return
+      }
+
       cy.wrap($el)
         .find('dt')
-        .should('contain', specs[i].dt)
+        .should('contain', spec.dt)
         .next()
-        .should('contain', specs[i].dd)
+        .should('contain', spec.dd)
     })
 }
 

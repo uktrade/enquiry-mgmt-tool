@@ -60,6 +60,11 @@ urlpatterns = [
         name="enquiry-delete",
     ),
     path("healthcheck/ping", ping.ping, name="ping"),
+    path(
+        "dh-adviser-search",
+        views.DataHubAdviserSearch.as_view(),
+        name="dh-adviser-search",
+    ),
 ]
 
 
