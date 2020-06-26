@@ -5,8 +5,8 @@
         "pk": 1,
         "fields": {
             "username": "ist-user-1",
-            "first_name": "IST",
-            "last_name": "User 1",
+            "first_name": "Kaylee",
+            "last_name": "Richards",
             "email": "ist.user.1@example.com"
         }
     },
@@ -16,8 +16,8 @@
         "pk": 2,
         "fields": {
             "username": "ist-user-2",
-            "first_name": "IST",
-            "last_name": "User 2",
+            "first_name": "Sam",
+            "last_name": "Koenen",
             "email": "ist.user.2@example.com"
         }
     },
@@ -27,8 +27,8 @@
         "pk": 3,
         "fields": {
             "username": "ist-user-3",
-            "first_name": "IST",
-            "last_name": "User 3",
+            "first_name": "Julia",
+            "last_name": "Mieville",
             "email": "ist.user.3@example.com"
         }
     },
@@ -38,8 +38,8 @@
         "pk": 4,
         "fields": {
             "username": "ist-user-4",
-            "first_name": "IST",
-            "last_name": "User 4",
+            "first_name": "Dominique",
+            "last_name": "Fernandez",
             "email": "ist.user.4@example.com"
         }
     },
@@ -49,8 +49,8 @@
         "pk": 5,
         "fields": {
             "username": "ist-user-5",
-            "first_name": "IST",
-            "last_name": "User 5",
+            "first_name": "Aiden",
+            "last_name": "Collet",
             "email": "ist.user.5@example.com"
         }
     }
