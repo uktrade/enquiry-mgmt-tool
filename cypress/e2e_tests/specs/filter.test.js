@@ -260,7 +260,7 @@ describe('Filters', () => {
     expectedTotal: 6,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Awaiting response from Investor$/)
-      cy.wrap($li).contains(/(^\s*IST User 5\s*$)/)
+      cy.wrap($li).contains(/(^\s*Aiden Collet\s*$)/)
     },
   })
 
@@ -295,7 +295,7 @@ describe('Filters', () => {
     expectedTotal: 5,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Non-responsive$/)
-      cy.wrap($li).contains(/(^\s*IST User 4\s*$)/)
+      cy.wrap($li).contains(/(^\s*Dominique Fernandez\s*$)/)
     },
   })
   
@@ -333,7 +333,7 @@ describe('Filters', () => {
     expectedTotal: 3,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Added to Data Hub$/)
-      cy.wrap($li).contains(/(^\s*IST User 2\s*$)/)
+      cy.wrap($li).contains(/(^\s*Sam Koenen\s*$)/)
     },
   })
   testFilters({
@@ -364,7 +364,7 @@ describe('Filters', () => {
     expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Sent to Post$/)
-      cy.wrap($li).contains(/(^\s*IST User 5\s*$)/)
+      cy.wrap($li).contains(/(^\s*Aiden Collet\s*$)/)
     },
   })
   testFilters({
@@ -394,7 +394,7 @@ describe('Filters', () => {
     expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Post progressing$/)
-      cy.wrap($li).contains(/(^\s*IST User 1\s*$)/)
+      cy.wrap($li).contains(/(^\s*Kaylee Richards\s*$)/)
     },
   })
   testFilters({
@@ -433,7 +433,7 @@ describe('Filters', () => {
       [USERS[1]]: true,
     },
     expectedTotal: 2,
-    assertItem: ($li) => cy.wrap($li).contains(/(^\s*IST User 1\s*$)/),
+    assertItem: ($li) => cy.wrap($li).contains(/(^\s*Kaylee Richards\s*$)/),
   })
   testFilters({
     filters: {
@@ -443,7 +443,7 @@ describe('Filters', () => {
     expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^New$/)
-      cy.wrap($li).contains(/(^\s*IST User 1\s*$)/)
+      cy.wrap($li).contains(/(^\s*Kaylee Richards\s*$)/)
     },
   })
   
@@ -452,7 +452,7 @@ describe('Filters', () => {
       [USERS[2]]: true,
     },
     expectedTotal: 4,
-    assertItem: ($li) => cy.wrap($li).contains(/(^\s*IST User 2\s*$)/),
+    assertItem: ($li) => cy.wrap($li).contains(/(^\s*Sam Koenen\s*$)/),
   })
   testFilters({
     filters: {
@@ -462,7 +462,7 @@ describe('Filters', () => {
     expectedTotal: 3,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Added to Data Hub$/)
-      cy.wrap($li).contains(/(^\s*IST User 2\s*$)/)
+      cy.wrap($li).contains(/(^\s*Sam Koenen\s*$)/)
     },
   })
   
@@ -471,7 +471,7 @@ describe('Filters', () => {
       [USERS[3]]: true,
     },
     expectedTotal: 5,
-    assertItem: ($li) => cy.wrap($li).contains(/(^\s*IST User 3\s*$)/),
+    assertItem: ($li) => cy.wrap($li).contains(/(^\s*Julia Mieville\s*$)/),
   })
   testFilters({
     filters: {
@@ -481,7 +481,7 @@ describe('Filters', () => {
     expectedTotal: 4,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Non-FDI$/)
-      cy.wrap($li).contains(/(^\s*IST User 3\s*$)/)
+      cy.wrap($li).contains(/(^\s*Julia Mieville\s*$)/)
     },
   })
   
@@ -490,7 +490,7 @@ describe('Filters', () => {
       [USERS[4]]: true,
     },
     expectedTotal: 5,
-    assertItem: ($li) => cy.wrap($li).contains(/(^\s*IST User 4\s*$)/),
+    assertItem: ($li) => cy.wrap($li).contains(/(^\s*Dominique Fernandez\s*$)/),
   })
   testFilters({
     filters: {
@@ -500,7 +500,7 @@ describe('Filters', () => {
     expectedTotal: 5,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Non-responsive$/)
-      cy.wrap($li).contains(/(^\s*IST User 4\s*$)/)
+      cy.wrap($li).contains(/(^\s*Dominique Fernandez\s*$)/)
     },
   })
   testFilters({
@@ -522,7 +522,7 @@ describe('Filters', () => {
       [USERS[5]]: true,
     },
     expectedTotal: 7,
-    assertItem: ($li) => cy.wrap($li).contains(/(^\s*IST User 5\s*$)/),
+    assertItem: ($li) => cy.wrap($li).contains(/(^\s*Aiden Collet\s*$)/),
   })
   testFilters({
     filters: {
@@ -532,7 +532,7 @@ describe('Filters', () => {
     expectedTotal: 6,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Awaiting response from Investor$/)
-      cy.wrap($li).contains(/(^\s*IST User 5\s*$)/)
+      cy.wrap($li).contains(/(^\s*Aiden Collet\s*$)/)
     },
   })
   
