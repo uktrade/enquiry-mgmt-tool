@@ -12,7 +12,6 @@ field_error_msgs = {
     "company_name": "Company name cannot be left blank",
     "company_hq_address": "Company address cannot be left blank",
     "enquiry_text": "Enquiry text cannot be left blank",
-    "website": "Enter a valid website eg http://www.example.com",
     "first_name": "Enquirer first name is required",
     "last_name": "Enquirer last name is required",
     "job_title": "Enquirer job title is required",

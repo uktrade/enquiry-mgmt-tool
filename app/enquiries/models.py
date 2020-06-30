@@ -91,8 +91,8 @@ class Enquiry(TimeStampedModel):
         default=ref_data.HowDidTheyHear.DEFAULT,
         verbose_name="How did they hear about DIT?",
     )
-    website = models.URLField(
-        max_length=MAX_LENGTH, blank=True, null=True, verbose_name="Website"
+    website = models.TextField(
+        blank=True, verbose_name="Website"
     )
     primary_sector = models.CharField(
         max_length=MAX_LENGTH,
