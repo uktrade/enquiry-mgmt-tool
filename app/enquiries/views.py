@@ -323,6 +323,7 @@ class EnquiryCompanySearchView(TemplateView):
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
+        context["data_hub_create_company_page_url"] = settings.DATA_HUB_CREATE_COMPANY_PAGE_URL
         return context
 
     def post(self, request, *args, **kwargs):
