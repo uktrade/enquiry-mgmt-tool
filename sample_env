@@ -19,6 +19,7 @@ DATA_HUB_INVESTMENT_CREATE_URL=http://dh-api-mock:8001/investment/create
 DATA_HUB_ADVISER_SEARCH_URL=http://dh-api-mock:8001/adviser/search
 DATA_HUB_WHOAMI_URL=http://dh-api-mock:8001/whoami
 DATA_HUB_FRONTEND=https://datahub/frontend
+DATA_HUB_CREATE_COMPANY_PAGE_URL=https://www.datahub.dev.uktrade.io/companies/create
 
 
 # Hawk
