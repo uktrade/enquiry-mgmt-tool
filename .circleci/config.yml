@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.2
 jobs:
   build:
     machine:
@@ -10,14 +12,19 @@ jobs:
           name: Copy config
           command: cp sample_env app/settings/.env
       - run:
-          name: Build docker stack
+          name: Build Docker stack
+          command: docker-compose build
+      - run:
+          name: Start Docker stack as daemon
           command: docker-compose up -d
           environment:
             ALLOW_TEST_FIXTURE_SETUP: allow
             DJANGO_SETTINGS_MODULE: app.settings.e2etest
       - run:
           name: Run unit tests
-          command: docker-compose run app python -m pytest -s --ds=app.settings.djangotest -vvv app
+          command: docker-compose run app python -m pytest --cov --cov-report=xml -s --ds=app.settings.djangotest -vvv app
+      - codecov/upload:
+          file: coverage.xml
       - run:
           name: Install dependencies
           command: docker-compose run --entrypoint npm cypress install moment@2.24.0
