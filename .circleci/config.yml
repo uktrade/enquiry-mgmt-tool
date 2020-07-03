@@ -12,7 +12,10 @@ jobs:
           name: Copy config
           command: cp sample_env app/settings/.env
       - run:
-          name: Build docker stack
+          name: Build Docker stack
+          command: docker-compose build
+      - run:
+          name: Start Docker stack as daemon
           command: docker-compose up -d
           environment:
             ALLOW_TEST_FIXTURE_SETUP: allow
