@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/uktrade/enquiry-mgmt-tool#readme",
   "dependencies": {
+    "del": "^5.1.0",
     "govuk-frontend": "^3.5.0",
     "gulp": "^4.0.2",
     "gulp-sass": "^4.0.2",
