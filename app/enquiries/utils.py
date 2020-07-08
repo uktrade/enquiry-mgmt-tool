@@ -99,7 +99,7 @@ def generate_import_template(file_obj):
     
         app.enquiries.ref_data.py:IMPORT_COL_NAMES
 
-    enquirer_first_name | enquirer_last_name | enquirer_job_title | enquirer_email | enquirer_phone | enquirer_request_for_call | country | company_name | primary_sector | company_hq_address | website | investment_readiness | enquiry_text | notes
+    enquirer_first_name | enquirer_last_name | enquirer_job_title | enquirer_email | enquirer_phone | enquirer_request_for_call | country | company_name | primary_sector | company_hq_address | website | investment_readiness | enquiry_stage | enquiry_text | notes
     
     The additional sheets list valid options (i.e. Country names etc) which enable end users to implement their own form of validation.
 
