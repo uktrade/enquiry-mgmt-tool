@@ -7,9 +7,7 @@
     "test": "cypress open",
     "sass": "gulp",
     "sass:watch": "gulp && gulp sass:watch",
-    "postinstall": "npm run sass",
-    "build": "echo 'hello'",
-    "postbuild": "echo 'hello again'"
+    "postinstall": "npm run sass"
   },
   "repository": {
     "type": "git",
@@ -35,8 +33,5 @@
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "moment": "^2.24.0"
-  },
-  "engines": {
-    "node": "13.14.0"
   }
 }
