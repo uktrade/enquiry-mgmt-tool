@@ -4,9 +4,6 @@
 
 set  -xe
 
-# Compile css
-npm rebuild node-sass && npm install && npm run sass
-
 ./manage.py migrate --noinput
 
 gunicorn app.wsgi --config app/gunicorn.py
