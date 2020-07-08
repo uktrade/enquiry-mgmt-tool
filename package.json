@@ -33,8 +33,5 @@
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "moment": "^2.24.0"
-  },
-  "engines": {
-    "node": "13.14.0"
   }
 }
