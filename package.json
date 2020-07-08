@@ -6,7 +6,10 @@
   "scripts": {
     "test": "cypress open",
     "sass": "gulp",
-    "sass:watch": "gulp && gulp sass:watch"
+    "sass:watch": "gulp && gulp sass:watch",
+    "postinstall": "npm run sass",
+    "build": "echo 'hello'",
+    "postbuild": "echo 'hello again'"
   },
   "repository": {
     "type": "git",
