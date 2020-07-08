@@ -55,6 +55,16 @@ def map_enquiry_data_to_instance(data):
         "I’m still exploring where to expand my business and would like to know more about the UK’s offer.": ref_data.InvestmentReadiness.EXPLORING,
         "I’m not yet ready to invest. Keep me informed.": ref_data.InvestmentReadiness.NOT_READY,
     }
+    enquiry_stage = {
+        "New": ref_data.EnquiryStage.NEW,
+        "Awaiting response from Investor": ref_data.EnquiryStage.AWAITING_RESPONSE,
+        "Engaged in dialogue": ref_data.EnquiryStage.ENGAGED,
+        "Non-responsive": ref_data.EnquiryStage.NON_RESPONSIVE,
+        "Non-FDI": ref_data.EnquiryStage.NON_FDI,
+        "Added to Data Hub": ref_data.EnquiryStage.ADDED_TO_DATAHUB,
+        "Sent to Post": ref_data.EnquiryStage.SENT_TO_POST,
+        "Post progressing": ref_data.EnquiryStage.POST_PROGRESSING
+    }
 
     how_did_you_hear = {
         "Press ad (newspaper/trade publication)": ref_data.HowDidTheyHear.PRESS_AD,
@@ -75,6 +85,9 @@ def map_enquiry_data_to_instance(data):
     ]
     enquiry["investment_readiness"] = investment_readiness.get(
         value, ref_data.InvestmentReadiness.DEFAULT
+    )
+    enquiry["enquiry_stage"] = enquiry_stage.get(
+        value, ref_data.EnquiryStage.DEFAULT
     )
     enquiry["enquiry_text"] = data["Tell us about your investment"]
     value = data.get("How did you hear about us?")

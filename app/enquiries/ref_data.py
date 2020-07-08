@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class EnquiryStage(models.TextChoices):
+    DEFAULT = "DEFAULT", _("----")
     NEW = "NEW", _("New")
     AWAITING_RESPONSE = "AWAITING_RESPONSE", _("Awaiting response from Investor")
     ENGAGED = "ENGAGED", _("Engaged in dialogue")
@@ -449,6 +450,7 @@ IMPORT_COL_NAMES = [
     "company_hq_address",
     "website",
     "investment_readiness",
+    "enquiry_stage",
     "enquiry_text",
     "notes",
     "google_campaign",
