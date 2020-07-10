@@ -449,6 +449,7 @@ IMPORT_COL_NAMES = [
     "company_hq_address",
     "website",
     "investment_readiness",
+    "enquiry_stage",
     "enquiry_text",
     "notes",
     "google_campaign",

@@ -114,6 +114,7 @@ def create_fake_enquiry_csv_row():
         "company_hq_address": fake.address(),
         "website": fake.url(),
         "investment_readiness": get_random_item(ref_data.InvestmentReadiness),
+        "enquiry_stage": get_random_item(ref_data.EnquiryStage),
         "enquiry_text": fake.sentence(),
         "notes": fake.sentence(nb_words=20),
     }

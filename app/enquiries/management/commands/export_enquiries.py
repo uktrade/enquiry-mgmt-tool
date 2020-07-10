@@ -37,6 +37,7 @@ class Command(BaseCommand):
                         e.company_hq_address,
                         e.website,
                         e.investment_readiness,
+                        e.enquiry_stage,
                         e.enquiry_text,
                         e.notes
                     ]
