@@ -82,10 +82,7 @@ class PaginationWithPaginationMeta(PageNumberPagination):
                 "filter_enquiry_stage": get_enquiry_field("enquiry_stage"),
                 "owners": models.Owner.objects.all().order_by("last_name"),
                 "query_params": self.request.GET,
-                "pages": [(page_number,
-                           page_number == self.page.number,
-                           replace_query_param(self.request.get_full_path(),
-                                               'page',
+            "total_pages": len(self.page.paginator.page_range),
                                                page_number))
                           for page_number in self.page.paginator.page_range],
             },

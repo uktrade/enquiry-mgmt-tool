@@ -45,6 +45,7 @@
                         {% endfor %}
                     </ol>
                 </article>
+                {% if total_pages > 1 %}
                 <div class="govuk-grid-row">
                     <nav class="pagination" aria-label="pagination">
                         <ol>
@@ -81,6 +82,7 @@
                         </ol>
                     </nav>
                 </div>
+                {% endif %}
             </div>
         </div>
     </main>
