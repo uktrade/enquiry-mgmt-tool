@@ -5,5 +5,6 @@
 set  -xe
 
 ./manage.py migrate --noinput
+./manage.py collectstatic --noinput
 
 gunicorn app.wsgi --config app/gunicorn.py
