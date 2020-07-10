@@ -6,7 +6,7 @@ FEATURE_FLAGS = {
     "ENFORCE_STAFF_SSO_ON": True,
 }
 
-REST_FRAMEWORK["PAGE_SIZE"] = 2
+REST_FRAMEWORK["PAGE_SIZE"] = 10
 
 CACHES["default"] = {
     "BACKEND": "django.core.cache.backends.locmem.LocMemCache",

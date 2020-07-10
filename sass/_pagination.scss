@@ -9,11 +9,12 @@
 
 .pagination {
     margin-top: govuk-spacing(6);
+    text-align: center;
 
     &__item {
         display: inline-block;
 
-        &--active {
+        &--no-link {
           @include pagination-item-dimensions();
         }
     }
@@ -27,10 +28,6 @@
         
         &:hover {
             background-color: #dee0e2;
-        }
-
-        &--active {
-            background: none;
         }
     }
 }

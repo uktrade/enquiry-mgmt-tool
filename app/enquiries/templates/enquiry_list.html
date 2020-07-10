@@ -32,7 +32,7 @@
                         </div>
                         <div class="collection-header__row">
                             <div class="header-page-number-container">
-                                <span class="header-page-number">Page {{ current_page }} of {{ pages|length }}</span>
+                                <span class="header-page-number">Page {{ current_page }} of {{ total_pages }}</span>
                             </div>
                             <div class="download-button-container">
                                 <button onclick="window.location.href = `{% url 'export-enquiries' %}`" class="govuk-button download-enquiries-button">Download all</button>
@@ -57,17 +57,22 @@
                                 </li>
                             {%endif%}
 
-                            {% for page_number, current, link in pages %}
-                                    {% if current %}
-                                        <li class="pagination__item pagination__item--active"
-                                            aria-current="page">
-                                            {{ page_number }} 
+                            {% for page in pages %}
+                                    {% if page.current %}
+                                        <li class="pagination__item pagination__item--no-link">
+                                            <a aria-current="page", aria-disabled="true">
+                                                <span class="govuk-visually-hidden">Page</span>{{ page.page_number }} 
+                                            </a>
+                                        </li>
+                                    {% elif page.link %}
+                                        <li class="pagination__item">
+                                            <a class="pagination__link" href="{{ page.link }}" aria-label="Go to page {{ page.page_number }}">
+                                                {{ page.page_number }} 
+                                            </a>
                                         </li>
                                     {% else %}
-                                        <li class="pagination__item">
-                                            <a class="pagination__link" href="{{ link }}">
-                                                {{ page_number }} 
-                                            </a>
+                                        <li class="pagination__item pagination__item--no-link" aria-hidden="true">
+                                            {{ page.page_number }} 
                                         </li>
                                     {% endif %}
                             {% endfor %}

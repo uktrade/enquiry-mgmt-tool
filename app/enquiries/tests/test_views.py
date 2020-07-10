@@ -232,7 +232,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         It will be same for all pages except for the last page
         if num_enquiries is not a multiple of page_size
         """
-        num_enquiries = 3
+        num_enquiries = 123
         enquiries = EnquiryFactory.create_batch(num_enquiries)
         ids = [e.id for e in enquiries]
         # reverse the ids because we order by latest first
@@ -250,6 +250,17 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
                 [enq["id"] for enq in response.data["results"]], ids[start:end]
             )
             self.assertEqual(response.data["current_page"], page + 1)
+        
+        response = self.client.get(reverse("enquiry-list"), **headers)
+        pages = response.context["pages"]
+        assert response.context["total_pages"] == 13
+        assert pages[0]["page_number"] == 1
+        assert pages[0]["link"] == (
+            "/enquiries/?page=1"
+        )
+        page_labels = [page["page_number"] for page in pages]
+        assert page_labels == [1, 2, 3, 4, "...", 13]
+
 
         # Ensure accesing the page after the last page should return 404
         response = self.client.get(reverse("enquiry-list"), {"page": total_pages + 1})
