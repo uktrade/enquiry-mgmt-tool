@@ -207,6 +207,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
+STATICFILES_DIRS = [
+    ('govuk-frontend', 'node_modules/govuk-frontend/govuk'),
+]
 
 # This setting alone will NOT enable the "Test Fixture API" facility -
 # By default the URL to it is not enabled. See README.md section

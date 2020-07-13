@@ -1,7 +1,8 @@
-$govuk-assets-path: '/static/assets/';
+// This path is resolved at load time and is relative to the loaded CSS /static/application.css
+$govuk-assets-path: '../static/govuk-frontend/assets/';
 $color-green-success: govuk-colour("green");
 $color-red-error: govuk-colour("red");
-@import "node_modules/govuk-frontend/govuk/all";
+@import "../node_modules/govuk-frontend/govuk/all";
 @import "_settings";
 @import "_enquiries";
 @import "_enquiry_list";
