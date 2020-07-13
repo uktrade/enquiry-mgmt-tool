@@ -10,6 +10,8 @@ const USERS = usersFixture.reduce(
   {},
 )
 
+const UNASSIGNED = 'UNASSIGNED'
+
 // The result list items only show a subset of the enquiry data and we need
 // to make assertions about the information not shown. The constants
 // ENQUIRIES and ENQUIRERS constants are maps of primary keys to enquiries and
@@ -77,6 +79,14 @@ const submitFilters = () =>
   cy.contains('Apply filters')
     .as('submit')
     .click()
+  
+const setOwner = id => 
+  cy.get('label').contains('Owner').next()
+    .select(id === UNASSIGNED ? 'Unassigned' : USERS[id])
+
+const assertOwnerSet = id =>
+  cy.get('label').contains('Owner').next()
+    .should('have.value', id ? id : null)
 
 const assertPage = (itemsPerPage, assert = () => {}) =>
   cy.get('article')
@@ -135,16 +145,20 @@ const testResults = (assert, expectedTotal, testPages) => {
 
 const testFilters = ({
   filters,
+  owner,
   assertItem,
   expectedTotal,
   testFilteredPages,
   testUnfilteredPages,
   testUnfiltered,
 }) => {
-  describe(`Filter by: ${filterLabels(filters)}`, () => {
+  describe(`Filter by: ${filterLabels(filters)} ${owner ? `Owner ${owner}` : ''}`, () => {
     context('With filters applied', () => {
       it('Set filters', () => {
         setFilters(filters)
+        if (owner) {
+          setOwner(owner)
+        }
         submitFilters()
       })
 
@@ -164,14 +178,18 @@ const testFilters = ({
     })
 }
 
-const testPagination = ({ filters, totalPages, pages }) =>
+const testPagination = ({ filters, owner, totalPages, pages }) =>
   it('Should preserve filter when paginating', () => {
     setFilters(filters)
+    if (owner) {
+      setOwner(owner)
+    }
     submitFilters()
     pages.forEach(({ linkLabel, pageNo }) => {
       cy.get('.pagination').contains(linkLabel).click()
       cy.get('header').contains(`Page ${pageNo} of ${totalPages}`)
       assertFiltersSet(filters)
+      assertOwnerSet(owner)
     })
   })
 
@@ -191,7 +209,7 @@ describe('Filters', () => {
       'Added to Data Hub': true,
       'Post progressing': true,
     },
-    totalPages: 3,
+    totalPages: 4,
     pages: [
       {linkLabel: 'Next', pageNo: 2},
       {linkLabel: 'Previous', pageNo: 1},
@@ -206,11 +224,8 @@ describe('Filters', () => {
       'Received after': '2000-01-01',
       'Company added to Data Hub before': '2020-05-31',
       'Company added to Data Hub after': '1970-01-01',
-      'Unassigned': true,
-      [USERS[1]]: true,
-      [USERS[3]]: true,
-      [USERS[5]]: true,
     },
+    owner: UNASSIGNED,
     totalPages: 3,
     pages: [
       {linkLabel: 'Next', pageNo: 2},
@@ -234,13 +249,12 @@ describe('Filters', () => {
   testFilters({
     filters: {
       New: true,
-      [USERS[1]]: true,
-      [USERS[2]]: true,
     },
-    expectedTotal: 2,
+    owner: 2,
+    expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^New$/)
-      cy.wrap($li).contains(/(^\s*IST User (1|2)\s*$)/)
+      cy.wrap($li).contains(/(^\s*IST User 2\s*$)/)
     },
   })
 
@@ -248,15 +262,15 @@ describe('Filters', () => {
     filters: {
       [FILTERS.awaiting]: true,
     },
-    expectedTotal: 8,
+    expectedTotal: 16,
     assertItem: ($li) =>
       cy.wrap($li).contains(/^Awaiting response from Investor$/),
   })
   testFilters({
     filters: {
       [FILTERS.awaiting]: true,
-      [USERS[5]]: true,
     },
+    owner: 5,
     expectedTotal: 6,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Awaiting response from Investor$/)
@@ -274,8 +288,8 @@ describe('Filters', () => {
   testFilters({
     filters: {
       [FILTERS.engaged]: true,
-      [USERS[5]]: true,
     },
+    owner: 5,
     expectedTotal: 0,
     assertItem: () => {},
   })
@@ -290,8 +304,8 @@ describe('Filters', () => {
   testFilters({
     filters: {
       [FILTERS.nonResponsive]: true,
-      [USERS[4]]: true,
     },
+    owner: 4,
     expectedTotal: 5,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Non-responsive$/)
@@ -309,8 +323,8 @@ describe('Filters', () => {
   testFilters({
     filters: {
       [FILTERS.nonFdi]: true,
-      Unassigned: true,
     },
+    owner: UNASSIGNED,
     expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Non-FDI$/)
@@ -328,8 +342,8 @@ describe('Filters', () => {
   testFilters({
     filters: {
       [FILTERS.added]: true,
-      [USERS[2]]: true,
     },
+    owner: 2,
     expectedTotal: 3,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Added to Data Hub$/)
@@ -339,12 +353,8 @@ describe('Filters', () => {
   testFilters({
     filters: {
       [FILTERS.added]: true,
-      Unassigned: true,
-      [USERS[1]]: true,
-      [USERS[3]]: true,
-      [USERS[4]]: true,
-      [USERS[5]]: true,
     },
+    owner: 4,
     expectedTotal: 0,
     assertItem: () => {},
   })
@@ -359,19 +369,20 @@ describe('Filters', () => {
   testFilters({
     filters: {
       [FILTERS.sent]: true,
-      [USERS[5]]: true,
     },
+    owner: 5,
     expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Sent to Post$/)
       cy.wrap($li).contains(/(^\s*Aiden Collet\s*$)/)
     },
   })
+
   testFilters({
     filters: {
       [FILTERS.sent]: true,
-      Unassigned: true,
     },
+    owner: UNASSIGNED,
     expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Sent to Post$/)
@@ -389,8 +400,8 @@ describe('Filters', () => {
   testFilters({
     filters: {
       [FILTERS.postProgressing]: true,
-      [USERS[1]]: true,
     },
+    owner: 1,
     expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Post progressing$/)
@@ -400,8 +411,8 @@ describe('Filters', () => {
   testFilters({
     filters: {
       [FILTERS.postProgressing]: true,
-      Unassigned: true,
     },
+    owner: UNASSIGNED,
     expectedTotal: 2,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Post progressing$/)
@@ -410,36 +421,34 @@ describe('Filters', () => {
   })
   
   testFilters({
-    filters: {
-      Unassigned: true,
-    },
-    expectedTotal: 14,
+    filters: {},
+    owner: UNASSIGNED,
+    expectedTotal: 22,
     assertItem: ($li) => cy.wrap($li).contains(/(^\s*Unassigned\s*$)/),
   })
   testFilters({
     filters: {
-      Unassigned: true,
       [FILTERS.new]: true,
     },
+    owner: UNASSIGNED,
     expectedTotal: 8,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^New$/)
       cy.wrap($li).contains(/(^\s*Unassigned\s*$)/)
     },
   })
-  
+
   testFilters({
-    filters: {
-      [USERS[1]]: true,
-    },
+    filters: {},
+    owner: 1,
     expectedTotal: 2,
     assertItem: ($li) => cy.wrap($li).contains(/(^\s*Kaylee Richards\s*$)/),
   })
   testFilters({
     filters: {
-      [USERS[1]]: true,
       [FILTERS.new]: true,
     },
+    owner: 1,
     expectedTotal: 1,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^New$/)
@@ -448,17 +457,16 @@ describe('Filters', () => {
   })
   
   testFilters({
-    filters: {
-      [USERS[2]]: true,
-    },
+    filters: {},
+    owner: 2,
     expectedTotal: 4,
     assertItem: ($li) => cy.wrap($li).contains(/(^\s*Sam Koenen\s*$)/),
   })
   testFilters({
     filters: {
-      [USERS[2]]: true,
       [FILTERS.added]: true,
     },
+    owner: 2,
     expectedTotal: 3,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Added to Data Hub$/)
@@ -467,17 +475,16 @@ describe('Filters', () => {
   })
   
   testFilters({
-    filters: {
-      [USERS[3]]: true,
-    },
+    filters: {},
+    owner: 3,
     expectedTotal: 5,
     assertItem: ($li) => cy.wrap($li).contains(/(^\s*Julia Mieville\s*$)/),
   })
   testFilters({
     filters: {
-      [USERS[3]]: true,
       [FILTERS.nonFdi]: true,
     },
+    owner: 3,
     expectedTotal: 4,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Non-FDI$/)
@@ -486,17 +493,16 @@ describe('Filters', () => {
   })
   
   testFilters({
-    filters: {
-      [USERS[4]]: true,
-    },
+    filters: {},
+    owner: 4,
     expectedTotal: 5,
     assertItem: ($li) => cy.wrap($li).contains(/(^\s*Dominique Fernandez\s*$)/),
   })
   testFilters({
     filters: {
-      [USERS[4]]: true,
       [FILTERS.nonResponsive]: true,
     },
+    owner: 4,
     expectedTotal: 5,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Non-responsive$/)
@@ -505,7 +511,6 @@ describe('Filters', () => {
   })
   testFilters({
     filters: {
-      [USERS[4]]: true,
       [FILTERS.new]: true,
       [FILTERS.awaiting]: true,
       [FILTERS.engaged]: true,
@@ -514,21 +519,21 @@ describe('Filters', () => {
       [FILTERS.sent]: true,
       [FILTERS.postProgressing]: true,
     },
+    owner: 4,
     expectedTotal: 0,
   })
   
   testFilters({
-    filters: {
-      [USERS[5]]: true,
-    },
+    filters: {},
+    owner: 5,
     expectedTotal: 7,
     assertItem: ($li) => cy.wrap($li).contains(/(^\s*Aiden Collet\s*$)/),
   })
   testFilters({
     filters: {
-      [USERS[5]]: true,
       [FILTERS.awaiting]: true,
     },
+    owner: 5,
     expectedTotal: 6,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^Awaiting response from Investor$/)
@@ -555,7 +560,7 @@ describe('Filters', () => {
     filters: {
       'Received after': '2019-01-01',
     },
-    expectedTotal: 13,
+    expectedTotal: 21,
     testFilteredPages: true,
     assertItem: ($li) =>
       cy.wrap($li)
@@ -585,11 +590,11 @@ describe('Filters', () => {
   })
   
   Object.entries({
-    matchbox: [6, 3],
+    matchbox: [14, 3],
     company: [10, 2],
-    ltd: [16, 6],
+    ltd: [24, 6],
     mars: [5, 1],
-    a: [32, 9],
+    a: [40, 9],
     foo: [0, 0],
   }).forEach(([term, [total, totalNew]]) => {
     testFilters({
@@ -613,7 +618,7 @@ describe('Filters', () => {
   })
   
   Object.entries({
-    'evelyn.wang@example.com': 13,
+    'evelyn.wang@example.com': 21,
     'jeff.bezos@washingtonpost.com': 12,
     'nanny.maroon@bluemountain.jm': 12,
   }).forEach(([email, total]) =>
@@ -639,7 +644,7 @@ describe('Filters', () => {
     filters: {
       'Company added to Data Hub before': '2020-02-04',
     },
-    expectedTotal: 37,
+    expectedTotal: 45,
     assertItem: ($li) => {
       cy.wrap($li).find('a').then($el => {
         // The added to Data Hub date is not available on the result item,
@@ -663,7 +668,7 @@ describe('Filters', () => {
     filters: {
       'Company added to Data Hub after': '2020-02-02',
     },
-    expectedTotal: 37,
+    expectedTotal: 45,
     testFilteredPages: true,
     assertItem: ($li) => {
       cy.wrap($li).find('a').then($el => {
