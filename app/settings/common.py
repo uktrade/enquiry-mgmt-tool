@@ -217,6 +217,9 @@ STATICFILES_DIRS = [
 # enable the URL and turn on the Test Fixture API.
 ALLOW_TEST_FIXTURE_SETUP = env('ALLOW_TEST_FIXTURE_SETUP', default=None) == 'allow'
 
+# Sets the X-XSS-Protection HTTP header in older browsers
+SECURE_BROWSER_XSS_FILTER = True
+
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
