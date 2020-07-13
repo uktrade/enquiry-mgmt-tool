@@ -5,8 +5,8 @@
   "main": "index.html",
   "scripts": {
     "test": "cypress open",
-    "sass": "gulp",
-    "sass:watch": "gulp && gulp sass:watch",
+    "sass": "sass sass/application.scss app/enquiries/static/application.css",
+    "sass:watch": "npm run sass -- --watch",
     "postinstall": "npm run sass"
   },
   "repository": {
@@ -20,18 +20,11 @@
   },
   "homepage": "https://github.com/uktrade/enquiry-mgmt-tool#readme",
   "dependencies": {
-    "del": "^5.1.0",
     "govuk-frontend": "^3.5.0",
-    "gulp": "^4.0.2",
-    "gulp-sass": "^4.0.2",
-    "gulp-sourcemaps": "^2.6.5"
+    "sass": "^1.26.10"
   },
   "devDependencies": {
     "cypress": "^4.4.0",
-    "del": "^5.1.0",
-    "gulp": "^4.0.2",
-    "gulp-sass": "^4.0.2",
-    "gulp-sourcemaps": "^2.6.5",
     "moment": "^2.24.0"
   }
 }
