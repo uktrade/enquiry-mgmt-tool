@@ -63,7 +63,10 @@ class Enquiry(TimeStampedModel):
         help_text="User assigned to the enquiry",
         verbose_name="Owner",
     )
-    enquiry_text = models.CharField(max_length=MAX_LENGTH, verbose_name="Enquiry text")
+    enquiry_text = models.TextField(
+        verbose_name="Enquiry text",
+        editable=False,
+    )
     investment_readiness = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.InvestmentReadiness.choices,

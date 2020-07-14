@@ -135,7 +135,10 @@
 
                 <h3 class="govuk-heading-m">Enquiry details</h3>
 
-                {% include 'snippets/enquiry_field_textarea.html' with instance=enquiry field="enquiry_text" %}
+                <div class="enquiry-text">
+                    <div class="govuk-label">Enquiry text</div>
+                    <p>{{ enquiry.enquiry_text }}</p>
+                </div>
 
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="investment_readiness" %}
 
