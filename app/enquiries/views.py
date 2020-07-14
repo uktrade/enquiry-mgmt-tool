@@ -72,24 +72,27 @@ class PaginationWithPaginationMeta(PageNumberPagination):
     """
 
     def get_paginated_response(self, data):
+        response_data = {
+            "next": self.get_next_link(),
+            "previous": self.get_previous_link(),
+            "count": self.page.paginator.count,
+            "current_page": self.page.number,
+            "results": data,
+            "filter_enquiry_stage": get_enquiry_field("enquiry_stage"),
+            "owners": models.Owner.objects.all().order_by("last_name"),
+            "query_params": self.request.GET,
+            "total_pages": len(self.page.paginator.page_range),
+            "pages": [{'page_number': page_number,
+                        'current': page_number == self.page.number,
+                        'link': replace_query_param(
+                                            self.request.get_full_path(),
+                                            'page',
+                                            page_number)}
+                        for page_number in self.page.paginator.page_range],
+
+            }
         return Response(
-            {
-                "next": self.get_next_link(),
-                "previous": self.get_previous_link(),
-                "count": self.page.paginator.count,
-                "current_page": self.page.number,
-                "results": data,
-                "filter_enquiry_stage": get_enquiry_field("enquiry_stage"),
-                "owners": models.Owner.objects.all().order_by("last_name"),
-                "query_params": self.request.GET,
-                "pages": [(page_number,
-                           page_number == self.page.number,
-                           replace_query_param(self.request.get_full_path(),
-                                               'page',
-                                               page_number))
-                          for page_number in self.page.paginator.page_range],
-            },
-            template_name="enquiry_list.html",
+            truncate_response_data(response_data),
         )
 
     def post(self, request, format=None):
@@ -99,6 +102,57 @@ class PaginationWithPaginationMeta(PageNumberPagination):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def truncate_response_data(response_data, block_size=4):
+    """
+    Truncate the pagination links.
+
+    We don't want to show a link for every page if there are lots of pages. 
+    This replaces page links which are less useful with an ellipsis ('...').
+    """
+    pages = response_data["pages"]
+
+    if len(pages) <= block_size:
+        return response_data
+
+    current_page_num = response_data["current_page"]
+    current_page_index = response_data["current_page"] - 1
+    first_page = pages[0]
+    last_page = pages[-1]
+
+    block_pivot = block_size // 2
+    start_of_current_block = abs(current_page_num - block_pivot)
+    start_of_last_block = last_page["page_number"] - block_size
+    block_start_index = min(
+        start_of_current_block, start_of_last_block, current_page_index,
+    )
+
+    truncated_pages = pages[block_start_index:][:block_size]
+    first_of_truncated_pages_num = truncated_pages[0]["page_number"]
+    last_of_truncated_pages_num = truncated_pages[-1]["page_number"]
+
+    if first_of_truncated_pages_num > 3:
+        truncated_pages = [{"page_number": "..."}] + truncated_pages
+
+    if first_of_truncated_pages_num == 3:
+        truncated_pages = [pages[1]] + truncated_pages
+
+    if first_of_truncated_pages_num > 1:
+        truncated_pages = [first_page] + truncated_pages
+
+    if last_of_truncated_pages_num < last_page["page_number"] - 2:
+        truncated_pages.append({"page_number": "..."})
+
+    if last_of_truncated_pages_num == last_page["page_number"] - 2:
+        truncated_pages.append(pages[-2])
+
+    if last_of_truncated_pages_num < last_page["page_number"]:
+        truncated_pages.append(last_page)
+
+    response_data["pages"] = truncated_pages
+    return response_data
+
 
 
 def is_valid_id(v) -> bool:
