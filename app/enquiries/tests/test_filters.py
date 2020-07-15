@@ -44,20 +44,21 @@ class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
             msg="should render search filters",
         )
 
-        # users checkbox
+        # users dropdown
         _input = soup.select("#owner__id")[0]
-        _label = soup.select("label[for=owner__id]")[0]
+        _select = soup.select("option")[1]
+        _label = _select.find(text=True).strip()
 
         self.assertIsNotNone(
             _input, msg="should render unassigned control",
         )
 
         self.assertIsNotNone(
-            _label, msg="should render unassigned control label",
+            _select, msg="should render unassigned select option",
         )
 
-        self.assertEqual(_input.attrs.get("value"), "UNASSIGNED")
-        self.assertEqual(_label.string.strip(), "Unassigned")
+        self.assertEqual(_select.attrs.get("value"), "UNASSIGNED")
+        self.assertEqual(_label, "Unassigned")
 
         # enquiry_stage checxboxes
         for value, label in ref_data.EnquiryStage.choices:
