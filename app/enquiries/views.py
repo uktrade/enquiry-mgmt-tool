@@ -44,10 +44,19 @@ class DataHubAdviserSearch(LoginRequiredMixin, View):
                          url=settings.DATA_HUB_ADVISER_SEARCH_URL,
                          params=dict(autocomplete=request.GET.get('q')))
 
-        return JsonResponse(dict(results=[
-            dict(text=adviser['name'], id=adviser['name'])
-            for adviser in res.json()['results']
-        ]))
+        try:
+            data = res.json()
+        except json.decoder.JSONDecodeError:
+            data = {}
+
+        return JsonResponse(
+            dict(results=[
+                dict(text=adviser['name'], id=adviser['name'])
+                for adviser in data['results']
+            ]) if res.status_code == 200 else data,
+            status=res.status_code,
+            reason=res.reason
+        )
 
 
 def get_filter_config():
