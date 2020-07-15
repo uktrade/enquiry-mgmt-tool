@@ -106,6 +106,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'app.middleware.add_cache_control_header_middleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -216,6 +217,9 @@ STATICFILES_DIRS = [
 # "Allowing for Fixture Reset during e2e tests" for details how to
 # enable the URL and turn on the Test Fixture API.
 ALLOW_TEST_FIXTURE_SETUP = env('ALLOW_TEST_FIXTURE_SETUP', default=None) == 'allow'
+
+# Sets the X-XSS-Protection HTTP header in older browsers
+SECURE_BROWSER_XSS_FILTER = True
 
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
