@@ -236,7 +236,7 @@ describe('Edit', () => {
             {
               type: 'select',
               label: 'Country',
-              value: 'SAUDI',
+              value: 'SA',
             },
             {
               type: 'select',
