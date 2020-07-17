@@ -527,6 +527,7 @@ def dh_investment_create(request, enquiry, metadata=None):
         enquiry.datahub_project_status = ref_data.DatahubProjectStatus.PROSPECT
         enquiry.date_added_to_datahub = date.today()
         enquiry.enquiry_stage = ref_data.EnquiryStage.ADDED_TO_DATAHUB
+        enquiry.project_code = response["result"]["project_code"]
         enquiry.save()
 
     return response
