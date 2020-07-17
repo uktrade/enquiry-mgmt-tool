@@ -3,6 +3,7 @@ require('../support/commands')
 const {
   assertSummaryDetails,
   assertEnquiryForm,
+  NOT_EDITABLE,
 } = require('../support/assertions')
 const { results, details } = require('../selectors')
 
@@ -203,7 +204,7 @@ describe('Edit', () => {
           title: 'Enquiry details',
           formFields: [
             {
-              type: 'textarea',
+              type: NOT_EDITABLE,
               label: 'Enquiry text',
               value: 'Internet startup company',
             },
@@ -462,11 +463,6 @@ describe('Edit', () => {
           value: '2',
         },
         {
-          type: 'textarea',
-          name: 'enquiry_text',
-          value: 'A different internet startup company',
-        },
-        {
           type: 'select',
           name: 'investment_readiness',
           value: 'EXPLORING',
@@ -681,7 +677,7 @@ describe('Edit', () => {
         {
           title: 'Enquiry details',
           summaryList: [
-            { dt: 'Enquiry text', dd: 'A different internet startup company' },
+            { dt: 'Enquiry text' },
             {
               dt: 'Investment readiness',
               dd:

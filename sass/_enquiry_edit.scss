@@ -1,1 +1,5 @@
 $govuk-assets-path: '/static/assets/';
+
+.enquiry-text {
+    @include govuk-responsive-margin(6, "bottom");
+}

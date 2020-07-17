@@ -1,3 +1,5 @@
+const NOT_EDITABLE = 'NOT_EDITABLE'
+
 const assertSummaryDetails = specs => {
   cy.get('main div > div').each(($div, i) => {
     const header = i === 0 ? 'h2' : 'h3'
@@ -40,19 +42,26 @@ const assertEnquiryForm = specs => {
       .find('> div')
       .each(($div, index) => {
         const sectionFields = section.formFields[index]
-        sectionFields.type === 'address'
+        sectionFields.type === NOT_EDITABLE
           ? cy
               .wrap($div)
-              .contains('label', sectionFields.label)
+              .contains('div', sectionFields.label)
               .parent()
-              .find('div')
-              .eq(2)
-              .should('contain', sectionFields.address)
-          : cy
-              .wrap($div)
-              .contains('label', sectionFields.label)
-              .next()
-              .should(...inputType(sectionFields.type), sectionFields.value)
+              .contains('p', sectionFields.value)
+
+          : sectionFields.type === 'address'
+            ? cy
+                .wrap($div)
+                .contains('label', sectionFields.label)
+                .parent()
+                .find('div')
+                .eq(2)
+                .should('contain', sectionFields.address)
+            : cy
+                .wrap($div)
+                .contains('label', sectionFields.label)
+                .next()
+                .should(...inputType(sectionFields.type), sectionFields.value)
       })
   })
 }
@@ -61,4 +70,5 @@ module.exports = {
   assertSummaryList,
   assertEnquiryForm,
   assertSummaryDetails,
+  NOT_EDITABLE,
 }
