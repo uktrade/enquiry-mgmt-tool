@@ -78,7 +78,6 @@ class PrimarySector(models.TextChoices):
     CONSTRUCTION = "CONSTRUCTION", _("Construction")
     CONSUMER = "CONSUMER", _("Consumer and Retail")
     CREATIVE = "CREATIVE", _("Creative Industries")
-    CYBER = "CYBER", _("Cyber Security")
     DEFENCE = "DEFENCE", _("Defence")
     EDUCATION = "EDUCATION", _("Education and Training")
     ENERGY = "ENERGY", _("Energy")
