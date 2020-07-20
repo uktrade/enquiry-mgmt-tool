@@ -67,3 +67,8 @@ ACTIVITY_STREAM_ENQUIRY_DATA_OBJ=enquiry-data-obj
 
 # Date from which enquiry data is to be fetched in AS
 ACTIVITY_STREAM_INITIAL_LOAD_DATE=01-January-2020
+
+# Settings for CSRF and Session cookies
+CSRF_COOKIE_SECURE=False
+CSRF_COOKIE_HTTPONLY=False
+SESSION_COOKIE_SECURE=False
