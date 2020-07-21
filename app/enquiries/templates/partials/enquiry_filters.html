@@ -14,7 +14,7 @@
         </option>
         {% for owner in owners %}
           <option value="{{ owner.id }}" {% query_params_value_selected owner.id 'owner__id' query_params ' selected'  %}>
-            {{ owner.get_full_name }}
+            {{ owner }}
           </option>
         {% endfor %}
       </select>
