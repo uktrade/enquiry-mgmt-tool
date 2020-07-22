@@ -90,3 +90,8 @@ def query_params_has_value(value, param_key, query_params):
 @register.simple_tag
 def query_params_value_selected(value, param_key, query_params, text='selected'):
     return f' {text}' if str(value) in query_params.getlist(param_key) else ''
+
+@register.filter
+def title_phrase(value):
+    """Converts a snake case key into a title with spaces"""
+    return value.replace("_", " ").title()
