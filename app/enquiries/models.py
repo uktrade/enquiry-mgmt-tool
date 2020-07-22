@@ -31,11 +31,11 @@ class Enquirer(models.Model):
 
 class Owner(AbstractUser):
     """
-    Customer user model user by the app. Each Enquiry has an owner.
+    Customer user model used by the app. Each Enquiry has an owner.
     """
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name.title()} {self.last_name.title()}"
 
 
 class Enquiry(TimeStampedModel):

@@ -12,7 +12,7 @@
                     <span>{{ enquiry.enquiry_stage }}</span>
                 </div>
                 <div class="entity__badges-item">
-                    <span>{% if enquiry.owner %}{{ enquiry.owner.first_name }} {{ enquiry.owner.last_name }} {%else%} {{ "Unassigned" }}
+                    <span>{% if enquiry.owner %}{{ enquiry.owner.first_name|title }} {{ enquiry.owner.last_name|title }} {%else%} {{ "Unassigned" }}
                         {%endif%}</span>
                 </div>
                 {% if enquiry.country != "----" %}
