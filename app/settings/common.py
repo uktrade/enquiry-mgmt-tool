@@ -218,7 +218,12 @@ STATICFILES_DIRS = [
 # enable the URL and turn on the Test Fixture API.
 ALLOW_TEST_FIXTURE_SETUP = env('ALLOW_TEST_FIXTURE_SETUP', default=None) == 'allow'
 
-# Sets the X-XSS-Protection HTTP header in older browsers
+# Set security related headers
+SET_HSTS_HEADERS = env('SET_HSTS_HEADERS', default=True)
+if SET_HSTS_HEADERS:
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
 SECURE_BROWSER_XSS_FILTER = True
 
 # App specific settings
