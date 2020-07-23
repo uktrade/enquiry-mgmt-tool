@@ -22,11 +22,11 @@ from django_filters import rest_framework as filters
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.utils.urls import replace_query_param
 from rest_framework.views import APIView
-
+from rest_framework_csv.renderers import CSVRenderer
 
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms, models, serializers, utils
@@ -36,6 +36,7 @@ from app.enquiries.utils import (
     parse_error_messages,
 )
 from app.enquiries.common.datahub_utils import dh_company_search, dh_request
+
 
 UNASSIGNED = "UNASSIGNED"
 
@@ -246,16 +247,22 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     also inherited via a meta class to add additional metadata required
     for use in the template
     """
-
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = EnquiryFilter
     template_name = "enquiry_list.html"
-    renderer_classes = (JSONRenderer, TemplateHTMLRenderer)
+    renderer_classes = (TemplateHTMLRenderer, CSVRenderer)
     serializer_class = serializers.EnquiryDetailSerializer
     pagination_class = PaginationWithPaginationMeta
 
     def get_queryset(self):
         return models.Enquiry.objects.all()
+
+    @property
+    def paginator(self):
+        """This method override is here to disable pagination for the csv format"""
+        if self.request.query_params.get('format') == 'csv':
+            self._paginator = None
+        return super().paginator
 
 
 class EnquiryCreateView(LoginRequiredMixin, APIView):
@@ -533,24 +540,4 @@ class ImportTemplateDownloadView(View):
             "Content-Disposition"
         ] = f'attachment; filename="{settings.IMPORT_TEMPLATE_FILENAME}"'
         utils.generate_import_template(response)
-        return response
-
-
-class ExportEnquiriesView(TemplateView):
-    """
-    Generates a CSV download of exported enquiries
-    """
-
-    methods = ["get"]
-
-    CONTENT_TYPE = settings.EXPORT_OUTPUT_FILE_MIMETYPE
-
-    def get(self, request):
-        qs = models.Enquiry.objects.all()
-        date_str = datetime.now().isoformat(timespec="minutes")
-        filename = f"{settings.EXPORT_OUTPUT_FILE_SLUG}_{date_str}.{settings.EXPORT_OUTPUT_FILE_EXT}"
-        response = HttpResponse(content_type=self.CONTENT_TYPE)
-        response["Content-Disposition"] = f'attachment; filename="{filename}"'
-
-        utils.export_to_csv(qs, response)
         return response

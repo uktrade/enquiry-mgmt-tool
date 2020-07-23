@@ -45,11 +45,6 @@ urlpatterns = [
         "enquiries/<int:pk>/edit", views.EnquiryEditView.as_view(), name="enquiry-edit"
     ),
     path(
-        "enquiries/export/",
-        views.ExportEnquiriesView.as_view(),
-        name="export-enquiries",
-    ),
-    path(
         "enquiries/<int:pk>/company-search",
         views.EnquiryCompanySearchView.as_view(),
         name="enquiry-company-search",
