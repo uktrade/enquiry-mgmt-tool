@@ -8,6 +8,33 @@ from app.enquiries import serializers
 
 register = template.Library()
 
+dh_required_fields = [
+    "client_relationship_manager",
+    "project_name",
+    "project_description",
+    "anonymised_project_description",
+    "estimated_land_date",
+    "email",
+    "phone_country_code",
+]
+
+can_be_default_fields = [
+    "investment_readiness",
+    "quality",
+    "first_response_channel",
+    "region",
+    "primary_sector",
+    "ist_sector",
+    "request_for_call",
+    "marketing_channel",
+    "first_hpo_selection",
+    "second_hpo_selection",
+    "third_hpo_selection",
+    "organisation_type",
+    "new_existing_investor",
+    "datahub_project_status",
+]
+
 field_error_msgs = {
     "company_name": "Company name cannot be left blank",
     "company_hq_address": "Company address cannot be left blank",
@@ -22,6 +49,15 @@ field_error_msgs = {
 @register.filter
 def enquiry_field_error_msg(field):
     return field_error_msgs.get(field)
+
+@register.filter
+def is_optional(instance, field_name):
+    field = get_instance_field(instance, field_name)
+    return field.blank and field_name not in dh_required_fields
+
+@register.filter
+def can_be_default(field_name):
+    return field_name in can_be_default_fields
 
 @register.filter
 def get_dh_company_url(enquiry):

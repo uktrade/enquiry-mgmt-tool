@@ -1,0 +1,5 @@
+{% load enquiries_extras %}
+<label class="govuk-label">
+    {{ instance|get_field_verbose_name:field }}
+    {% if instance|is_optional:field %} (optional){% endif %}
+</label>

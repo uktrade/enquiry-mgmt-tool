@@ -2,6 +2,7 @@
 <div class="govuk-form-group">
     <label class="govuk-label" for="{{ field }}">
         {{ instance|get_field_verbose_name:field }}
+        {% if field|can_be_default %} (optional){% endif %}
     </label>
     <select class="govuk-select" id={{ field }} name={{ field }}>
         {% for key,value in instance|get_field_choices:field %}
