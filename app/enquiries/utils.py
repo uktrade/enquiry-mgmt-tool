@@ -171,3 +171,25 @@ def export_to_csv(qs: QuerySet, fp: typing.IO):
         data = enquiry_to_dict(e)
         output.append(data)
         writer.writerow(data)
+
+
+def parse_error_messages(e):
+    """
+    Take an error and parse the messages in human-readable form.
+
+    Returns a list of error messages
+    Where there are message dictionaries, separates out each message,
+    parsing the keys into sentence case with title capitalisations
+    """
+    response = []
+
+    if hasattr(e, 'message_dict'):
+        for key, value in e.message_dict.items():
+            msg = f'{key.replace("_", " ").title()}:'
+            for v in value:
+                msg += f' {v}'
+            response.append(msg)
+    else:
+        response.append(str(e))
+
+    return response

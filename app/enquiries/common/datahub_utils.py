@@ -469,7 +469,7 @@ def dh_investment_create(request, enquiry, metadata=None):
     # check if the user is available in Data Hub
     user_details, error = dh_get_user_details(request, access_token)
     if error:
-        response["errors"].append({"referral_advisor": error})
+        response["errors"].append({"referral_advisor": "Error validating your identity in Data Hub"})
         return response
 
     dh_status = dh_enquiry_readiness(request, access_token, enquiry)
@@ -491,7 +491,7 @@ def dh_investment_create(request, enquiry, metadata=None):
         request, access_token, full_name, company_id
     )
     if error:
-        response["errors"].append({"contact_search": error})
+        response["errors"].append({"contact_search": f"Error while checking company contacts, {str(error)}"})
         return response
 
     primary = not existing_contacts
@@ -499,7 +499,7 @@ def dh_investment_create(request, enquiry, metadata=None):
         request, access_token, enquiry, company_id, primary=primary
     )
     if error:
-        response["errors"].append({"contact_create": error})
+        response["errors"].append({"contact_create": f"Error while creating a new company contact, {str(error)}"})
         return response
 
     contact_id = contact_response["id"]

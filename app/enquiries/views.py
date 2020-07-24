@@ -8,6 +8,7 @@ from chardet import UniversalDetector
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -29,7 +30,11 @@ from rest_framework.views import APIView
 
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms, models, serializers, utils
-from app.enquiries.utils import row_to_enquiry, get_oauth_payload
+from app.enquiries.utils import (
+    row_to_enquiry,
+    get_oauth_payload,
+    parse_error_messages,
+)
 from app.enquiries.common.datahub_utils import dh_company_search, dh_request
 
 UNASSIGNED = "UNASSIGNED"
@@ -488,10 +493,15 @@ class ImportEnquiriesView(TemplateView):
 
         try:
             records = self.process_upload(file_obj)
-        except Exception as err:
-            messages.add_message(request, messages.ERROR, str(err))
+        except ValidationError as err:
+            for msg in parse_error_messages(err):
+                messages.add_message(request, messages.ERROR, msg)
             logging.error(err)
             return HttpResponseRedirect(self.ERROR_URL)
+        except Exception as err:
+            messages.add_message(request, messages.ERROR, f"Unexpected error, {str(err)}")
+            logging.error(err)
+            return HttpResponseRedirect(self.ERROR_URL)  
 
         return render(
             self.request,
