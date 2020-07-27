@@ -750,15 +750,3 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertIn(
             settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition")
         )
-
-    def test_security_response_headers(self):
-        """
-        Tests that the add_cache_control_header_middleware and
-        Django's security middleware add the correct header 
-        values to any response. 
-
-        Only tested with one path as middleware is applied to all.
-        """
-        response = self.client.get(reverse("enquiry-list"), **headers)
-        assert response['X-XSS-Protection'] == '1; mode=block'
-        assert response["Cache-Control"] == 'max-age=0, no-cache, no-store, must-revalidate, private'
