@@ -15,9 +15,11 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
+from django.test import RequestFactory
 from django.urls import reverse
 
 from rest_framework import status
+from rest_framework.test import APIRequestFactory
 from unittest import mock
 
 import app.enquiries.ref_data as ref_data
@@ -25,7 +27,7 @@ import app.enquiries.views as enquiry_views
 import app.enquiries.tests.utils as test_utils
 
 from app.enquiries import utils
-from app.enquiries.models import Enquiry, Enquirer
+from app.enquiries.models import Enquiry, Enquirer, Owner
 from app.enquiries.tests.factories import (
     EnquirerFactory,
     EnquiryFactory,
@@ -35,11 +37,13 @@ from app.enquiries.tests.factories import (
     get_display_value,
     return_display_value,
 )
-from app.enquiries.views import ImportEnquiriesView
+from app.enquiries.views import ImportEnquiriesView, PaginationWithPaginationMeta
+
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
 headers_json = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/json"}
+headers_csv = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/csv"}
 
 
 def canned_enquiry():
@@ -561,6 +565,25 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 2)
 
+    def test_enquiry_list_csv_format(self):
+        """
+        Asserts that the view instance has no paginator if there's a
+        `format=csv` query string parameter
+        """
+        user = Owner.objects.get(username='test')
+
+        request = RequestFactory().get(reverse("enquiry-list"),
+                                       dict(format='csv'))
+        request.user = user
+        response = enquiry_views.EnquiryListView.as_view()(request)
+        assert response.renderer_context['view'].paginator is None
+
+        request = RequestFactory().get(reverse("enquiry-list"))
+        request.user = user
+        response = enquiry_views.EnquiryListView.as_view()(request)
+        assert isinstance(response.renderer_context['view'].paginator,
+                          PaginationWithPaginationMeta)
+
     @pytest.mark.skip(
         reason="@TODO need to investigate why the Owner model cannot be serialized"
     )
@@ -728,24 +751,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition")
         )
 
-    def test_export_view(self):
-        num_enquiries = 5
-        enquiries = EnquiryFactory.create_batch(num_enquiries)
-        response = self.client.get(reverse("export-enquiries"))
-        reader = csv.DictReader(io.StringIO(response.content.decode()))
-
-        self.assertTrue("text/csv" in response.get("Content-Type"))
-        self.assertIn(
-            settings.EXPORT_OUTPUT_FILE_SLUG, response.get("Content-Disposition"),
-        )
-
-        for csv_row in reader:
-            enquiry = Enquiry.objects.get(id=int(csv_row["id"]))
-            self.assert_enquiry_equals_csv_row(enquiry, csv_row)
-            num_enquiries -= 1
-
-        self.assertEqual(num_enquiries, 0)
-    
     def test_security_response_headers(self):
         """
         Tests that the add_cache_control_header_middleware and

@@ -134,45 +134,6 @@ def generate_import_template(file_obj):
     book.save(file_obj)
 
 
-def enquiry_to_dict(e: models.Enquiry) -> dict:
-    output = {}
-
-    for f in ENQUIRY_FIELDS:
-        if f.name == "enquirer":
-            output.update(enquirer_to_dict(getattr(e, f.name)))
-        else:
-            output[f.name] = getattr(e, f.name)
-
-    return output
-
-
-def enquirer_to_dict(e: models.Enquirer) -> dict:
-    output = {}
-
-    for f in ENQUIRER_FIELDS:
-        col_name = "enquirer_" + f.name
-        output[col_name] = getattr(e, f.name)
-
-    return output
-
-
-def export_to_csv(qs: QuerySet, fp: typing.IO):
-    """
-    Exports a CSV dump of the enquiries to a CSV file
-    :qs: Django queryset
-    :fp: file-like object. This includes Django HTTP response object
-    :return: void
-    """
-    output = []
-    writer = csv.DictWriter(fp, fieldnames=EXPORT_FIELD_NAMES)
-    writer.writeheader()
-
-    for e in qs.iterator():
-        data = enquiry_to_dict(e)
-        output.append(data)
-        writer.writerow(data)
-
-
 def parse_error_messages(e):
     """
     Take an error and parse the messages in human-readable form.

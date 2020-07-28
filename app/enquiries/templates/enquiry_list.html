@@ -35,7 +35,12 @@
                                 <span class="header-page-number">Page {{ current_page }} of {{ total_pages }}</span>
                             </div>
                             <div class="download-button-container">
-                                <button onclick="window.location.href = `{% url 'export-enquiries' %}`" class="govuk-button download-enquiries-button">Download all</button>
+                                <button
+                                    onclick="location.search += (location.search ? '&' : '') + 'format=csv' "
+                                    class="govuk-button download-enquiries-button"
+                                >
+                                    Download all
+                                </button>
                             </div>
                         </div>
                     </header>
