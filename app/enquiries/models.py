@@ -44,9 +44,7 @@ class Enquiry(TimeStampedModel):
     """
 
     company_name = models.CharField(
-        max_length=MAX_LENGTH,
-        help_text="Name of the company",
-        verbose_name="Company name",
+        max_length=MAX_LENGTH, help_text="Name of the company", verbose_name="Company name"
     )
     enquiry_stage = models.CharField(
         max_length=MAX_LENGTH,

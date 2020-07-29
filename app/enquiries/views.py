@@ -139,9 +139,7 @@ def truncate_response_data(response_data, block_size=4):
     block_pivot = block_size // 2
     start_of_current_block = abs(current_page_num - block_pivot)
     start_of_last_block = last_page["page_number"] - block_size
-    block_start_index = min(
-        start_of_current_block, start_of_last_block, current_page_index,
-    )
+    block_start_index = min(start_of_current_block, start_of_last_block, current_page_index)
 
     truncated_pages = pages[block_start_index:][:block_size]
     first_of_truncated_pages_num = truncated_pages[0]["page_number"]
