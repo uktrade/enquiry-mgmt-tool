@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import login
 from django.core.management import call_command
-from rest_framework import authentication, status
+from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,6 +24,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
     DRF will enforce CSRF (unless we stop it).
 
     """
+
     def enforce_csrf(self, request):
         return
 
@@ -51,34 +52,29 @@ class TestFixtureResetView(APIView):
     be automatically logged in (to simplify the e2e testing cycle).
 
     """
+
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request, *args, **kwargs):
         if not settings.ALLOW_TEST_FIXTURE_SETUP:
             return Response(status=status.HTTP_404_NOT_FOUND)
         seed_user_data = {
-            'username': request.data['username'],
-            'first_name': request.data['first_name'],
-            'last_name': request.data['last_name'],
-            'email': request.data['email'],
+            "username": request.data["username"],
+            "first_name": request.data["first_name"],
+            "last_name": request.data["last_name"],
+            "email": request.data["email"],
         }
         Enquiry.objects.all().delete()
         Enquirer.objects.all().delete()
         Owner.objects.all().delete()
         call_command(
-            'loaddata',
-            'app/enquiries/fixtures/test_users.json',
-            app_label='enquiries',
+            "loaddata", "app/enquiries/fixtures/test_users.json", app_label="enquiries",
         )
         call_command(
-            'loaddata',
-            'app/enquiries/fixtures/test_enquiries.json',
-            app_label='enquiries',
+            "loaddata", "app/enquiries/fixtures/test_enquiries.json", app_label="enquiries",
         )
         seed_user = Owner.objects.create(**seed_user_data)
         login(
-            request,
-            seed_user,
-            backend='django.contrib.auth.backends.ModelBackend',
+            request, seed_user, backend="django.contrib.auth.backends.ModelBackend",
         )
         return Response(status=status.HTTP_201_CREATED)

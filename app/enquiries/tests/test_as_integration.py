@@ -1,21 +1,14 @@
-import json
 import random
 import requests_mock
 
 from datetime import datetime
 from django.conf import settings
 from django.forms.models import model_to_dict
-from django.test import Client, TestCase
+from django.test import TestCase
 from faker import Faker
-from unittest import mock
 
 from app.enquiries.models import Enquiry, Enquirer
-from app.enquiries.common.as_utils import (
-    hawk_request,
-    parse_enquiry_email,
-    get_new_investment_enquiries,
-    fetch_and_process_enquiries,
-)
+from app.enquiries.common.as_utils import fetch_and_process_enquiries
 
 faker = Faker()
 
@@ -28,84 +21,89 @@ table_template = """
             <td>Given name</td>
             <td>{first_name}</td>
         </tr>
-   
+
         <tr>
             <td>Family name</td>
             <td>{last_name}</td>
         </tr>
-    
+
         <tr>
             <td>Job title</td>
             <td>CEO</td>
         </tr>
-    
+
         <tr>
             <td>Email address</td>
             <td>{email}</td>
         </tr>
-    
+
         <tr>
             <td>Phone number</td>
             <td>{phone}</td>
         </tr>
-    
+
         <tr>
             <td>Company name</td>
             <td>{company_name}</td>
         </tr>
-    
+
         <tr>
             <td>Company website</td>
             <td>https://example.com</td>
         </tr>
-    
+
         <tr>
             <td>Company HQ address</td>
             <td>Far, far away</td>
         </tr>
-    
+
         <tr>
             <td>Country</td>
             <td>US</td>
         </tr>
-    
+
         <tr>
             <td>Industry</td>
             <td>AEROSPACE</td>
         </tr>
-    
+
         <tr>
-            <td>Which of these best describes how you feel about expanding to the UK?</td>
-            <td>I’m still exploring where to expand my business and would like to know more about the UK’s offer.</td>
+            <td>
+                Which of these best describes how you feel about expanding to the UK?
+            </td>
+            <td>I’m still exploring where to expand my business and would like to know more about\
+ the UK’s offer.</td>
         </tr>
-    
+
         <tr>
             <td>Tell us about your investment</td>
             <td>This is a test message sent via automated tests</td>
         </tr>
-    
+
         <tr>
             <td>Would you like to arrange a call?</td>
             <td>{arrange_call}</td>
         </tr>
-    
+
         <tr>
             <td>When should we call you?</td>
             <td></td>
         </tr>
-    
+
         <tr>
             <td>How did you hear about us?</td>
             <td>LinkedIn</td>
         </tr>
-    
+
         <tr>
             <td>I would like to receive additional information by email</td>
             <td>{email_consent}</td>
         </tr>
-    
+
         <tr>
-            <td>I would like to receive additional information by telephone</td>
+            <td>
+                I would like to receive additional information by telephone
+            </td>
             <td>{phone_consent}</td>
         </tr>
     </table>
@@ -130,12 +128,8 @@ def get_enquiries_data():
         }
 
         arrange_call = random.choice(["yes", "no", "yes", "yes", "no", "yes"])
-        email_consent = random.choice(
-            ["True", "False", "False", "True", "True", "True"]
-        )
-        phone_consent = random.choice(
-            ["True", "False", "False", "True", "True", "True"]
-        )
+        email_consent = random.choice(["True", "False", "False", "True", "True", "True"])
+        phone_consent = random.choice(["True", "False", "False", "True", "True", "True"])
         detail = {
             "company_name": faker.company(),
             "first_name": faker.name(),
@@ -161,7 +155,6 @@ def get_enquiries_data():
 
 
 class ActivityStreamIntegrationTests(TestCase):
-
     def test_fetch_new_enquiries(self):
         """
         Test that fetches sample enquiries data, parses them and creates
@@ -179,13 +172,9 @@ class ActivityStreamIntegrationTests(TestCase):
             for detail in details:
                 if not detail["skip"]:
                     enquiry = model_to_dict(
-                        Enquiry.objects.filter(
-                            company_name=detail["company_name"]
-                        ).first()
+                        Enquiry.objects.filter(company_name=detail["company_name"]).first()
                     )
-                    enquirer = model_to_dict(
-                        Enquirer.objects.get(id=enquiry["enquirer"])
-                    )
+                    enquirer = model_to_dict(Enquirer.objects.get(id=enquiry["enquirer"]))
                     for k, v in detail.items():
                         if k == "arrange_call":
                             v = True if v == "yes" else False
@@ -197,8 +186,5 @@ class ActivityStreamIntegrationTests(TestCase):
                             self.assertEqual(enquirer[k], v)
                 else:
                     self.assertEqual(
-                        Enquiry.objects.filter(
-                            company_name=detail["company_name"]
-                        ).count(),
-                        0,
+                        Enquiry.objects.filter(company_name=detail["company_name"]).count(), 0
                     )

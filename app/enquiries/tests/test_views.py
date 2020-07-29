@@ -1,9 +1,7 @@
 import csv
-import io
 import pytest
-import pytz
 import random
-from openpyxl import Workbook, load_workbook
+from openpyxl import load_workbook
 
 from bs4 import BeautifulSoup
 from io import StringIO
@@ -12,18 +10,15 @@ from datetime import date, datetime
 from faker import Faker
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import RequestFactory
 from django.urls import reverse
 
 from rest_framework import status
-from rest_framework.test import APIRequestFactory
 from unittest import mock
 
 import app.enquiries.ref_data as ref_data
-import app.enquiries.views as enquiry_views
 import app.enquiries.tests.utils as test_utils
 
 from app.enquiries import utils
@@ -34,10 +29,14 @@ from app.enquiries.tests.factories import (
     create_fake_enquiry_csv_row,
     get_random_item,
     get_display_name,
-    get_display_value,
     return_display_value,
 )
-from app.enquiries.views import ImportEnquiriesView, PaginationWithPaginationMeta
+from app.enquiries.views import (
+    EnquiryListView,
+    ImportEnquiriesView,
+    ImportTemplateDownloadView,
+    PaginationWithPaginationMeta
+)
 
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
@@ -116,9 +115,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
             self.assertEqual(value, expected[key])
 
-    def assert_factory_enquiry_equals_enquiry_response(
-        self, factory_item, response_item
-    ):
+    def assert_factory_enquiry_equals_enquiry_response(self, factory_item, response_item):
         date_fields = [
             "created",
             "modified",
@@ -138,13 +135,9 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
                     db_value = db_value.date()
                 elif isinstance(db_value, str):
                     db_value = datetime.strptime(db_value, "%d %B %Y")
-                    db_value = (
-                        db_value.date() if isinstance(db_value, datetime) else db_value
-                    )
+                    db_value = db_value.date() if isinstance(db_value, datetime) else db_value
                 factory_value = (
-                    factory_value.date()
-                    if isinstance(factory_value, datetime)
-                    else factory_value
+                    factory_value.date() if isinstance(factory_value, datetime) else factory_value
                 )
             elif name in ref_fields:
                 ref_model = ref_fields[name]
@@ -158,22 +151,19 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             if name in ["id", "created", "modified"]:
                 continue
             enquiry_val = getattr(enquiry, name)
-            self.assertEqual(
-                csv_row[name], str(enquiry_val) if enquiry_val else ""
-            )
+            self.assertEqual(csv_row[name], str(enquiry_val) if enquiry_val else "")
         if enquiry.enquirer:
             for enquirer_key in utils.ENQUIRER_FIELD_NAMES:
                 enquirer_val = getattr(enquiry.enquirer, enquirer_key)
                 csv_row_key = f"enquirer_{enquirer_key}"
                 self.assertEqual(
-                    csv_row[csv_row_key],
-                    str(enquirer_val) if enquirer_val != None else "",
+                    csv_row[csv_row_key], str(enquirer_val) if enquirer_val is not None else "",
                 )
 
     def create_enquiry_and_assert(self, enquiry):
         """Creates an Enquiry using the API and asserts on the response status"""
         response = self.client.post(
-            reverse("enquiry-create"), data=enquiry, content_type="application/json"
+            reverse("enquiry-create"), data=enquiry, content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         return response.json()
@@ -185,9 +175,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         return response.context["enquiry"]
 
-    @pytest.mark.skip(
-        reason="@TODO need to investigate why the Owner model cannot be serialized"
-    )
+    @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
     def test_enquiry_list(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         enquiries = [EnquiryFactory() for i in range(2)]
@@ -207,9 +195,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         count = len(enquiry_els)
         self.assertEqual(count, len(enquiries))
 
-    @pytest.mark.skip(
-        reason="@TODO need to investigate why the Owner model cannot be serialized"
-    )
+    @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
     def test_enquiry_list_content_type_json(self):
         response = self.client.get(reverse("enquiry-list"))
         self.assertIn(
@@ -219,13 +205,14 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
 
     def test_enquiry_list_content_type_html(self):
-        headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
+        headers = {
+            "HTTP_CONTENT_TYPE": "text/html",
+            "HTTP_ACCEPT": "text/html",
+        }
         response = self.client.get(reverse("enquiry-list"), **headers)
 
         self.assertIn(
-            "text/html",
-            response.get("Content-Type"),
-            msg="document should have type: text/html",
+            "text/html", response.get("Content-Type"), msg="document should have type: text/html",
         )
 
     def test_enquiries_list_pagination(self):
@@ -246,25 +233,18 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         for page in range(total_pages):
             start = page * page_size
             end = start + page_size
-            response = self.client.get(
-                reverse("enquiry-list"), {"page": page + 1}, **headers
-            )
+            response = self.client.get(reverse("enquiry-list"), {"page": page + 1}, **headers)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual(
-                [enq["id"] for enq in response.data["results"]], ids[start:end]
-            )
+            self.assertEqual([enq["id"] for enq in response.data["results"]], ids[start:end])
             self.assertEqual(response.data["current_page"], page + 1)
-        
+
         response = self.client.get(reverse("enquiry-list"), **headers)
         pages = response.context["pages"]
         assert response.context["total_pages"] == 13
         assert pages[0]["page_number"] == 1
-        assert pages[0]["link"] == (
-            "/enquiries/?page=1"
-        )
+        assert pages[0]["link"] == ("/enquiries/?page=1")
         page_labels = [page["page_number"] for page in pages]
         assert page_labels == [1, 2, 3, 4, "...", 13]
-
 
         # Ensure accesing the page after the last page should return 404
         response = self.client.get(reverse("enquiry-list"), {"page": total_pages + 1})
@@ -275,9 +255,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiry = canned_enquiry()
         response = self.create_enquiry_and_assert(enquiry)
         self.assert_dicts_equal(
-            enquiry,
-            response,
-            ["enquirer", "date_added_to_datahub", "project_success_date"],
+            enquiry, response, ["enquirer", "date_added_to_datahub", "project_success_date"],
         )
         self.assert_dicts_equal(enquiry["enquirer"], response["enquirer"])
 
@@ -286,7 +264,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiry = canned_enquiry()
         del enquiry["company_name"]
         response = self.client.post(
-            reverse("enquiry-create"), data=enquiry, content_type="application/json"
+            reverse("enquiry-create"), data=enquiry, content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -295,20 +273,18 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         """
         While creating an Enquiry we first have to create an Enquirer instance
         as there is a foreign key reference to it. To avoid dangling Enquirers
-        both of these are executed as atomic transaction. This test ensures that
+        both of these are executed as atomic transactions. This test ensures that
         the atomic transaction is working as expected.
 
         We intentionally fail the Enquiry creation and assert that no new
         Enquirers are created.
         """
         num_enquirers = Enquirer.objects.all().count()
-        mock_enquiry.create.side_effect = Exception(
-            "raise Exception while creating Enquiry"
-        )
+        mock_enquiry.create.side_effect = Exception("raise Exception while creating Enquiry")
 
-        with pytest.raises(Exception) as e:
+        with pytest.raises(Exception):
             enquiry = canned_enquiry()
-            response = self.create_enquiry_and_assert(enquiry)
+            self.create_enquiry_and_assert(enquiry)
         self.assertEqual(Enquirer.objects.all().count(), num_enquirers)
 
     def test_enquiry_detail(self):
@@ -352,9 +328,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         data["email_consent"] = False
         data["phone_consent"] = True
         data["request_for_call"] = enquirer.request_for_call
-        response = self.client.post(
-            reverse("enquiry-edit", kwargs={"pk": data["id"]}), data,
-        )
+        response = self.client.post(reverse("enquiry-edit", kwargs={"pk": data["id"]}), data,)
         # POST request response to a form is 302
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
@@ -387,7 +361,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(updated_enquiry["company_name"], enquiry["company_name"])
         self.assertNotEqual(updated_enquiry["company_name"], "")
 
-        """Test the template is using the right variables to show enquiry data 
+        """Test the template is using the right variables to show enquiry data
         in the simple case when data is a string"""
         enquiry = EnquiryFactory()
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
@@ -395,13 +369,11 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertContains(response, enquiry.notes)
 
     def test_enquiry_detail_template_ref_data(self):
-        """Test the template is using the right variables to show enquiry data 
+        """Test the template is using the right variables to show enquiry data
         in the case when data is a ref_data choice and has a verbose name"""
         enquiry = EnquiryFactory()
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
-        enquiry_stage_display_name = get_display_name(
-            ref_data.EnquiryStage, enquiry.enquiry_stage
-        )
+        enquiry_stage_display_name = get_display_name(ref_data.EnquiryStage, enquiry.enquiry_stage)
         country_display_name = get_display_name(ref_data.Country, enquiry.country)
         self.assertContains(response, enquiry_stage_display_name)
         self.assertContains(response, country_display_name)
@@ -413,9 +385,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertContains(response, "Upload file")
         self.assertContains(response, "Choose a file to upload")
         self.assertNotContains(
-            response,
-            "govuk-error-summary",
-            msg_prefix="Should not render message summary",
+            response, "govuk-error-summary", msg_prefix="Should not render message summary",
         )
         self.assertNotContains(response, "File import successfully completed.")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -459,7 +429,8 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
             for e in enquiries:
                 # generate filter keyword args dynamically
-                # (can't modify the dict we arfe iterating over withouit raising an error so make a extra copy)
+                # (can't modify the dict we are iterating over withouit raising an error
+                # so make an extra copy)
                 qs_kwargs = utils.csv_row_to_enquiry_filter_kwargs(e)
                 # fake address generated by Faker() sometimes contains '\n' breaks filtering
                 qs_kwargs.pop("company_hq_address")
@@ -559,7 +530,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         EnquiryFactory(company_name="Bar Inc")
         EnquiryFactory(company_name="Baz")
         response = self.client.get(
-            reverse("enquiry-list"), {"company_name__icontains": "Bar"}, **headers
+            reverse("enquiry-list"), {"company_name__icontains": "Bar"}, **headers,
         )
         data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -575,18 +546,16 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         request = RequestFactory().get(reverse("enquiry-list"),
                                        dict(format='csv'))
         request.user = user
-        response = enquiry_views.EnquiryListView.as_view()(request)
+        response = EnquiryListView.as_view()(request)
         assert response.renderer_context['view'].paginator is None
 
         request = RequestFactory().get(reverse("enquiry-list"))
         request.user = user
-        response = enquiry_views.EnquiryListView.as_view()(request)
+        response = EnquiryListView.as_view()(request)
         assert isinstance(response.renderer_context['view'].paginator,
                           PaginationWithPaginationMeta)
 
-    @pytest.mark.skip(
-        reason="@TODO need to investigate why the Owner model cannot be serialized"
-    )
+    @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
     def test_enquiry_list_filtered_unassigned(self):
         """Test retrieving enquiry list and ensure we get expected count"""
 
@@ -604,18 +573,14 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiry_assigned = enquiries[1]
 
         # owner assigned
-        response = self.client.get(
-            reverse("enquiry-list"), {"owner__id": owner.id}, **headers
-        )
+        response = self.client.get(reverse("enquiry-list"), {"owner__id": owner.id}, **headers)
         data = response.data
 
         enquiry_data = data["results"][0]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 1)
-        self.assert_factory_enquiry_equals_enquiry_response(
-            enquiry_assigned, enquiry_data
-        )
+        self.assert_factory_enquiry_equals_enquiry_response(enquiry_assigned, enquiry_data)
 
         # owner unassigned
         response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"})
@@ -645,9 +610,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiries[0].save()
 
         # owner assigned
-        response = self.client.get(
-            reverse("enquiry-list"), {"owner__id": owner.id}, **headers
-        )
+        response = self.client.get(reverse("enquiry-list"), {"owner__id": owner.id}, **headers)
 
         soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity__list-item")
@@ -656,18 +619,14 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(len(enquiry_els), 1)
 
         # owner unassigned
-        response = self.client.get(
-            reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers
-        )
+        response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers)
         soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity__list-item")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(enquiry_els), 1)
 
-    @pytest.mark.skip(
-        reason="@TODO need to investigate why the Owner model cannot be serialized"
-    )
+    @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
     def test_enquiry_list_filtered_enquiry_stage(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.ADDED_TO_DATAHUB),
@@ -675,8 +634,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW)
         # enquiry stage - ADDED_TO_DATAHUB
         response = self.client.get(
-            reverse("enquiry-list"),
-            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
+            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
         )
         data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -684,7 +642,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
         # enquiry stage - NON_FDI
         response = self.client.get(
-            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}
+            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI},
         )
         data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -710,9 +668,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
         # enquiry stage - NON_FDI
         response = self.client.get(
-            reverse("enquiry-list"),
-            {"enquiry_stage": ref_data.EnquiryStage.NON_FDI},
-            **headers,
+            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}, **headers,
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
@@ -727,7 +683,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         All other sheets are populate with the apps ref_data.py
         """
         import io
-        import tempfile
 
         response = self.client.get(reverse("import-template"))
         content = response.content
@@ -737,16 +692,14 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         for row in sheet.values:
             for i, val in enumerate(row):
                 self.assertEqual(
-                    val,
-                    ref_data.IMPORT_COL_NAMES[i],
-                    msg="should match expected column value",
+                    val, ref_data.IMPORT_COL_NAMES[i], msg="should match expected column value",
                 )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(
-            enquiry_views.ImportTemplateDownloadView.CONTENT_TYPE,
+            ImportTemplateDownloadView.CONTENT_TYPE,
             response.get("Content-Type"),
-            msg=f"Should have content type: {enquiry_views.ImportTemplateDownloadView.CONTENT_TYPE}",
+            msg=f"Should have content type: {ImportTemplateDownloadView.CONTENT_TYPE}",
         )
         self.assertIn(
-            settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition")
+            settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition"),
         )
