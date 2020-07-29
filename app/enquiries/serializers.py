@@ -1,5 +1,4 @@
 from django.db import transaction
-from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from app.enquiries import models
@@ -14,14 +13,12 @@ class EnquirerDetailSerializer(serializers.ModelSerializer):
 
 
 class EnquirerSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.Enquirer
         fields = "__all__"
 
 
 class OwnerSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.Owner
         fields = "__all__"
@@ -32,6 +29,7 @@ class EnquirySerializer(serializers.ModelSerializer):
     Enquiry model serializer mainly used for serializing during
     create, update of Enquiry objects
     """
+
     enquirer = EnquirerSerializer()
 
     class Meta:
@@ -40,7 +38,7 @@ class EnquirySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         with transaction.atomic():
-            enquirer = validated_data.pop('enquirer')
+            enquirer = validated_data.pop("enquirer")
             enquirer_instance = models.Enquirer.objects.create(**enquirer)
             enquiry = models.Enquiry.objects.create(**validated_data, enquirer=enquirer_instance)
             return enquiry
@@ -52,6 +50,7 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     It provides the human readable form for all the choice fields
     in the Enquiry model.
     """
+
     owner = OwnerSerializer()
     enquirer = EnquirerDetailSerializer()
     created = serializers.DateTimeField(format="%d %B %Y")
@@ -73,8 +72,12 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     investment_type = serializers.CharField(source="get_investment_type_display")
     estimated_land_date = serializers.DateField(format="%d %B %Y")
     new_existing_investor = serializers.CharField(source="get_new_existing_investor_display")
-    investor_involvement_level = serializers.CharField(source="get_investor_involvement_level_display")
-    specific_investment_programme = serializers.CharField(source="get_specific_investment_programme_display")
+    investor_involvement_level = serializers.CharField(
+        source="get_investor_involvement_level_display"
+    )
+    specific_investment_programme = serializers.CharField(
+        source="get_specific_investment_programme_display"
+    )
     date_added_to_datahub = serializers.DateField(format="%d %B %Y")
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
     project_success_date = serializers.DateField(format="%d %B %Y")

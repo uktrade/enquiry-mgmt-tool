@@ -46,9 +46,13 @@ class DataHubAdviserSearch(LoginRequiredMixin, View):
         session = get_oauth_payload(request)
         access_token = session["access_token"]
 
-        res = dh_request(request, access_token, method='GET',
-                         url=settings.DATA_HUB_ADVISER_SEARCH_URL,
-                         params=dict(autocomplete=request.GET.get('q')))
+        res = dh_request(
+            request,
+            access_token,
+            method="GET",
+            url=settings.DATA_HUB_ADVISER_SEARCH_URL,
+            params=dict(autocomplete=request.GET.get("q")),
+        )
 
         try:
             data = res.json()
@@ -56,19 +60,20 @@ class DataHubAdviserSearch(LoginRequiredMixin, View):
             data = {}
 
         return JsonResponse(
-            dict(results=[
-                dict(text=adviser['name'], id=adviser['name'])
-                for adviser in data['results']
-            ]) if res.status_code == 200 else data,
+            dict(
+                results=[
+                    dict(text=adviser["name"], id=adviser["name"]) for adviser in data["results"]
+                ]
+            )
+            if res.status_code == 200
+            else data,
             status=res.status_code,
-            reason=res.reason
+            reason=res.reason,
         )
 
 
 def get_filter_config():
-    filter_fields = [
-        field for field in models.Enquiry._meta.get_fields() if field.choices
-    ]
+    filter_fields = [field for field in models.Enquiry._meta.get_fields() if field.choices]
     filter_config = {}
     for field in filter_fields:
         filter_config[field.name] = field
@@ -97,18 +102,16 @@ class PaginationWithPaginationMeta(PageNumberPagination):
             "owners": models.Owner.objects.all().order_by("last_name"),
             "query_params": self.request.GET,
             "total_pages": len(self.page.paginator.page_range),
-            "pages": [{'page_number': page_number,
-                        'current': page_number == self.page.number,
-                        'link': replace_query_param(
-                                            self.request.get_full_path(),
-                                            'page',
-                                            page_number)}
-                        for page_number in self.page.paginator.page_range],
-
-            }
-        return Response(
-            truncate_response_data(response_data),
-        )
+            "pages": [
+                {
+                    "page_number": page_number,
+                    "current": page_number == self.page.number,
+                    "link": replace_query_param(self.request.get_full_path(), "page", page_number),
+                }
+                for page_number in self.page.paginator.page_range
+            ],
+        }
+        return Response(truncate_response_data(response_data),)
 
     def post(self, request, format=None):
         serializer = serializers.EnquirySerializer(data=request.data)
@@ -117,13 +120,13 @@ class PaginationWithPaginationMeta(PageNumberPagination):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 def truncate_response_data(response_data, block_size=4):
     """
     Truncate the pagination links.
 
-    We don't want to show a link for every page if there are lots of pages. 
+    We don't want to show a link for every page if there are lots of pages.
     This replaces page links which are less useful with an ellipsis ('...').
     """
     pages = response_data["pages"]
@@ -167,7 +170,6 @@ def truncate_response_data(response_data, block_size=4):
     return response_data
 
 
-
 def is_valid_id(v) -> bool:
     if v == UNASSIGNED:
         return True
@@ -188,9 +190,7 @@ class EnquiryFilter(filters.FilterSet):
     created__lt = filters.DateFilter(field_name="create", method="filter_created_lt")
     created__gt = filters.DateFilter(field_name="create", method="filter_created_gt")
     enquiry_stage = filters.CharFilter(
-        field_name="enquiry_stage",
-        lookup_expr="in",
-        method="filter_enquiry_stage"
+        field_name="enquiry_stage", lookup_expr="in", method="filter_enquiry_stage"
     )
     enquirer__email = filters.CharFilter(field_name="enquirer__email", lookup_expr="icontains")
 
@@ -201,7 +201,8 @@ class EnquiryFilter(filters.FilterSet):
     def filter_owner_id(self, queryset, name, value):
         """
         This filter handles the owner__id parameter which can either be an int
-        of the string 'UNASSIGNED'. In the case of UNASSIGNED to filter for enquirires where owner == None
+        or the string 'UNASSIGNED'.
+        In the case of UNASSIGNED to filter for enquirires where owner == None
         """
         vals = self.request.GET.getlist(name)
         # filter out valid values (int|'UNASSIGNED')
@@ -245,6 +246,7 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     also inherited via a meta class to add additional metadata required
     for use in the template
     """
+
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = EnquiryFilter
     template_name = "enquiry_list.html"
@@ -258,7 +260,7 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     @property
     def paginator(self):
         """This method override is here to disable pagination for the csv format"""
-        if self.request.query_params.get('format') == 'csv':
+        if self.request.query_params.get("format") == "csv":
             self._paginator = None
         return super().paginator
 
@@ -286,7 +288,6 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
     template_name = "enquiry_detail.html"
 
     def get_context_data(self, **kwargs):
-        pk = kwargs["pk"]
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
@@ -308,9 +309,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
             context["errors"] = create_response["errors"]
         response = render(request, self.template_name, context)
         response.status_code = (
-            status.HTTP_400_BAD_REQUEST
-            if create_response["errors"]
-            else status.HTTP_201_CREATED
+            status.HTTP_400_BAD_REQUEST if create_response["errors"] else status.HTTP_201_CREATED
         )
         return response
 
@@ -380,7 +379,6 @@ class EnquiryDeleteView(DeleteView):
     template_name = "enquiry_delete.html"
 
     def post(self, request, **kwargs):
-        pk = kwargs["pk"]
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         enquiry.delete()
         return redirect("enquiry-list")
@@ -392,7 +390,6 @@ class EnquiryCompanySearchView(TemplateView):
     template_name = "enquiry_company_search.html"
 
     def get_context_data(self, **kwargs):
-        pk = kwargs["pk"]
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
@@ -438,9 +435,7 @@ class ImportEnquiriesView(TemplateView):
     def _build_records(self, csv_lines):
         records = []
         if len(csv_lines) <= 1:
-            raise Exception(
-                "Empty CSV file or only header row detected, no records imported"
-            )
+            raise Exception("Empty CSV file or only header row detected, no records imported")
 
         # import all or none
         with transaction.atomic():
@@ -506,7 +501,7 @@ class ImportEnquiriesView(TemplateView):
         except Exception as err:
             messages.add_message(request, messages.ERROR, f"Unexpected error, {str(err)}")
             logging.error(err)
-            return HttpResponseRedirect(self.ERROR_URL)  
+            return HttpResponseRedirect(self.ERROR_URL)
 
         return render(
             self.request,
@@ -516,9 +511,7 @@ class ImportEnquiriesView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         status_code = (
-            status.HTTP_400_BAD_REQUEST
-            if "errors" in request.GET
-            else status.HTTP_200_OK
+            status.HTTP_400_BAD_REQUEST if "errors" in request.GET else status.HTTP_200_OK
         )
         return render(
             request,
