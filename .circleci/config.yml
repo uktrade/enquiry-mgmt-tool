@@ -21,6 +21,9 @@ jobs:
             ALLOW_TEST_FIXTURE_SETUP: allow
             DJANGO_SETTINGS_MODULE: app.settings.e2etest
       - run:
+          name: Run Flake8
+          command: docker-compose run app python -m flake8
+      - run:
           name: Run unit tests
           command: docker-compose run app python -m pytest --cov --cov-report=xml -s --ds=app.settings.djangotest -vvv app
       - codecov/upload:
