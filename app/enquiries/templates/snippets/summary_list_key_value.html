@@ -1,7 +1,7 @@
 {% load enquiries_extras %}
 <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-        {{ instance|get_field_verbose_name:field }}
+        {{ instance|get_field_verbose_name:field }} {% if instance|is_optional:field %} (optional){% endif %}
     </dt>
     <dd class="govuk-summary-list__value"  id="{{ field }}">{% if instance|get_field_value:field == None %}{{ "----" }}{% else %}{{ instance|get_field_value:field }}{% endif %}</dd>
 </div>

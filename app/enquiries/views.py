@@ -300,7 +300,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         enquiry = context["enquiry"]
 
         create_response = dh_investment_create(request, enquiry)
-        if create_response.get("result") and create_response["result"]["id"]:
+        if create_response.get("result", {}).get("id"):
             enquiry.refresh_from_db()
             context["enquiry"] = enquiry
             context[
