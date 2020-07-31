@@ -40,6 +40,10 @@ This file contains all the required environment variable for the application. Sa
 
 The actual values are added to `ready-to-trade` vault. Please use the values corresponding to the `dev` environment.
 
+## Set up a flake8 pre-commit hook locally
+To set up a pre-commit hook which will prevent you from committing code with formatting errors, run:
+`make setup-flake8-hook`
+
 ### Single Sign On (SSO)
 
 The app works out of the box with
