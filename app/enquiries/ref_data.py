@@ -11,6 +11,7 @@ class EnquiryStage(models.TextChoices):
     ADDED_TO_DATAHUB = "ADDED_TO_DATAHUB", _("Added to Data Hub")
     SENT_TO_POST = "SENT_TO_POST", _("Sent to Post")
     POST_PROGRESSING = "POST_PROGRESSING", _("Post progressing")
+    NON_APPLICABLE = "NON_APPLICABLE", _("Non-applicable")
 
 
 class InvestmentReadiness(models.TextChoices):

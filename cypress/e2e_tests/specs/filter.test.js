@@ -29,6 +29,7 @@ const FILTERS = {
   added: 'Added to Data Hub',
   nonFdi: 'Non-FDI',
   nonResponsive: 'Non-responsive',
+  nonApplicable: 'Non-applicable',
   awaiting: 'Awaiting response from Investor',
   postProgressing: 'Post progressing',
   sent: 'Sent to Post',
@@ -262,7 +263,7 @@ describe('Filters', () => {
     filters: {
       [FILTERS.awaiting]: true,
     },
-    expectedTotal: 16,
+    expectedTotal: 15,
     assertItem: ($li) =>
       cy.wrap($li).contains(/^Awaiting response from Investor$/),
   })
@@ -313,6 +314,25 @@ describe('Filters', () => {
     },
   })
   
+  testFilters({
+    filters: {
+      [FILTERS.nonApplicable]: true,
+    },
+    expectedTotal: 1,
+    assertItem: ($li) => cy.wrap($li).contains(/^Non-applicable$/),
+  })
+  testFilters({
+    filters: {
+      [FILTERS.nonApplicable]: true,
+    },
+    owner: 0,
+    expectedTotal: 1,
+    assertItem: ($li) => {
+      cy.wrap($li).contains(/^Non-applicable$/)
+      cy.wrap($li).contains(/(^\s*Unassigned\s*$)/)
+    },
+  })
+
   testFilters({
     filters: {
       [FILTERS.nonFdi]: true,
@@ -590,9 +610,9 @@ describe('Filters', () => {
   })
   
   Object.entries({
-    matchbox: [14, 3],
+    matchbox: [13, 3],
     company: [10, 2],
-    ltd: [24, 6],
+    ltd: [23, 6],
     mars: [5, 1],
     a: [40, 9],
     foo: [0, 0],
