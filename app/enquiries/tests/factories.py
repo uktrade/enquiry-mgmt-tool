@@ -106,7 +106,7 @@ def create_fake_enquiry_csv_row():
         "enquirer_request_for_call": get_random_item(ref_data.RequestForCall),
         "country": get_random_item(ref_data.Country),
         "company_name": fake.company(),
-        "primary_sector": get_random_item(ref_data.PrimarySector),
+        "ist_sector": get_random_item(ref_data.IstSector),
         "company_hq_address": fake.address(),
         "website": fake.url(),
         "investment_readiness": get_random_item(ref_data.InvestmentReadiness),

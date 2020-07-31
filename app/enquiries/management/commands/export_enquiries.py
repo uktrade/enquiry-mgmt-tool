@@ -36,7 +36,7 @@ class Command(BaseCommand):
                         e.enquirer.request_for_call,
                         e.country,
                         e.company_name,
-                        e.primary_sector,
+                        e.ist_sector,
                         e.company_hq_address,
                         e.website,
                         e.investment_readiness,

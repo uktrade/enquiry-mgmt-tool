@@ -463,7 +463,7 @@ IMPORT_COL_NAMES = [
     "enquirer_request_for_call",
     "country",
     "company_name",
-    "primary_sector",
+    "ist_sector",
     "company_hq_address",
     "website",
     "investment_readiness",
