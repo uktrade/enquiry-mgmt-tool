@@ -142,7 +142,7 @@ describe('Edit', () => {
             { dt: 'Investor level of involvement', dd: 'FDI Hub + Post' },
             {
               dt: 'Specific investment programme',
-              dd: 'Invest in Great Britain',
+              dd: 'Invest in GREAT Britain',
             },
             { dt: 'Client Relationship Manager', dd: 'Data Hub user 1' },
             { dt: 'Date added to Data Hub', dd: '03 February 2020' },
@@ -769,7 +769,7 @@ describe('Edit', () => {
               dd: 'Expansion of more factory sites',
             },
             { dt: 'Estimated land date', dd: '02 January 2020' },
-            { dt: 'New or existing investor', dd: 'Existing investor' },
+            { dt: 'New or existing investor', dd: 'Existing Investor' },
             {
               dt: 'Investor level of involvement',
               dd: 'FDI Hub + HQ + Post + LEP',
