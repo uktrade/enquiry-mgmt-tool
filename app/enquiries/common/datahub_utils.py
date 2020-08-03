@@ -508,9 +508,9 @@ def dh_investment_create(request, enquiry, metadata=None):
 
     try:
         result = dh_request(request, access_token, "POST", url, payload)
-        
+
         result.raise_for_status()
-        
+
         response["result"] = result.json()
     except HTTPError as e:
         response["errors"].append(
