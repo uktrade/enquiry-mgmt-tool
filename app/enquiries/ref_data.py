@@ -402,7 +402,7 @@ class InvestorInvolvement(models.TextChoices):
     HQ_REGION = "HQ_REGION", _("HQ and Region")
     HQ_POST_REGION = "HQ_POST_REGION,", _("HQ, Post and Region")
     LEP_ONLY = "LEP_ONLY", _("LEP Only")
-    NO_INVOLVEMENT = "NO_INVOLVEMENT", _("No involvement")
+    NO_INVOLVEMENT = "NO_INVOLVEMENT", _("No Involvement")
     POST_LEP = "POST_LEP", _("Post + LEP")
     POST_ONLY = "POST_ONLY", _("Post Only")
     POST_REGION = "POST_REGION", _("Post and Region")
