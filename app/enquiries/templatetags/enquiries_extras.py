@@ -57,9 +57,11 @@ def is_optional(instance, field_name):
     field = get_instance_field(instance, field_name)
     return field.blank and field_name not in dh_required_fields
 
+
 @register.filter
 def can_be_default(field_name):
     return field_name in can_be_default_fields
+
 
 @register.filter
 def get_dh_company_url(enquiry):

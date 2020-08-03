@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.forms.models import model_to_dict
 from mohawk import Sender
 from requests.exceptions import RequestException
+from urllib.error import HTTPError
 
 import app.enquiries.ref_data as ref_data
 from app.enquiries.utils import get_oauth_payload
@@ -507,9 +508,9 @@ def dh_investment_create(request, enquiry, metadata=None):
 
     try:
         result = dh_request(request, access_token, "POST", url, payload)
-        
+
         result.raise_for_status()
-        
+
         response["result"] = result.json()
     except HTTPError as e:
         response["errors"].append(
