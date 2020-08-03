@@ -56,7 +56,7 @@ def canned_enquiry():
         "how_they_heard_dit": get_random_item(ref_data.HowDidTheyHear),
         "website": "https://www.example.com/",
         "primary_sector": get_random_item(ref_data.PrimarySector),
-        "ist_sector": get_random_item(ref_data.IstSector),
+        "ist_sector": get_random_item(ref_data.ISTSector),
         "company_hq_address": faker.address(),
         "country": get_random_item(ref_data.Country),
         "region": get_random_item(ref_data.Region),
