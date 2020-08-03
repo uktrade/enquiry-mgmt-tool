@@ -307,3 +307,8 @@ ACTIVITY_STREAM_ENQUIRY_DATA_OBJ = env('ACTIVITY_STREAM_ENQUIRY_DATA_OBJ')
 CSRF_COOKIE_SECURE = env('CSRF_COOKIE_SECURE', default=True)
 CSRF_COOKIE_HTTPONLY = env('CSRF_COOKIE_HTTPONLY', default=True)
 SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE', default=True)
+# Setting the session expiration to less than the expiration of the SSO access
+# token (currently 10 hours) is the simplest way of keeping the token valid.
+# It forces the user to go through the /auth/login endpoint just before the
+# token expires which gets the user a fresh one.
+SESSION_COOKIE_AGE = env('SESSION_COOKIE_AGE', default=60 * 60 * 9)

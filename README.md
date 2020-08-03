@@ -74,6 +74,18 @@ Or in app/settings/*
 In which case, it will redirect to Django admin page for login so a superuser
 needs to be created first.
 
+#### OAuth Access Token Refreshment
+
+_Access tokens_ issued by Staff SSO have expiration time of 10 hours to
+just about outlive a user's working time. In order to always have a valid
+_access token_ this app limits the user's session to 9 hours. When the session
+expires, the user will be automatically redirected to `/auth/login` which will
+refresh both the session and the _access token_ and allows the user to use the
+app uninterrupted for another period of 9 hours.
+
+The session expiration can be configured with the optional `SESSION_COOKIE_AGE`
+environmental variable which defaults to 9 hours.
+
 ### Running tests
 
 To run all unit tests:
