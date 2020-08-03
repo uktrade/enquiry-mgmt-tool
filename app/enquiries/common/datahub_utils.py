@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import requests
@@ -9,7 +8,6 @@ from django.core.cache import cache
 from django.forms.models import model_to_dict
 from mohawk import Sender
 from requests.exceptions import RequestException
-from rest_framework import status
 
 import app.enquiries.ref_data as ref_data
 from app.enquiries.utils import get_oauth_payload
@@ -67,17 +65,11 @@ def dh_request(
 
     try:
         if method == "GET":
-            response = requests.get(
-                url, headers=headers, params=params, timeout=timeout
-            )
+            response = requests.get(url, headers=headers, params=params, timeout=timeout)
         elif method == "POST":
-            response = requests.post(
-                url, headers=headers, json=payload, timeout=timeout
-            )
+            response = requests.post(url, headers=headers, json=payload, timeout=timeout)
     except RequestException as e:
-        logging.error(
-            f"Error {e} while requesting {url}, request timeout set to {timeout} secs"
-        )
+        logging.error(f"Error {e} while requesting {url}, request timeout set to {timeout} secs")
         raise e
 
     return response
@@ -109,7 +101,7 @@ def _dh_fetch_metadata():
             always_hash_content=False,
         )
         response = requests.get(
-            meta_url, headers={"Authorization": sender.request_header}, timeout=10
+            meta_url, headers={"Authorization": sender.request_header}, timeout=10,
         )
         if response.ok:
             metadata[endpoint] = response.json()
@@ -117,18 +109,17 @@ def _dh_fetch_metadata():
             metadata["failed"].append(endpoint)
 
     if metadata["failed"]:
-        logging.error(
-            f"Error fetching Data Hub metadata for endpoints: {metadata['failed']}"
-        )
+        logging.error(f"Error fetching Data Hub metadata for endpoints: {metadata['failed']}")
 
     return metadata
 
 
 def dh_fetch_metadata(cache_key="metadata", expiry_secs=60 * 60):
     """
-    Fetches and caches the metadata with an expiry time
+    Fetches and caches the metadata with an expiry time.
 
-    It check if the data is valid in cache, if it has expired then fetches again
+    It checks if the data is valid in cache, if it has expired then it
+    fetches again.
     """
 
     try:
@@ -164,9 +155,7 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
 
     """
 
-    dh_data = list(
-        filter(lambda d: d[target_key] == refdata_value, dh_metadata[dh_category])
-    )
+    dh_data = list(filter(lambda d: d[target_key] == refdata_value, dh_metadata[dh_category]))
 
     return dh_data[0]["id"] if dh_data else None
 
@@ -316,8 +305,8 @@ def dh_enquiry_readiness(request, access_token, enquiry):
     """
     Check whether the given enquiry is ready to be submitted to Data Hub
 
-    Criteria is that the company should exist in Data Hub, client relationship manager 
-    is a valid user, given user is available etc
+    Criteria is that the company should exist in Data Hub, client relationship
+    manager is a valid user, given user is available etc.
 
     Returns json response with error description.
     """
@@ -325,15 +314,12 @@ def dh_enquiry_readiness(request, access_token, enquiry):
 
     # Allow creating of investments only if Company exists on DH
     if not enquiry.dh_company_id:
-        response["errors"].append(
-            {"company": f"{enquiry.company_name} doesn't exist in Data Hub"}
-        )
+        response["errors"].append({"company": f"{enquiry.company_name} doesn't exist in Data Hub"})
         return response
 
     # Same enquiry cannot be submitted if it is already done once
-    if (
-        enquiry.date_added_to_datahub
-        or enquiry.datahub_project_status != ref_data.DatahubProjectStatus.DEFAULT
+    if enquiry.date_added_to_datahub or (
+        enquiry.datahub_project_status != ref_data.DatahubProjectStatus.DEFAULT
     ):
         prev_submission_date = (
             enquiry.date_added_to_datahub.strftime("%d %B %Y")
@@ -359,9 +345,7 @@ def dh_enquiry_readiness(request, access_token, enquiry):
         "estimated_land_date",
     ]:
         if not enquiry_dict[field]:
-            response["errors"].append(
-                {field: "This value is required, should not be empty"}
-            )
+            response["errors"].append({field: "This value is required, should not be empty"})
             empty_values = True
 
     if empty_values:
@@ -379,7 +363,9 @@ def dh_enquiry_readiness(request, access_token, enquiry):
         return response
 
     if not advisers:
-        response["errors"].append({"adviser": f"Adviser {enquiry.client_relationship_manager} not found"})
+        response["errors"].append(
+            {"adviser": f"Adviser {enquiry.client_relationship_manager} not found"}
+        )
         return response
 
     response["adviser"] = advisers[0]["datahub_id"]
@@ -388,7 +374,7 @@ def dh_enquiry_readiness(request, access_token, enquiry):
 
 
 def prepare_dh_payload(
-    enquiry, dh_metadata, company_id, contact_id, adviser_id, client_relationship_manager_id
+    enquiry, dh_metadata, company_id, contact_id, adviser_id, client_relationship_manager_id,
 ):
     """ Prepares the payload for investment create request """
 
@@ -407,18 +393,13 @@ def prepare_dh_payload(
         enquiry.get_investment_type_display(), dh_metadata, "fdi-type"
     )
     payload["stage"] = get_dh_id(
-        dh_metadata["investment-project-stage"],
-        ref_data.DATA_HUB_PROJECT_STAGE_PROSPECT,
+        dh_metadata["investment-project-stage"], ref_data.DATA_HUB_PROJECT_STAGE_PROSPECT,
     )
     payload["investor_type"] = map_to_datahub_id(
-        enquiry.get_new_existing_investor_display(),
-        dh_metadata,
-        "investment-investor-type",
+        enquiry.get_new_existing_investor_display(), dh_metadata, "investment-investor-type",
     )
     payload["level_of_involvement"] = map_to_datahub_id(
-        enquiry.get_investor_involvement_level_display(),
-        dh_metadata,
-        "investment-involvement",
+        enquiry.get_investor_involvement_level_display(), dh_metadata, "investment-involvement",
     )
     payload["specific_programme"] = map_to_datahub_id(
         enquiry.get_specific_investment_programme_display(),
@@ -431,7 +412,8 @@ def prepare_dh_payload(
         enquiry.get_primary_sector_display(), dh_metadata, "sector"
     )
     # There is a mismatch in the sector data coming from the website vs
-    # the metadata in DH, hence bail out if we don't get uuid because of mismatch
+    # the metadata in DH, hence bail out if we don't get uuid because of
+    # a mismatch
     if not payload["sector"]:
         return payload, "primary_sector"
 
@@ -442,8 +424,7 @@ def prepare_dh_payload(
         ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE,
     )
     payload["referral_source_activity_website"] = get_dh_id(
-        dh_metadata["referral-source-website"],
-        ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE,
+        dh_metadata["referral-source-website"], ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE
     )
 
     return payload, None
@@ -451,10 +432,11 @@ def prepare_dh_payload(
 
 def dh_investment_create(request, enquiry, metadata=None):
     """
-    Creates an Investment in Data Hub using the data from the given Enquiry obj.
+    Creates an Investment in Data Hub using the data from the given
+    Enquiry obj.
 
-    Investment is only created if the Company corresponding to the Enquiry exists
-    in DH otherwise error is returned.
+    Investment is only created if the Company corresponding to the Enquiry
+    exists in DH otherwise error is returned.
     Enquirer details are added to the list of contacts for this company.
     If this is the only contact then it will be made primary.
     """
@@ -469,7 +451,9 @@ def dh_investment_create(request, enquiry, metadata=None):
     # check if the user is available in Data Hub
     user_details, error = dh_get_user_details(request, access_token)
     if error:
-        response["errors"].append({"referral_advisor": "Error validating your identity in Data Hub"})
+        response["errors"].append(
+            {"referral_advisor": "Error validating your identity in Data Hub"}
+        )
         return response
 
     dh_status = dh_enquiry_readiness(request, access_token, enquiry)
@@ -479,7 +463,7 @@ def dh_investment_create(request, enquiry, metadata=None):
 
     try:
         dh_metadata = dh_fetch_metadata()
-    except Exception as e:
+    except Exception:
         response["errors"].append({"metadata": "Error fetching metadata"})
         return response
 
@@ -487,11 +471,11 @@ def dh_investment_create(request, enquiry, metadata=None):
     # Create a contact for this company
     # If a contact already exists then make the new contact as secondary
     full_name = f"{enquiry.enquirer.first_name} {enquiry.enquirer.last_name}"
-    existing_contacts, error = dh_contact_search(
-        request, access_token, full_name, company_id
-    )
+    existing_contacts, error = dh_contact_search(request, access_token, full_name, company_id)
     if error:
-        response["errors"].append({"contact_search": f"Error while checking company contacts, {str(error)}"})
+        response["errors"].append(
+            {"contact_search": f"Error while checking company contacts, {str(error)}"}
+        )
         return response
 
     primary = not existing_contacts
@@ -499,7 +483,9 @@ def dh_investment_create(request, enquiry, metadata=None):
         request, access_token, enquiry, company_id, primary=primary
     )
     if error:
-        response["errors"].append({"contact_create": f"Error while creating a new company contact, {str(error)}"})
+        response["errors"].append(
+            {"contact_create": f"Error while creating a new company contact, {str(error)}"}
+        )
         return response
 
     contact_id = contact_response["id"]
@@ -508,7 +494,12 @@ def dh_investment_create(request, enquiry, metadata=None):
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
     payload, error_key = prepare_dh_payload(
-        enquiry, dh_metadata, company_id, contact_id, referral_adviser, client_relationship_manager_id
+        enquiry,
+        dh_metadata,
+        company_id,
+        contact_id,
+        referral_adviser,
+        client_relationship_manager_id,
     )
     if error_key:
         response["errors"].append({error_key: "Reference data mismatch in Data Hub"})
@@ -525,9 +516,7 @@ def dh_investment_create(request, enquiry, metadata=None):
             {"investment_create": f"Error contacting Data Hub to create investment, {str(e)}"}
         )
     except Exception as e:
-        response["errors"].append(
-            {"investment_create": f"Error creating investment, {str(e)}"}
-        )
+        response["errors"].append({"investment_create": f"Error creating investment, {str(e)}"})
         return response
 
     if result.ok:

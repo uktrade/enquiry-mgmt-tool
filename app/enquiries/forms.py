@@ -14,7 +14,7 @@ class EnquirerForm(ModelForm):
 
 
 class AutocompleteField(ChoiceField):
-    widget = autocomplete.Select2(url=reverse_lazy('dh-adviser-search'))
+    widget = autocomplete.Select2(url=reverse_lazy("dh-adviser-search"))
 
     # We need to disable deep copying, otherwise setting the choices dynamically
     # won't take effect.
@@ -36,10 +36,10 @@ class EnquiryForm(ModelForm):
         # choices, the field will not be prepopulated with it.
         # The workaround is to add both the initial and the new value as valid
         # choices dynamically.
-        client_relationship_manager_initial = self.initial.get('client_relationship_manager')
-        client_relationship_manager_data = self.data.get('client_relationship_manager')
+        client_relationship_manager_initial = self.initial.get("client_relationship_manager")
+        client_relationship_manager_data = self.data.get("client_relationship_manager")
 
-        self.fields['client_relationship_manager'].choices = (
+        self.fields["client_relationship_manager"].choices = (
             (client_relationship_manager_data, client_relationship_manager_data),
             (client_relationship_manager_initial, client_relationship_manager_initial),
         )

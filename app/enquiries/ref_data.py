@@ -21,14 +21,13 @@ class InvestmentReadiness(models.TextChoices):
     )
     SHORTLIST = (
         "SHORTLIST",
-        _(
-            "The UK is on my shortlist. How can the Department for International Trade help me?"
-        ),
+        _("The UK is on my shortlist. How can the Department for International Trade help me?"),
     )
     EXPLORING = (
         "EXPLORING",
         _(
-            "I’m still exploring where to expand my business and would like to know more about the UK’s offer"
+            "I’m still exploring where to expand my business and would like to know more about the\
+ UK’s offer"
         ),
     )
     NOT_READY = "NOT_READY", _("I’m not yet ready to invest. Keep me informed")
@@ -324,6 +323,7 @@ class Country(models.TextChoices):
     YE = "YE", _("Yemen")
     ZM = "ZM", _("Zambia")
     ZW = "ZW", _("Zimbabwe")
+
 
 class Region(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")

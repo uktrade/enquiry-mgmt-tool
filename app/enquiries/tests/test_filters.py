@@ -1,26 +1,10 @@
-import pytest
-import pytz
-import random
-import requests
 from bs4 import BeautifulSoup
-from datetime import date
 
-from django.conf import settings
-from django.forms.models import model_to_dict
-from django.test import Client, TestCase
 from django.urls import reverse
 from faker import Faker
-from rest_framework import status
-from unittest import mock
 
 import app.enquiries.ref_data as ref_data
-from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests import utils as test_utils
-from app.enquiries.tests.factories import (
-    EnquiryFactory,
-    get_random_item,
-    get_display_name,
-)
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
@@ -29,19 +13,17 @@ headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
 class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
     def setUp(self):
         super().setUp()
-        # self.faker = Faker()
-        # self.client = Client()
 
     def test_enquiry_filters_render(self):
         """Test that the search filters render correctly"""
-        # DRF defaults to JSON response so we need to set headers to receive HTML
+        # DRF defaults to JSON response so we need to set headers to
+        # receive HTML
 
         response = self.client.get(reverse("enquiry-list"), **headers)
         soup = BeautifulSoup(response.content, "html.parser")
 
         self.assertIsNotNone(
-            soup.find(attrs={"data-qa": "search-filters"}),
-            msg="should render search filters",
+            soup.find(attrs={"data-qa": "search-filters"}), msg="should render search filters"
         )
 
         # users dropdown
@@ -77,15 +59,13 @@ class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
             self.assertEqual(_label.string.strip(), label)
 
         self.assertIsNotNone(
-            soup.find(id="created__lt"),
-            msg="should render date created before control",
+            soup.find(id="created__lt"), msg="should render date created before control",
         )
         self.assertIsNotNone(
             soup.find(id="created__gt"), msg="should render date created after control",
         )
         self.assertIsNotNone(
-            soup.find(id="company_name__icontains"),
-            msg="should render company_name control",
+            soup.find(id="company_name__icontains"), msg="should render company_name control",
         )
         self.assertIsNotNone(
             soup.find(id="date_added_to_datahub__lt"),
@@ -98,6 +78,4 @@ class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
         self.assertIsNotNone(
             soup.find(id="enquirer__email"), msg="should render enquirer__email control",
         )
-        self.assertIsNotNone(
-            soup.find(id="btn_submit"), msg="should render btn_submit control"
-        )
+        self.assertIsNotNone(soup.find(id="btn_submit"), msg="should render btn_submit control")

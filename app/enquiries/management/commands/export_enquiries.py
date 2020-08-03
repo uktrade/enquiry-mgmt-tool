@@ -4,21 +4,24 @@ from django.core.management.base import BaseCommand
 from app.enquiries.models import Enquiry
 import app.enquiries.ref_data as ref_data
 
-OUTPUT_FILE_SLUG = 'ingest_sample'
-OUTPUT_FILE_EXT = '.csv'
+OUTPUT_FILE_SLUG = "ingest_sample"
+OUTPUT_FILE_EXT = ".csv"
+
 
 class Command(BaseCommand):
     """
-    Command is for use by developers to quickly export CSV data so that the upload functionality can be easily tested
+    Command is for use by developers to quickly export CSV data so that the
+    upload functionality can be easily tested.
     """
-    help = 'this command exports enquiries to simple (level) CSV'
+
+    help = "this command exports enquiries to simple (level) CSV"
 
     def handle(self, *args, **options):
         count = 0
         timestamp = datetime.now().strftime("%Y-%m-%dT%H%M%S")
         entries = Enquiry.objects.all().iterator()
-        filename = f'{OUTPUT_FILE_SLUG}_{timestamp}{OUTPUT_FILE_EXT}' 
-        with open(filename, 'w', newline='') as f:
+        filename = f"{OUTPUT_FILE_SLUG}_{timestamp}{OUTPUT_FILE_EXT}"
+        with open(filename, "w", newline="") as f:
             writer = csv.writer(f)
             # write headers
             writer.writerow(ref_data.IMPORT_COL_NAMES)
@@ -39,9 +42,14 @@ class Command(BaseCommand):
                         e.investment_readiness,
                         e.enquiry_stage,
                         e.enquiry_text,
-                        e.notes
+                        e.notes,
                     ]
                 )
                 count += 1
         # writer.save()
-        self.stdout.write(self.style.SUCCESS(f'Successfully exported enquiry to simple (level 1) file: "{filename}"'))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"""Successfully exported enquiry to simple (level 1)
+            file: "{filename}" """
+            )
+        )

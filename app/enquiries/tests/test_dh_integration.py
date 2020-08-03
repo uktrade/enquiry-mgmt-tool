@@ -1,16 +1,12 @@
 import pytest
-import requests
 import requests_mock
-import time
 
 from datetime import date
 from django.conf import settings
 from django.core.cache import cache
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.test.client import RequestFactory
-from django.urls import reverse
 from requests.exceptions import Timeout
-from rest_framework import status
 from unittest import mock
 from app.enquiries.tests.factories import EnquiryFactory
 
@@ -25,8 +21,7 @@ from app.enquiries.common.datahub_utils import (
 
 
 metadata_test_responses = {
-    endpoint: {"metadata": f"metadata for {endpoint}"}
-    for endpoint in DATA_HUB_METADATA_ENDPOINTS
+    endpoint: {"metadata": f"metadata for {endpoint}"} for endpoint in DATA_HUB_METADATA_ENDPOINTS
 }
 
 
@@ -81,15 +76,11 @@ class DataHubIntegrationTests(TestCase):
         url = settings.DATA_HUB_COMPANY_SEARCH_URL
         req = RequestFactory()
         post_req = req.post("/investment/", {"name": "test"})
-        post_req.session = {
-            settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
-        }
+        post_req.session = {settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}}
         payload = {"name": "test"}
 
         with pytest.raises(Timeout):
-            response = dh_request(
-                post_req, "access_token", "POST", url, payload, timeout=2
-            )
+            dh_request(post_req, "access_token", "POST", url, payload, timeout=2)
 
     @mock.patch("django.core.cache.cache.get")
     def test_dh_fetch_metada_exception(self, mock_cache_get):
@@ -174,9 +165,7 @@ class DataHubIntegrationTests(TestCase):
             m.post(url, status_code=400, json=contact_search_response()["error"])
             expected = contact_search_response()["error"]
 
-            response, error = dh_contact_search(
-                "mock_request", "access_token", "", "company_id"
-            )
+            response, error = dh_contact_search("mock_request", "access_token", "", "company_id")
             self.assertIsNotNone(error)
             self.assertEqual(error["name"], expected["name"])
 
@@ -185,9 +174,7 @@ class DataHubIntegrationTests(TestCase):
         enquiry = EnquiryFactory()
         req = RequestFactory()
         post_req = req.post("/investment/", {"name": "test"})
-        post_req.session = {
-            settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
-        }
+        post_req.session = {settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}}
         with requests_mock.Mocker() as m:
             url = settings.DATA_HUB_WHOAMI_URL
             m.get(url, json={"user": "details"})
@@ -202,9 +189,7 @@ class DataHubIntegrationTests(TestCase):
         enquiry = EnquiryFactory()
         req = RequestFactory()
         post_req = req.post("/investment/", {"name": "test"})
-        post_req.session = {
-            settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}
-        }
+        post_req.session = {settings.AUTHBROKER_TOKEN_SESSION_KEY: {"access_token": "mock_token"}}
         enquiry.dh_company_id = "1234-2468"
         enquiry.date_added_to_datahub = date.today()
         enquiry.save()
@@ -216,5 +201,6 @@ class DataHubIntegrationTests(TestCase):
             stage = enquiry.get_datahub_project_status_display()
             self.assertEqual(
                 response["errors"][0]["enquiry"],
-                f"Enquiry can only be submitted once, previously submitted on {prev_date}, stage {stage}",
+                f"Enquiry can only be submitted once, previously submitted on {prev_date}, stage\
+ {stage}",
             )

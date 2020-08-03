@@ -19,23 +19,18 @@ def get_display_name(refdata_model, item):
     """Get the verbose name from ref_data given the short name"""
     return list(filter(lambda choice: choice[0] == item, refdata_model.choices))[0][1]
 
+
 def get_display_value(ref_data_model, label):
-    text = [
-        value
-        for (choice_label, value) in ref_data_model.choices
-        if choice_label == label
-    ]
+    text = [value for (choice_label, value) in ref_data_model.choices if choice_label == label]
     return text[0] if text else "Not found"
+
 
 def return_display_value(ref_data_model, label):
     """
-    Returns the ref_data option value when given the the ref_data_model option label
+    Returns the ref_data option value when given the the ref_data_model
+    option label.
     """
-    text = [
-        value
-        for (value, choice_label) in ref_data_model.choices
-        if choice_label == label
-    ]
+    text = [value for (value, choice_label) in ref_data_model.choices if choice_label == label]
     return text[0] if text else "Not found"
 
 
@@ -47,6 +42,7 @@ class OwnerFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Owner
+
 
 class EnquirerFactory(factory.django.DjangoModelFactory):
     first_name = factory.Faker("first_name")

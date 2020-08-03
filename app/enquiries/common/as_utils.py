@@ -3,24 +3,24 @@ import logging
 import mohawk
 import requests
 
+from distutils.util import strtobool
+
 from bs4 import BeautifulSoup
 from datetime import datetime
 from django.db import transaction
 from django.conf import settings
 
 import app.enquiries.ref_data as ref_data
-from app.enquiries.models import Enquiry, Enquirer, ReceivedEnquiryCursor, FailedEnquiry
+from app.enquiries.models import Enquirer, Enquiry, ReceivedEnquiryCursor
 
 
 def great_ui_sector_rtt_mapping(value):
     """
-    Sector data in the website is different from that in dit-sectors reference,
-    so we first check if it is in standard reference data otherwise map it to
-    our reference data. If not found anywhere use default value.
+    Sector data in the website is different from that in dit-sectors
+    reference, so we first check if it is in standard reference data otherwise
+    map it to our reference data. If not found anywhere use default value.
     """
-    rtt_reference = [
-        value for choice in ref_data.PrimarySector.choices if choice[0] == value
-    ]
+    rtt_reference = [value for choice in ref_data.PrimarySector.choices if choice[0] == value]
     if rtt_reference:
         return rtt_reference[0]
 
@@ -38,10 +38,12 @@ def great_ui_sector_rtt_mapping(value):
 
 def map_enquiry_data_to_instance(data):
     """
-    This function maps the investment enquiry data received from the via website
-    to internal database fields so that new Enquiry instances can be created.
-    Because the form processing is done in a different place the reference data
-    used is not consistent and there are slight mismatches hence this mapping is required.
+    This function maps the investment enquiry data received from the via
+    website to internal database fields so that new Enquiry instances can
+    be created.
+    Because the form processing is done in a different place the reference
+    data used is not consistent and there are slight mismatches hence this
+    mapping is required.
     """
     enquiry = {}
 
@@ -50,9 +52,12 @@ def map_enquiry_data_to_instance(data):
         "in the afternoon": ref_data.RequestForCall.YES_AFTERNOON,
     }
     investment_readiness = {
-        "I’m convinced and want to talk to someone about my plans.": ref_data.InvestmentReadiness.CONVINCED,
-        "The UK is on my shortlist. How can the Department for International Trade help me?": ref_data.InvestmentReadiness.SHORTLIST,
-        "I’m still exploring where to expand my business and would like to know more about the UK’s offer.": ref_data.InvestmentReadiness.EXPLORING,
+        "I’m convinced and want to talk to someone about my plans.":
+            ref_data.InvestmentReadiness.CONVINCED,
+        """The UK is on my shortlist. How can the Department for International
+        Trade help me?""": ref_data.InvestmentReadiness.SHORTLIST,
+        """I’m still exploring where to expand my business and would like to
+        know more about the UK’s offer.""": ref_data.InvestmentReadiness.EXPLORING,
         "I’m not yet ready to invest. Keep me informed.": ref_data.InvestmentReadiness.NOT_READY,
     }
     enquiry_stage = {
@@ -63,7 +68,7 @@ def map_enquiry_data_to_instance(data):
         "Non-FDI": ref_data.EnquiryStage.NON_FDI,
         "Added to Data Hub": ref_data.EnquiryStage.ADDED_TO_DATAHUB,
         "Sent to Post": ref_data.EnquiryStage.SENT_TO_POST,
-        "Post progressing": ref_data.EnquiryStage.POST_PROGRESSING
+        "Post progressing": ref_data.EnquiryStage.POST_PROGRESSING,
     }
 
     how_did_you_hear = {
@@ -80,15 +85,11 @@ def map_enquiry_data_to_instance(data):
     enquiry["company_hq_address"] = data["Company HQ address"]
     enquiry["country"] = data["Country"]
     enquiry["primary_sector"] = great_ui_sector_rtt_mapping(data["Industry"])
-    value = data[
-        "Which of these best describes how you feel about expanding to the UK?"
-    ]
+    value = data["Which of these best describes how you feel about expanding to the UK?"]
     enquiry["investment_readiness"] = investment_readiness.get(
         value, ref_data.InvestmentReadiness.DEFAULT
     )
-    enquiry["enquiry_stage"] = enquiry_stage.get(
-        value, ref_data.EnquiryStage.NEW
-    )
+    enquiry["enquiry_stage"] = enquiry_stage.get(value, ref_data.EnquiryStage.NEW)
     enquiry["enquiry_text"] = data["Tell us about your investment"]
     value = data.get("How did you hear about us?")
     if value:
@@ -108,12 +109,11 @@ def map_enquiry_data_to_instance(data):
         email = data["Work email address"]
     enquiry["enquirer"]["email"] = email
     enquiry["enquirer"]["phone"] = data["Phone number"]
-    true_or_false = lambda value: value == "True"
-    email_consent = true_or_false(
+    email_consent = strtobool(
         data.get("I would like to receive additional information by email", "False")
     )
-    phone_consent = true_or_false(
-        data.get("I would like to receive additional information by telephone", "False")
+    phone_consent = strtobool(
+        data.get("I would like to receive additional information by telephone", "False",)
     )
     enquiry["enquirer"]["email_consent"] = email_consent
     enquiry["enquirer"]["phone_consent"] = phone_consent
@@ -136,9 +136,7 @@ def parse_enquiry_email(submission):
     """
     enquiry_data = {}
 
-    body = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ][
-        "html_body"
-    ]
+    body = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]["html_body"]
     if not body:
         return enquiry_data
 
@@ -155,10 +153,7 @@ def parse_enquiry_email(submission):
     hence using url as additional filter but some of the other enquiries share
     the same url hence additionally look for specified keys to filter data
     """
-    if not (
-        {"Given name", "Job title", "Company HQ address"}
-        <= enquiry_data.keys()
-    ):
+    if not ({"Given name", "Job title", "Company HQ address"} <= enquiry_data.keys()):
         return None
 
     # map the data to Enquiry model fields
@@ -180,7 +175,7 @@ def hawk_request(method, url, key_id, secret_key, body):
         method,
         url,
         data=body,
-        headers={"Authorization": header, "Content-Type": "application/json",},
+        headers={"Authorization": header, "Content-Type": "application/json"},
     )
     return response
 
@@ -205,21 +200,17 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
         "query": {
             "bool": {
                 "filter": [
+                    {"range": {"object.published": {"gte": start_date}}},
                     {
-                        "range": {
-                            "object.published": {
-                                "gte": start_date
-                            }
+                        "term": {
+                            settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1:
+                                settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1
                         }
                     },
                     {
                         "term": {
-                            settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1: settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1
-                        }
-                    },
-                    {
-                        "term": {
-                            settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2: settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2
+                            settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2:
+                                settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2
                         }
                     },
                 ]
@@ -243,10 +234,7 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
     # investment related using the url field
     target_url = settings.ACTIVITY_STREAM_SEARCH_TARGET_URL
     enquiries = list(
-        filter(
-            lambda x: x["_source"]["object"]["url"] == target_url,
-            response["hits"]["hits"],
-        )
+        filter(lambda x: x["_source"]["object"]["url"] == target_url, response["hits"]["hits"])
     )
 
     return enquiries
@@ -279,12 +267,12 @@ def fetch_and_process_enquiries():
             enquiry_obj.created = published
             enquiry_obj.save()
             logging.info(
-                f"Enquiry ({enquiry_obj.id}) created for the company {enquiry_obj.company_name}"
+                f"""
+                Enquiry ({enquiry_obj.id}) created for the company {enquiry_obj.company_name}
+                """
             )
             valid_count += 1
 
     last_obj = enquiries[-1]
-    ReceivedEnquiryCursor.objects.create(
-        index=last_obj["sort"][0], object_id=last_obj["sort"][1]
-    )
+    ReceivedEnquiryCursor.objects.create(index=last_obj["sort"][0], object_id=last_obj["sort"][1])
     logging.info(f"Number of valid enquiries found: {valid_count}/{len(enquiries)}")

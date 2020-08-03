@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import User, AbstractUser
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
 
@@ -17,7 +17,9 @@ class Enquirer(models.Model):
     last_name = models.CharField(max_length=MAX_LENGTH, verbose_name="Last name")
     job_title = models.CharField(max_length=MAX_LENGTH, verbose_name="Job title")
     email = models.EmailField(max_length=MAX_LENGTH, blank=True, verbose_name="Email")
-    phone_country_code = models.CharField(max_length=5, blank=True, null=True, verbose_name="Telephone country code")
+    phone_country_code = models.CharField(
+        max_length=5, blank=True, null=True, verbose_name="Telephone country code"
+    )
     phone = models.CharField(max_length=MAX_LENGTH, verbose_name="Phone")
     email_consent = models.BooleanField(default=False, verbose_name="Email consent")
     phone_consent = models.BooleanField(default=False, verbose_name="Phone consent")
@@ -44,9 +46,7 @@ class Enquiry(TimeStampedModel):
     """
 
     company_name = models.CharField(
-        max_length=MAX_LENGTH,
-        help_text="Name of the company",
-        verbose_name="Company name",
+        max_length=MAX_LENGTH, help_text="Name of the company", verbose_name="Company name"
     )
     enquiry_stage = models.CharField(
         max_length=MAX_LENGTH,
@@ -63,10 +63,7 @@ class Enquiry(TimeStampedModel):
         help_text="User assigned to the enquiry",
         verbose_name="Owner",
     )
-    enquiry_text = models.TextField(
-        verbose_name="Enquiry text",
-        editable=False,
-    )
+    enquiry_text = models.TextField(verbose_name="Enquiry text", editable=False,)
     investment_readiness = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.InvestmentReadiness.choices,
@@ -94,9 +91,7 @@ class Enquiry(TimeStampedModel):
         default=ref_data.HowDidTheyHear.DEFAULT,
         verbose_name="How did they hear about DIT?",
     )
-    website = models.TextField(
-        blank=True, verbose_name="Website"
-    )
+    website = models.TextField(blank=True, verbose_name="Website")
     primary_sector = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.PrimarySector.choices,
@@ -109,9 +104,7 @@ class Enquiry(TimeStampedModel):
         default=ref_data.IstSector.DEFAULT,
         verbose_name="IST sector",
     )
-    company_hq_address = models.CharField(
-        max_length=MAX_LENGTH, verbose_name="Company HQ address"
-    )
+    company_hq_address = models.CharField(max_length=MAX_LENGTH, verbose_name="Company HQ address")
     country = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.Country.choices,
@@ -125,10 +118,7 @@ class Enquiry(TimeStampedModel):
         verbose_name="Region",
     )
     enquirer = models.ForeignKey(
-        Enquirer,
-        related_name="enquirer",
-        on_delete=models.PROTECT,
-        verbose_name="Enquirer",
+        Enquirer, related_name="enquirer", on_delete=models.PROTECT, verbose_name="Enquirer",
     )
     first_response_channel = models.CharField(
         max_length=MAX_LENGTH,
@@ -223,22 +213,13 @@ class Enquiry(TimeStampedModel):
     # If the Enquiry for the company that already exists in DH then user can assign
     # that company details to below fields when editing an Enquiry
     dh_company_id = models.CharField(
-        max_length=MAX_LENGTH,
-        blank=True,
-        null=True,
-        verbose_name="Company id in Data Hub",
+        max_length=MAX_LENGTH, blank=True, null=True, verbose_name="Company id in Data Hub",
     )
     dh_company_number = models.CharField(
-        max_length=MAX_LENGTH,
-        blank=True,
-        null=True,
-        verbose_name="Company number in Data Hub",
+        max_length=MAX_LENGTH, blank=True, null=True, verbose_name="Company number in Data Hub",
     )
     dh_duns_number = models.CharField(
-        max_length=MAX_LENGTH,
-        blank=True,
-        null=True,
-        verbose_name="Duns number",
+        max_length=MAX_LENGTH, blank=True, null=True, verbose_name="Duns number",
     )
     dh_assigned_company_name = models.CharField(
         max_length=MAX_LENGTH,
@@ -265,11 +246,9 @@ class ReceivedEnquiryCursor(models.Model):
     This model tracks the timestamp and object id of the last item received.
     They are used to fetch the next set of results.
     """
+
     index = models.CharField(
-        max_length=MAX_LENGTH,
-        help_text="Index of the object",
-        blank=True,
-        null=True,
+        max_length=MAX_LENGTH, help_text="Index of the object", blank=True, null=True,
     )
     object_id = models.CharField(
         max_length=MAX_LENGTH,
@@ -283,17 +262,12 @@ class FailedEnquiry(models.Model):
     """
     Model to track failed enquiries when processing the data from AS
     """
+
     index = models.CharField(
-        max_length=MAX_LENGTH,
-        help_text="Index of the object",
-        blank=True,
-        null=True,
+        max_length=MAX_LENGTH, help_text="Index of the object", blank=True, null=True,
     )
     object_id = models.CharField(
-        max_length=MAX_LENGTH,
-        help_text="Id of the failed object",
-        blank=True,
-        null=True,
+        max_length=MAX_LENGTH, help_text="Id of the failed object", blank=True, null=True,
     )
     html_body = models.TextField(blank=True, null=True, verbose_name="HTML body")
     text_body = models.TextField(blank=True, null=True, verbose_name="Text body")
