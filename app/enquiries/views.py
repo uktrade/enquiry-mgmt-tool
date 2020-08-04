@@ -187,8 +187,8 @@ def is_valid_int(v) -> bool:
 class EnquiryFilter(filters.FilterSet):
 
     owner__id = filters.CharFilter(field_name="owner__id", method="filter_owner_id")
-    created__lt = filters.DateFilter(field_name="create", method="filter_created_lt")
-    created__gt = filters.DateFilter(field_name="create", method="filter_created_gt")
+    received__lt = filters.DateFilter(field_name="receive", method="filter_received_lt")
+    received__gt = filters.DateFilter(field_name="receive", method="filter_received_gt")
     enquiry_stage = filters.CharFilter(
         field_name="enquiry_stage", lookup_expr="in", method="filter_enquiry_stage"
     )
@@ -221,13 +221,27 @@ class EnquiryFilter(filters.FilterSet):
 
         return queryset.filter(q)
 
-    def filter_created_lt(self, queryset, name, value):
-        created = datetime.combine(value, datetime.min.time())
-        return queryset.filter(created__lt=created)
+    def filter_received_lt(self, queryset, name, value):
+        """
+        Returns a queryset only with entities having the ``received`` date less than ``value``.
+        """
+        received = datetime.combine(value, datetime.min.time())
+        q = Q(date_received__lt=received) | Q(
+                date_received__isnull=True,
+                created__lt=received,
+            )
+        return queryset.filter(q)
 
-    def filter_created_gt(self, queryset, name, value):
-        created = datetime.combine(value, datetime.min.time())
-        return queryset.filter(created__gt=created)
+    def filter_received_gt(self, queryset, name, value):
+        """
+        Returns a queryset only with entities having the ``received`` date greater than ``value``.
+        """
+        received = datetime.combine(value, datetime.min.time())
+        q = Q(date_received__gt=received) | Q(
+            date_received__isnull=True,
+            created__gt=received,
+        )
+        return queryset.filter(q)
 
     class Meta:
         model = models.Enquiry

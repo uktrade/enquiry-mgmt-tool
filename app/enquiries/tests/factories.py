@@ -113,4 +113,5 @@ def create_fake_enquiry_csv_row():
         "enquiry_stage": get_random_item(ref_data.EnquiryStage),
         "enquiry_text": fake.sentence(),
         "notes": fake.sentence(nb_words=20),
+        "date_received": fake.date(),
     }

@@ -43,10 +43,17 @@ class Owner(AbstractUser):
 class Enquiry(TimeStampedModel):
     """
     Model for investment Enquiry
+
+    Includes an optional 'date_received' field to allow a differentiation between when the enquiry
+    is uploaded to the system and when it was received by our teams.
     """
 
     company_name = models.CharField(
         max_length=MAX_LENGTH, help_text="Name of the company", verbose_name="Company name"
+    )
+    date_received = models.DateTimeField(
+        blank=True,
+        null=True,
     )
     enquiry_stage = models.CharField(
         max_length=MAX_LENGTH,
@@ -235,6 +242,11 @@ class Enquiry(TimeStampedModel):
         verbose_name="Company address in Data Hub",
         help_text="Address of the company in Data Hub",
     )
+
+    # Handles cases where the optional date_received field is not set.
+    @property
+    def received(self):
+        return self.date_received or self.created
 
     class Meta:
         ordering = ["-created"]

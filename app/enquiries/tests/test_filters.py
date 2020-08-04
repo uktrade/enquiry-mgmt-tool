@@ -59,10 +59,10 @@ class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
             self.assertEqual(_label.string.strip(), label)
 
         self.assertIsNotNone(
-            soup.find(id="created__lt"), msg="should render date created before control",
+            soup.find(id="received__lt"), msg="should render date created before control",
         )
         self.assertIsNotNone(
-            soup.find(id="created__gt"), msg="should render date created after control",
+            soup.find(id="received__gt"), msg="should render date created after control",
         )
         self.assertIsNotNone(
             soup.find(id="company_name__icontains"), msg="should render company_name control",
