@@ -54,10 +54,11 @@ def map_enquiry_data_to_instance(data):
     investment_readiness = {
         "I’m convinced and want to talk to someone about my plans.":
             ref_data.InvestmentReadiness.CONVINCED,
-        """The UK is on my shortlist. How can the Department for International
-        Trade help me?""": ref_data.InvestmentReadiness.SHORTLIST,
-        """I’m still exploring where to expand my business and would like to
-        know more about the UK’s offer.""": ref_data.InvestmentReadiness.EXPLORING,
+        "The UK is on my shortlist. How can the Department for International Trade help me?":
+        ref_data.InvestmentReadiness.SHORTLIST,
+        """I’m still exploring where to expand my business and would like to know more about the
+UK’s offer.""":
+        ref_data.InvestmentReadiness.EXPLORING,
         "I’m not yet ready to invest. Keep me informed.": ref_data.InvestmentReadiness.NOT_READY,
     }
     enquiry_stage = {
