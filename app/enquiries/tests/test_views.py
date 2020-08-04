@@ -439,9 +439,32 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             # clear entries for next mime type run
             Enquiry.objects.all().delete()
 
+    def test_enquiry_import_post_blank(self):
+        """
+        Test an unsuccessful import, where no file is provided
+        """
+        initial_count = Enquiry.objects.count()
+
+        response = self.client.post(
+            reverse("import-enquiries"), {"enquiries": ""}, follow=True
+        )
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        error_message = soup.select(".error")[0].text
+
+        self.assertEqual(error_message, "No file was selected. Choose a file to upload.")
+
+        # test atomic transactions
+        final_count = Enquiry.objects.count()
+        self.assertEqual(
+            final_count,
+            initial_count,
+            f"atomic transaction should prevent any records being created. Found: {final_count}",
+        )
+
     def test_enquiry_import_post_error(self):
         """
-        Test a unsuccessful import
+        Test an unsuccessful import
         Creates an enquiry dict, updates few fields and ensures
         the data is updated after submitting the form
         """
