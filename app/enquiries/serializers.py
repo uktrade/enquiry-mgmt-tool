@@ -81,6 +81,7 @@ class EnquiryDetailSerializer(serializers.ModelSerializer):
     date_added_to_datahub = serializers.DateField(format="%d %B %Y")
     datahub_project_status = serializers.CharField(source="get_datahub_project_status_display")
     project_success_date = serializers.DateField(format="%d %B %Y")
+    received = serializers.DateTimeField(format="%d %B %Y")
 
     class Meta:
         model = models.Enquiry

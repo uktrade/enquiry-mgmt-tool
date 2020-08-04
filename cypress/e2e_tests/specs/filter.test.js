@@ -263,7 +263,7 @@ describe('Filters', () => {
     filters: {
       [FILTERS.awaiting]: true,
     },
-    expectedTotal: 15,
+    expectedTotal: 17,
     assertItem: ($li) =>
       cy.wrap($li).contains(/^Awaiting response from Investor$/),
   })
@@ -443,7 +443,7 @@ describe('Filters', () => {
   testFilters({
     filters: {},
     owner: UNASSIGNED,
-    expectedTotal: 22,
+    expectedTotal: 24,
     assertItem: ($li) => cy.wrap($li).contains(/(^\s*Unassigned\s*$)/),
   })
   testFilters({
@@ -565,7 +565,7 @@ describe('Filters', () => {
     filters: {
       'Received before': '2018-01-01',
     },
-    expectedTotal: 11,
+    expectedTotal: 12,
     testFilteredPages: true,
     assertItem: ($li) =>
       cy.wrap($li)
@@ -580,7 +580,7 @@ describe('Filters', () => {
     filters: {
       'Received after': '2019-01-01',
     },
-    expectedTotal: 21,
+    expectedTotal: 22,
     testFilteredPages: true,
     assertItem: ($li) =>
       cy.wrap($li)
@@ -610,11 +610,11 @@ describe('Filters', () => {
   })
   
   Object.entries({
-    matchbox: [13, 3],
+    matchbox: [15, 3],
     company: [10, 2],
-    ltd: [23, 6],
+    ltd: [25, 6],
     mars: [5, 1],
-    a: [40, 9],
+    a: [42, 9],
     foo: [0, 0],
   }).forEach(([term, [total, totalNew]]) => {
     testFilters({
@@ -638,7 +638,7 @@ describe('Filters', () => {
   })
   
   Object.entries({
-    'evelyn.wang@example.com': 21,
+    'evelyn.wang@example.com': 23,
     'jeff.bezos@washingtonpost.com': 12,
     'nanny.maroon@bluemountain.jm': 12,
   }).forEach(([email, total]) =>
@@ -664,7 +664,7 @@ describe('Filters', () => {
     filters: {
       'Company added to Data Hub before': '2020-02-04',
     },
-    expectedTotal: 45,
+    expectedTotal: 47,
     assertItem: ($li) => {
       cy.wrap($li).find('a').then($el => {
         // The added to Data Hub date is not available on the result item,
@@ -688,7 +688,7 @@ describe('Filters', () => {
     filters: {
       'Company added to Data Hub after': '2020-02-02',
     },
-    expectedTotal: 45,
+    expectedTotal: 47,
     testFilteredPages: true,
     assertItem: ($li) => {
       cy.wrap($li).find('a').then($el => {

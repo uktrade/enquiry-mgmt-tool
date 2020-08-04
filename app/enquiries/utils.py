@@ -55,6 +55,9 @@ def row_to_enquiry(row: dict) -> Enquirer:
     # this is an optional field, if the value is blank ensure it gets default choice
     if row_data.get("marketing_channel") == "":
         row_data["marketing_channel"] = ref_data.MarketingChannel.DEFAULT
+    # this is an optional DateTime field, it needs to be set to 'None' to avoid errors
+    if row_data.get("date_received") == "":
+        row_data["date_received"] = None
 
     enquiry = Enquiry(enquirer=enquirer, **row_data)
 

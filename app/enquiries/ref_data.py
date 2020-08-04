@@ -476,6 +476,7 @@ IMPORT_COL_NAMES = [
     "notes",
     "google_campaign",
     "marketing_channel",
+    "date_received",
 ]
 
 MAP_ENQUIRY_FIELD_TO_REF_DATA = {
