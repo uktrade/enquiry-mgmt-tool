@@ -106,8 +106,7 @@ const assertPage = (itemsPerPage, assert = () => {}) =>
 const testResults = (assert, expectedTotal, testPages) => {
   context('Results', () => {
     it(`Should show ${expectedTotal} total results`, () =>
-      cy.get('header')
-        .contains(`${expectedTotal} enquiries`)
+      cy.get('.big-number-of-enquiries').should('have.text', `${expectedTotal}`)
     )
 
     if (!testPages) {
