@@ -494,9 +494,15 @@ class ImportEnquiriesView(TemplateView):
         enquiries_key = "enquiries"
 
         file_obj = request.FILES.get(enquiries_key)
+        if not file_obj:
+            messages.error(
+                self.request,
+                "No file was selected. Please choose a file to upload.",
+            )
+            return HttpResponseRedirect(reverse("import-enquiries"))
+
         if not (
-            file_obj
-            and file_obj.name.endswith(".csv")
+            file_obj.name.endswith(".csv")
             and file_obj.content_type in settings.IMPORT_ENQUIRIES_MIME_TYPES
         ):
             messages.error(
