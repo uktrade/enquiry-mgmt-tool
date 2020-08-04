@@ -100,8 +100,8 @@ class Enquiry(TimeStampedModel):
     )
     ist_sector = models.CharField(
         max_length=MAX_LENGTH,
-        choices=ref_data.IstSector.choices,
-        default=ref_data.IstSector.DEFAULT,
+        choices=ref_data.ISTSector.choices,
+        default=ref_data.ISTSector.DEFAULT,
         verbose_name="IST sector",
     )
     company_hq_address = models.CharField(max_length=MAX_LENGTH, verbose_name="Company HQ address")

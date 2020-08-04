@@ -96,7 +96,7 @@ class PrimarySector(models.TextChoices):
     WATER = "WATER", _("Water")
 
 
-class IstSector(models.TextChoices):
+class ISTSector(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
     ITECH = "ITECH", _("ITECH")
     LIFE = "LIFE", _("Life Science")
@@ -463,7 +463,7 @@ IMPORT_COL_NAMES = [
     "enquirer_request_for_call",
     "country",
     "company_name",
-    "primary_sector",
+    "ist_sector",
     "company_hq_address",
     "website",
     "investment_readiness",
@@ -483,7 +483,7 @@ MAP_ENQUIRY_FIELD_TO_REF_DATA = {
     "primary_sector": PrimarySector,
     "country": Country,
     "first_response_channel": FirstResponseChannel,
-    "ist_sector": IstSector,
+    "ist_sector": ISTSector,
     "first_hpo_selection": HpoSelection,
     "region": Region,
     "second_hpo_selection": HpoSelection,

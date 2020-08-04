@@ -107,7 +107,7 @@ def generate_import_template(file_obj):
         ref_data.EnquiryStage,
         ref_data.HowDidTheyHear,
         ref_data.InvestmentReadiness,
-        ref_data.PrimarySector,
+        ref_data.ISTSector,
         ref_data.RequestForCall,
         ref_data.MarketingChannel,
     ]
