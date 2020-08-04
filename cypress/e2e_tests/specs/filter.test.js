@@ -85,9 +85,16 @@ const setOwner = id =>
   cy.get('label').contains('Owner').next()
     .select(id === UNASSIGNED ? 'Unassigned' : USERS[id])
 
+const clearOwner = () => {
+  cy
+    .get('label').contains('Owner')
+    .next()
+    .select('---')
+}
+
 const assertOwnerSet = id =>
   cy.get('label').contains('Owner').next()
-    .should('have.value', id ? id : null)
+    .should('have.value', id ? id : '---')
 
 const assertPage = (itemsPerPage, assert = () => {}) =>
   cy.get('article')
@@ -706,4 +713,13 @@ describe('Filters', () => {
     },
     expectedTotal: 0,
   })
+  
+  it("Should display results for all owners when the '---' option is selected", () => {
+    setOwner(1),
+    submitFilters()
+    clearOwner()
+    submitFilters()
+    cy.get('.big-number-of-enquiries').should('have.text', '47')
+  })
+
 })
