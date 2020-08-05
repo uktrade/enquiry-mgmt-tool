@@ -405,9 +405,9 @@ describe('Edit', () => {
               value: 'Data Hub user 1',
             },
             {
-              type: 'date',
+              type: NOT_EDITABLE,
               label: 'Date added to Data Hub',
-              value: '2020-02-03',
+              value: '03 February 2020',
             },
             {
               type: 'text',
@@ -630,11 +630,6 @@ describe('Edit', () => {
           value: 'Data Hub user 2',
         },
         {
-          type: 'date',
-          name: 'date_added_to_datahub',
-          value: '2020-08-10',
-        },
-        {
           type: 'text',
           name: 'project_code',
           value: '67542',
@@ -779,7 +774,7 @@ describe('Edit', () => {
               dd: 'Business Partnership (Non-FDI)',
             },
             { dt: 'Client Relationship Manager', dd: 'Data Hub user 2' },
-            { dt: 'Date added to Data Hub', dd: '10 August 2020' },
+            { dt: 'Date added to Data Hub', dd: 'Date not recorded'},
             { dt: 'Project code', dd: '67542' },
             { dt: 'Data Hub project status', dd: 'Verify Win' },
             { dt: 'Project success date', dd: '01 February 2026' },

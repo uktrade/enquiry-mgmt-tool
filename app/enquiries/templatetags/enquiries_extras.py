@@ -3,12 +3,11 @@ import os
 from django.conf import settings
 from django import template
 
-from app.enquiries import models
-from app.enquiries import serializers
+from app.enquiries import models, ref_data, serializers
 
 register = template.Library()
 
-dh_required_fields = [
+dh_strict_fields = [
     "client_relationship_manager",
     "project_name",
     "project_description",
@@ -19,6 +18,7 @@ dh_required_fields = [
     "first_name",
     "phone",
     "company_name",
+    "date_added_to_datahub",
 ]
 
 can_be_default_fields = [
@@ -58,7 +58,7 @@ def enquiry_field_error_msg(field):
 @register.filter
 def is_optional(instance, field_name):
     field = get_instance_field(instance, field_name)
-    return field.blank and field_name not in dh_required_fields
+    return field.blank and field_name not in dh_strict_fields
 
 
 @register.filter
@@ -72,6 +72,20 @@ def get_dh_company_url(enquiry):
         return "#"
 
     return os.path.join(settings.DATA_HUB_FRONTEND, "companies", enquiry.dh_company_id)
+
+
+@register.filter
+def get_dh_date_added(enquiry):
+    if enquiry.date_added_to_datahub:
+        return enquiry.date_added_to_datahub.strftime("%d %B %Y")
+
+    default_status = (enquiry.datahub_project_status == ref_data.DatahubProjectStatus.DEFAULT)
+    added_to_dh_stage = (enquiry.enquiry_stage == ref_data.EnquiryStage.ADDED_TO_DATAHUB)
+
+    if added_to_dh_stage or not default_status:
+        return "Date not recorded"
+
+    return "Enquiry not added to Data Hub"
 
 
 def get_instance_field(instance, field_name):

@@ -160,7 +160,12 @@
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="investor_involvement_level" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="specific_investment_programme" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="client_relationship_manager" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="date_added_to_datahub" %}
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date added to Data Hub
+                    </dt>
+                    <dd class="govuk-summary-list__value"  id="{{ date_added_to_datahub }}">{{ enquiry|get_dh_date_added }}</dd>
+                </div>
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_code" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="datahub_project_status" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_success_date" %}
