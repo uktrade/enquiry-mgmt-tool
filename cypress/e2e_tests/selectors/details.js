@@ -1,4 +1,4 @@
 module.exports = {
   topControls: '.top-controls',
-  editDetailsButton: '.top-controls button',
+  editDetailsButton: '.top-controls .govuk-button',
 }
