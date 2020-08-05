@@ -181,7 +181,7 @@
     <form class="form" action="{% url 'enquiry-detail' pk=enquiry.id %}" method="post">
         {% csrf_token %}
 
-        {% if not enquiry.date_added_to_datahub %}
+        {% if enquiry|can_be_submitted %}
         <button class="govuk-button" data-module="govuk-button" type="submit">Submit to Data Hub</button>
         {% endif %}
     </form>

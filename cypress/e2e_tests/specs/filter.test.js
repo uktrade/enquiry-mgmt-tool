@@ -247,7 +247,7 @@ describe('Filters', () => {
     filters: {
       New: true,
     },
-    expectedTotal: 11,
+    expectedTotal: 13,
     testFilteredPages: true,
     testUnfiltered: true,
     testUnfilteredPages: true,
@@ -362,7 +362,7 @@ describe('Filters', () => {
     filters: {
       [FILTERS.added]: true,
     },
-    expectedTotal: 3,
+    expectedTotal: 4,
     assertItem: ($li) => cy.wrap($li).contains(/^Added to Data Hub$/),
   })
   testFilters({
@@ -449,7 +449,7 @@ describe('Filters', () => {
   testFilters({
     filters: {},
     owner: UNASSIGNED,
-    expectedTotal: 24,
+    expectedTotal: 27,
     assertItem: ($li) => cy.wrap($li).contains(/(^\s*Unassigned\s*$)/),
   })
   testFilters({
@@ -457,7 +457,7 @@ describe('Filters', () => {
       [FILTERS.new]: true,
     },
     owner: UNASSIGNED,
-    expectedTotal: 8,
+    expectedTotal: 10,
     assertItem: ($li) => {
       cy.wrap($li).contains(/^New$/)
       cy.wrap($li).contains(/(^\s*Unassigned\s*$)/)
@@ -571,7 +571,7 @@ describe('Filters', () => {
     filters: {
       'Received before': '2018-01-01',
     },
-    expectedTotal: 12,
+    expectedTotal: 15,
     testFilteredPages: true,
     assertItem: ($li) =>
       cy.wrap($li)
@@ -620,7 +620,7 @@ describe('Filters', () => {
     company: [10, 2],
     ltd: [25, 6],
     mars: [5, 1],
-    a: [42, 9],
+    a: [44, 10],
     foo: [0, 0],
   }).forEach(([term, [total, totalNew]]) => {
     testFilters({
@@ -644,7 +644,7 @@ describe('Filters', () => {
   })
   
   Object.entries({
-    'evelyn.wang@example.com': 23,
+    'evelyn.wang@example.com': 26,
     'jeff.bezos@washingtonpost.com': 12,
     'nanny.maroon@bluemountain.jm': 12,
   }).forEach(([email, total]) =>
@@ -670,7 +670,7 @@ describe('Filters', () => {
     filters: {
       'Company added to Data Hub before': '2020-02-04',
     },
-    expectedTotal: 47,
+    expectedTotal: 48,
     assertItem: ($li) => {
       cy.wrap($li).find('a').then($el => {
         // The added to Data Hub date is not available on the result item,
@@ -694,7 +694,7 @@ describe('Filters', () => {
     filters: {
       'Company added to Data Hub after': '2020-02-02',
     },
-    expectedTotal: 47,
+    expectedTotal: 48,
     testFilteredPages: true,
     assertItem: ($li) => {
       cy.wrap($li).find('a').then($el => {
@@ -718,7 +718,7 @@ describe('Filters', () => {
     submitFilters()
     clearOwner()
     submitFilters()
-    cy.get('.big-number-of-enquiries').should('have.text', '47')
+    cy.get('.big-number-of-enquiries').should('have.text', '48')
   })
 
 })
