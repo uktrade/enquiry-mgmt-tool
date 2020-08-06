@@ -35,6 +35,6 @@ jobs:
           name: Run e2e tests
           # Chrome freezes when redirecting on the login page.
           # See: https://github.com/cypress-io/cypress/issues/3594
-          command: docker-compose run cypress run --browser firefox
+          command: docker-compose run cypress run
       - store_artifacts:
           path: cypress/screenshots
