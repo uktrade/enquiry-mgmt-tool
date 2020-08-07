@@ -187,6 +187,12 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
     ACTIVITY_STREAM_INITIAL_LOAD_DATE determines the initial date
     from which the data is queried.
 
+    Two emails are sent for every enquiry, one to the user who filled
+    out the form and one to enquiries@invest-trade.uk for triage. Both of
+    these are present in activity stream. To avoid duplicate enquiries, the
+    emails sent to the user are ignored by filtering out emails which
+    were sent by noreply@invest.great.gov.uk.
+
     last_cursor indicates the last enquiry fetched (index and id).
     This is used to fetch next set of results when this is invoked again.
     """
@@ -212,6 +218,13 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
                         "term": {
                             settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2:
                                 settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2
+                        }
+                    },
+                    {
+                        "bool": {
+                            "must_not": {
+                                "term": {"actor.dit:emailAddress": "noreply@invest.great.gov.uk"}
+                            }
                         }
                     },
                 ]
