@@ -13,14 +13,14 @@ class Enquirer(models.Model):
     Model for Enquirer details
     """
 
-    first_name = models.CharField(max_length=MAX_LENGTH, verbose_name="First name")
+    first_name = models.CharField(max_length=MAX_LENGTH, blank=True, verbose_name="First name")
     last_name = models.CharField(max_length=MAX_LENGTH, verbose_name="Last name")
     job_title = models.CharField(max_length=MAX_LENGTH, verbose_name="Job title")
-    email = models.EmailField(max_length=MAX_LENGTH, blank=True, verbose_name="Email")
+    email = models.TextField(blank=True, verbose_name="Email")
     phone_country_code = models.CharField(
         max_length=5, blank=True, null=True, verbose_name="Telephone country code"
     )
-    phone = models.CharField(max_length=MAX_LENGTH, verbose_name="Phone")
+    phone = models.CharField(max_length=MAX_LENGTH, blank=True, verbose_name="Phone")
     email_consent = models.BooleanField(default=False, verbose_name="Email consent")
     phone_consent = models.BooleanField(default=False, verbose_name="Phone consent")
     request_for_call = models.CharField(
@@ -49,7 +49,8 @@ class Enquiry(TimeStampedModel):
     """
 
     company_name = models.CharField(
-        max_length=MAX_LENGTH, help_text="Name of the company", verbose_name="Company name"
+        max_length=MAX_LENGTH, help_text="Name of the company", blank=True,
+        verbose_name="Company name"
     )
     date_received = models.DateTimeField(
         blank=True,
@@ -75,6 +76,7 @@ class Enquiry(TimeStampedModel):
         max_length=MAX_LENGTH,
         choices=ref_data.InvestmentReadiness.choices,
         default=ref_data.InvestmentReadiness.DEFAULT,
+        blank=True,
         verbose_name="Investment readiness",
     )
     quality = models.CharField(

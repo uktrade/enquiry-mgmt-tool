@@ -32,6 +32,7 @@ class InvestmentReadiness(models.TextChoices):
         ),
     )
     NOT_READY = "NOT_READY", _("I’m not yet ready to invest. Keep me informed")
+    NOT_INTERESTED_IN_UK = "NOT_INTERESTED_IN_UK", _("I’m not interested in setting up in the UK")
 
 
 class Quality(models.TextChoices):
