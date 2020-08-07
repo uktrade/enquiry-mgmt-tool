@@ -262,7 +262,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def test_enquiry_create_missing_mandatory_field(self):
         """Test to ensure Enquiry creation fails if a mandatory field is not supplied"""
         enquiry = canned_enquiry()
-        del enquiry["company_name"]
+        del enquiry["enquirer"]["last_name"]
         response = self.client.post(
             reverse("enquiry-create"), data=enquiry, content_type="application/json",
         )
@@ -354,12 +354,12 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiry = model_to_dict(enquiry)
 
         response = self.client.post(
-            reverse("enquiry-edit", kwargs={"pk": enquiry["id"]}), {"company_name": ""},
+            reverse("enquiry-edit", kwargs={"pk": enquiry["id"]}), {"enquiry_stage": ""},
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         updated_enquiry = model_to_dict(response.context["enquiry"])
-        self.assertEqual(updated_enquiry["company_name"], enquiry["company_name"])
-        self.assertNotEqual(updated_enquiry["company_name"], "")
+        self.assertEqual(updated_enquiry["enquiry_stage"], enquiry["enquiry_stage"])
+        self.assertNotEqual(updated_enquiry["enquiry_stage"], "")
 
         """Test the template is using the right variables to show enquiry data
         in the simple case when data is a string"""

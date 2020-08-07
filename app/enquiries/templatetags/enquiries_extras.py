@@ -16,6 +16,9 @@ dh_required_fields = [
     "estimated_land_date",
     "email",
     "phone_country_code",
+    "first_name",
+    "phone",
+    "company_name",
 ]
 
 can_be_default_fields = [
