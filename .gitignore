@@ -114,8 +114,11 @@ app/**/static
 # app specific env files
 app/.env
 app/settings/.env
-celerybeat-schedule
 
 # cypress
 cypress/screenshots
 cypress/videos
+
+# celery
+celerybeat.pid
+celerybeat-schedule
