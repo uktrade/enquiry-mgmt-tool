@@ -26,7 +26,7 @@ describe('Edit', () => {
         .should('have.text', 'Back')
         .and('have.attr', 'href', '/enquiries/')
         .parents()
-        .find('button')
+        .find('a')
         .should('contain', 'Edit details')
 
       assertSummaryDetails([
