@@ -332,6 +332,7 @@ class Region(models.TextChoices):
     AMERICAS = "AMERICAS", _("Americas")
     APAC = "APAC", _("Asia-Pacific")
     EMEA = "EMEA", _("EMEA")
+    UK = "UK", _("UK")
 
 
 class RequestForCall(models.TextChoices):
