@@ -114,7 +114,9 @@ const testResults = (assert, expectedTotal, testPages) => {
     }
 
     const r = expectedTotal % 10
-    const pages = [...Array((expectedTotal - r) / 10).fill(10), r]
+    // An array with the length being the number of pages
+    // and the value of each item the expected number of results on that page.
+    const pages = Array((expectedTotal - r) / 10).fill(10).concat(r || [])
 
     pages.forEach((itemsPerPage, i) => {
       const currentPage = i + 1
