@@ -135,7 +135,7 @@
 
                 <h3 class="govuk-heading-m">Enquiry details</h3>
 
-                <div class="enquiry-text">
+                <div class="read-only">
                     <div class="govuk-label">Enquiry text</div>
                     <p>{{ enquiry.enquiry_text }}</p>
                 </div>
@@ -252,8 +252,10 @@
                     {{ form.client_relationship_manager }}
                 </div>
 
-                <!-- TODO: Change label to 'Date added to Data Hub' -->
-                {% include 'snippets/enquiry_field_input_date.html' with instance=enquiry field="date_added_to_datahub" %}
+                <div class="read-only">
+                    <div class="govuk-label">Date added to Data Hub</div>
+                    <p>{{ enquiry|get_dh_date_added }}</p>
+                </div>
 
                 {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="project_code" %}
 
