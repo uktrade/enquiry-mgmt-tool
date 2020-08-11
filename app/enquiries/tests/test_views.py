@@ -562,12 +562,12 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def test_enquiry_list_csv_format(self):
         """
         Asserts that the view instance has no paginator if there's a
-        `format=csv` query string parameter
+        `format=xlsx` query string parameter
         """
         user = Owner.objects.get(username='test')
 
         request = RequestFactory().get(reverse("enquiry-list"),
-                                       dict(format='csv'))
+                                       dict(format='xlsx'))
         request.user = user
         response = EnquiryListView.as_view()(request)
         assert response.renderer_context['view'].paginator is None
