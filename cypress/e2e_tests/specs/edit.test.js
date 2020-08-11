@@ -69,8 +69,7 @@ describe('Edit', () => {
             { dt: 'Region', dd: 'EMEA' },
             {
               dt: 'Company HQ address',
-              dd:
-                'ABC Electronics Co. (UK), Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom',
+              dd: 'ABC Electronics Co. (UK), Far Far Away, United Kingdom',
             },
             { dt: 'Primary sector', dd: 'Advanced Engineering' },
             { dt: 'IST sector', dd: 'ITECH' },
@@ -180,8 +179,7 @@ describe('Edit', () => {
             {
               type: 'text',
               label: 'Company HQ address',
-              value:
-                'ABC Electronics Co. (UK), Infinity Park Derby, Sinfin Moor Ln, Derby, DE24 9QG, United Kingdom',
+              value: 'ABC Electronics Co. (UK), Far Far Away, United Kingdom',
             },
             {
               type: 'select',
@@ -774,7 +772,7 @@ describe('Edit', () => {
               dd: 'Business Partnership (Non-FDI)',
             },
             { dt: 'Client Relationship Manager', dd: 'Data Hub user 2' },
-            { dt: 'Date added to Data Hub', dd: 'Date not recorded'},
+            { dt: 'Date added to Data Hub', dd: 'Date not recorded' },
             { dt: 'Project code', dd: '67542' },
             { dt: 'Data Hub project status', dd: 'Verify Win' },
             { dt: 'Project success date', dd: '01 February 2026' },
