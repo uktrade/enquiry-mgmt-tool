@@ -18,7 +18,7 @@ django-redis==4.11.0
 django-rest-knox==4.1.0
 django-staff-sso-client==2.2.0
 djangorestframework==3.10.3
-djangorestframework-csv==2.1.0
+drf-renderer-xlsx==0.3.7
 drf-writable-nested==0.5.3
 django-widget-tweaks==1.4.5
 django-model-choices==1.0.0
