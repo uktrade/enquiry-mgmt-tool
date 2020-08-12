@@ -166,3 +166,17 @@ def query_params_value_selected(value, param_key, query_params, text="selected")
 def title_phrase(value):
     """Converts a snake case key into a title with spaces"""
     return value.replace("_", " ").title()
+
+
+@register.filter
+def truncate_chars_end_word(value: str, max_length: int):
+    """
+    Truncates a string after a specified character length
+    but does not cut off mid-word.
+    """
+    if len(value) > max_length:
+        truncd_val = value[:max_length]
+        if value[max_length] != " ":
+            truncd_val = truncd_val[:truncd_val.rfind(" ")]
+        return truncd_val + "..."
+    return value

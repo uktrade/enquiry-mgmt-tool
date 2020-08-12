@@ -1,3 +1,4 @@
+{% load enquiries_extras %}
 <li class="entity__list-item">
     <div class="entity__enquiry">
         <div class="entity__header">
@@ -30,7 +31,7 @@
                 </div>
                 <div class="entity__content-item">
                     <span class="list-item-label">Enquiry text</span>
-                    <span class="list-item-value">{{ enquiry.enquiry_text }}</span>
+                    <span class="list-item-value">{{ enquiry.enquiry_text|truncate_chars_end_word:250 }}</span>
                 </div>
                 <div class="entity__content-item">
                     <span class="list-item-label">Date last updated</span>
