@@ -321,6 +321,8 @@ def dh_enquiry_readiness(request, access_token, enquiry):
     # Same enquiry cannot be submitted if it is already done once
     if enquiry.date_added_to_datahub or (
         enquiry.datahub_project_status != ref_data.DatahubProjectStatus.DEFAULT
+    ) or (
+        enquiry.enquiry_stage == ref_data.EnquiryStage.ADDED_TO_DATAHUB
     ):
         prev_submission_date = (
             enquiry.date_added_to_datahub.strftime("%d %B %Y")
