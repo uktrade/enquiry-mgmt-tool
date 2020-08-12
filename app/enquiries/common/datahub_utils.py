@@ -39,14 +39,33 @@ def dh_request(
     timeout=15,
 ):
     """
-    Helper function to perform Data Hub request
+    Makes a |data-hub-api|_ request.
 
-    All requests have same headers, instead of repeating in each function
-    they are added in the function. If there are any custom headers they
-    can be provided using the request_headers argument.
+    :param request: A Django request
+    :type request: django.http.HttpRequest
 
-    Each request has a timeout (default=15sec) failing which throws an
-    exception which will be captured in Sentry
+    :param access_token: A valid |oauth| `access_token`
+    :type access_token: str
+
+    :param method: HTTP method
+    :type method: str
+
+    :param url: A full |data-hub-api|_ URL
+    :type url: str
+
+    :param payload: The request payload
+    :type payload: A JSON serializable value, optional
+
+    :param request_headers: Request headers
+    :type request_headers: dict, optional
+
+    :param params: GET request querystring params
+    :type params: dict, optional
+
+    :param timeout: A timeout after which the function throws an error
+    :type timeout: int, optional
+
+    :returns: A :class:`requests.Response` instance
     """
 
     if request_headers:
@@ -77,9 +96,6 @@ def dh_request(
 
 
 def _dh_fetch_metadata():
-    """
-    Fetches metadata from Data Hub as we need that to call Data Hub APIs
-    """
     logging.info(f"Fetching metadata at {datetime.now()}")
     credentials = {
         "id": settings.DATA_HUB_HAWK_ID,
@@ -110,17 +126,17 @@ def _dh_fetch_metadata():
             metadata["failed"].append(endpoint)
 
     if metadata["failed"]:
-        logging.error(f"Error fetching Data Hub metadata for endpoints: {metadata['failed']}")
+        logging.error(f"Error fetching DataHub metadata for endpoints: {metadata['failed']}")
 
     return metadata
 
 
 def dh_fetch_metadata(cache_key="metadata", expiry_secs=60 * 60):
     """
-    Fetches and caches the metadata with an expiry time.
+    Fetches and caches metadata from |data-hub|_
 
-    It checks if the data is valid in cache, if it has expired then it
-    fetches again.
+    :returns: The fetched metadata
+    :rtype: dict
     """
 
     try:
@@ -140,20 +156,19 @@ def dh_fetch_metadata(cache_key="metadata", expiry_secs=60 * 60):
 
 def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"):
     """
-    Maps application reference data to Data Hub reference data and
+    Maps application reference data to |data-hub|_ reference data and
     extracts the unique identifier
 
-    Arguments
-    ---------
-    refdata_value: Human readable value of a choice field
-    dh_metadata: Data Hub metadata dictionary
-    dh_category: Data Hub metadata category
-    target_key: key name with then metadata object
+    :param refdata_value: Human readable value of a choice field
+    :type refdata_value: str
+    :param dh_metadata: |data-hub|_ metadata
+    :type dh_metadata: dict
+    :param dh_category: |data-hub|_ metadata category
+    :type dh_category: str
+    :param target_key: key name with the metadata object
+    :type target_key: str
 
-    Returns
-    -------
-    Data Hub uuid for the given refdata_value if available otherwise None
-
+    :returns: |data-hub|_ uuid for the given ``refdata_value`` if available, else ``None``
     """
 
     dh_data = list(filter(lambda d: d[target_key] == refdata_value, dh_metadata[dh_category]))
@@ -162,7 +177,15 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
 
 
 def dh_get_user_details(request, access_token):
-    """ Gets the currently logged in user details """
+    """
+    Gets the currently logged in user details
+
+    :param request:
+    :type request: django.http.HttpRequest
+
+    :param access_token: The user's |oauth|_ access token
+    :type access_token: str
+    """
 
     url = settings.DATA_HUB_WHOAMI_URL
 
@@ -175,9 +198,19 @@ def dh_get_user_details(request, access_token):
 
 def dh_company_search(request, access_token, company_name):
     """
-    Peforms a Company name search using Data hub API.
+    Performs a Company name search using |data-hub-api|_.
 
-    Returns list of subset of fields for each company found
+    :param request:
+    :type request: django.http.HttpRequest
+
+    :param access_token: The user's |oauth|_ access token
+    :type access_token: str
+
+    :param company_name: Company name to search for
+    :type company_name: str
+
+    :returns: A subset of fields for each company found
+    :rtype: list
     """
     companies = []
     url = settings.DATA_HUB_COMPANY_SEARCH_URL
@@ -215,9 +248,22 @@ def dh_company_search(request, access_token, company_name):
 
 def dh_contact_search(request, access_token, contact_name, company_id):
     """
-    Peforms a Contact name search using Data hub API.
+    Performs a `contact name` search using |data-hub-api|_.
 
-    Returns list of subset of fields for each contact found
+    :param request:
+    :type request: django.http.HttpRequest
+
+    :param access_token: The user's |oauth|_ access token
+    :type access_token: str
+
+    :param contact_name: Contact name to search for
+    :type contact_name: str
+
+    :param company_id: Company ID
+    :type company_id: str
+
+    :returns: A subset of fields for each company found
+    :rtype: list
     """
     contacts = []
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
@@ -245,9 +291,25 @@ def dh_contact_search(request, access_token, contact_name, company_id):
 
 def dh_contact_create(request, access_token, enquirer, company_id, primary=False):
     """
-    Create a contact and associate with the given Company Id.
+    Create a |data-hub|_ `contact` and associate it with the given `company`.
 
-    Returns created contact and error if any
+    :param request:
+    :type request: django.http.HttpRequest
+
+    :param access_token: The user's |oauth|_ access token
+    :type access_token: str
+
+    :param contact_name: Contact name to search for
+    :type contact_name: str
+
+    :param company_id: Company ID
+    :type company_id: str
+
+    :param primary:
+    :type primary: bool
+
+    :returns: A ``(response_json_dict, None)`` or ``(None, error_json_dict)`` tuple
+    :rtype: tuple
     """
     url = settings.DATA_HUB_CONTACT_CREATE_URL
     enquirer = enquirer.enquirer
@@ -272,9 +334,19 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
 
 def dh_adviser_search(request, access_token, adviser_name):
     """
-    Peforms an Adviser search using Data hub API.
+    Performs an `adviser` |data-hub-api|_ search.
 
-    Returns list of subset of fields for each Adviser found
+    :param request:
+    :type request: django.http.HttpRequest
+
+    :param access_token: The user's |oauth|_ access token
+    :type access_token: str
+
+    :param adviser_name: Adviser name to search for
+    :type adviser_name: str
+
+    :returns: A subset of fields for each Adviser found
+    :rtype: list
     """
     advisers = []
     url = settings.DATA_HUB_ADVISER_SEARCH_URL
@@ -304,18 +376,30 @@ def get_dh_id(metadata_items, name):
 
 def dh_enquiry_readiness(request, access_token, enquiry):
     """
-    Check whether the given enquiry is ready to be submitted to Data Hub
+    Check whether the given `enquiry` is ready to be submitted to |data-hub|_
 
-    Criteria is that the company should exist in Data Hub, client relationship
-    manager is a valid user, given user is available etc.
+    Criteria is that the company should exist in |data-hub|_,
+    client relationship manager is a valid user, given user is available etc.
 
-    Returns json response with error description.
+    :param request:
+    :type request: django.http.HttpRequest
+
+    :param access_token: The user's |oauth|_ access token
+    :type access_token: str
+
+    :param enquiry:
+    :type enquiry: app.enquiries.models.Enquiry
+
+    :returns: JSON-parsed |data-hub-api|_ response
+    :rtype: dict
     """
     response = {"errors": []}
 
     # Allow creating of investments only if Company exists on DH
     if not enquiry.dh_company_id:
-        response["errors"].append({"company": f"{enquiry.company_name} doesn't exist in Data Hub"})
+        response["errors"].append(
+            dict(company=f"{enquiry.company_name} doesn't exist in Data Hub")
+        )
         return response
 
     # Same enquiry cannot be submitted if it is already done once
@@ -379,7 +463,32 @@ def dh_enquiry_readiness(request, access_token, enquiry):
 def prepare_dh_payload(
     enquiry, dh_metadata, company_id, contact_id, adviser_id, client_relationship_manager_id,
 ):
-    """ Prepares the payload for investment create request """
+    """
+    Prepares the payload for investment create request
+
+    :param enquiry:
+    :type enquiry: app.enquiries.models.Enquiry
+
+    :param dh_metadata: |data-hub-api|_ metadata
+    :type dh_metadata: dict
+
+    :param company_id:
+    :type company_id: str
+
+    :param contact_id:
+    :type contact_id: str
+
+    :param adviser_id:
+    :type adviser_id: str
+
+    :param client_relationship_manager_id:
+    :type client_relationship_manager_id: str
+
+    :returns:
+
+        A ``(payload, 'primary_sector')`` or ``(payload, None)``, where
+        ``payload`` is a ``dict``.
+    """
 
     payload = {}
     payload["name"] = enquiry.company_name
@@ -433,15 +542,24 @@ def prepare_dh_payload(
     return payload, None
 
 
-def dh_investment_create(request, enquiry, metadata=None):
+def dh_investment_create(request, enquiry):
     """
-    Creates an Investment in Data Hub using the data from the given
-    Enquiry obj.
+    Creates a |data-hub|_ `investment` using the data from the given
+    :class:`app.enquiries.models.Enquiry`.
 
-    Investment is only created if the Company corresponding to the Enquiry
-    exists in DH otherwise error is returned.
-    Enquirer details are added to the list of contacts for this company.
-    If this is the only contact then it will be made primary.
+    `Investment` is only created if the `company` corresponding to the `enquiry`
+    exists in |data-hub|_ otherwise error is returned.
+    `Enquirer` details are added to the list of `contacts` for this `company`.
+    If this is the only `contact` then it will be made primary.
+
+    :param request:
+    :type request: django.http.HttpRequest
+
+    :param enquiry:
+    :type enquiry: app.enquiries.models.Enquiry
+
+    :returns: The parsed response JSON
+    :rtype: dict
     """
 
     # Return a list of errors to be displayed in UI
@@ -451,11 +569,11 @@ def dh_investment_create(request, enquiry, metadata=None):
     session = get_oauth_payload(request)
     access_token = session["access_token"]
 
-    # check if the user is available in Data Hub
+    # check if the user is available in DataHub
     user_details, error = dh_get_user_details(request, access_token)
     if error:
         response["errors"].append(
-            {"referral_advisor": "Error validating your identity in Data Hub"}
+            {"referral_advisor": "Error validating your identity in DataHub"}
         )
         return response
 
@@ -505,7 +623,7 @@ def dh_investment_create(request, enquiry, metadata=None):
         client_relationship_manager_id,
     )
     if error_key:
-        response["errors"].append({error_key: "Reference data mismatch in Data Hub"})
+        response["errors"].append({error_key: "Reference data mismatch in DataHub"})
         return response
 
     try:
@@ -516,7 +634,7 @@ def dh_investment_create(request, enquiry, metadata=None):
         response["result"] = result.json()
     except HTTPError as e:
         response["errors"].append(
-            {"investment_create": f"Error contacting Data Hub to create investment, {str(e)}"}
+            {"investment_create": f"Error contacting DataHub_ to create investment, {str(e)}"}
         )
     except Exception as e:
         response["errors"].append({"investment_create": f"Error creating investment, {str(e)}"})
