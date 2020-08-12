@@ -18,7 +18,7 @@ FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS}"
 
 @app.task(name="refresh_datahub_metadata")
 def refresh_datahub_metadata():
-    """ Periodically refreshes metadata in cache """
+    """Periodically refreshes |data-hub-api|_ metadata in cache """
 
     # set expiry a few minutes before next refresh so that we
     # ensure refresh fetches data again
@@ -29,7 +29,7 @@ def refresh_datahub_metadata():
 
 @app.task(name="fetch_new_enquiries")
 def fetch_new_enquiries():
-    """ Periodically fetches new investment enquiries from AS """
+    """Periodically fetches new `investment enquiries` from |activity-stream|_"""
 
     fetch_and_process_enquiries()
     logging.info(f"New enquiries last retrieved at {datetime.now()}")

@@ -3,9 +3,15 @@ from django.conf import settings
 from app.enquiries.utils import generate_import_template
 
 
+doc = """
+Generates an ``.XLSX`` template for users to enter enquiries
+and manually import them as a CSV file.
+"""
+
+
 class Command(BaseCommand):
-    help = """this command generates a .XLSX template for users to enter enquiries
-     and manually import them as a CSVfile"""
+    __doc__ = doc
+    help = doc
 
     def handle(self, *args, **options):
         generate_import_template(settings.IMPORT_TEMPLATE_FILENAME)
