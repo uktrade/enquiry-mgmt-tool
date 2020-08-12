@@ -16,10 +16,19 @@ from app.enquiries.models import Enquirer, Enquiry, ReceivedEnquiryCursor
 
 def great_ui_sector_rtt_mapping(value):
     """
-    Sector data in the website is different from that in dit-sectors
+    Resolves the `primary sector` for ``value``.
+
+    Sector data in the website is different from that in `dit-sectors`
     reference, so we first check if it is in standard reference data otherwise
     map it to our reference data. If not found anywhere use default value.
+
+    :param value:
+    :type value: str
+
+    :returns: |great|_ `sector`
+    :rtype: str
     """
+
     rtt_reference = [value for choice in ref_data.PrimarySector.choices if choice[0] == value]
     if rtt_reference:
         return rtt_reference[0]
@@ -36,14 +45,18 @@ def great_ui_sector_rtt_mapping(value):
     return mapping.get(value, ref_data.PrimarySector.DEFAULT.value)
 
 
-def map_enquiry_data_to_instance(data):
+def via_enquiry_to_enquiry_kwargs(data):
     """
-    This function maps the investment enquiry data received from the via
-    website to internal database fields so that new Enquiry instances can
-    be created.
-    Because the form processing is done in a different place the reference
-    data used is not consistent and there are slight mismatches hence this
-    mapping is required.
+    Converts `enquiry` submitted via email into a dict of `kwargs` for
+    :class:`app.enquiries.models.Enquiry`.
+
+    :param data:
+    :type data: dict
+
+    :returns:
+
+        A ``dict`` of :class:`app.enquiries.models.Enquiry` constructor
+        `kwargs`.
     """
     enquiry = {}
 
@@ -134,6 +147,12 @@ def parse_enquiry_email(submission):
     """
     Parses email body in the submission and returns Enquiry related fields.
     This can be used to create an Enquiry.
+
+    :param submission: The email to be parsed
+    :type submission: dict
+
+    :returns:
+        The result of :func:`via_enquiry_to_enquiry_kwargs` or ``{}`` or ``None``
     """
     enquiry_data = {}
 
@@ -157,15 +176,32 @@ def parse_enquiry_email(submission):
     if not ({"Given name", "Job title", "Company HQ address"} <= enquiry_data.keys()):
         return None
 
-    # map the data to Enquiry model fields
-    enquiry = map_enquiry_data_to_instance(enquiry_data)
-
-    return enquiry
+    return via_enquiry_to_enquiry_kwargs(enquiry_data)
 
 
-def hawk_request(method, url, key_id, secret_key, body):
+def hawk_request(method, url, id_, secret_key, body):
+    """
+    Makes a :mod:`hawk` request
+
+    :param method: A valid HTTP method
+    :type method: str
+
+    :param url: A valid URL
+    :type url: str
+
+    :param id_: The ``id`` for the ``credentials`` argument to :class:`mohawk.Sender`
+    :type id_: str
+
+    :param secret_key:
+        The ``secret_key`` for the ``credentials`` argument to :class:`mohawk.Sender`
+    :type secret_key: str
+
+    :param body: A JSON serializable data structure to be sent as the request body
+
+    :returns: :class:`requests.Response`
+    """
     header = mohawk.Sender(
-        {"id": key_id, "key": secret_key, "algorithm": "sha256"},
+        {"id": id_, "key": secret_key, "algorithm": "sha256"},
         url,
         method,
         content_type="application/json",
@@ -183,9 +219,9 @@ def hawk_request(method, url, key_id, secret_key, body):
 
 def get_new_investment_enquiries(last_cursor=None, max_size=100):
     """
-    Helper function to pull new investment enquiries from AS.
-    ACTIVITY_STREAM_INITIAL_LOAD_DATE determines the initial date
-    from which the data is queried.
+    Fetches new investment enquiries from |activity-stream|_.
+    The ``ACTIVITY_STREAM_INITIAL_LOAD_DATE`` environmental variable determines
+    the initial date from which the data is queried.
 
     Two emails are sent for every enquiry, one to the user who filled
     out the form and one to enquiries@invest-trade.uk for triage. Both of
@@ -193,8 +229,15 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
     emails sent to the user are ignored by filtering out emails which
     were sent by noreply@invest.great.gov.uk.
 
-    last_cursor indicates the last enquiry fetched (index and id).
-    This is used to fetch next set of results when this is invoked again.
+    :param last_cursor:
+        Indicates the last enquiry fetched (index and id).
+        This is used to fetch next set of results when this is invoked again.
+    :type last_cursor: str
+
+    :param max_size: The maximum number of results to fetch
+    :type max_size: int
+
+    :returns: JSON-parsed response or ``None`` in case of an error
     """
 
     key_id = settings.ACTIVITY_STREAM_KEY_ID
@@ -238,6 +281,7 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
 
     response = hawk_request("GET", url, key_id, secret_key, json.dumps(query))
     if not response.ok:
+        # FIXME: Throw an error instead of returning None
         logging.error(f"Error running query on Activity stream, {response.json()}")
         return None
 
@@ -256,7 +300,8 @@ def get_new_investment_enquiries(last_cursor=None, max_size=100):
 
 def fetch_and_process_enquiries():
     """
-    Fetches new enquiries from AS and creates new instances in the database
+    Fetches new enquiries from |activity-stream|_ and creates saved
+    :class:`app.enquiries.models.Enquiry` instances.
     """
 
     last_cursor = ReceivedEnquiryCursor.objects.last()

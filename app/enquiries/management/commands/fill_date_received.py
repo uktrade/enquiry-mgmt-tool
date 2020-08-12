@@ -5,11 +5,11 @@ from app.enquiries.models import Enquiry
 
 class Command(BaseCommand):
     """
-    Command is for one-off use to populate the date_received value for existing enquiries,
-    replacing empty values with the date the record was created
+    Populates the :attr:`app.enquiries.models.Enquiry.date_received` of existing enquiries,
+    replacing empty values with the date the record was created.
     """
 
-    help = "this command replaces empty date_received values for enquiries with the date created"
+    help = "Replaces empty date_received values for enquiries with the date created"
 
     def handle(self, *args, **options):
         print('Replacing empty date_received values')
