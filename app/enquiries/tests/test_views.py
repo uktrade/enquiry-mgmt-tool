@@ -12,7 +12,6 @@ from faker import Faker
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
-from django.test import RequestFactory
 from django.urls import reverse
 
 from rest_framework import status
@@ -22,7 +21,7 @@ import app.enquiries.ref_data as ref_data
 import app.enquiries.tests.utils as test_utils
 
 from app.enquiries import utils
-from app.enquiries.models import Enquiry, Enquirer, Owner
+from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
     EnquirerFactory,
     EnquiryFactory,
@@ -31,18 +30,11 @@ from app.enquiries.tests.factories import (
     get_display_name,
     return_display_value,
 )
-from app.enquiries.views import (
-    EnquiryListView,
-    ImportEnquiriesView,
-    ImportTemplateDownloadView,
-    PaginationWithPaginationMeta
-)
+from app.enquiries.views import ImportEnquiriesView, ImportTemplateDownloadView
 
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
-headers_json = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/json"}
-headers_csv = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/csv"}
 
 
 def canned_enquiry():
@@ -559,24 +551,16 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 2)
 
-    def test_enquiry_list_csv_format(self):
+    def test_enquiry_csv_format_content_disposition(self):
         """
-        Asserts that the view instance has no paginator if there's a
-        `format=csv` query string parameter
+        Asserts that response to a ``format=csv`` request has the correct
+        ``Content-Disposition`` header.
         """
-        user = Owner.objects.get(username='test')
+        response = self.client.get(reverse("enquiry-list"), dict(format="csv"))
+        assert response["Content-Disposition"] == "attachment; filename=rtt_enquiries_export.csv"
 
-        request = RequestFactory().get(reverse("enquiry-list"),
-                                       dict(format='csv'))
-        request.user = user
-        response = EnquiryListView.as_view()(request)
-        assert response.renderer_context['view'].paginator is None
-
-        request = RequestFactory().get(reverse("enquiry-list"))
-        request.user = user
-        response = EnquiryListView.as_view()(request)
-        assert isinstance(response.renderer_context['view'].paginator,
-                          PaginationWithPaginationMeta)
+        response = self.client.get(reverse("enquiry-list"))
+        assert response.get("Content-Disposition") is None
 
     @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
     def test_enquiry_list_filtered_unassigned(self):
