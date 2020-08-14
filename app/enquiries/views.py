@@ -26,7 +26,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.utils.urls import replace_query_param
 from rest_framework.views import APIView
-from rest_framework_csv.renderers import CSVRenderer
+from rest_framework_csv.renderers import PaginatedCSVRenderer
 
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms, models, serializers, utils
@@ -264,19 +264,23 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = EnquiryFilter
     template_name = "enquiry_list.html"
-    renderer_classes = (TemplateHTMLRenderer, CSVRenderer)
+    renderer_classes = (TemplateHTMLRenderer, PaginatedCSVRenderer)
     serializer_class = serializers.EnquiryDetailSerializer
     pagination_class = PaginationWithPaginationMeta
 
     def get_queryset(self):
         return models.Enquiry.objects.all()
 
-    @property
-    def paginator(self):
-        """This method override is here to disable pagination for the csv format"""
+    def finalize_response(self, *args, **kwargs):
+        """Handles the ``Content-Disposition`` header of a ``format=csv`` request"""
+        response = super().finalize_response(*args, **kwargs)
+
         if self.request.query_params.get("format") == "csv":
-            self._paginator = None
-        return super().paginator
+            fname = settings.EXPORT_OUTPUT_FILE_SLUG
+            ext = settings.EXPORT_OUTPUT_FILE_EXT
+            response['Content-Disposition'] = f"attachment; filename={fname}.{ext}"
+
+        return response
 
 
 class EnquiryCreateView(LoginRequiredMixin, APIView):
