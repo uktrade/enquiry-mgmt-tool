@@ -252,6 +252,7 @@ class Enquiry(TimeStampedModel):
 
     class Meta:
         ordering = ["-created"]
+        verbose_name_plural = "Enquiries"
 
 
 class ReceivedEnquiryCursor(models.Model):
