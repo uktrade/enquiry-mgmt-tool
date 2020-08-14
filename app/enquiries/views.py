@@ -276,6 +276,17 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     pagination_class = PaginationWithPaginationMeta
 
     def get_queryset(self):
+        sortby = self.request.query_params.get("sortby")
+        all_enquiries = models.Enquiry.objects.all()
+        if sortby == "name":
+            return all_enquiries.order_by("company_name")
+        if sortby == "updated":
+            return all_enquiries.order_by("-modified")
+        if sortby == "received:asc":
+            return all_enquiries.order_by("date_received")
+        if sortby == "received:desc":
+            # Will work once every enquiry has a date received
+            return all_enquiries.order_by("-date_received")
         return models.Enquiry.objects.all()
 
     @property

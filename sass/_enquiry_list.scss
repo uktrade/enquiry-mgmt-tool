@@ -59,6 +59,11 @@ $govuk-assets-path: '/static/assets/';
     padding: govuk-spacing(3) 0;
     border-bottom: 1px solid #6f777b;
     margin-right: 0;
+    justify-content: space-between;
+}
+
+.collection-header__row-no-border {
+    border-bottom: none;
 }
 
 .filters__column {
@@ -86,3 +91,18 @@ $govuk-assets-path: '/static/assets/';
 .download-button-container {
     margin-left: auto;
 }
+<<<<<<< HEAD
+=======
+
+.sortby-select {
+    display: inline-block;
+}
+.sortby-container {
+    display: flex;
+    align-items: center;
+}
+
+.sortby-label {
+    margin-right: 8px;
+}
+>>>>>>> Sort enquiries in list view
