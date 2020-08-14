@@ -233,6 +233,9 @@ IMPORT_ENQUIRIES_MIME_TYPES = ["text/csv", "application/vnd.ms-excel"]
 IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
 IMPORT_TEMPLATE_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 UPLOAD_CHUNK_SIZE = 256000
+EXPORT_OUTPUT_FILE_SLUG = 'rtt_enquiries_export'
+EXPORT_OUTPUT_FILE_EXT = 'csv'
+EXPORT_OUTPUT_FILE_MIMETYPE = 'text/csv'
 
 # Data Hub settings
 DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
