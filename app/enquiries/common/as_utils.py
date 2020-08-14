@@ -279,6 +279,7 @@ def fetch_and_process_enquiries():
             enquirer_instance = Enquirer.objects.create(**enquirer)
             enquiry_obj = Enquiry.objects.create(**enquiry, enquirer=enquirer_instance)
             enquiry_obj.created = published
+            enquiry_obj.date_received = published
             enquiry_obj.save()
             logging.info(
                 f"""
