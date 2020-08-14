@@ -30,10 +30,31 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="collection-header__row">
+                        <div class="collection-header__row collection-header__row-no-border">
                             <div class="header-page-number-container">
                                 <span class="header-page-number">Page {{ current_page }} of {{ total_pages }}</span>
                             </div>
+                            <div class="sortby-container">
+                                <label for="sortby" class="govuk-label sortby-label">
+                                    Sort by
+                                </label>
+                                <select name="sortby" class="govuk-select sortby-select" onchange="window.location.href='{% url 'enquiry-list' %}?sortby=' + this.value">
+                                    <option value="name" {% if request.query_params.sortby == "name" %} selected {% endif %}>
+                                        Company name: A-Z
+                                    </option>
+                                    <option value="updated" {% if request.query_params.sortby == "updated" %} selected {% endif %}>
+                                            Most recently updated
+                                    </option>
+                                    <option value="received:asc" {% if request.query_params.sortby == "received:asc" %} selected {% endif %}>
+                                            Date received: old-new
+                                    </option>
+                                    <option value="received:desc" {% if request.query_params.sortby == "received:desc" %} selected {% endif %}>
+                                        Date received: new-old
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="collection-header__row">
                             <div class="download-button-container">
                                 <button
                                     onclick="location.search += (location.search ? '&' : '') + 'format=csv' "
