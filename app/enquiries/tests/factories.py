@@ -115,3 +115,9 @@ def create_fake_enquiry_csv_row():
         "notes": fake.sentence(nb_words=20),
         "date_received": fake.date(),
     }
+
+
+def create_fake_enquiry_csv_row_no_date_received():
+    csv_row_dict = create_fake_enquiry_csv_row()
+    csv_row_dict.pop("date_received")
+    return csv_row_dict
