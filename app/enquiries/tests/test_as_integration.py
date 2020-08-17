@@ -6,6 +6,7 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import TestCase
 from faker import Faker
+from freezegun import freeze_time
 
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.common.as_utils import fetch_and_process_enquiries
@@ -155,6 +156,7 @@ def get_enquiries_data():
 
 
 class ActivityStreamIntegrationTests(TestCase):
+    @freeze_time()
     def test_fetch_new_enquiries(self):
         """
         Test that fetches sample enquiries data, parses them and creates
