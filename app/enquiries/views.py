@@ -26,7 +26,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.utils.urls import replace_query_param
 from rest_framework.views import APIView
-from rest_framework_csv.renderers import PaginatedCSVRenderer
+from rest_framework_csv.renderers import CSVRenderer
 
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms, models, serializers, utils
@@ -264,18 +264,30 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = EnquiryFilter
     template_name = "enquiry_list.html"
-    renderer_classes = (TemplateHTMLRenderer, PaginatedCSVRenderer)
+    renderer_classes = (TemplateHTMLRenderer, CSVRenderer)
     serializer_class = serializers.EnquiryDetailSerializer
     pagination_class = PaginationWithPaginationMeta
 
     def get_queryset(self):
         return models.Enquiry.objects.all()
 
+    @property
+    def is_csv(self):
+        return self.request.query_params.get("format") == "csv"
+
+    @property
+    def paginator(self):
+        """Disables pagination for ``?format=csv`` requests"""
+        if self.is_csv:
+            self._paginator = None
+
+        return super().paginator
+
     def finalize_response(self, *args, **kwargs):
-        """Handles the ``Content-Disposition`` header of a ``format=csv`` request"""
+        """Handles the ``Content-Disposition`` header of a ``?format=csv`` request"""
         response = super().finalize_response(*args, **kwargs)
 
-        if self.request.query_params.get("format") == "csv":
+        if self.is_csv:
             fname = settings.EXPORT_OUTPUT_FILE_SLUG
             ext = settings.EXPORT_OUTPUT_FILE_EXT
             response['Content-Disposition'] = f"attachment; filename={fname}.{ext}"
