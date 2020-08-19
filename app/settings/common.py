@@ -230,6 +230,11 @@ SECURE_BROWSER_XSS_FILTER = True
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
 ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS = env.int('ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS', default=6)
+ENQUIRY_SORT_OPTIONS = {
+    "company_name": "Company name: A-Z",
+    "-modified": "Most recently updated",
+    "date_received": "Least recently received",
+}
 IMPORT_ENQUIRIES_MIME_TYPES = ["text/csv", "application/vnd.ms-excel"]
 IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
 IMPORT_TEMPLATE_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

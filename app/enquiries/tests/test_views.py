@@ -217,9 +217,10 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         """
         num_enquiries = 123
         enquiries = EnquiryFactory.create_batch(num_enquiries)
+        # sort enquiries to match the default sort
+        enquiries.sort(key=lambda x: x.date_received, reverse=True)
         ids = [e.id for e in enquiries]
-        # reverse the ids because we order by latest first
-        ids = ids[::-1]
+
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
         total_pages = (num_enquiries + page_size - 1) // page_size
         for page in range(total_pages):
@@ -307,6 +308,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         data["enquiry_stage"] = get_random_item(ref_data.EnquiryStage)
         data["notes"] = self.faker.sentence()
         data["country"] = get_random_item(ref_data.Country)
+        data["date_received"] = self.faker.date_time()
 
         # Enquirer fields are also sent in a single form update
         enquirer = enquiry_obj.enquirer
