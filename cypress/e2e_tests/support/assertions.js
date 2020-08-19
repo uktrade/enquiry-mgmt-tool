@@ -66,9 +66,18 @@ const assertEnquiryForm = specs => {
   })
 }
 
+const assertSortedByDate = (fieldIndex, ascending) => {
+  cy.get(`.entity__content-item:nth-child(${fieldIndex}) .list-item-value`)
+    .then(($els) => {
+      const dates = $els.map($el => Date.parse($el.text))
+      expect(dates).to.eq(dates.sort((a, b) => { ascending ? a < b : a > b }))
+    })
+}
+
 module.exports = {
   assertSummaryList,
   assertEnquiryForm,
   assertSummaryDetails,
+  assertSortedByDate,
   NOT_EDITABLE,
 }
