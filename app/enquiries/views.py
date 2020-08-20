@@ -251,6 +251,13 @@ class EnquiryFilter(filters.FilterSet):
         }
 
 
+class EnquiryListCSVRenderer(CSVRenderer):
+    """
+    A custom CSV renderer showing only selected fields.
+    """
+    header = settings.EXPORT_OUTPUT_FILE_CSV_HEADERS
+
+
 class EnquiryListView(LoginRequiredMixin, ListAPIView):
     """
     List all enquiries.
@@ -264,7 +271,7 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = EnquiryFilter
     template_name = "enquiry_list.html"
-    renderer_classes = (TemplateHTMLRenderer, CSVRenderer)
+    renderer_classes = (TemplateHTMLRenderer, EnquiryListCSVRenderer)
     serializer_class = serializers.EnquiryDetailSerializer
     pagination_class = PaginationWithPaginationMeta
 
