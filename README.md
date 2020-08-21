@@ -29,7 +29,7 @@ This project uses Docker compose to setup and run all the necessary components. 
     docker-compose up --build
     ```
 
-You can view the app at `http://localhost:8000/enquiries/`
+You can view the app at `http://localhost:8001/enquiries/`
 
 The application uses SSO by default. When you access the above link for the first time you will be redirected to SSO login page. After authentication it will create a user in the database.
 
@@ -50,7 +50,7 @@ The app works out of the box with
 [mock-sso](https://github.com/uktrade/mock-sso), which is part of the
 docker-compose setup. The OAuth flow however only works locally when you
 set the `AUTHBROKER_URL` to
-[`host.docker.internal:8000`](http://docker.for.mac.localhost:8000/).
+[`host.docker.internal:8080`](http://docker.for.mac.localhost:8080/).
 This is because the SSO service (configured with the `AUTHBROKER_URL`) must be
 accessible from outside of docker-compose for the authorization redirect, and
 also from within docker-compose to make the access token POST request.
