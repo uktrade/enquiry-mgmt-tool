@@ -11,13 +11,13 @@ DJANGO_SENTRY_DSN=sentry-dsn
 ENQUIRIES_PER_PAGE=10
 
 # Data Hub variables
-DATA_HUB_METADATA_URL=http://dh-api-mock:8001/v4/metadata
-DATA_HUB_COMPANY_SEARCH_URL=http://dh-api-mock:8001/v4/search/company
-DATA_HUB_CONTACT_SEARCH_URL=http://dh-api-mock:8001/v3/search/contact
-DATA_HUB_CONTACT_CREATE_URL=http://dh-api-mock:8001/v3/contact
-DATA_HUB_INVESTMENT_CREATE_URL=http://dh-api-mock:8001/v3/investment
-DATA_HUB_ADVISER_SEARCH_URL=http://dh-api-mock:8001/adviser/
-DATA_HUB_WHOAMI_URL=http://dh-api-mock:8001/whoami
+DATA_HUB_METADATA_URL=http://dh-api-mock:8000/v4/metadata
+DATA_HUB_COMPANY_SEARCH_URL=http://dh-api-mock:8000/v4/search/company
+DATA_HUB_CONTACT_SEARCH_URL=http://dh-api-mock:8000/v3/search/contact
+DATA_HUB_CONTACT_CREATE_URL=http://dh-api-mock:8000/v3/contact
+DATA_HUB_INVESTMENT_CREATE_URL=http://dh-api-mock:8000/v3/investment
+DATA_HUB_ADVISER_SEARCH_URL=http://dh-api-mock:8000/adviser/
+DATA_HUB_WHOAMI_URL=http://dh-api-mock:8000/whoami
 DATA_HUB_FRONTEND=https://datahub/frontend
 DATA_HUB_CREATE_COMPANY_PAGE_URL=https://www.datahub.dev.uktrade.io/companies/create
 
