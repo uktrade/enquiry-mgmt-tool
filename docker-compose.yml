@@ -11,14 +11,14 @@ services:
       - dh-api-mock
       - mock-sso
     ports:
-      - 8000:8000
+      - 8001:8001
     environment:
       ALLOW_TEST_FIXTURE_SETUP: allow
       DJANGO_SETTINGS_MODULE: app.settings.e2etest
       DJANGO_SUPERUSER_USERNAME: testuser
       DJANGO_SUPERUSER_EMAIL: testuser@example.com
       DJANGO_SUPERUSER_PASSWORD: testpass
-    entrypoint: dockerize -wait tcp://dh-api-mock:8001 -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 5m
+    entrypoint: dockerize -wait tcp://dh-api-mock:8000 -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 5m
     command: ./start.sh
 
   celery:
@@ -44,7 +44,7 @@ services:
   dh-api-mock:
     image: ukti/data-hub-sandbox:latest
     environment:
-      PORT: 8001
+      PORT: 8000
 
   mock-sso:
     image: ukti/mock-sso
@@ -60,5 +60,5 @@ services:
     depends_on:
       - app
     environment:
-      CYPRESS_BASE_URL: http://app:8000
+      CYPRESS_BASE_URL: http://app:8001
     entrypoint: cypress
