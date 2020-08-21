@@ -562,6 +562,15 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         response = self.client.get(reverse("enquiry-list"))
         assert response.get("Content-Disposition") is None
 
+    def test_enquiry_csv_response_fields(self):
+        """
+        Asserts that response to a ``format=csv`` request returns the expected enquiry fields.
+        """
+        response = self.client.get(reverse("enquiry-list"), dict(format="csv"))
+        assert response.content.decode().strip() == ','.join(
+            settings.EXPORT_OUTPUT_FILE_CSV_HEADERS
+        )
+
     @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
     def test_enquiry_list_filtered_unassigned(self):
         """Test retrieving enquiry list and ensure we get expected count"""
