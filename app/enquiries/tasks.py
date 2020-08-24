@@ -6,6 +6,7 @@ from django.conf import settings
 from app.enquiries.celery import app
 from app.enquiries.common.datahub_utils import dh_fetch_metadata
 from app.enquiries.common.as_utils import fetch_and_process_enquiries
+from app.enquiries.utils import mark_non_responsive_enquiries
 
 FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS}"
 
@@ -27,3 +28,11 @@ def fetch_new_enquiries():
 
     fetch_and_process_enquiries()
     logging.info(f"New enquiries last retrieved at {datetime.now()}")
+
+
+@app.task(name="update_stage_stale_enquiries")
+def update_stage_stale_enquiries():
+    """ Periodically changes older enquiries from 'Awaiting Response' to 'Non-responsive' """
+
+    mark_non_responsive_enquiries(expiry_weeks=settings.ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS)
+    logging.info(f"Older enquiries marked as 'Non-responsive' at {datetime.now()}")
