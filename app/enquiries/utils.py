@@ -1,5 +1,8 @@
-from datetime import datetime
+import logging
+
+from datetime import datetime, timedelta, timezone
 from django.conf import settings
+from django.db import transaction
 from openpyxl import Workbook
 
 from app.enquiries import ref_data
@@ -149,3 +152,20 @@ def parse_error_messages(e):
         response.append(str(e))
 
     return response
+
+
+def mark_non_responsive_enquiries(expiry_weeks):
+    past_date = datetime.now(timezone.utc) - timedelta(weeks=expiry_weeks)
+    logging.info(f"Updating non-responsive enquiries from before {past_date}")
+
+    entries = Enquiry.objects.select_for_update().filter(
+        modified__lt=past_date, enquiry_stage="AWAITING_RESPONSE"
+    )
+
+    with transaction.atomic():
+        for entry in entries:
+            logging.info(f"Updating enquiry last updated on {entry.modified}")
+            entry.enquiry_stage = "NON_RESPONSIVE"
+            entry.save()
+
+    logging.info(f"Updated enquiry stage of {len(entries)} enquiries")

@@ -11,6 +11,8 @@ from app.enquiries.common.email_campaign_utils import (
     process_second_qualifications,
     process_engaged_enquiries,
 )
+from app.enquiries.utils import mark_non_responsive_enquiries
+
 FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS}"
 
 
@@ -39,4 +41,10 @@ def handle_non_responsives():
     process_latest_enquiries()
     logging.info("Fetched non responsive enquiries %s", datetime.now())
 
-    
+
+@app.task(name="update_stage_stale_enquiries")
+def update_stage_stale_enquiries():
+    """ Periodically changes older enquiries from 'Awaiting Response' to 'Non-responsive' """
+
+    mark_non_responsive_enquiries(expiry_weeks=settings.ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS)
+    logging.info(f"Older enquiries marked as 'Non-responsive' at {datetime.now()}")
