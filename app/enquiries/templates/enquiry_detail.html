@@ -167,7 +167,6 @@
                     <dd class="govuk-summary-list__value"  id="{{ date_added_to_datahub }}">{{ enquiry|get_dh_date_added }}</dd>
                 </div>
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_code" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="datahub_project_status" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_success_date" %}
             </dl>
         </div>

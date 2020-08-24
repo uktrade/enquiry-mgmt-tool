@@ -238,7 +238,7 @@ EXPORT_OUTPUT_FILE_EXT = 'csv'
 EXPORT_OUTPUT_FILE_MIMETYPE = 'text/csv'
 EXPORT_OUTPUT_FILE_CSV_HEADERS = [
         'client_relationship_manager', 'company_name', 'country', 'created',
-        'datahub_project_status', 'date_added_to_datahub', 'date_received', 'enquirer.email',
+        'date_added_to_datahub', 'date_received', 'enquirer.email',
         'enquirer.email_consent', 'enquirer.first_name', 'enquirer.job_title',
         'enquirer.last_name', 'enquirer.phone', 'enquirer.phone_consent',
         'enquirer.phone_country_code', 'enquirer.request_for_call', 'enquiry_stage',

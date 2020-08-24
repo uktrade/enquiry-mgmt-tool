@@ -146,7 +146,6 @@ describe('Edit', () => {
             { dt: 'Client Relationship Manager', dd: 'Data Hub user 1' },
             { dt: 'Date added to Data Hub', dd: '03 February 2020' },
             { dt: 'Project code', dd: '42901' },
-            { dt: 'Data Hub project status', dd: 'Active' },
             { dt: 'Project success date', dd: '03 February 2022' },
           ],
         },
@@ -413,11 +412,6 @@ describe('Edit', () => {
               value: '42901',
             },
             {
-              type: 'select',
-              label: 'Data Hub project status',
-              value: 'ACTIVE',
-            },
-            {
               type: 'date',
               label: 'Project success date',
               value: '2022-02-03',
@@ -638,11 +632,6 @@ describe('Edit', () => {
           value: '67542',
         },
         {
-          type: 'select',
-          name: 'datahub_project_status',
-          value: 'VERIFY',
-        },
-        {
           type: 'date',
           name: 'project_success_date',
           value: '2026-02-01',
@@ -779,7 +768,6 @@ describe('Edit', () => {
             { dt: 'Client Relationship Manager', dd: 'Data Hub user 2' },
             { dt: 'Date added to Data Hub', dd: '10 August 2020' },
             { dt: 'Project code', dd: '67542' },
-            { dt: 'Data Hub project status', dd: 'Verify Win' },
             { dt: 'Project success date', dd: '01 February 2026' },
           ],
         },
