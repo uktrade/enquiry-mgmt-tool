@@ -35,7 +35,6 @@ can_be_default_fields = [
     "third_hpo_selection",
     "organisation_type",
     "new_existing_investor",
-    "datahub_project_status",
 ]
 
 field_error_msgs = {
