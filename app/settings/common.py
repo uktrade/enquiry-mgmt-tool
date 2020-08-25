@@ -252,7 +252,7 @@ EXPORT_OUTPUT_FILE_CSV_HEADERS = [
         'google_campaign', 'how_they_heard_dit', 'investment_readiness', 'investment_type',
         'ist_sector', 'marketing_channel', 'notes', 'owner', 'owner.first_name', 'owner.last_name',
         'primary_sector', 'project_code', 'project_name', 'project_success_date', 'quality',
-        'received', 'region', 'second_hpo_selection', 'third_hpo_selection', 'website']
+        'region', 'second_hpo_selection', 'third_hpo_selection', 'website']
 
 # Data Hub settings
 DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
