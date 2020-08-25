@@ -224,18 +224,20 @@ class EnquiryFilter(filters.FilterSet):
 
     def filter_received_lt(self, queryset, name, value):
         """
-        Returns a queryset only with entities having the ``received`` date less than ``value``.
+        Returns a queryset with entities which have a ``date_received``
+        less than ``value``.
         """
         received = datetime.combine(value, datetime.min.time())
-        q = Q(date_received__lt=received) | Q(date_received__isnull=True, created__lt=received,)
+        q = Q(date_received__lt=received)
         return queryset.filter(q)
 
     def filter_received_gt(self, queryset, name, value):
         """
-        Returns a queryset only with entities having the ``received`` date greater than ``value``.
+        Returns a queryset with entities which have a ``date_received``
+        greater than ``value``.
         """
         received = datetime.combine(value, datetime.min.time())
-        q = Q(date_received__gt=received) | Q(date_received__isnull=True, created__gt=received,)
+        q = Q(date_received__gt=received)
         return queryset.filter(q)
 
     class Meta:

@@ -246,11 +246,6 @@ class Enquiry(TimeStampedModel):
         help_text="Address of the company in Data Hub",
     )
 
-    # Handles cases where the optional date_received field is not set.
-    @property
-    def received(self):
-        return self.date_received or self.created
-
     class Meta:
         ordering = ["-created"]
         verbose_name_plural = "Enquiries"
