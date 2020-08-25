@@ -61,8 +61,12 @@ $govuk-assets-path: '/static/assets/';
     margin-right: 0;
 }
 
-.filters-column {
+.filters__column {
     padding: 0;
+}
+
+.filters__select {
+    width: 100%;
 }
 
 .import-enquiries-button {
