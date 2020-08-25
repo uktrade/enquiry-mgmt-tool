@@ -204,7 +204,7 @@ const testPagination = ({ filters, owner, totalPages, pages }) =>
 
 describe('Filters', () => {
   before(() => {
-    cy.reseed('/enquiries/')
+    cy.reseed('/')
   })
   beforeEach(() => Cypress.Cookies.preserveOnce('sessionid'))
 

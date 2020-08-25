@@ -1,5 +1,5 @@
 {% load enquiries_extras %}
-<form method="GET" action="{% url 'enquiry-list' %}" data-qa="search-filters">
+<form method="GET" action="{% url 'index' %}" data-qa="search-filters">
   {% include 'snippets/enquiry_field_checkbox.html' with group_id='enquiry_stage_container' heading='Enquiry stage' field=filter_enquiry_stage query_params=query_params %}
   <div class="govuk-form-group" id="users" data-qa="search-filter-users">
     <fieldset class="govuk-fieldset">
@@ -59,7 +59,7 @@
   <button id="btn_submit" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" accesskey="s">
     Apply filters
   </button>
-  <a href="{% url 'enquiry-list' %}" class="govuk-button govuk-button--secondary" data-module="govuk-button" id="btn_clear" type="button" accesskey="c">
+  <a href="{% url 'index' %}" class="govuk-button govuk-button--secondary" data-module="govuk-button" id="btn_clear" type="button" accesskey="c">
     Clear filters
   </a>
 </form>

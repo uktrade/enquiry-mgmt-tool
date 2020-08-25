@@ -9,7 +9,7 @@ const { results, details } = require('../selectors')
 
 describe('Edit', () => {
   before(() => {
-    cy.reseed('/enquiries/')
+    cy.reseed('/')
   })
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('Edit', () => {
         .find('a')
         .eq(0)
         .should('have.text', 'Back')
-        .and('have.attr', 'href', '/enquiries/')
+        .and('have.attr', 'href', '/')
         .parents()
         .find('a')
         .should('contain', 'Edit details')
