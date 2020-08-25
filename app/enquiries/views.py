@@ -102,6 +102,7 @@ class PaginationWithPaginationMeta(PageNumberPagination):
             "owners": models.Owner.objects.all().order_by("first_name"),
             "query_params": self.request.GET,
             "total_pages": len(self.page.paginator.page_range),
+            "sort_options": settings.ENQUIRY_SORT_OPTIONS,
             "pages": [
                 {
                     "page_number": page_number,
@@ -276,7 +277,12 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
     pagination_class = PaginationWithPaginationMeta
 
     def get_queryset(self):
-        return models.Enquiry.objects.all()
+        sortby = self.request.query_params.get("sortby")
+        all_enquiries = models.Enquiry.objects.all()
+
+        return all_enquiries.order_by(
+            sortby if sortby in settings.ENQUIRY_SORT_OPTIONS.keys() else "-date_received"
+        )
 
     @property
     def is_csv(self):
