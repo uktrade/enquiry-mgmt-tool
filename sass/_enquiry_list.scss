@@ -61,7 +61,7 @@ $govuk-assets-path: '/static/assets/';
     margin-right: 0;
 }
 
-.filters-column {
+.filters__column {
     padding: 0;
 }
 
@@ -85,9 +85,4 @@ $govuk-assets-path: '/static/assets/';
 
 .download-button-container {
     margin-left: auto;
-}
-
-// Make select element for owner filter same width as other filters
-.owner-filter {
-    width: 100%;
 }
