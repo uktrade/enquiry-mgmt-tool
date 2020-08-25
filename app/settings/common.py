@@ -229,6 +229,7 @@ SECURE_BROWSER_XSS_FILTER = True
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
+ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS = env.int('ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS', default=6)
 IMPORT_ENQUIRIES_MIME_TYPES = ["text/csv", "application/vnd.ms-excel"]
 IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
 IMPORT_TEMPLATE_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -281,6 +282,8 @@ if REDIS_BASE_URL:
     BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}?{encoded_query_args}'
     CELERY_RESULT_BACKEND = BROKER_URL
     CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
+    ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS = env.int('ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS', default=1)
+    ENQUIRY_STATUS_SHOULD_UPDATE = env.bool('ENQUIRY_STATUS_SHOULD_UPDATE', True)
 
     CACHES = {
         "default": {
