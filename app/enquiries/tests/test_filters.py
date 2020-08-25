@@ -19,7 +19,7 @@ class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
         # DRF defaults to JSON response so we need to set headers to
         # receive HTML
 
-        response = self.client.get(reverse("enquiry-list"), **headers)
+        response = self.client.get(reverse("index"), **headers)
         soup = BeautifulSoup(response.content, "html.parser")
 
         self.assertIsNotNone(

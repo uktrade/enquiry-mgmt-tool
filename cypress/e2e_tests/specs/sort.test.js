@@ -18,7 +18,7 @@ const testDateSort = (searchString, fieldIndex, ascending) => {
 
 describe('Sorting enquiries list view', () => {
   before(() => {
-    cy.reseed('/enquiries')
+    cy.reseed('/')
   })
   beforeEach(() => Cypress.Cookies.preserveOnce('sessionid'))
 
