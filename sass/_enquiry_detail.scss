@@ -19,6 +19,6 @@ $govuk-assets-path: '/static/assets/';
 .govuk-summary-list {
     border-top: 2px solid govuk-colour("mid-grey");
     &__key {
-        padding-bottom: 9.5px;
+        padding-left: govuk-spacing(2);
     }
 }
