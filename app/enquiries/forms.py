@@ -48,4 +48,4 @@ class EnquiryForm(ModelForm):
 
     class Meta:
         model = Enquiry
-        exclude = ('datahub_project_status',)
+        exclude = ('datahub_project_status', 'date_received')
