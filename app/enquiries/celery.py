@@ -29,7 +29,9 @@ app.conf.beat_schedule = {
     },
     "update-stage-stale-enquiries": {
         "task": "update_stage_stale_enquiries",
-        "schedule": crontab(day_of_month=f"*/{ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS}")
+        "schedule": crontab(minute="0", hour="0",
+                            day_of_month=f"*/{ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS}"
+                            )
     }
 } if ENQUIRY_STATUS_SHOULD_UPDATE else {
     "refresh-datahub-metadata": {
