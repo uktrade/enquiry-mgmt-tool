@@ -29,7 +29,7 @@ This project uses Docker compose to setup and run all the necessary components. 
     docker-compose up --build
     ```
 
-You can view the app at `http://localhost:8001/enquiries/`
+You can view the app at `http://localhost:8001`
 
 The application uses SSO by default. When you access the above link for the first time you will be redirected to SSO login page. After authentication it will create a user in the database.
 

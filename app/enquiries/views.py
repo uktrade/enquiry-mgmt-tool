@@ -227,10 +227,7 @@ class EnquiryFilter(filters.FilterSet):
         Returns a queryset only with entities having the ``received`` date less than ``value``.
         """
         received = datetime.combine(value, datetime.min.time())
-        q = Q(date_received__lt=received) | Q(
-                date_received__isnull=True,
-                created__lt=received,
-            )
+        q = Q(date_received__lt=received) | Q(date_received__isnull=True, created__lt=received,)
         return queryset.filter(q)
 
     def filter_received_gt(self, queryset, name, value):
@@ -238,10 +235,7 @@ class EnquiryFilter(filters.FilterSet):
         Returns a queryset only with entities having the ``received`` date greater than ``value``.
         """
         received = datetime.combine(value, datetime.min.time())
-        q = Q(date_received__gt=received) | Q(
-            date_received__isnull=True,
-            created__gt=received,
-        )
+        q = Q(date_received__gt=received) | Q(date_received__isnull=True, created__gt=received,)
         return queryset.filter(q)
 
     class Meta:
@@ -256,6 +250,7 @@ class EnquiryListCSVRenderer(CSVRenderer):
     """
     A custom CSV renderer showing only selected fields.
     """
+
     header = settings.EXPORT_OUTPUT_FILE_CSV_HEADERS
 
 
@@ -303,7 +298,7 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
         if self.is_csv:
             fname = settings.EXPORT_OUTPUT_FILE_SLUG
             ext = settings.EXPORT_OUTPUT_FILE_EXT
-            response['Content-Disposition'] = f"attachment; filename={fname}.{ext}"
+            response["Content-Disposition"] = f"attachment; filename={fname}.{ext}"
 
         return response
 
@@ -334,7 +329,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
-        context["back_url"] = reverse("enquiry-list")
+        context["back_url"] = reverse("index")
         return context
 
     def post(self, request, *args, **kwargs):
@@ -424,7 +419,7 @@ class EnquiryDeleteView(DeleteView):
     def post(self, request, **kwargs):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         enquiry.delete()
-        return redirect("enquiry-list")
+        return redirect("index")
 
 
 class EnquiryCompanySearchView(TemplateView):
@@ -525,8 +520,7 @@ class ImportEnquiriesView(TemplateView):
         file_obj = request.FILES.get(enquiries_key)
         if not file_obj:
             messages.error(
-                self.request,
-                "No file was selected. Choose a file to upload.",
+                self.request, "No file was selected. Choose a file to upload.",
             )
             return HttpResponseRedirect(reverse("import-enquiries"))
 

@@ -25,7 +25,6 @@ urlpatterns = [
     path("", views.EnquiryListView.as_view(), name="index"),
     path("admin/", admin.site.urls),
     path("enquiry/", views.EnquiryCreateView.as_view(), name="enquiry-create"),
-    path("enquiries/", views.EnquiryListView.as_view(), name="enquiry-list"),
     path(
         "enquiries/template/", views.ImportTemplateDownloadView.as_view(), name="import-template",
     ),

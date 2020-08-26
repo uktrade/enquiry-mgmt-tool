@@ -12,7 +12,7 @@ const shorterEnquiryText =
 describe('View list of enquiries', () => {
   context('Enquiry text', () => {
     beforeEach(() => {
-      cy.reseed('/enquiries/')
+      cy.reseed('/')
       Cypress.Cookies.preserveOnce('sessionid')
     })
     it('Should truncate enquiry text if more than 250 characters but keep final word intact', () => {
