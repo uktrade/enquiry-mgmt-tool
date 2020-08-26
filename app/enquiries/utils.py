@@ -22,22 +22,26 @@ EXPORT_FIELD_NAMES = ENQUIRY_OWN_FIELD_NAMES + ["enquirer_" + n for n in ENQUIRE
 
 def get_oauth_payload(request):
     """
-    Returns the Staff SSO oauth data stored in the session (i.e. oauth token,
-    expiry time etc)
+    Extracts the user's |oauth|_ token from session
 
-    The oauth data is needed for authentication with data and other services
-    authenticated via Staff SSO).
+    :param request:
+    :type request: django.http.HttpRequest
     """
     return request.session.get(settings.AUTHBROKER_TOKEN_SESSION_KEY, None)
 
 
-def row_to_enquiry(row: dict) -> Enquirer:
+def row_to_enquiry(row: dict) -> Enquiry:
     """
-    Takes a dict representing a CSV row and create an Enquiry instance before
-    saving it to the db
+    Converts a CSV :data:`row` into a persisted :class:`app.enquiries.models.Enquiry` instance.
+
+    :param row:
+    :type row: dict
+
+    :returns: :class:`app.enquiries.models.Enquiry`
     """
     row_data = row.copy()
 
+    # FIXME: Use dict comprehension here
     # Extract enquirer fields
     enquirer_items = {}
     for key, value in row.items():
@@ -77,9 +81,14 @@ def row_to_enquiry(row: dict) -> Enquirer:
 
 def csv_row_to_enquiry_filter_kwargs(csv_row: dict) -> dict:
     """
-    Takes a dict (represents a CSV row as exported by the tool) and returns
-    a dict representing a model query i.e.:
-    enquiry__enquirer__first_name to access -> enquiry.enquirer.first_name.
+    Converts a CSV ``row`` into a ``dict`` representing
+    :class:`app.enquiries.models.Enquiry` query `kwargs`
+    e.g. ``enquiry__enquirer__first_name``.
+
+    :param csv_row: The CSV row
+    :type csv_row: dict
+
+    :returns: ``dict`` of queryset filter `kwargs`
     """
 
     # build queryset filter params
@@ -90,20 +99,18 @@ def csv_row_to_enquiry_filter_kwargs(csv_row: dict) -> dict:
 
 def generate_import_template(file_obj):
     """
-    This function generates an .XLSX spreadsheet for use by by IST team to
-    capture enquiries.
+    Generates an |xlsx|_ spreadsheet for use by by `IST team` to capture enquiries.
 
-    The main sheet 'enquiries' is used by end users to capture information.
-
-    The enquiry sheet columns are listed in:
-
-        app.enquiries.ref_data.py:IMPORT_COL_NAMES
+    The main `enquiry` sheet is used by end users to capture information.
+    The enquiry sheet columns are listed in :data:`app.enquiries.ref_data.IMPORT_COL_NAMES`.
 
     The additional sheets list valid options (i.e. Country names etc) which
     enable end users to implement their own form of validation.
 
-    The fields for these sheets are also listed in ref_data.py
+    The fields for these sheets are also listed in :mod:`app.enquiries.ref_data`
 
+    :param file_obj:
+    :type file_obj: file-like object
     """
     ENTRY_SHEET_NAME = "enquiries"
 
@@ -135,10 +142,15 @@ def generate_import_template(file_obj):
 
 def parse_error_messages(e):
     """
-    Take an error and parse the messages in human-readable form.
-    Returns a list of error messages
+    Takes an error and parses its messages in human-readable form.
+
     Where there are message dictionaries, separates out each message,
     parsing the keys into sentence case with title capitalisations
+
+    :param e:
+    :type e: django.core.exceptions.ValidationError
+
+    :returns: A list of error messages
     """
     response = []
 

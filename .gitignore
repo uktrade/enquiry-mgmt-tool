@@ -122,3 +122,7 @@ cypress/videos
 # celery
 celerybeat.pid
 celerybeat-schedule
+
+# Sphinx
+docs/build/
+.env/

@@ -42,6 +42,10 @@ UNASSIGNED = "UNASSIGNED"
 
 
 class DataHubAdviserSearch(LoginRequiredMixin, View):
+    """
+    Endpoint for the `Client Relationship Manager` autocomplete field
+    of :class:`app.enquiries.forms.EnquiryForm`.
+    """
     def get(self, request):
         session = get_oauth_payload(request)
         access_token = session["access_token"]
@@ -88,7 +92,7 @@ def get_enquiry_field(name):
 
 class PaginationWithPaginationMeta(PageNumberPagination):
     """
-    Metadata class to add additional metadata for use in template
+    Adds additional metadata to the template context.
     """
 
     def get_paginated_response(self, data):
@@ -112,9 +116,9 @@ class PaginationWithPaginationMeta(PageNumberPagination):
                 for page_number in self.page.paginator.page_range
             ],
         }
-        return Response(truncate_response_data(response_data),)
+        return Response(truncate_response_data(response_data))
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = serializers.EnquirySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -125,10 +129,21 @@ class PaginationWithPaginationMeta(PageNumberPagination):
 
 def truncate_response_data(response_data, block_size=4):
     """
-    Truncate the pagination links.
+    Truncates pagination links.
 
     We don't want to show a link for every page if there are lots of pages.
-    This replaces page links which are less useful with an ellipsis ('...').
+    This replaces page links which are less useful with an ``...`` ellipsis.
+
+    :param response_data:
+        Data supposed to be passed to :class:`rest_framework.response.Response`.
+    :type response_data: dict
+
+    :param block_size:
+        How many page links should be kept at each end of the truncated portion.
+    :type block_size: int
+
+    :returns: The response data with updated ``'pages'`` key
+    :rtype: dict
     """
     pages = response_data["pages"]
 
@@ -186,7 +201,9 @@ def is_valid_int(v) -> bool:
 
 
 class EnquiryFilter(filters.FilterSet):
-
+    """
+    Enquiry search filters
+    """
     owner__id = filters.CharFilter(field_name="owner__id", method="filter_owner_id")
     received__lt = filters.DateFilter(field_name="receive", method="filter_received_lt")
     received__gt = filters.DateFilter(field_name="receive", method="filter_received_gt")
@@ -201,9 +218,9 @@ class EnquiryFilter(filters.FilterSet):
 
     def filter_owner_id(self, queryset, name, value):
         """
-        This filter handles the owner__id parameter which can either be an int
-        or the string 'UNASSIGNED'.
-        In the case of UNASSIGNED to filter for enquirires where owner == None
+        Handles the ``owner__id`` parameter which can either be an int
+        or the string ``'UNASSIGNED'``. In the case of ``'UNASSIGNED'``
+        to filter for enquirires where ``owner == None``.
         """
         vals = self.request.GET.getlist(name)
         # filter out valid values (int|'UNASSIGNED')
@@ -224,8 +241,8 @@ class EnquiryFilter(filters.FilterSet):
 
     def filter_received_lt(self, queryset, name, value):
         """
-        Returns a queryset with entities which have a ``date_received``
-        less than ``value``.
+        Returns a :class:`django.db.models.query.QuerySet` only with entities
+        which have ``date_received`` less than ``value``.
         """
         received = datetime.combine(value, datetime.min.time())
         q = Q(date_received__lt=received)
@@ -233,8 +250,8 @@ class EnquiryFilter(filters.FilterSet):
 
     def filter_received_gt(self, queryset, name, value):
         """
-        Returns a queryset with entities which have a ``date_received``
-        greater than ``value``.
+        Returns a :class:`django.db.models.query.QuerySet` only with entities
+        which have a ``date_received`` greater than ``value``.
         """
         received = datetime.combine(value, datetime.min.time())
         q = Q(date_received__gt=received)
@@ -258,12 +275,7 @@ class EnquiryListCSVRenderer(CSVRenderer):
 
 class EnquiryListView(LoginRequiredMixin, ListAPIView):
     """
-    List all enquiries.
-
-    In GET: Returns a paginated list of enquiries using PageNumberPagination.
-    This is the default pagination class as set globally in settings. It is
-    also inherited via a meta class to add additional metadata required
-    for use in the template
+    The `enquiry search` view.
     """
 
     filter_backends = [filters.DjangoFilterBackend]
@@ -307,7 +319,7 @@ class EnquiryListView(LoginRequiredMixin, ListAPIView):
 
 class EnquiryCreateView(LoginRequiredMixin, APIView):
     """
-    Creates new Enquiry
+    Creates new :class:`app.enquiries.models.Enquiry`
     """
 
     def post(self, request, format=None):
@@ -321,7 +333,7 @@ class EnquiryCreateView(LoginRequiredMixin, APIView):
 
 class EnquiryDetailView(LoginRequiredMixin, TemplateView):
     """
-    View to provide complete details of an Enquiry
+    :class:`app.enquiries.models.Enquiry` detail view
     """
 
     model = models.Enquiry
@@ -356,7 +368,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
 
 class EnquiryEditView(LoginRequiredMixin, UpdateView):
     """
-    View to provide complete details of an Enquiry
+    :class:`app.enquiries.models.Enquiry` edit view
     """
 
     model = models.Enquiry
@@ -412,19 +424,20 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
 
 class EnquiryDeleteView(DeleteView):
     """
-    View to delete enquiry
+    Delete :class:`app.enquiries.models.Enquiry` view
     """
 
     model = models.Enquiry
     template_name = "enquiry_delete.html"
 
-    def post(self, request, **kwargs):
+    def post(self, *args, **kwargs):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         enquiry.delete()
         return redirect("index")
 
 
 class EnquiryCompanySearchView(TemplateView):
+    """|data-hub|_ company search view"""
 
     model = models.Enquiry
     template_name = "enquiry_company_search.html"
@@ -462,7 +475,7 @@ class EnquiryCompanySearchView(TemplateView):
 
 class ImportEnquiriesView(TemplateView):
     """
-    View handles submission of CSV files containing enquiries
+    Handles import of enquiries with a CSV file
     """
 
     http_method_names = ["get", "post"]
