@@ -1,5 +1,6 @@
+import logging
+
 from django.core.management.base import BaseCommand
-from django.db import transaction
 from app.enquiries.models import Enquiry
 
 
@@ -12,13 +13,19 @@ class Command(BaseCommand):
     help = "Replaces empty date_received values for enquiries with the date created"
 
     def handle(self, *args, **options):
-        print('Replacing empty date_received values')
+        logging.info('Replacing empty date_received values')
 
-        entries = Enquiry.objects.select_for_update().filter(date_received=None)
-        with transaction.atomic():
-            for entry in entries:
+        updated = 0
+        failed = 0
+        for entry in Enquiry.objects.filter(date_received=None):
+            try:
                 entry.date_received = entry.created
-                print(entry.date_received)
                 entry.save()
+                updated += 1
+                logging.info(f'Enquiry({entry.id}).date_received = {entry.date_received}')
+            except Exception as e:
+                failed += 1
+                logging.error(f'Enquiry({entry.id}).date_received update failed')
+                raise e
 
-        print(f'Updated {len(entries)} enquiries')
+        logging.info(f'Enquiries updated: {updated}, failed: {failed}')
