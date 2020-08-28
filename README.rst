@@ -1,9 +1,59 @@
+=======================
 Enquiry Management Tool
 =======================
 
-This is tool mainly used by the Service team to manage investment enquiries.
-They can review enquiries, update them during their engagement with the
-potential investors and submit the qualified ones to |data-hub|_.
+The *Enquiry Management Tool* is a web application designed for the
+needs of the |ist|_ based in Belfast, to simplify the management of *investment
+enquiries*. It allows for:
+
+* Reviewing *enquiries*
+* Updating them during their engagement with potential investors
+* Submitting them to |data-hub|_
+* The batch import and export of *enquiries* in the form of *CSV* file
+
+The application also periodically ingests new *enquiries* from |activity-stream|_,
+which were submitted through the |great|_ |investment-form|_.
+
+Technical Overview
+------------------
+
+The *Enquiry Management* is a |drf|_ web application. It uses:
+
+* |postgresql|_ database as the persistence layer
+* |es|_ for *enquiry* search
+* |scss|_ with |bem|_ methodology for CSS
+* |gds-components|_ for the UI
+* |celery|_ for periodic tasks and |activity-stream|_ ingestion
+* |redis|_ as a backend for both the *session* and the |celery|_ *message queue*
+* |docker-compose|_ for managing service dependencies in development and CI only
+* |cypress|_ for *end to end (e2e)* tests
+* |pytest|_ for unit tests
+* |oauth|_ protocol for user authentication
+* |hawk|_ protocol for inter-service communication authorization
+* |flake8|_ as a *linter* for Python code
+* |sphinx|_ for documentation
+
+The application also depends on the |data-hub-api|_ and |activity-stream|_ services.
+
+For information about deployment to the *dev*, *staging* and *production*
+environments, refer to the
+`Enquiry Management section <https://readme.trade.gov.uk/docs/playbooks/enquiry-management.html?highlight=enq>`_
+in the `DDaT Readme <https://readme.trade.gov.uk/>`_.
+
+Coding Style (linting)
+^^^^^^^^^^^^^^^^^^^^^^
+
+The style of Python code is enforced with |flake8|, which is run against new
+code in a PR. You can set up a pre-commit hook to catch any formatting errors
+in updated code by:
+
+.. code-block:: bash
+
+    $ make setup-flake8-hook
+
+.. warning::
+
+    This creates a new `./env` Python virtual environment.
 
 Installation with Docker
 ------------------------
@@ -53,11 +103,6 @@ in the ``app/settings/.env`` file at the appropriate location.
 The actual values are added to ``ready-to-trade`` `vault`. Please use the values
 corresponding to the ``dev`` environment.
 
-Set up a flake8 pre-commit hook locally
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-To set up a pre-commit hook which will prevent you from committing code with
-formatting errors, run: ``make setup-flake8-hook``
-
 Single Sign On (SSO)
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -91,7 +136,7 @@ Or in ``app/settings/*``
 In which case, it will redirect to |django|_ admin page for login.
 
 |oauth| Access Token Refreshment
-""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""
 
 |oauth|_ `access tokens` issued by |staff-sso|_ have expiration time of 10 hours so,
 that it just about outlives a user's working time. In order to always have a valid
@@ -103,8 +148,28 @@ app uninterruptedly for another period of 9 hours.
 The session expiration can be configured with the optional
 ``SESSION_COOKIE_AGE`` environmental variable which defaults to 9 hours.
 
+Visual Component Styles
+-----------------------
+
+The CSS stylesheets are written in |scss|_ in the |file-sass| directory.
+All class names should conform to the |bem|_ methodology.
+
+We rely on |gds-components|_ and its |govuk-frontend|_ |scss|_ package
+to provide the main UI component markup and style. We should strive to use the
+components with their default styling and only override the styles if there is a very
+good reason for it. Most developers feel an urge to tweak the stiles slightly
+to their subjective taste. **You should resist this urge at all times!**
+
 Tests
 -----
+
+In accordance with our testing philosophy, the *end to end* tests are the
+ones we rely on. The *unit tests* are optional and should be used mainly
+as an aid during the development. Keep in mind, that unit tests only make sense
+if they are written before the actual tested code.
+Most of the unit tests in this project are legacy code.
+
+.. _unit-tests:
 
 Unit tests
 ^^^^^^^^^^
@@ -115,8 +180,10 @@ The unit tests are written with |pytest|_. You can run all unit tests with:
 
    $ ./test.sh app
 
+.. _e2e-tests:
+
 End to end tests
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 The end to end tests (e2e) are written in JavaScript with |cypress|_.
 You can run them in `watch` mode with:
@@ -236,8 +303,23 @@ The compiled HTML will then be in ``doc/build``.
 .. |great| replace:: GREAT
 .. _great: https://readme.trade.gov.uk/docs/playbooks/great.gov.uk-website.html
 
+.. |investment-form| replace:: Contact the investment team form
+.. _investment-form: https://www.great.gov.uk/international/invest/contact/
+
+.. |ist| replace:: Investment Services Team
+.. _ist: https://www.gov.uk/government/organisations/uk-trade-investment/about-our-services#investment-services-for-non-uk-businesses
+
 .. |data-hub-api| replace:: DataHub API
 .. _data-hub-api: https://github.com/uktrade/data-hub-api#data-hub-api
+
+.. |gds| replace:: GDS
+.. _gds: https://design-system.service.gov.uk/
+
+.. |gds-components| replace:: |gds|_ Components
+.. _gds-components: https://design-system.service.gov.uk/components/
+
+.. |govuk-frontend| replace:: GOV.UK Frontend
+.. _govuk-frontend: https://frontend.design-system.service.gov.uk/
 
 .. |staff-sso| replace:: Staff SSO
 .. _staff-sso: https://readme.trade.gov.uk/docs/howtos/staff-sso-integration.html
@@ -263,11 +345,35 @@ The compiled HTML will then be in ``doc/build``.
 .. |scss| replace:: SCSS
 .. _scss: https://sass-lang.com/documentation/syntax#scss
 
+.. |bem| replace:: BEM
+.. _bem: https://en.bem.info/methodology/
+
+.. |es| replace:: Elastic Search
+.. _es: https://www.elastic.co/
+
+.. |postgresql| replace:: PostgreSQL
+.. _postgresql: https://www.postgresql.org/
+
+.. |redis| replace:: Redis
+.. _redis: https://redis.io
+
+.. |hawk| replace:: Hawk
+.. _hawk: https://github.com/outmoded/hawk
+
+.. |celery| replace:: Celery
+.. _celery: http://celeryproject.org/
+
 .. |pytest| replace:: pytest
 .. _pytest: https://docs.pytest.org/
 
 .. |django| replace:: Django
 .. _django: https://www.djangoproject.com/
+
+.. |drf| replace:: Django REST framework
+.. _drf: https://www.django-rest-framework.org/
+
+.. |flake8| replace:: Flake8
+.. _flake8: https://flake8.pycqa.org/
 
 .. |rst| replace:: reStructuredText (RST)
 .. _rst: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
@@ -301,3 +407,6 @@ The compiled HTML will then be in ``doc/build``.
 
 .. |file-doc-bootstrap| replace:: ``doc/bootstrap.sh``
 .. _file-doc-bootstrap: https://github.com/uktrade/enquiry-mgmt-tool/blob/master/app/doc/bootstrap.sh
+
+.. |file-sass| replace:: ``sass/``
+.. _file-sass: https://github.com/uktrade/enquiry-mgmt-tool/blob/master/app/sass/
