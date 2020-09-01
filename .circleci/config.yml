@@ -1,8 +1,9 @@
 version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.2
+  dotenv: anilanar/dotenv@volatile
 jobs:
-  build:
+  test:
     machine:
       docker_layer_caching: true
     working_directory: ~/emt
@@ -40,3 +41,60 @@ jobs:
           file: coverage.xml
       - store_artifacts:
           path: cypress/screenshots
+  docs-build:
+    docker:
+      - image: python:3.8
+    steps:
+      - checkout
+      - dotenv/source:
+          path: sample_env
+      - run:
+          name: Install docs dependencies
+          command: |
+            pwd
+            ls -lta
+            cd doc/
+            ./bootstrap.sh
+      - run:
+          name: Build docs
+          command: cd doc/ && make html
+      - persist_to_workspace:
+          root: doc/build
+          paths: html
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: doc/build
+      - run:
+          name: Disable jekyll builds
+          command: touch doc/build/html/.nojekyll
+      - run:
+          name: Install dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "ci-build@digital.trade.gov.uk"
+            git config user.name "ci-build"
+      - add_ssh_keys:
+          fingerprints:
+            - "95:62:d7:98:68:5b:90:84:87:5b:0f:e9:f6:c6:82:a6"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dotfiles --message "[skip ci] Updates" --dist doc/build/html
+
+workflows:
+  version: 1
+  emt-workflow:
+    jobs:
+      - test
+      - docs-build
+      - docs-deploy:
+          requires:
+            - test
+            - docs-build
+          filters:
+            branches:
+              only: master
+
