@@ -2,4 +2,4 @@
 
 python manage.py migrate
 sh setup-test-fixtures.sh
-python manage.py runserver 0.0.0.0:8001
+exec coverage run manage.py runserver 0.0.0.0:8001 --noreload

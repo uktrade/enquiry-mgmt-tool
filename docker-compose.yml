@@ -3,6 +3,7 @@ version: '3'
 services:
   app:
     build: .
+    stop_signal: SIGINT
     volumes:
       - .:/usr/src/app
     depends_on:
