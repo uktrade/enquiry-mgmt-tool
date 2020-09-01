@@ -43,7 +43,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "celery.contrib.sphinx",
-    "djcommanddoc",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
