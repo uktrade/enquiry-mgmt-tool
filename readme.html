@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Enquiry Management Tool &mdash; Enquiry Management 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Enquiry Management
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Enquiry Management Tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="forms.html">Forms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Celery Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ref_data.html">Ref Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Django Commands</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Enquiry Management</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Enquiry Management Tool</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/readme.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="enquiry-management-tool">
+<h1>Enquiry Management Tool<a class="headerlink" href="#enquiry-management-tool" title="Permalink to this headline">¶</a></h1>
+<p>The <em>Enquiry Management Tool</em> is a web application designed for the
+needs of the <a class="reference external" href="https://www.gov.uk/government/organisations/uk-trade-investment/about-our-services#investment-services-for-non-uk-businesses">Investment Services Team</a> based in Belfast, to simplify the management of <em>investment
+enquiries</em>. It allows for:</p>
+<ul class="simple">
+<li><p>Reviewing <em>enquiries</em></p></li>
+<li><p>Updating them during their engagement with potential investors</p></li>
+<li><p>Submitting them to <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/datahub.html">DataHub</a></p></li>
+<li><p>The batch import and export of <em>enquiries</em> in the form of <em>CSV</em> file</p></li>
+</ul>
+<p>The application also periodically ingests new <em>enquiries</em> from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a>,
+which were submitted through the <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/great.gov.uk-website.html">GREAT</a> <a class="reference external" href="https://www.great.gov.uk/international/invest/contact/">Contact the investment team form</a>.</p>
+<div class="section" id="technical-overview">
+<h2>Technical Overview<a class="headerlink" href="#technical-overview" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Enquiry Management</em> is a <a class="reference external" href="https://www.django-rest-framework.org/">Django REST framework</a> web application. It uses:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a> database as the persistence layer</p></li>
+<li><p><a class="reference external" href="https://www.elastic.co/">Elastic Search</a> for <em>enquiry</em> search</p></li>
+<li><p><a class="reference external" href="https://sass-lang.com/documentation/syntax#scss">SCSS</a> with <a class="reference external" href="https://en.bem.info/methodology/">BEM</a> methodology for CSS</p></li>
+<li><p><a class="reference external" href="https://design-system.service.gov.uk/components/"><a class="reference external" href="https://design-system.service.gov.uk/">GDS</a> Components</a> for the UI</p></li>
+<li><p><a class="reference external" href="http://celeryproject.org/">Celery</a> for periodic tasks and <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a> ingestion</p></li>
+<li><p><a class="reference external" href="https://redis.io">Redis</a> as a backend for both the <em>session</em> and the <a class="reference external" href="http://celeryproject.org/">Celery</a> <em>message queue</em></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/compose/">Docker Compose</a> for managing service dependencies in development and CI only</p></li>
+<li><p><a class="reference external" href="https://www.cypress.io/">Cypress</a> for <em>end to end (e2e)</em> tests</p></li>
+<li><p><a class="reference external" href="https://docs.pytest.org/">pytest</a> for unit tests</p></li>
+<li><p><a class="reference external" href="https://oauth.net/2/">OAuth 2.0</a> protocol for user authentication</p></li>
+<li><p><a class="reference external" href="https://github.com/outmoded/hawk">Hawk</a> protocol for inter-service communication authorization</p></li>
+<li><p><a class="reference external" href="https://flake8.pycqa.org/">Flake8</a> as a <em>linter</em> for Python code</p></li>
+<li><p><a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> for documentation</p></li>
+</ul>
+<p>The application also depends on the <a class="reference external" href="https://github.com/uktrade/data-hub-api#data-hub-api">DataHub API</a> and <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a> services.</p>
+<p>For information about deployment to the <em>dev</em>, <em>staging</em> and <em>production</em>
+environments, refer to the
+<a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/enquiry-management.html?highlight=enq">Enquiry Management section</a>
+in the <a class="reference external" href="https://readme.trade.gov.uk/">DDaT Readme</a>.</p>
+<div class="section" id="coding-style-linting">
+<h3>Coding Style (linting)<a class="headerlink" href="#coding-style-linting" title="Permalink to this headline">¶</a></h3>
+<p>The style of Python code is enforced with Flake8, which is run against new
+code in a PR. You can set up a pre-commit hook to catch any formatting errors
+in updated code by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ make setup-flake8-hook
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This creates a new <cite>./env</cite> Python virtual environment.</p>
+</div>
+</div>
+</div>
+<div class="section" id="installation-with-docker">
+<h2>Installation with Docker<a class="headerlink" href="#installation-with-docker" title="Permalink to this headline">¶</a></h2>
+<p>This project uses <a class="reference external" href="https://docs.docker.com/compose/">Docker Compose</a> to setup and run all the necessary components.
+The <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/docker-compose.yml"><code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code></a> file provided is meant to be used for running tests and
+development.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/uktrade/enquiry-mgmt-tool.git
+$ <span class="nb">cd</span> enquiry-mgmt-tool
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p>Clone the repository:</p></li>
+<li><p>Bootstrap the project (install node dependencies and compile CSS from <a class="reference external" href="https://sass-lang.com/documentation/syntax#scss">SCSS</a>)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sh ./bootstrap.sh
+</pre></div>
+</div>
+</li>
+<li><p>Set up your <code class="docutils literal notranslate"><span class="pre">app/settings/.env</span></code> file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ cp sample_env app/settings/.env
+</pre></div>
+</div>
+</li>
+<li><p>Build and run the necessary containers for the required environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ docker-compose up --build
+</pre></div>
+</div>
+</li>
+</ol>
+<p>You can view the app at <a class="reference external" href="http://localhost:8000/enquiries/">http://localhost:8000/enquiries/</a></p>
+<p>The application uses SSO by default. When you access the above link for the
+first time you will be redirected to SSO login page. After authentication it
+will create a user in the database.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/sample_env"><code class="docutils literal notranslate"><span class="pre">sample_env</span></code></a> file contains all the required environment variable for the application.
+Sample values are provided in this file but the actual values are to be included
+in the <code class="docutils literal notranslate"><span class="pre">app/settings/.env</span></code> file at the appropriate location.</p>
+<p>The actual values are added to <code class="docutils literal notranslate"><span class="pre">ready-to-trade</span></code> <cite>vault</cite>. Please use the values
+corresponding to the <code class="docutils literal notranslate"><span class="pre">dev</span></code> environment.</p>
+<div class="section" id="single-sign-on-sso">
+<h3>Single Sign On (SSO)<a class="headerlink" href="#single-sign-on-sso" title="Permalink to this headline">¶</a></h3>
+<p>The app works out of the box with <a class="reference external" href="https://github.com/uktrade/mock-sso">Mock SSO</a>, which is part of the
+<a class="reference external" href="https://docs.docker.com/compose/">Docker Compose</a> setup. The <a class="reference external" href="https://oauth.net/2/">OAuth 2.0</a> flow however only works locally when you
+set the <code class="docutils literal notranslate"><span class="pre">AUTHBROKER_URL</span></code> env var to <code class="docutils literal notranslate"><span class="pre">host.docker.internal:8080</span></code>.
+This is because the <a class="reference external" href="https://github.com/uktrade/mock-sso">Mock SSO</a> service (configured with the <code class="docutils literal notranslate"><span class="pre">AUTHBROKER_URL</span></code>)
+must be accessible from outside of <cite>docker-compose</cite> for the <cite>authorization redirect</cite>,
+and also from within <cite>docker-compose</cite> to make the <cite>access token</cite> POST request.
+The problem though is that the service can only be accessed from another docker
+container as <code class="docutils literal notranslate"><span class="pre">http://mock-sso:8080</span></code>, which however is not available outside of
+<cite>docker-compose</cite>. The special
+<a class="reference external" href="https://docs.docker.com/docker-for-mac/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host">host.docker.internal</a>
+host name should be accessible from everywhere. Should it for any reason not
+work, try <code class="docutils literal notranslate"><span class="pre">docker.for.mac.localhost</span></code>. The value varies across platforms.</p>
+<p>You can disable the SSO with the <code class="docutils literal notranslate"><span class="pre">FEATURE_ENFORCE_STAFF_SSO_ENABLED</span></code> env var:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FEATURE_ENFORCE_STAFF_SSO_ENABLED</span><span class="o">=</span><span class="mi">1</span> <span class="c1"># on</span>
+<span class="n">FEATURE_ENFORCE_STAFF_SSO_ENABLED</span><span class="o">=</span><span class="mi">0</span> <span class="c1"># off</span>
+</pre></div>
+</div>
+<p>Or in <code class="docutils literal notranslate"><span class="pre">app/settings/*</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ENFORCE_STAFF_SSO_ENABLED</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># on</span>
+<span class="n">ENFORCE_STAFF_SSO_ENABLED</span><span class="o">=</span><span class="kc">False</span> <span class="c1"># off</span>
+</pre></div>
+</div>
+<p>In which case, it will redirect to <a class="reference external" href="https://www.djangoproject.com/">Django</a> admin page for login.</p>
+<div class="section" id="oauth-access-token-refreshment">
+<h4>OAuth 2.0 Access Token Refreshment<a class="headerlink" href="#oauth-access-token-refreshment" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="https://oauth.net/2/">OAuth 2.0</a> <cite>access tokens</cite> issued by <a class="reference external" href="https://readme.trade.gov.uk/docs/howtos/staff-sso-integration.html">Staff SSO</a> have expiration time of 10 hours so,
+that it just about outlives a user’s working time. In order to always have a valid
+<cite>access token</cite> this app limits the user’s session to 9 hours. When the session
+expires, the user will be automatically redirected to <code class="docutils literal notranslate"><span class="pre">/auth/login</span></code> which will
+refresh both the session and the <cite>access token</cite> and allows the user to use the
+app uninterruptedly for another period of 9 hours.</p>
+<p>The session expiration can be configured with the optional
+<code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_AGE</span></code> environmental variable which defaults to 9 hours.</p>
+</div>
+</div>
+</div>
+<div class="section" id="visual-component-styles">
+<h2>Visual Component Styles<a class="headerlink" href="#visual-component-styles" title="Permalink to this headline">¶</a></h2>
+<p>The CSS stylesheets are written in <a class="reference external" href="https://sass-lang.com/documentation/syntax#scss">SCSS</a> in the <code class="docutils literal notranslate"><span class="pre">sass/</span></code> directory.
+All class names should conform to the <a class="reference external" href="https://en.bem.info/methodology/">BEM</a> methodology.</p>
+<p>We rely on <a class="reference external" href="https://design-system.service.gov.uk/components/"><a class="reference external" href="https://design-system.service.gov.uk/">GDS</a> Components</a> and its <a class="reference external" href="https://frontend.design-system.service.gov.uk/">GOV.UK Frontend</a> <a class="reference external" href="https://sass-lang.com/documentation/syntax#scss">SCSS</a> package
+to provide the main UI component markup and style. We should strive to use the
+components with their default styling and only override the styles if there is a very
+good reason for it. Most developers feel an urge to tweak the stiles slightly
+to their subjective taste. <strong>You should resist this urge at all times!</strong></p>
+</div>
+<div class="section" id="tests">
+<h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h2>
+<p>In accordance with our testing philosophy, the <em>end to end</em> tests are the
+ones we rely on. The <em>unit tests</em> are optional and should be used mainly
+as an aid during the development. Keep in mind, that unit tests only make sense
+if they are written before the actual tested code.
+Most of the unit tests in this project are legacy code.</p>
+<div class="section" id="unit-tests">
+<span id="id1"></span><h3>Unit tests<a class="headerlink" href="#unit-tests" title="Permalink to this headline">¶</a></h3>
+<p>The unit tests are written with <a class="reference external" href="https://docs.pytest.org/">pytest</a>. You can run all unit tests with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ ./test.sh app
+</pre></div>
+</div>
+</div>
+<div class="section" id="end-to-end-tests">
+<span id="e2e-tests"></span><h3>End to end tests<a class="headerlink" href="#end-to-end-tests" title="Permalink to this headline">¶</a></h3>
+<p>The end to end tests (e2e) are written in JavaScript with <a class="reference external" href="https://www.cypress.io/">Cypress</a>.
+You can run them in <cite>watch</cite> mode with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ npm <span class="nb">test</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">test</span></code> expects the application to be listening on <code class="docutils literal notranslate"><span class="pre">localhost:8000</span></code></p>
+</div>
+<p>The <cite>e2e</cite> tests can also be run <cite>headless</cite> with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ npx cypress run
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ docker-compose run cypress
+</pre></div>
+</div>
+<div class="section" id="allowing-for-fixture-reset-during-e2e-tests">
+<h4>Allowing for Fixture Reset during e2e tests<a class="headerlink" href="#allowing-for-fixture-reset-during-e2e-tests" title="Permalink to this headline">¶</a></h4>
+<p>It is possible to expose a URL method which enables an external testing agent
+(e.g. <a class="reference external" href="https://www.cypress.io/">Cypress</a>) to reset the database to a known fixture state.</p>
+<p>Naturally this endpoint is not exposed by default. To enable it you must:</p>
+<ul class="simple">
+<li><p>Run Django with <code class="docutils literal notranslate"><span class="pre">ROOT_URLCONF</span></code> set to <code class="docutils literal notranslate"><span class="pre">app.testfixtureapi_urls</span></code> which includes the “reset” endpoint.
+This can be achieved by running Django with <code class="docutils literal notranslate"><span class="pre">DJANGO_SETTINGS_MODULE</span></code> set to either
+<code class="docutils literal notranslate"><span class="pre">app.settings.djangotest</span></code> (which is already set to be the case in pytest.ini) or
+<code class="docutils literal notranslate"><span class="pre">app.settings.e2etest</span></code> (which is already set to be the case in docker-compose.yml)</p></li>
+<li><p>Set the environment variable <code class="docutils literal notranslate"><span class="pre">ALLOW_TEST_FIXTURE_SETUP</span></code> to have the explicit
+exact value <code class="docutils literal notranslate"><span class="pre">allow</span></code>.</p></li>
+</ul>
+<p>Under these conditions (and only these conditions) when this endpoint receives a <code class="docutils literal notranslate"><span class="pre">POST</span></code> request
+it will reset the application database to the state frozen in the files:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/app/enquiries/fixtures/test_users.json"><code class="docutils literal notranslate"><span class="pre">app/enquiries/fixtures/test_enquiries.json</span></code></a></p></li>
+<li><p><a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/app/enquiries/fixtures/test_enquiries.json"><code class="docutils literal notranslate"><span class="pre">app/enquiries/fixtures/test_enquiries.json</span></code></a></p></li>
+</ul>
+<p>Because this method removes all user data it will also invalidate any active
+session which your test client holds.
+For this reason the method also creates a standard user of your specification,
+logs them in and returns the session info in the cookie headers of the response.
+You must therefor supply this method with JSON which describes a new seed user like this:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;user123&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;first_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Evelyn&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;last_name&quot;</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;evelyn@example.com&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>Documentation is written in <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">reStructuredText (RST)</a> and <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a>. The documentation source files
+live in the <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/doc"><code class="docutils literal notranslate"><span class="pre">doc/</span></code></a> directory.</p>
+<ul class="simple">
+<li><p>Always keep the documentation in sync with the code</p></li>
+<li><p>Try to provide a link to every external source of information, don’t let
+future readers of the codebase waste their time by searching for things which
+could be just clicked through a link.</p></li>
+<li><p>Always specify all function arguments and return values with
+<code class="docutils literal notranslate"><span class="pre">:param</span> <span class="pre">&lt;name&gt;:</span></code> and <code class="docutils literal notranslate"><span class="pre">:returns:</span></code> <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> directives. Idealy acompanied
+with <code class="docutils literal notranslate"><span class="pre">:type</span> <span class="pre">&lt;name&gt;:</span></code> and <code class="docutils literal notranslate"><span class="pre">:rtype:</span></code> to describe the expected types.</p></li>
+<li><p>When referencing other objects use the <code class="docutils literal notranslate"><span class="pre">:func:</span></code>, <code class="docutils literal notranslate"><span class="pre">:class:</span></code>, <code class="docutils literal notranslate"><span class="pre">:mod:</span></code>, etc
+directives. You can use them to also reference objects from external libraries
+e.g. <code class="docutils literal notranslate"><span class="pre">:class:`djang.http.HttpRequest`</span></code>, provided they are properly
+linked through <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html">sphinx.ext.intersphinx</a> (see the next point)</p></li>
+<li><p>When referencing objects from other libraries, always try to link them through
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html">sphinx.ext.intersphinx</a> by adding a record to the <code class="docutils literal notranslate"><span class="pre">intersphinx_mapping</span></code> dictionary in
+<a class="reference external" href="doc/source/config.py">doc/source/config.py</a>.</p></li>
+</ul>
+<div class="section" id="compilation-to-html">
+<h3>Compilation to HTML<a class="headerlink" href="#compilation-to-html" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each of the documentation related commands require you to be in the
+<a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/doc"><code class="docutils literal notranslate"><span class="pre">doc/</span></code></a> directory.</p>
+</div>
+<p>To compile the docs to HTML you need to have installed both the project
+dependencies listed in <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/app/requirements.txt"><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code></a> and the <cite>docs</cite> dependencies listed
+in <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/app/doc/requirements.txt"><code class="docutils literal notranslate"><span class="pre">doc/requirements.txt</span></code></a>. The easiest way to install them is to run the
+<a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/app/doc/bootstrap.sh"><code class="docutils literal notranslate"><span class="pre">doc/bootstrap.sh</span></code></a> script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> doc/
+<span class="c1"># Create and activate virtual environment specific for docs compilation</span>
+$ python3 -m venv .env
+<span class="p">&amp;</span> . .env/bin/activate
+<span class="c1"># Install the merged dependencies</span>
+$ sh doc/bootstrap.sh
+</pre></div>
+</div>
+<p>You can then compile the HTML with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ make html
+</pre></div>
+</div>
+<p>The compiled HTML will then be in <code class="docutils literal notranslate"><span class="pre">doc/build</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, FIXME, provide author names
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

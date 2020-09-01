@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Activity Stream Utils &mdash; Enquiry Management 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DataHub Utils" href="data-hub.html" />
+    <link rel="prev" title="Utils" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Enquiry Management
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Enquiry Management Tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../views.html">Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../forms.html">Forms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tasks.html">Celery Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ref_data.html">Ref Data</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Utils</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Activity Stream Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-hub.html">DataHub Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../commands.html">Django Commands</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Enquiry Management</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Utils</a> &raquo;</li>
+        
+      <li>Activity Stream Utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/utils/activity-stream.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-app.enquiries.common.as_utils">
+<span id="activity-stream-utils"></span><h1>Activity Stream Utils<a class="headerlink" href="#module-app.enquiries.common.as_utils" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="app.enquiries.common.as_utils.fetch_and_process_enquiries">
+<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">fetch_and_process_enquiries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.fetch_and_process_enquiries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches new enquiries from <a href="#id7"><span class="problematic" id="id8">|activity-stream|_</span></a> and creates saved
+<a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.enquiries.models.Enquiry</span></code></a> instances.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.as_utils.get_new_investment_enquiries">
+<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">get_new_investment_enquiries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">last_cursor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_size</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.get_new_investment_enquiries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches new investment enquiries from <a href="#id9"><span class="problematic" id="id10">|activity-stream|_</span></a>.
+The <code class="docutils literal notranslate"><span class="pre">ACTIVITY_STREAM_INITIAL_LOAD_DATE</span></code> environmental variable determines
+the initial date from which the data is queried.</p>
+<p>Two emails are sent for every enquiry, one to the user who filled
+out the form and one to <a class="reference external" href="mailto:enquiries&#37;&#52;&#48;invest-trade&#46;uk">enquiries<span>&#64;</span>invest-trade<span>&#46;</span>uk</a> for triage. Both of
+these are present in activity stream. To avoid duplicate enquiries, the
+emails sent to the user are ignored by filtering out emails which
+were sent by <a class="reference external" href="mailto:noreply&#37;&#52;&#48;invest&#46;great&#46;gov&#46;uk">noreply<span>&#64;</span>invest<span>&#46;</span>great<span>&#46;</span>gov<span>&#46;</span>uk</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>last_cursor</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Indicates the last enquiry fetched (index and id).
+This is used to fetch next set of results when this is invoked again.</p></li>
+<li><p><strong>max_size</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The maximum number of results to fetch</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON-parsed response or <code class="docutils literal notranslate"><span class="pre">None</span></code> in case of an error</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.as_utils.great_ui_sector_rtt_mapping">
+<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">great_ui_sector_rtt_mapping</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.great_ui_sector_rtt_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolves the <cite>primary sector</cite> for <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+<p>Sector data in the website is different from that in <cite>dit-sectors</cite>
+reference, so we first check if it is in standard reference data otherwise
+map it to our reference data. If not found anywhere use default value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a href="#id11"><span class="problematic" id="id12">|great|_</span></a> <cite>sector</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.as_utils.hawk_request">
+<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">hawk_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">id_</span></em>, <em class="sig-param"><span class="n">secret_key</span></em>, <em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.hawk_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a <code class="xref py py-mod docutils literal notranslate"><span class="pre">hawk</span></code> request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A valid HTTP method</p></li>
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A valid URL</p></li>
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The <code class="docutils literal notranslate"><span class="pre">id</span></code> for the <code class="docutils literal notranslate"><span class="pre">credentials</span></code> argument to <a class="reference external" href="https://mohawk.readthedocs.io/en/latest/api.html#mohawk.Sender" title="(in Mohawk v0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mohawk.Sender</span></code></a></p></li>
+<li><p><strong>secret_key</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The <code class="docutils literal notranslate"><span class="pre">secret_key</span></code> for the <code class="docutils literal notranslate"><span class="pre">credentials</span></code> argument to <a class="reference external" href="https://mohawk.readthedocs.io/en/latest/api.html#mohawk.Sender" title="(in Mohawk v0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mohawk.Sender</span></code></a></p></li>
+<li><p><strong>body</strong> – A JSON serializable data structure to be sent as the request body</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference external" href="https://requests.readthedocs.io/en/master/api/#requests.Response" title="(in Requests v2.24.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Response</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.as_utils.parse_enquiry_email">
+<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">parse_enquiry_email</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">submission</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.parse_enquiry_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses email body in the submission and returns Enquiry related fields.
+This can be used to create an Enquiry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>submission</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – The email to be parsed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The result of <a class="reference internal" href="#app.enquiries.common.as_utils.via_enquiry_to_enquiry_kwargs" title="app.enquiries.common.as_utils.via_enquiry_to_enquiry_kwargs"><code class="xref py py-func docutils literal notranslate"><span class="pre">via_enquiry_to_enquiry_kwargs()</span></code></a> or <code class="docutils literal notranslate"><span class="pre">{}</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.as_utils.via_enquiry_to_enquiry_kwargs">
+<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">via_enquiry_to_enquiry_kwargs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.via_enquiry_to_enquiry_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts <cite>enquiry</cite> submitted via email into a dict of <cite>kwargs</cite> for
+<a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.enquiries.models.Enquiry</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">dict</span></code> of <a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.enquiries.models.Enquiry</span></code></a> constructor
+<cite>kwargs</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="data-hub.html" class="btn btn-neutral float-right" title="DataHub Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, FIXME, provide author names
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
