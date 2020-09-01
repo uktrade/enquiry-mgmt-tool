@@ -20,14 +20,13 @@ jobs:
           environment:
             ALLOW_TEST_FIXTURE_SETUP: allow
             DJANGO_SETTINGS_MODULE: app.settings.e2etest
+            COVERAGE_FILE: .coverage-cypress
       - run:
           name: Run Flake8
           command: docker-compose run app python -m flake8
       - run:
           name: Run unit tests
-          command: docker-compose run app python -m pytest --cov --cov-report=xml -s --ds=app.settings.djangotest -vvv app
-      - codecov/upload:
-          file: coverage.xml
+          command: docker-compose run -e COVERAGE_FILE=.coverage-unit app python -m pytest --cov --cov-report=xml -s --ds=app.settings.djangotest -vvv app
       - run:
           name: Install dependencies
           command: docker-compose run --entrypoint npm cypress install moment@2.24.0
@@ -36,5 +35,10 @@ jobs:
           # Chrome freezes when redirecting on the login page.
           # See: https://github.com/cypress-io/cypress/issues/3594
           command: docker-compose run cypress run
+      - run: docker-compose stop app
+      - run: docker-compose run app coverage combine .coverage-cypress .coverage-unit
+      - run: docker-compose exec app coverage xml
+      - codecov/upload:
+          file: coverage.xml
       - store_artifacts:
           path: cypress/screenshots
