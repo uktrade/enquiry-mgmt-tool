@@ -2,6 +2,12 @@
 Enquiry Management Tool
 =======================
 
+.. note::
+
+    You can read the compiled documentation
+    `here <https://uktrade.github.io/enquiry-mgmt-tool>`_.
+    You should also read the |em-playbook|_ in the |dit-docs|_.
+
 The *Enquiry Management Tool* is a web application designed for the
 needs of the |ist|_ based in Belfast, to simplify the management of *investment
 enquiries*. It allows for:
@@ -295,13 +301,35 @@ You can then compile the HTML with:
 
 The compiled HTML will then be in ``doc/build``.
 
+Hosting the compiled documentation
+""""""""""""""""""""""""""""""""""
+
+There is a |ci-workflow|_ defined in |file-ci-config|_ which compiles
+and deploys the documentation to the |gh-pages|_ branch of the |repository|_
+when code is pushed to the ``master`` branch, which is after every PR merge.
+The deployed documentation will then be available at
+`<https://uktrade.github.io/enquiry-mgmt-tool>`_.
+
+
 .. rst_prolog (do not remove this comment, it is used in doc/source/config.py)
+
+.. |repository| replace:: repository
+.. _repository: https://github.com/uktrade/enquiry-mgmt-tool/
+
+.. |gh-pages| replace:: ``gh-pages``
+.. _gh-pages: https://github.com/uktrade/enquiry-mgmt-tool/tree/gh-pages
 
 .. |data-hub| replace:: DataHub
 .. _data-hub: https://readme.trade.gov.uk/docs/playbooks/datahub.html
 
 .. |great| replace:: GREAT
 .. _great: https://readme.trade.gov.uk/docs/playbooks/great.gov.uk-website.html
+
+.. |dit-docs| replace:: DIT Software Development Manual
+.. _dit-docs: https://readme.trade.gov.uk
+
+.. |em-playbook| replace:: Enquiry Management playbook
+.. _em-playbook: https://readme.trade.gov.uk/docs/playbooks/enquiry-management.html
 
 .. |investment-form| replace:: Contact the investment team form
 .. _investment-form: https://www.great.gov.uk/international/invest/contact/
@@ -332,6 +360,12 @@ The compiled HTML will then be in ``doc/build``.
 
 .. |oauth| replace:: OAuth 2.0
 .. _oauth: https://oauth.net/2/
+
+.. |circle-ci| replace:: CircleCI
+.. _circle-ci: https://app.circleci.com/pipelines/github/uktrade/enquiry-mgmt-tool
+
+.. |ci-workflow| replace:: |circle-ci|_ workflow
+.. _ci-workflow: https://circleci.com/docs/2.0/workflows-overview/
 
 .. |activity-stream| replace:: Activity Stream
 .. _activity-stream: https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html
@@ -410,3 +444,6 @@ The compiled HTML will then be in ``doc/build``.
 
 .. |file-sass| replace:: ``sass/``
 .. _file-sass: https://github.com/uktrade/enquiry-mgmt-tool/blob/master/app/sass/
+
+.. |file-ci-config| replace:: ``.circleci/config.yml``
+.. _file-ci-config: https://github.com/uktrade/enquiry-mgmt-tool/blob/master/.circleci/config.yml
