@@ -159,6 +159,12 @@
 </div>
 <div class="section" id="enquiry-management-tool">
 <h1>Enquiry Management Tool<a class="headerlink" href="#enquiry-management-tool" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can read the compiled documentation
+<a class="reference external" href="https://uktrade.github.io/enquiry-mgmt-tool">here</a>.
+You should also read the <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/enquiry-management.html">Enquiry Management playbook</a> in the <a class="reference external" href="https://readme.trade.gov.uk">DIT Software Development Manual</a>.</p>
+</div>
 <p>The <em>Enquiry Management Tool</em> is a web application designed for the
 needs of the <a class="reference external" href="https://www.gov.uk/government/organisations/uk-trade-investment/about-our-services#investment-services-for-non-uk-businesses">Investment Services Team</a> based in Belfast, to simplify the management of <em>investment
 enquiries</em>. It allows for:</p>
@@ -406,6 +412,14 @@ $ sh doc/bootstrap.sh
 </pre></div>
 </div>
 <p>The compiled HTML will then be in <code class="docutils literal notranslate"><span class="pre">doc/build</span></code>.</p>
+<div class="section" id="hosting-the-compiled-documentation">
+<h4>Hosting the compiled documentation<a class="headerlink" href="#hosting-the-compiled-documentation" title="Permalink to this headline">¶</a></h4>
+<p>There is a <a class="reference external" href="https://circleci.com/docs/2.0/workflows-overview/"><a class="reference external" href="https://app.circleci.com/pipelines/github/uktrade/enquiry-mgmt-tool">CircleCI</a> workflow</a> defined in <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/.circleci/config.yml"><code class="docutils literal notranslate"><span class="pre">.circleci/config.yml</span></code></a> which compiles
+and deploys the documentation to the <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/tree/gh-pages"><code class="docutils literal notranslate"><span class="pre">gh-pages</span></code></a> branch of the <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/">repository</a>
+when code is pushed to the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch, which is after every PR merge.
+The deployed documentation will then be available at
+<a class="reference external" href="https://uktrade.github.io/enquiry-mgmt-tool">https://uktrade.github.io/enquiry-mgmt-tool</a>.</p>
+</div>
 </div>
 </div>
 </div>
