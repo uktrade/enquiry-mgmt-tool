@@ -61,6 +61,9 @@ jobs:
       - persist_to_workspace:
           root: doc/build
           paths: html
+      - store_artifacts:
+          path: doc/build/html
+          destination: docs
   docs-deploy:
     docker:
       - image: node:8.10.0
