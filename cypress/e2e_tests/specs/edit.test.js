@@ -145,7 +145,7 @@ describe('Edit', () => {
             },
             { dt: 'Client Relationship Manager', dd: 'Data Hub user 1' },
             { dt: 'Date added to Data Hub', dd: '03 February 2020' },
-            { dt: 'Project code', dd: '42901' },
+            { dt: 'Project code', dd: 'DHP-00000001' },
             { dt: 'Project success date', dd: '03 February 2022' },
           ],
         },
@@ -409,7 +409,7 @@ describe('Edit', () => {
             {
               type: 'text',
               label: 'Project code',
-              value: '42901',
+              value: 'DHP-00000001',
             },
             {
               type: 'date',

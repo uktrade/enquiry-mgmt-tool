@@ -262,6 +262,7 @@ class EnquiryFilter(filters.FilterSet):
         fields = {
             "company_name": ["icontains"],
             "date_added_to_datahub": ["lt", "gt"],
+            "project_code": ["icontains"]
         }
 
 
