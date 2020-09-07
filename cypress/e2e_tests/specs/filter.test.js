@@ -723,4 +723,10 @@ describe('Filters', () => {
     cy.get('.big-number-of-enquiries').should('have.text', '48')
   })
 
+  testFilters({
+    filters: {
+      'Data Hub project code': 'DHP-00000002',
+    },
+    expectedTotal: 1,
+  })
 })

@@ -79,3 +79,6 @@ class EnquiryViewFiltersTestCase(test_utils.BaseEnquiryTestCase):
             soup.find(id="enquirer__email"), msg="should render enquirer__email control",
         )
         self.assertIsNotNone(soup.find(id="btn_submit"), msg="should render btn_submit control")
+        self.assertIsNotNone(
+            soup.find(id="project_code__icontains"), msg="should render project_code control"
+        )
