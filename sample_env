@@ -11,24 +11,24 @@ DJANGO_SENTRY_DSN=sentry-dsn
 ENQUIRIES_PER_PAGE=10
 ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS=6
 
-# Data Hub variables
-DATA_HUB_METADATA_URL=http://dh-api-mock:8000/v4/metadata
-DATA_HUB_COMPANY_SEARCH_URL=http://dh-api-mock:8000/v4/search/company
-DATA_HUB_CONTACT_SEARCH_URL=http://dh-api-mock:8000/v3/search/contact
-DATA_HUB_CONTACT_CREATE_URL=http://dh-api-mock:8000/v3/contact
-DATA_HUB_INVESTMENT_CREATE_URL=http://dh-api-mock:8000/v3/investment
-DATA_HUB_ADVISER_SEARCH_URL=http://dh-api-mock:8000/adviser/
-DATA_HUB_WHOAMI_URL=http://dh-api-mock:8000/whoami
-DATA_HUB_FRONTEND=https://datahub/frontend
+# DataHub links
+DATA_HUB_FRONTEND==https://www.datahub.dev.uktrade.io
 DATA_HUB_CREATE_COMPANY_PAGE_URL=https://www.datahub.dev.uktrade.io/companies/create
 
+# DataHub API variables when running Data Hub API locally on port 8000
+DATA_HUB_METADATA_URL=http://docker.for.mac.localhost:8000/v4/metadsuf
+DATA_HUB_COMPANY_SEARCH_URL=http://docker.for.mac.localhost:8000/v4/search/company
+DATA_HUB_CONTACT_SEARCH_URL=http://docker.for.mac.localhost:8000/v3/search/contact
+DATA_HUB_CONTACT_CREATE_URL=http://docker.for.mac.localhost:8000/v3/contact
+DATA_HUB_INVESTMENT_CREATE_URL=http://docker.for.mac.localhost:8000/v3/investment
+DATA_HUB_ADVISER_SEARCH_URL=http://docker.for.mac.localhost:8000/adviser/
+DATA_HUB_WHOAMI_URL=http://docker.for.mac.localhost:8000/whoami/
 
 # Hawk
 DATA_HUB_HAWK_ID=hawk-id
 DATA_HUB_HAWK_KEY=hawk-key
 
 # Celery and Redis
-DATA_HUB_METADATA_FETCH_INTERVAL=4      # in hours
 ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS=1
 ENQUIRY_STATUS_SHOULD_UPDATE=0
 REDIS_BASE_URL=redis://redis:6379

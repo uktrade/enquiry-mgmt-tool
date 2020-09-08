@@ -13,16 +13,11 @@ app = Celery("app")
 app.config_from_object("django.conf:settings")
 app.autodiscover_tasks()
 
-DH_METADATA_FETCH_INTERVAL_HOURS = settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS
 AS_ENQUIRIES_POLL_INTERVAL_MINS = settings.ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS
 ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS = settings.ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS
 ENQUIRY_STATUS_SHOULD_UPDATE = settings.ENQUIRY_STATUS_SHOULD_UPDATE
 
 app.conf.beat_schedule = {
-    "refresh-datahub-metadata": {
-        "task": "refresh_datahub_metadata",
-        "schedule": crontab(minute="0", hour=f"*/{DH_METADATA_FETCH_INTERVAL_HOURS}"),
-    },
     "fetch-new-enquiries": {
         "task": "fetch_new_enquiries",
         "schedule": crontab(minute=f"*/{AS_ENQUIRIES_POLL_INTERVAL_MINS}"),
@@ -34,10 +29,6 @@ app.conf.beat_schedule = {
                             )
     }
 } if ENQUIRY_STATUS_SHOULD_UPDATE else {
-    "refresh-datahub-metadata": {
-        "task": "refresh_datahub_metadata",
-        "schedule": crontab(minute="0", hour=f"*/{DH_METADATA_FETCH_INTERVAL_HOURS}"),
-    },
     "fetch-new-enquiries": {
         "task": "fetch_new_enquiries",
         "schedule": crontab(minute=f"*/{AS_ENQUIRIES_POLL_INTERVAL_MINS}"),
