@@ -1,31 +1,17 @@
 import logging
 import os
 import requests
-
-from datetime import datetime, date
+from requests_hawk import HawkAuth
+from cache_memoize import cache_memoize
+from datetime import date
 from django.conf import settings
-from django.core.cache import cache
 from django.forms.models import model_to_dict
-from mohawk import Sender
 from requests.exceptions import RequestException
 from urllib.error import HTTPError
 
 import app.enquiries.ref_data as ref_data
 from app.enquiries.utils import get_oauth_payload
-
-
-DATA_HUB_METADATA_ENDPOINTS = (
-    "country",
-    "fdi-type",
-    "investment-investor-type",
-    "investment-involvement",
-    "investment-project-stage",
-    "investment-specific-programme",
-    "investment-type",
-    "referral-source-activity",
-    "referral-source-website",
-    "sector",
-)
+from app.enquiries.common.requests import cached_requests
 
 
 def dh_request(
@@ -95,74 +81,36 @@ def dh_request(
     return response
 
 
-def _dh_fetch_metadata():
-    logging.info(f"Fetching metadata at {datetime.now()}")
-    credentials = {
-        "id": settings.DATA_HUB_HAWK_ID,
-        "key": settings.DATA_HUB_HAWK_KEY,
-        "algorithm": "sha256",
-    }
-
-    metadata = {"failed": []}
-    for endpoint in DATA_HUB_METADATA_ENDPOINTS:
-        meta_url = os.path.join(settings.DATA_HUB_METADATA_URL, endpoint)
-
-        logging.info(f"Fetching {meta_url} ...")
-
-        sender = Sender(
-            credentials,
-            meta_url,
-            "GET",
-            content=None,
-            content_type=None,
-            always_hash_content=False,
-        )
-        response = requests.get(
-            meta_url, headers={"Authorization": sender.request_header}, timeout=10,
-        )
-        if response.ok:
-            metadata[endpoint] = response.json()
-        else:
-            metadata["failed"].append(endpoint)
-
-    if metadata["failed"]:
-        logging.error(f"Error fetching DataHub metadata for endpoints: {metadata['failed']}")
-
-    return metadata
-
-
-def dh_fetch_metadata(cache_key="metadata", expiry_secs=60 * 60):
+@cache_memoize(60 * 60)
+def fetch_metadata(name):
     """
-    Fetches and caches metadata from |data-hub|_
+    Fetches |data-hub-api|_ metadata by ``name``. The function is *memoized* for
+    one hour in :doc:`Django's cache <topics/cache>`.
 
-    :returns: The fetched metadata
-    :rtype: dict
+    :param name:
+        The trailing part of the |data-hub-api|_ metadata endpoint e.g.
+        ``https://api.datahub.dev.uktrade.io/v4/metadata/<name>``.
+    :type name: str
+
+    :returns: The parsed metadata as a ``list`` of dictionaries.
     """
-
-    try:
-        cached_metadata = cache.get(cache_key)
-        if not cached_metadata:
-            logging.info("Metadata expired in cache, fetching again ...")
-            cached_metadata = _dh_fetch_metadata()
-            cache.set(cache_key, cached_metadata, timeout=expiry_secs)
-            return cached_metadata
-
-        logging.info(f"Metadata valid in cache (expiry_secs={expiry_secs})")
-        return cached_metadata
-    except Exception as e:
-        logging.error(f"Error fetching metadata, {str(e)} ...")
-        raise e
+    url = os.path.join(settings.DATA_HUB_METADATA_URL, name)
+    response = cached_requests.get(
+        url,
+        auth=HawkAuth(id=settings.DATA_HUB_HAWK_ID, key=settings.DATA_HUB_HAWK_KEY),
+        timeout=10,
+    )
+    response.raise_for_status()
+    return response.json()
 
 
-def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"):
+def map_to_datahub_id(refdata_value, dh_category, target_key="name"):
     """
     Maps application reference data to |data-hub|_ reference data and
     extracts the unique identifier
 
     :param refdata_value: Human readable value of a choice field
     :type refdata_value: str
-    :param dh_metadata: |data-hub|_ metadata
-    :type dh_metadata: dict
     :param dh_category: |data-hub|_ metadata category
     :type dh_category: str
     :param target_key: key name with the metadata object
@@ -171,7 +119,7 @@ def map_to_datahub_id(refdata_value, dh_metadata, dh_category, target_key="name"
     :returns: |data-hub|_ uuid for the given ``refdata_value`` if available, else ``None``
     """
 
-    dh_data = list(filter(lambda d: d[target_key] == refdata_value, dh_metadata[dh_category]))
+    dh_data = list(filter(lambda d: d[target_key] == refdata_value, fetch_metadata(dh_category)))
 
     return dh_data[0]["id"] if dh_data else None
 
@@ -461,16 +409,13 @@ def dh_enquiry_readiness(request, access_token, enquiry):
 
 
 def prepare_dh_payload(
-    enquiry, dh_metadata, company_id, contact_id, adviser_id, client_relationship_manager_id,
+    enquiry, company_id, contact_id, adviser_id, client_relationship_manager_id,
 ):
     """
     Prepares the payload for investment create request
 
     :param enquiry:
     :type enquiry: app.enquiries.models.Enquiry
-
-    :param dh_metadata: |data-hub-api|_ metadata
-    :type dh_metadata: dict
 
     :param company_id:
     :type company_id: str
@@ -490,53 +435,65 @@ def prepare_dh_payload(
         ``payload`` is a ``dict``.
     """
 
-    payload = {}
-    payload["name"] = enquiry.company_name
-    payload["investor_company"] = company_id
-    payload["description"] = enquiry.project_description
-    payload["anonymous_description"] = enquiry.anonymised_project_description
-    payload["estimated_land_date"] = ""
-    if enquiry.estimated_land_date:
-        payload["estimated_land_date"] = enquiry.estimated_land_date.isoformat()
-    payload["investment_type"] = get_dh_id(
-        dh_metadata["investment-type"], ref_data.DATA_HUB_INVESTMENT_TYPE_FDI
+    sector = map_to_datahub_id(
+        enquiry.get_primary_sector_display(),
+        "sector",
     )
-    payload["fdi_type"] = map_to_datahub_id(
-        enquiry.get_investment_type_display(), dh_metadata, "fdi-type"
+
+    payload = dict(
+        name=enquiry.company_name,
+        investor_company=company_id,
+        description=enquiry.project_description,
+        anonymous_description=enquiry.anonymised_project_description,
+        investment_type=get_dh_id(
+            fetch_metadata("investment-type"),
+            ref_data.DATA_HUB_INVESTMENT_TYPE_FDI
+        ),
+        fdi_type=map_to_datahub_id(
+            enquiry.get_investment_type_display(),
+            "fdi-type"
+        ),
+        stage=get_dh_id(
+            fetch_metadata("investment-project-stage"),
+            ref_data.DATA_HUB_PROJECT_STAGE_PROSPECT,
+        ),
+        investor_type=map_to_datahub_id(
+            enquiry.get_new_existing_investor_display(),
+            "investment-investor-type",
+        ),
+        level_of_involvement=map_to_datahub_id(
+            enquiry.get_investor_involvement_level_display(),
+            "investment-involvement",
+        ),
+        specific_programme=map_to_datahub_id(
+            enquiry.get_specific_investment_programme_display(),
+            "investment-specific-programme",
+        ),
+        client_contacts=[contact_id],
+        client_relationship_manager=client_relationship_manager_id,
+        sector=sector,
+        estimated_land_date=(
+            enquiry.estimated_land_date and enquiry.estimated_land_date.isoformat()
+        ),
     )
-    payload["stage"] = get_dh_id(
-        dh_metadata["investment-project-stage"], ref_data.DATA_HUB_PROJECT_STAGE_PROSPECT,
-    )
-    payload["investor_type"] = map_to_datahub_id(
-        enquiry.get_new_existing_investor_display(), dh_metadata, "investment-investor-type",
-    )
-    payload["level_of_involvement"] = map_to_datahub_id(
-        enquiry.get_investor_involvement_level_display(), dh_metadata, "investment-involvement",
-    )
-    payload["specific_programme"] = map_to_datahub_id(
-        enquiry.get_specific_investment_programme_display(),
-        dh_metadata,
-        "investment-specific-programme",
-    )
-    payload["client_contacts"] = [contact_id]
-    payload["client_relationship_manager"] = client_relationship_manager_id
-    payload["sector"] = map_to_datahub_id(
-        enquiry.get_primary_sector_display(), dh_metadata, "sector"
-    )
+
     # There is a mismatch in the sector data coming from the website vs
     # the metadata in DH, hence bail out if we don't get uuid because of
     # a mismatch
-    if not payload["sector"]:
+    if not sector:
         return payload, "primary_sector"
 
-    payload["business_activities"] = [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES]
-    payload["referral_source_adviser"] = adviser_id
-    payload["referral_source_activity"] = get_dh_id(
-        dh_metadata["referral-source-activity"],
-        ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE,
-    )
-    payload["referral_source_activity_website"] = get_dh_id(
-        dh_metadata["referral-source-website"], ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE
+    payload.update(
+        business_activities=[ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES],
+        referral_source_adviser=adviser_id,
+        referral_source_activity=get_dh_id(
+            fetch_metadata("referral-source-activity"),
+            ref_data.DATA_HUB_REFERRAL_SOURCE_ACTIVITY_WEBSITE,
+        ),
+        referral_source_activity_website=get_dh_id(
+            fetch_metadata("referral-source-website"),
+            ref_data.DATA_HUB_REFERRAL_SOURCE_WEBSITE
+        ),
     )
 
     return payload, None
@@ -582,12 +539,6 @@ def dh_investment_create(request, enquiry):
         response["errors"].extend(dh_status["errors"])
         return response
 
-    try:
-        dh_metadata = dh_fetch_metadata()
-    except Exception:
-        response["errors"].append({"metadata": "Error fetching metadata"})
-        return response
-
     company_id = enquiry.dh_company_id
     # Create a contact for this company
     # If a contact already exists then make the new contact as secondary
@@ -605,7 +556,7 @@ def dh_investment_create(request, enquiry):
     )
     if error:
         response["errors"].append(
-            {"contact_create": f"Error while creating a new company contact, {str(error)}"}
+            {"contact_create": f"Error while creating a new company contact, {error}"}
         )
         return response
 
@@ -616,7 +567,6 @@ def dh_investment_create(request, enquiry):
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
     payload, error_key = prepare_dh_payload(
         enquiry,
-        dh_metadata,
         company_id,
         contact_id,
         referral_adviser,

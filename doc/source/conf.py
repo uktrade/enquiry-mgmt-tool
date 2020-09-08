@@ -85,7 +85,7 @@ html_static_path = ['_static']
 # we extract everything after the ".. rst_prolog" comment from the README
 # so the substitutions work everywhere, including docstrings. Due to this,
 # the doc compilation shows "Duplicate substitution definition" warnings.
-rst_prolog = re.search(r'rst_prolog.*\Z(.*)',
+rst_prolog = re.search(r'rst_prolog.*?$(.*)',
                        open('../../README.rst').read(),
                        re.MULTILINE | re.DOTALL).group(1)
 
