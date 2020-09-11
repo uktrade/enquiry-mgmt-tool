@@ -160,10 +160,6 @@ if FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
 
     LOGIN_URL = reverse_lazy("authbroker_client:login")
     LOGIN_REDIRECT_URL = reverse_lazy("index")
-    # MIDDLEWARE.append(
-    #     # middleware to check auth for all views, alternatively use login_required decorator
-    #     "authbroker_client.middleware.ProtectAllViewsMiddleware",
-    # )
 else:
     LOGIN_URL = "/admin/login/"
 # Database
