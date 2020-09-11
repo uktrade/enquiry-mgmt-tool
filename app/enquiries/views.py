@@ -423,7 +423,7 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class EnquiryDeleteView(DeleteView):
+class EnquiryDeleteView(LoginRequiredMixin, DeleteView):
     """
     Delete :class:`app.enquiries.models.Enquiry` view
     """
@@ -437,7 +437,7 @@ class EnquiryDeleteView(DeleteView):
         return redirect("index")
 
 
-class EnquiryCompanySearchView(TemplateView):
+class EnquiryCompanySearchView(LoginRequiredMixin, TemplateView):
     """|data-hub|_ company search view"""
 
     model = models.Enquiry
@@ -474,7 +474,7 @@ class EnquiryCompanySearchView(TemplateView):
         return render(request, self.template_name, context)
 
 
-class ImportEnquiriesView(TemplateView):
+class ImportEnquiriesView(LoginRequiredMixin, TemplateView):
     """
     Handles import of enquiries with a CSV file
     """
@@ -580,7 +580,7 @@ class ImportEnquiriesView(TemplateView):
         )
 
 
-class ImportTemplateDownloadView(View):
+class ImportTemplateDownloadView(LoginRequiredMixin, View):
     methods = ["get"]
     CONTENT_TYPE = settings.IMPORT_TEMPLATE_MIMETYPE
 
