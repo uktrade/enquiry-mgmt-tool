@@ -454,9 +454,11 @@ class DatahubProjectStatus(models.TextChoices):
 
 class EnquiryAction(models.TextChoices):
     EMAIL_CAMPAIGN_SUBSCRIBE = "EMAIL_CAMPAIGN_SUBSCRIBE", _("Subscribe to email campaign")
-    SECOND_QUALIFICATION_FORM = "SECOND_QUALIFICATION_FORM", _("Second qualification form submitted")
+    SECOND_QUALIFICATION_FORM = (
+        "SECOND_QUALIFICATION_FORM", _("Second qualification form submitted"))
     MARKED_RESPONSIVE = "MARKED_RESPONSIVE", _("Marked responsive")
-    UNSUBSCRIBED_FROM_CAMPAIGN = "UNSUBSCRIBED_FROM_CAMPAIGN", _("Unsubscribed from email campaign")
+    UNSUBSCRIBED_FROM_CAMPAIGN = (
+        "UNSUBSCRIBED_FROM_CAMPAIGN", _("Unsubscribed from email campaign"))
 
 
 # Data Hub metadata
@@ -510,4 +512,3 @@ MAP_ENQUIRY_FIELD_TO_REF_DATA = {
     "specific_investment_programme": InvestmentProgramme,
     "datahub_project_status": DatahubProjectStatus,
 }
-
