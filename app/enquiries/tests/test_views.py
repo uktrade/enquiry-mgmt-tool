@@ -12,7 +12,6 @@ from faker import Faker
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
-from django.test import RequestFactory
 from django.urls import reverse
 
 from rest_framework import status
@@ -22,7 +21,7 @@ import app.enquiries.ref_data as ref_data
 import app.enquiries.tests.utils as test_utils
 
 from app.enquiries import utils
-from app.enquiries.models import Enquiry, Enquirer, Owner
+from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
     EnquirerFactory,
     EnquiryFactory,
@@ -31,18 +30,11 @@ from app.enquiries.tests.factories import (
     get_display_name,
     return_display_value,
 )
-from app.enquiries.views import (
-    EnquiryListView,
-    ImportEnquiriesView,
-    ImportTemplateDownloadView,
-    PaginationWithPaginationMeta
-)
+from app.enquiries.views import ImportEnquiriesView, ImportTemplateDownloadView
 
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
-headers_json = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/json"}
-headers_csv = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "application/csv"}
 
 
 def canned_enquiry():
@@ -179,7 +171,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def test_enquiry_list(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         enquiries = [EnquiryFactory() for i in range(2)]
-        response = self.client.get(reverse("enquiry-list"))
+        response = self.client.get(reverse("index"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = response.json()
         results = response["results"]
@@ -188,7 +180,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def test_enquiry_list_html(self):
         """Test retrieving enquiry list and ensure we get expected count"""
         enquiries = EnquiryFactory.create_batch(2)
-        response = self.client.get(reverse("enquiry-list"), **headers)
+        response = self.client.get(reverse("index"), **headers)
         soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity__list-item")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -197,7 +189,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
     @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
     def test_enquiry_list_content_type_json(self):
-        response = self.client.get(reverse("enquiry-list"))
+        response = self.client.get(reverse("index"))
         self.assertIn(
             "application/json",
             response.get("Content-Type"),
@@ -209,7 +201,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             "HTTP_CONTENT_TYPE": "text/html",
             "HTTP_ACCEPT": "text/html",
         }
-        response = self.client.get(reverse("enquiry-list"), **headers)
+        response = self.client.get(reverse("index"), **headers)
 
         self.assertIn(
             "text/html", response.get("Content-Type"), msg="document should have type: text/html",
@@ -225,29 +217,30 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         """
         num_enquiries = 123
         enquiries = EnquiryFactory.create_batch(num_enquiries)
+        # sort enquiries to match the default sort
+        enquiries.sort(key=lambda x: x.date_received, reverse=True)
         ids = [e.id for e in enquiries]
-        # reverse the ids because we order by latest first
-        ids = ids[::-1]
+
         page_size = settings.REST_FRAMEWORK["PAGE_SIZE"]
         total_pages = (num_enquiries + page_size - 1) // page_size
         for page in range(total_pages):
             start = page * page_size
             end = start + page_size
-            response = self.client.get(reverse("enquiry-list"), {"page": page + 1}, **headers)
+            response = self.client.get(reverse("index"), {"page": page + 1}, **headers)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual([enq["id"] for enq in response.data["results"]], ids[start:end])
             self.assertEqual(response.data["current_page"], page + 1)
 
-        response = self.client.get(reverse("enquiry-list"), **headers)
+        response = self.client.get(reverse("index"), **headers)
         pages = response.context["pages"]
         assert response.context["total_pages"] == 13
         assert pages[0]["page_number"] == 1
-        assert pages[0]["link"] == ("/enquiries/?page=1")
+        assert pages[0]["link"] == ("/?page=1")
         page_labels = [page["page_number"] for page in pages]
         assert page_labels == [1, 2, 3, 4, "...", 13]
 
         # Ensure accesing the page after the last page should return 404
-        response = self.client.get(reverse("enquiry-list"), {"page": total_pages + 1})
+        response = self.client.get(reverse("index"), {"page": total_pages + 1})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_enquiry_create(self):
@@ -315,6 +308,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         data["enquiry_stage"] = get_random_item(ref_data.EnquiryStage)
         data["notes"] = self.faker.sentence()
         data["country"] = get_random_item(ref_data.Country)
+        data["date_received"] = self.faker.date_time()
 
         # Enquirer fields are also sent in a single form update
         enquirer = enquiry_obj.enquirer
@@ -445,9 +439,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         """
         initial_count = Enquiry.objects.count()
 
-        response = self.client.post(
-            reverse("import-enquiries"), {"enquiries": ""}, follow=True
-        )
+        response = self.client.post(reverse("import-enquiries"), {"enquiries": ""}, follow=True)
 
         soup = BeautifulSoup(response.content, "html.parser")
         error_message = soup.select(".error")[0].text
@@ -542,7 +534,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
     def test_login_protected(self):
         """Test the view is protected by SSO"""
         self.logout()
-        response = self.client.get(reverse("enquiry-list"))
+        response = self.client.get(reverse("index"))
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
         self.assertEqual(response.get("Location").split("?")[0], settings.LOGIN_URL)
         self.login()
@@ -553,30 +545,31 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         EnquiryFactory(company_name="Bar Inc")
         EnquiryFactory(company_name="Baz")
         response = self.client.get(
-            reverse("enquiry-list"), {"company_name__icontains": "Bar"}, **headers,
+            reverse("index"), {"company_name__icontains": "Bar"}, **headers,
         )
         data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data["count"], 2)
 
-    def test_enquiry_list_csv_format(self):
+    def test_enquiry_csv_format_content_disposition(self):
         """
-        Asserts that the view instance has no paginator if there's a
-        `format=xlsx` query string parameter
+        Asserts that response to a ``format=csv`` request has the correct
+        ``Content-Disposition`` header.
         """
-        user = Owner.objects.get(username='test')
+        response = self.client.get(reverse("index"), dict(format="csv"))
+        assert response["Content-Disposition"] == "attachment; filename=rtt_enquiries_export.csv"
 
-        request = RequestFactory().get(reverse("enquiry-list"),
-                                       dict(format='xlsx'))
-        request.user = user
-        response = EnquiryListView.as_view()(request)
-        assert response.renderer_context['view'].paginator is None
+        response = self.client.get(reverse("index"))
+        assert response.get("Content-Disposition") is None
 
-        request = RequestFactory().get(reverse("enquiry-list"))
-        request.user = user
-        response = EnquiryListView.as_view()(request)
-        assert isinstance(response.renderer_context['view'].paginator,
-                          PaginationWithPaginationMeta)
+    def test_enquiry_csv_response_fields(self):
+        """
+        Asserts that response to a ``format=csv`` request returns the expected enquiry fields.
+        """
+        response = self.client.get(reverse("index"), dict(format="csv"))
+        assert response.content.decode().strip() == ",".join(
+            settings.EXPORT_OUTPUT_FILE_CSV_HEADERS
+        )
 
     @pytest.mark.skip(reason="@TODO need to investigate why the Owner model cannot be serialized")
     def test_enquiry_list_filtered_unassigned(self):
@@ -596,7 +589,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiry_assigned = enquiries[1]
 
         # owner assigned
-        response = self.client.get(reverse("enquiry-list"), {"owner__id": owner.id}, **headers)
+        response = self.client.get(reverse("index"), {"owner__id": owner.id}, **headers)
         data = response.data
 
         enquiry_data = data["results"][0]
@@ -606,7 +599,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assert_factory_enquiry_equals_enquiry_response(enquiry_assigned, enquiry_data)
 
         # owner unassigned
-        response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"})
+        response = self.client.get(reverse("index"), {"owner__id": "UNASSIGNED"})
         data = response.data
 
         enquiry_data_unassigned = data["results"][0]
@@ -633,7 +626,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         enquiries[0].save()
 
         # owner assigned
-        response = self.client.get(reverse("enquiry-list"), {"owner__id": owner.id}, **headers)
+        response = self.client.get(reverse("index"), {"owner__id": owner.id}, **headers)
 
         soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity__list-item")
@@ -642,7 +635,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(len(enquiry_els), 1)
 
         # owner unassigned
-        response = self.client.get(reverse("enquiry-list"), {"owner__id": "UNASSIGNED"}, **headers)
+        response = self.client.get(reverse("index"), {"owner__id": "UNASSIGNED"}, **headers)
         soup = BeautifulSoup(response.content, "html.parser")
         enquiry_els = soup.select(".entity__list-item")
 
@@ -657,7 +650,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW)
         # enquiry stage - ADDED_TO_DATAHUB
         response = self.client.get(
-            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
+            reverse("index"), {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
         )
         data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -665,7 +658,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
         # enquiry stage - NON_FDI
         response = self.client.get(
-            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI},
+            reverse("index"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI},
         )
         data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -678,9 +671,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         EnquiryFactory(enquiry_stage=ref_data.EnquiryStage.NEW)
         # enquiry stage - ADDED_TO_DATAHUB
         response = self.client.get(
-            reverse("enquiry-list"),
-            {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB},
-            **headers,
+            reverse("index"), {"enquiry_stage": ref_data.EnquiryStage.ADDED_TO_DATAHUB}, **headers,
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
@@ -691,7 +682,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
 
         # enquiry stage - NON_FDI
         response = self.client.get(
-            reverse("enquiry-list"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}, **headers,
+            reverse("index"), {"enquiry_stage": ref_data.EnquiryStage.NON_FDI}, **headers,
         )
 
         soup = BeautifulSoup(response.content, "html.parser")

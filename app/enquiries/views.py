@@ -19,8 +19,6 @@ from django.views.generic import DeleteView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django_filters import rest_framework as filters
-from drf_renderer_xlsx.mixins import XLSXFileMixin
-from drf_renderer_xlsx.renderers import XLSXRenderer
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -28,6 +26,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.utils.urls import replace_query_param
 from rest_framework.views import APIView
+from rest_framework_csv.renderers import CSVRenderer
 
 from app.enquiries.common.datahub_utils import dh_investment_create
 from app.enquiries import forms, models, serializers, utils
@@ -43,6 +42,10 @@ UNASSIGNED = "UNASSIGNED"
 
 
 class DataHubAdviserSearch(LoginRequiredMixin, View):
+    """
+    Endpoint for the `Client Relationship Manager` autocomplete field
+    of :class:`app.enquiries.forms.EnquiryForm`.
+    """
     def get(self, request):
         session = get_oauth_payload(request)
         access_token = session["access_token"]
@@ -89,7 +92,7 @@ def get_enquiry_field(name):
 
 class PaginationWithPaginationMeta(PageNumberPagination):
     """
-    Metadata class to add additional metadata for use in template
+    Adds additional metadata to the template context.
     """
 
     def get_paginated_response(self, data):
@@ -103,6 +106,7 @@ class PaginationWithPaginationMeta(PageNumberPagination):
             "owners": models.Owner.objects.all().order_by("first_name"),
             "query_params": self.request.GET,
             "total_pages": len(self.page.paginator.page_range),
+            "sort_options": settings.ENQUIRY_SORT_OPTIONS,
             "pages": [
                 {
                     "page_number": page_number,
@@ -112,9 +116,9 @@ class PaginationWithPaginationMeta(PageNumberPagination):
                 for page_number in self.page.paginator.page_range
             ],
         }
-        return Response(truncate_response_data(response_data),)
+        return Response(truncate_response_data(response_data))
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = serializers.EnquirySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -125,10 +129,21 @@ class PaginationWithPaginationMeta(PageNumberPagination):
 
 def truncate_response_data(response_data, block_size=4):
     """
-    Truncate the pagination links.
+    Truncates pagination links.
 
     We don't want to show a link for every page if there are lots of pages.
-    This replaces page links which are less useful with an ellipsis ('...').
+    This replaces page links which are less useful with an ``...`` ellipsis.
+
+    :param response_data:
+        Data supposed to be passed to :class:`rest_framework.response.Response`.
+    :type response_data: dict
+
+    :param block_size:
+        How many page links should be kept at each end of the truncated portion.
+    :type block_size: int
+
+    :returns: The response data with updated ``'pages'`` key
+    :rtype: dict
     """
     pages = response_data["pages"]
 
@@ -186,7 +201,9 @@ def is_valid_int(v) -> bool:
 
 
 class EnquiryFilter(filters.FilterSet):
-
+    """
+    Enquiry search filters
+    """
     owner__id = filters.CharFilter(field_name="owner__id", method="filter_owner_id")
     received__lt = filters.DateFilter(field_name="receive", method="filter_received_lt")
     received__gt = filters.DateFilter(field_name="receive", method="filter_received_gt")
@@ -201,9 +218,9 @@ class EnquiryFilter(filters.FilterSet):
 
     def filter_owner_id(self, queryset, name, value):
         """
-        This filter handles the owner__id parameter which can either be an int
-        or the string 'UNASSIGNED'.
-        In the case of UNASSIGNED to filter for enquirires where owner == None
+        Handles the ``owner__id`` parameter which can either be an int
+        or the string ``'UNASSIGNED'``. In the case of ``'UNASSIGNED'``
+        to filter for enquirires where ``owner == None``.
         """
         vals = self.request.GET.getlist(name)
         # filter out valid values (int|'UNASSIGNED')
@@ -224,24 +241,20 @@ class EnquiryFilter(filters.FilterSet):
 
     def filter_received_lt(self, queryset, name, value):
         """
-        Returns a queryset only with entities having the ``received`` date less than ``value``.
+        Returns a :class:`django.db.models.query.QuerySet` only with entities
+        which have ``date_received`` less than ``value``.
         """
         received = datetime.combine(value, datetime.min.time())
-        q = Q(date_received__lt=received) | Q(
-                date_received__isnull=True,
-                created__lt=received,
-            )
+        q = Q(date_received__lt=received)
         return queryset.filter(q)
 
     def filter_received_gt(self, queryset, name, value):
         """
-        Returns a queryset only with entities having the ``received`` date greater than ``value``.
+        Returns a :class:`django.db.models.query.QuerySet` only with entities
+        which have a ``date_received`` greater than ``value``.
         """
         received = datetime.combine(value, datetime.min.time())
-        q = Q(date_received__gt=received) | Q(
-            date_received__isnull=True,
-            created__gt=received,
-        )
+        q = Q(date_received__gt=received)
         return queryset.filter(q)
 
     class Meta:
@@ -249,41 +262,65 @@ class EnquiryFilter(filters.FilterSet):
         fields = {
             "company_name": ["icontains"],
             "date_added_to_datahub": ["lt", "gt"],
+            "project_code": ["icontains"]
         }
 
 
-class EnquiryListView(XLSXFileMixin, LoginRequiredMixin, ListAPIView):
+class EnquiryListCSVRenderer(CSVRenderer):
     """
-    List all enquiries.
+    A custom CSV renderer showing only selected fields.
+    """
 
-    In GET: Returns a paginated list of enquiries using PageNumberPagination.
-    This is the default pagination class as set globally in settings. It is
-    also inherited via a meta class to add additional metadata required
-    for use in the template
+    header = settings.EXPORT_OUTPUT_FILE_CSV_HEADERS
+
+
+class EnquiryListView(LoginRequiredMixin, ListAPIView):
+    """
+    The `enquiry search` view.
     """
 
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = EnquiryFilter
     template_name = "enquiry_list.html"
-    renderer_classes = (TemplateHTMLRenderer, XLSXRenderer)
+    renderer_classes = (TemplateHTMLRenderer, EnquiryListCSVRenderer)
     serializer_class = serializers.EnquiryDetailSerializer
     pagination_class = PaginationWithPaginationMeta
-    filename = "rtt_enquiries_export.xlsx"
 
     def get_queryset(self):
-        return models.Enquiry.objects.all()
+        sortby = self.request.query_params.get("sortby")
+        all_enquiries = models.Enquiry.objects.all()
+
+        return all_enquiries.order_by(
+            sortby if sortby in settings.ENQUIRY_SORT_OPTIONS.keys() else "-date_received"
+        )
+
+    @property
+    def is_csv(self):
+        return self.request.query_params.get("format") == "csv"
 
     @property
     def paginator(self):
-        """This method override is here to disable pagination for the xlsx format"""
-        if self.request.query_params.get("format") == "xlsx":
+        """Disables pagination for ``?format=csv`` requests"""
+        if self.is_csv:
             self._paginator = None
+
         return super().paginator
+
+    def finalize_response(self, *args, **kwargs):
+        """Handles the ``Content-Disposition`` header of a ``?format=csv`` request"""
+        response = super().finalize_response(*args, **kwargs)
+
+        if self.is_csv:
+            fname = settings.EXPORT_OUTPUT_FILE_SLUG
+            ext = settings.EXPORT_OUTPUT_FILE_EXT
+            response["Content-Disposition"] = f"attachment; filename={fname}.{ext}"
+
+        return response
 
 
 class EnquiryCreateView(LoginRequiredMixin, APIView):
     """
-    Creates new Enquiry
+    Creates new :class:`app.enquiries.models.Enquiry`
     """
 
     def post(self, request, format=None):
@@ -297,7 +334,7 @@ class EnquiryCreateView(LoginRequiredMixin, APIView):
 
 class EnquiryDetailView(LoginRequiredMixin, TemplateView):
     """
-    View to provide complete details of an Enquiry
+    :class:`app.enquiries.models.Enquiry` detail view
     """
 
     model = models.Enquiry
@@ -307,7 +344,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
-        context["back_url"] = reverse("enquiry-list")
+        context["back_url"] = reverse("index")
         return context
 
     def post(self, request, *args, **kwargs):
@@ -332,7 +369,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
 
 class EnquiryEditView(LoginRequiredMixin, UpdateView):
     """
-    View to provide complete details of an Enquiry
+    :class:`app.enquiries.models.Enquiry` edit view
     """
 
     model = models.Enquiry
@@ -386,21 +423,22 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class EnquiryDeleteView(DeleteView):
+class EnquiryDeleteView(LoginRequiredMixin, DeleteView):
     """
-    View to delete enquiry
+    Delete :class:`app.enquiries.models.Enquiry` view
     """
 
     model = models.Enquiry
     template_name = "enquiry_delete.html"
 
-    def post(self, request, **kwargs):
+    def post(self, *args, **kwargs):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         enquiry.delete()
-        return redirect("enquiry-list")
+        return redirect("index")
 
 
-class EnquiryCompanySearchView(TemplateView):
+class EnquiryCompanySearchView(LoginRequiredMixin, TemplateView):
+    """|data-hub|_ company search view"""
 
     model = models.Enquiry
     template_name = "enquiry_company_search.html"
@@ -436,9 +474,9 @@ class EnquiryCompanySearchView(TemplateView):
         return render(request, self.template_name, context)
 
 
-class ImportEnquiriesView(TemplateView):
+class ImportEnquiriesView(LoginRequiredMixin, TemplateView):
     """
-    View handles submission of CSV files containing enquiries
+    Handles import of enquiries with a CSV file
     """
 
     http_method_names = ["get", "post"]
@@ -498,8 +536,7 @@ class ImportEnquiriesView(TemplateView):
         file_obj = request.FILES.get(enquiries_key)
         if not file_obj:
             messages.error(
-                self.request,
-                "No file was selected. Choose a file to upload.",
+                self.request, "No file was selected. Choose a file to upload.",
             )
             return HttpResponseRedirect(reverse("import-enquiries"))
 
@@ -543,7 +580,7 @@ class ImportEnquiriesView(TemplateView):
         )
 
 
-class ImportTemplateDownloadView(View):
+class ImportTemplateDownloadView(LoginRequiredMixin, View):
     methods = ["get"]
     CONTENT_TYPE = settings.IMPORT_TEMPLATE_MIMETYPE
 

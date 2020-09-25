@@ -59,10 +59,19 @@ $govuk-assets-path: '/static/assets/';
     padding: govuk-spacing(3) 0;
     border-bottom: 1px solid #6f777b;
     margin-right: 0;
+    justify-content: space-between;
+
+    &_no-border{
+        border-bottom: none;
+    }
 }
 
-.filters-column {
+.filters__column {
     padding: 0;
+}
+
+.filters__select {
+    width: 100%;
 }
 
 .import-enquiries-button {
@@ -81,4 +90,16 @@ $govuk-assets-path: '/static/assets/';
 
 .download-button-container {
     margin-left: auto;
+}
+
+.sortby {
+    display: flex;
+    align-items: center;
+
+    &__select {
+        display: inline-block;
+    }
+    &__label {
+        margin-right: 8px;
+    }
 }

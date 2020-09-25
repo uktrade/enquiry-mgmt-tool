@@ -7,6 +7,7 @@ cffi==1.13.2
 chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
+coverage==5.2.1
 cryptography==2.8
 decorator==4.4.1
 Django==3.0.7
@@ -18,7 +19,7 @@ django-redis==4.11.0
 django-rest-knox==4.1.0
 django-staff-sso-client==2.2.0
 djangorestframework==3.10.3
-drf-renderer-xlsx==0.3.7
+djangorestframework-csv==2.1.0
 drf-writable-nested==0.5.3
 django-widget-tweaks==1.4.5
 django-model-choices==1.0.0
@@ -54,6 +55,7 @@ pyparsing==2.4.5
 pytest==5.3.1
 pytest-cov==2.10.0
 pytest-django==3.7.0
+pytest-freezegun==0.4.2
 pytz==2019.3
 redis==3.4.1
 requests==2.22.0

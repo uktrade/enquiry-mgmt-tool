@@ -6,7 +6,7 @@ from app.enquiries.models import Enquiry, Enquirer
 
 
 class EnquirerForm(ModelForm):
-    """ Enquirer edit form """
+    """:class:`app.enquiries.models.Enquirer` edit form """
 
     class Meta:
         model = Enquirer
@@ -23,7 +23,7 @@ class AutocompleteField(ChoiceField):
 
 
 class EnquiryForm(ModelForm):
-    """ Enquiry edit form """
+    """:class:`app.enquiries.models.Enquiry` edit form"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,4 +48,4 @@ class EnquiryForm(ModelForm):
 
     class Meta:
         model = Enquiry
-        fields = "__all__"
+        exclude = ('datahub_project_status', 'date_received')

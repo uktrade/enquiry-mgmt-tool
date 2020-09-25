@@ -204,7 +204,7 @@ const testPagination = ({ filters, owner, totalPages, pages }) =>
 
 describe('Filters', () => {
   before(() => {
-    cy.reseed('/enquiries/')
+    cy.reseed('/')
   })
   beforeEach(() => Cypress.Cookies.preserveOnce('sessionid'))
 
@@ -723,4 +723,10 @@ describe('Filters', () => {
     cy.get('.big-number-of-enquiries').should('have.text', '48')
   })
 
+  testFilters({
+    filters: {
+      'Data Hub project code': 'DHP-00000002',
+    },
+    expectedTotal: 1,
+  })
 })

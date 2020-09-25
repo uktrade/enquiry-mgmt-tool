@@ -48,7 +48,7 @@
                     <dt class="govuk-summary-list__key">
                         Date received
                     </dt>
-                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"received" }}</dd>
+                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"date_received" }}</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -252,15 +252,9 @@
                     {{ form.client_relationship_manager }}
                 </div>
 
-                <div class="read-only">
-                    <div class="govuk-label">Date added to Data Hub</div>
-                    <p>{{ enquiry|get_dh_date_added }}</p>
-                </div>
+                {% include 'snippets/enquiry_field_input_date.html' with instance=enquiry field="date_added_to_datahub" %}
 
                 {% include 'snippets/enquiry_field_input.html' with instance=enquiry field="project_code" %}
-
-                <!-- TODO: Change label to 'Data Hub project status' -->
-                {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="datahub_project_status" %}
 
                 {% include 'snippets/enquiry_field_input_date.html' with instance=enquiry field="project_success_date" %}
 

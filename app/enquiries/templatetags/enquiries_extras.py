@@ -35,7 +35,6 @@ can_be_default_fields = [
     "third_hpo_selection",
     "organisation_type",
     "new_existing_investor",
-    "datahub_project_status",
 ]
 
 field_error_msgs = {
@@ -180,3 +179,8 @@ def truncate_chars_end_word(value: str, max_length: int):
             truncd_val = truncd_val[:truncd_val.rfind(" ")]
         return truncd_val + "..."
     return value
+
+
+@register.filter
+def is_default_sort(sort_by):
+    return not sort_by or sort_by not in settings.ENQUIRY_SORT_OPTIONS.keys()

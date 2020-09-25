@@ -24,7 +24,7 @@ const getDetail = field =>
 describe('Submit', () => {
 
   beforeEach(() => {
-    cy.reseed('/enquiries/')
+    cy.reseed('/')
     Cypress.Cookies.preserveOnce('sessionid')
   })
 

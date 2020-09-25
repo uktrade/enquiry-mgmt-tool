@@ -8,7 +8,7 @@
 
     <div class="top-controls">
         <div class="top-controls__back-container">
-            <a href="{% url 'enquiry-list' %}" class="govuk-back-link">Back</a>
+            <a href="{% url 'index' %}" class="govuk-back-link">Back</a>
         </div>
         <div class="top-controls__edit-button-container">
             <a href="{% url 'enquiry-edit' enquiry.id %}" class="govuk-button
@@ -54,7 +54,7 @@
                     <dt class="govuk-summary-list__key">
                         Date received
                     </dt>
-                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"received" }}</dd>
+                    <dd class="govuk-summary-list__value">{{ enquiry|get_field_value:"date_received" }}</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -167,7 +167,6 @@
                     <dd class="govuk-summary-list__value"  id="{{ date_added_to_datahub }}">{{ enquiry|get_dh_date_added }}</dd>
                 </div>
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_code" %}
-                {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="datahub_project_status" %}
                 {% include 'snippets/summary_list_key_value.html' with instance=enquiry field="project_success_date" %}
             </dl>
         </div>

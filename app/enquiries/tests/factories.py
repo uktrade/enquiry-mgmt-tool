@@ -1,7 +1,7 @@
 import factory
 import random
 
-from datetime import date
+from datetime import date, timezone
 from faker import Faker
 
 
@@ -88,6 +88,7 @@ class EnquiryFactory(factory.django.DjangoModelFactory):
     datahub_project_status = get_random_item(ref_data.DatahubProjectStatus)
     date_added_to_datahub = date.today()
     project_success_date = date.today()
+    date_received = factory.Faker("date_time", tzinfo=timezone.utc)
     client_relationship_manager = factory.Faker("first_name")
 
     class Meta:
@@ -115,3 +116,9 @@ def create_fake_enquiry_csv_row():
         "notes": fake.sentence(nb_words=20),
         "date_received": fake.date(),
     }
+
+
+def create_fake_enquiry_csv_row_no_date_received():
+    csv_row_dict = create_fake_enquiry_csv_row()
+    csv_row_dict.pop("date_received")
+    return csv_row_dict

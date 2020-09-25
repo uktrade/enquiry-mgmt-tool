@@ -6,6 +6,7 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import TestCase
 from faker import Faker
+from freezegun import freeze_time
 
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.common.as_utils import fetch_and_process_enquiries
@@ -155,10 +156,14 @@ def get_enquiries_data():
 
 
 class ActivityStreamIntegrationTests(TestCase):
+    @freeze_time()
     def test_fetch_new_enquiries(self):
         """
         Test that fetches sample enquiries data, parses them and creates
         Enquiry objects and asserts data matches with input data
+
+        Checks that for enquiries which come through activity stream the
+        date_received field is populated with the date of creation.
         """
         with requests_mock.Mocker() as m:
             url = settings.ACTIVITY_STREAM_SEARCH_URL
@@ -168,6 +173,8 @@ class ActivityStreamIntegrationTests(TestCase):
             self.assertEqual(Enquiry.objects.count(), 0)
             fetch_and_process_enquiries()
             self.assertEqual(Enquiry.objects.count(), 2)
+            enquiry = Enquiry.objects.all().first()
+            assert enquiry.date_received == enquiry.created
 
             for detail in details:
                 if not detail["skip"]:

@@ -1,10 +1,15 @@
+from datetime import datetime
 from django.test import Client, TestCase
 from faker import Faker
+from freezegun import freeze_time
 
 import app.enquiries.tests.utils as test_utils
 from app.enquiries import models, utils
 
-from app.enquiries.tests.factories import create_fake_enquiry_csv_row
+from app.enquiries.tests.factories import (
+    create_fake_enquiry_csv_row,
+    create_fake_enquiry_csv_row_no_date_received
+)
 
 
 class EnquiryViewTestCase(TestCase):
@@ -40,6 +45,16 @@ class EnquiryViewTestCase(TestCase):
 
         exists = models.Enquiry.objects.filter(**qs_args).exists()
         self.assertTrue(exists)
+
+    @freeze_time()
+    def test_util_row_to_enquiry_no_date_received(self):
+        """
+        Tests that when an enquiry is uploaded without date_received
+        populated, the field is populated with the current date.
+        """
+        csv_data = create_fake_enquiry_csv_row_no_date_received()
+        enquiry = utils.row_to_enquiry(csv_data)
+        assert enquiry.date_received.date() == datetime.now().date()
 
 
 class UtilsTestCase(test_utils.BaseEnquiryTestCase):

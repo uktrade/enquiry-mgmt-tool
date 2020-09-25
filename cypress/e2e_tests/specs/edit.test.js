@@ -9,7 +9,7 @@ const { results, details } = require('../selectors')
 
 describe('Edit', () => {
   before(() => {
-    cy.reseed('/enquiries/')
+    cy.reseed('/')
   })
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('Edit', () => {
         .find('a')
         .eq(0)
         .should('have.text', 'Back')
-        .and('have.attr', 'href', '/enquiries/')
+        .and('have.attr', 'href', '/')
         .parents()
         .find('a')
         .should('contain', 'Edit details')
@@ -145,8 +145,7 @@ describe('Edit', () => {
             },
             { dt: 'Client Relationship Manager', dd: 'Data Hub user 1' },
             { dt: 'Date added to Data Hub', dd: '03 February 2020' },
-            { dt: 'Project code', dd: '42901' },
-            { dt: 'Data Hub project status', dd: 'Active' },
+            { dt: 'Project code', dd: 'DHP-00000001' },
             { dt: 'Project success date', dd: '03 February 2022' },
           ],
         },
@@ -403,19 +402,14 @@ describe('Edit', () => {
               value: 'Data Hub user 1',
             },
             {
-              type: NOT_EDITABLE,
+              type: 'date',
               label: 'Date added to Data Hub',
-              value: '03 February 2020',
+              value: '2020-02-03',
             },
             {
               type: 'text',
               label: 'Project code',
-              value: '42901',
-            },
-            {
-              type: 'select',
-              label: 'Data Hub project status',
-              value: 'ACTIVE',
+              value: 'DHP-00000001',
             },
             {
               type: 'date',
@@ -628,14 +622,14 @@ describe('Edit', () => {
           value: 'Data Hub user 2',
         },
         {
+          type: 'date',
+          name: 'date_added_to_datahub',
+          value: '2020-08-10',
+        },
+        {
           type: 'text',
           name: 'project_code',
           value: '67542',
-        },
-        {
-          type: 'select',
-          name: 'datahub_project_status',
-          value: 'VERIFY',
         },
         {
           type: 'date',
@@ -772,9 +766,8 @@ describe('Edit', () => {
               dd: 'Business Partnership (Non-FDI)',
             },
             { dt: 'Client Relationship Manager', dd: 'Data Hub user 2' },
-            { dt: 'Date added to Data Hub', dd: 'Date not recorded' },
+            { dt: 'Date added to Data Hub', dd: '10 August 2020' },
             { dt: 'Project code', dd: '67542' },
-            { dt: 'Data Hub project status', dd: 'Verify Win' },
             { dt: 'Project success date', dd: '01 February 2026' },
           ],
         },

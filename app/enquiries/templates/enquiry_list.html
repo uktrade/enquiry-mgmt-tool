@@ -8,7 +8,7 @@
         <h2 class="govuk-heading-l">Enquiries</h2>
         <div class="govuk-grid-row">
 
-            <div class="govuk-grid-column-one-third filters-column">
+            <div class="govuk-grid-column-one-third filters__column">
                 {% include 'partials/enquiry_filters.html' %}
             </div>
 
@@ -30,13 +30,30 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="collection-header__row">
+                        <div class="collection-header__row collection-header__row_no-border">
                             <div class="header-page-number-container">
                                 <span class="header-page-number">Page {{ current_page }} of {{ total_pages }}</span>
                             </div>
+                            <div class="sortby">
+                                <label for="sortby" class="govuk-label sortby__label">
+                                    Sort by
+                                </label>
+                                <select name="sortby" class="govuk-select sortby__select"  onchange="location.search += (location.search ? '&' : '') + 'sortby=' + this.value">
+                                    {% for key,value in sort_options.items %}
+                                        <option value="{{ key }}" {% if request.query_params.sortby == key %} selected {% endif %}>
+                                            {{ value }}
+                                        </option>
+                                    {% endfor %}
+                                    <option value="-date_received" {% if request.query_params.sortby|is_default_sort %} selected {% endif %}>
+                                        Most recently received
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="collection-header__row">
                             <div class="download-button-container">
                                 <button
-                                    onclick="location.search += (location.search ? '&' : '') + 'format=xlsx' "
+                                    onclick="location.search += (location.search ? '&' : '') + 'format=csv' "
                                     class="govuk-button download-enquiries-button"
                                 >
                                     Download all

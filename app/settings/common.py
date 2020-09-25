@@ -160,10 +160,6 @@ if FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
 
     LOGIN_URL = reverse_lazy("authbroker_client:login")
     LOGIN_REDIRECT_URL = reverse_lazy("index")
-    # MIDDLEWARE.append(
-    #     # middleware to check auth for all views, alternatively use login_required decorator
-    #     "authbroker_client.middleware.ProtectAllViewsMiddleware",
-    # )
 else:
     LOGIN_URL = "/admin/login/"
 # Database
@@ -229,10 +225,30 @@ SECURE_BROWSER_XSS_FILTER = True
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
+ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS = env.int('ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS', default=6)
+ENQUIRY_SORT_OPTIONS = {
+    "company_name": "Company name: A-Z",
+    "-modified": "Most recently updated",
+    "date_received": "Least recently received",
+}
 IMPORT_ENQUIRIES_MIME_TYPES = ["text/csv", "application/vnd.ms-excel"]
 IMPORT_TEMPLATE_FILENAME = 'rtt_enquiries_import_template.xlsx'
 IMPORT_TEMPLATE_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 UPLOAD_CHUNK_SIZE = 256000
+EXPORT_OUTPUT_FILE_SLUG = 'rtt_enquiries_export'
+EXPORT_OUTPUT_FILE_EXT = 'csv'
+EXPORT_OUTPUT_FILE_MIMETYPE = 'text/csv'
+EXPORT_OUTPUT_FILE_CSV_HEADERS = [
+        'client_relationship_manager', 'company_name', 'country', 'created',
+        'date_added_to_datahub', 'date_received', 'enquirer.email',
+        'enquirer.email_consent', 'enquirer.first_name', 'enquirer.job_title',
+        'enquirer.last_name', 'enquirer.phone', 'enquirer.phone_consent',
+        'enquirer.phone_country_code', 'enquirer.request_for_call', 'enquiry_stage',
+        'enquiry_text', 'estimated_land_date', 'first_hpo_selection', 'first_response_channel',
+        'google_campaign', 'how_they_heard_dit', 'investment_readiness', 'investment_type',
+        'ist_sector', 'marketing_channel', 'notes', 'owner', 'owner.first_name', 'owner.last_name',
+        'primary_sector', 'project_code', 'project_name', 'project_success_date', 'quality',
+        'region', 'second_hpo_selection', 'third_hpo_selection', 'website']
 
 # Data Hub settings
 DATA_HUB_METADATA_URL = env('DATA_HUB_METADATA_URL')
@@ -267,6 +283,8 @@ if REDIS_BASE_URL:
     BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}?{encoded_query_args}'
     CELERY_RESULT_BACKEND = BROKER_URL
     CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
+    ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS = env.int('ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS', default=1)
+    ENQUIRY_STATUS_SHOULD_UPDATE = env.bool('ENQUIRY_STATUS_SHOULD_UPDATE', True)
 
     CACHES = {
         "default": {

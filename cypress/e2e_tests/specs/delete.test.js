@@ -3,7 +3,7 @@ const { results, details } = require('../selectors')
 
 describe('Delete', () => {
   before(() => {
-    cy.reseed('/enquiries/')
+    cy.reseed('/')
   })
 
   beforeEach(() => {
