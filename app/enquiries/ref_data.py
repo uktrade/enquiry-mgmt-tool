@@ -12,6 +12,7 @@ class EnquiryStage(models.TextChoices):
     SENT_TO_POST = "SENT_TO_POST", _("Sent to Post")
     POST_PROGRESSING = "POST_PROGRESSING", _("Post progressing")
     NON_APPLICABLE = "NON_APPLICABLE", _("Non-applicable")
+    NURTURE_AWAITING_RESPONSE = "NURTURE_AWAITING_RESPONSE", _("Nurture awaiting response")
 
 
 class InvestmentReadiness(models.TextChoices):
@@ -451,6 +452,13 @@ class DatahubProjectStatus(models.TextChoices):
     DELAYED = "DELAYED", _("Delayed")
 
 
+class EnquiryAction(models.TextChoices):
+    EMAIL_CAMPAIGN_SUBSCRIBE = "EMAIL_CAMPAIGN_SUBSCRIBE", _("Subscribe to email campaign")
+    SECOND_QUALIFICATION_FORM = "SECOND_QUALIFICATION_FORM", _("Second qualification form submitted")
+    MARKED_RESPONSIVE = "MARKED_RESPONSIVE", _("Marked responsive")
+    UNSUBSCRIBED_FROM_CAMPAIGN = "UNSUBSCRIBED_FROM_CAMPAIGN", _("Unsubscribed from email campaign")
+
+
 # Data Hub metadata
 DATA_HUB_BUSINESS_ACTIVITIES_SERVICES = "2f51ea6a-ca2f-466a-87fd-5f79ebfec125"
 DATA_HUB_INVESTMENT_TYPE_FDI = "FDI"
@@ -502,3 +510,4 @@ MAP_ENQUIRY_FIELD_TO_REF_DATA = {
     "specific_investment_programme": InvestmentProgramme,
     "datahub_project_status": DatahubProjectStatus,
 }
+
