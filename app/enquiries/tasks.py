@@ -6,7 +6,11 @@ from django.conf import settings
 from app.enquiries.celery import app
 from app.enquiries.common.datahub_utils import dh_fetch_metadata
 from app.enquiries.common.as_utils import fetch_and_process_enquiries
-
+from app.enquiries.common.email_campaign_utils import (
+    process_latest_enquiries,
+    process_second_qualifications,
+    process_engaged_enquiries,
+)
 FETCH_INTERVAL_HOURS = f"*/{settings.DATA_HUB_METADATA_FETCH_INTERVAL_HOURS}"
 
 
@@ -27,3 +31,12 @@ def fetch_new_enquiries():
 
     fetch_and_process_enquiries()
     logging.info(f"New enquiries last retrieved at {datetime.now()}")
+
+
+@app.task(name="handle_non_responsives")
+def handle_non_responsives():
+    """ Periodically fetch and handle non responsive enquiries """
+    process_latest_enquiries()
+    logging.info("Fetched non responsive enquiries %s", datetime.now())
+
+    
