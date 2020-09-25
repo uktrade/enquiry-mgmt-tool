@@ -322,26 +322,25 @@ class FailedEnquiry(models.Model):
     text_body = models.TextField(blank=True, null=True, verbose_name="Text body")
 
 
-
 class EnquiryActionLog(models.Model):
     enquiry = models.ForeignKey(Enquiry, null=False, blank=False, on_delete=models.PROTECT)
     action = models.CharField(
-        max_length=150, 
-        null=False, 
-        blank=False, 
+        max_length=150,
+        null=False,
+        blank=False,
         choices=ref_data.EnquiryAction.choices,
         default=ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE)
     actioned_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    action_data = JSONField(default=dict) 
+    action_data = JSONField(default=dict)
 
     def __str__(self):
         return f"{self.action}: {self.enquiry}"
-        
+
     @staticmethod
     def action_date_boundary(action):
         """
         Return the last time an action was performed and logged
         """
         return EnquiryActionLog.objects.filter(
-            action=action 
+            action=action
         ).order_by('-actioned_at').first()
