@@ -76,7 +76,6 @@ class AdobeClient:
         if emt_id: 
             extra_data['emt_id'] = emt_id 
         response = requests.post(url, json=extra_data, headers=self.headers)
-        print (response.text)
         if response.status_code != 201: 
             raise AdobeCampaignRequestException(message=response.text, status_code=response.status_code)
         response = response.json() 
@@ -104,6 +103,13 @@ class AdobeClient:
         Delete an unsubscription entry
         """
         url = self.url(f"profileAndServicesExt/cusInvestUnsubscribes/{pkey}")
+        return requests.delete(url, headers=self.headers).json()
+
+    def unsubscribe(self, subscription_pkey):
+        """
+        Unsubscribe a profile from a service via the subscription pkey
+        """
+        url = self.url(f"profileAndServices/service/{subscription_pkey}")
         return requests.delete(url, headers=self.headers).json()
     
     def get_profile(self, pkey):
