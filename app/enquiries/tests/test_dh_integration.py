@@ -3,26 +3,18 @@ import requests_mock
 
 from datetime import date
 from django.conf import settings
-from django.core.cache import cache
 from django.test import TestCase
 from django.test.client import RequestFactory
 from requests.exceptions import Timeout
 from unittest import mock
-from app.enquiries.tests.factories import EnquiryFactory
 
+from app.enquiries.tests.factories import EnquiryFactory
 from app.enquiries.common.datahub_utils import (
     dh_request,
-    dh_fetch_metadata,
     dh_company_search,
     dh_contact_search,
     dh_investment_create,
-    DATA_HUB_METADATA_ENDPOINTS,
 )
-
-
-metadata_test_responses = {
-    endpoint: {"metadata": f"metadata for {endpoint}"} for endpoint in DATA_HUB_METADATA_ENDPOINTS
-}
 
 
 def company_search_response():
@@ -81,42 +73,6 @@ class DataHubIntegrationTests(TestCase):
 
         with pytest.raises(Timeout):
             dh_request(post_req, "access_token", "POST", url, payload, timeout=2)
-
-    @mock.patch("django.core.cache.cache.get")
-    def test_dh_fetch_metada_exception(self, mock_cache_get):
-        """ Ensure any exception during metadata fetch handled gracefully """
-        mock_cache_get.side_effect = Exception
-
-        with pytest.raises(Exception):
-            metadata = dh_fetch_metadata()
-            self.assertEqual(metadata, None)
-
-    def test_dh_metadata_caching(self):
-        """ Test to ensure metadata is not fetched if it is valid in cache """
-        metadata = {
-            "country": ["UK", "US"],
-            "sector": ["Aerospace", "Advanced Engineering"],
-        }
-        cache.set("metadata", metadata)
-
-        with mock.patch("app.enquiries.common.datahub_utils") as mock_dh:
-            cached_metadata = dh_fetch_metadata()
-            self.assertEqual(metadata, cached_metadata)
-            mock_dh._dh_fetch_metadata.assert_not_called()
-
-    def test_metadata_fetch(self):
-        """ Test to ensure we fetch metadata if it is invalidated in cache """
-        cache.clear()
-        with requests_mock.Mocker() as m:
-            for endpoint in DATA_HUB_METADATA_ENDPOINTS:
-                url = f"{settings.DATA_HUB_METADATA_URL}/{endpoint}"
-                m.get(url, json=metadata_test_responses[endpoint])
-
-            self.assertIsNone(cache.get("metadata"))
-            cached_metadata = dh_fetch_metadata()
-            self.assertListEqual(cached_metadata.pop("failed"), [])
-            self.assertEqual(cached_metadata, metadata_test_responses)
-            self.assertIsNotNone(cache.get("metadata"))
 
     def test_company_search_success(self):
         """ Test company search returns matches """
