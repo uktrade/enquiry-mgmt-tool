@@ -336,3 +336,68 @@ def fetch_and_process_enquiries():
     last_obj = enquiries[-1]
     ReceivedEnquiryCursor.objects.create(index=last_obj["sort"][0], object_id=last_obj["sort"][1])
     logging.info(f"Number of valid enquiries found: {valid_count}/{len(enquiries)}")
+
+
+def get_new_second_qualification_forms(last_datetime=None, max_size=100):
+    """
+    Fetches new submissions of the second qualification form
+    from |activity-stream|_.
+    The submissions are fetched from last_datetime onward, or without
+    a date filter if not provided.
+
+    :param last_dattime:
+        The last time a second qualification form was submitted.
+        Subsequent forms will filter after this date. If omited
+        all forms will be fetched
+    :type last_cursor: datetime
+
+    :param max_size: The maximum number of results to fetch
+    :type max_size: int
+
+    :returns: JSON-parsed response or ``None`` in case of an error
+    """
+
+    key_id = settings.SECOND_QUALIFICATION_FORMS_SENDER_ID
+    secret_key = settings.ACTIVITY_STSECOND_QUALIFICATION_FORMS_API_KEYREAM_KEY
+    url = settings.ACTIVITY_STREAM_SEARCH_URL
+    search_filter = [
+        {"range": {"object.published": {"gte": last_datetime}}}
+    ] if last_datetime else []
+    search_filter.append({
+            "term": {
+                settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1:
+                    settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1
+            }
+        })
+    search_filter.append({
+        "term": {
+            settings.ACTIVITY_STREAM_SECOND_QUALIFICATION_ID_NAME:
+                settings.ACTIVITY_STREAM_SECOND_QUALIFICATION_ID_VALUE
+        }
+    })
+    query = {
+        "size": max_size,
+        "query": {
+            "bool": {
+                "filter": search_filter
+            }
+        },
+        "sort": [{"published": "asc"}, {"id": "asc"}],
+    }
+
+    response = hawk_request("GET", url, key_id, secret_key, json.dumps(query))
+    if not response.ok:
+        logging.error(f"Error running query on Activity stream, {response.json()}")
+        return None
+
+    response = response.json()
+
+    # url field in the object is not part of search mapping.
+    # The above query returns trade related enquiries also hence filter
+    # investment related using the url field
+    # target_url = settings.ACTIVITY_STREAM_SEARCH_TARGET_URL
+    # enquiries = list(
+    #     filter(lambda x: x["_source"]["object"]["url"] == target_url, response["hits"]["hits"])
+    # )
+
+    return enquiries

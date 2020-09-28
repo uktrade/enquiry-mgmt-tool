@@ -20,6 +20,8 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from urllib.parse import urlencode
 
 from django.urls import reverse_lazy
+from django.utils import timezone
+
 
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
@@ -328,7 +330,7 @@ SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE', default=True)
 # token expires which gets the user a fresh one.
 SESSION_COOKIE_AGE = env('SESSION_COOKIE_AGE', default=60 * 60 * 9)
 
-# Adobe Campaigns 
+# Adobe Campaigns
 
 ADOBE_PRIVATE_KEY = env.str('ADOBE_PRIVATE_KEY', '').replace('~~', """
 """)
@@ -343,3 +345,11 @@ ADOBE_STAGING_WORKFLOW = env.str('ADOBE_STAGING_WORKFLOW', 'WKF8')
 
 ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY3 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY3')
 ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE3 = env('ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE3')
+
+
+NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE = env.str('NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE')
+
+SECOND_QUALIFICATION_FORMS_API_KEY = env.str('SECOND_QUALIFICATION_FORMS_API_KEY', '')
+SECOND_QUALIFICATION_FORMS_SENDER_ID = env.str('SECOND_QUALIFICATION_FORMS_SENDER_ID', '')
+# DIRECTORY_FORMS_API_BASE_URL = env.str('DIRECTORY_FORMS_API_BASE_URL', '')
+# DIRECTORY_FORMS_DEFAULT_TIMEOUT = env.str('DIRECTORY_FORMS_DEFAULT_TIMEOUT', '60')

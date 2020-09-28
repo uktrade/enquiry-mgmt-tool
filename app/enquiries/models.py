@@ -337,7 +337,7 @@ class EnquiryActionLog(models.Model):
         return f"{self.action}: {self.enquiry}"
 
     @staticmethod
-    def action_date_boundary(action):
+    def get_last_action_date(action):
         """
         Return the last time an action was performed and logged
         """
