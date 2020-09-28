@@ -44,7 +44,7 @@ class AdobeClient:
     @property
     def headers(self):
         """
-        Standard request headrs
+        Standard request headers
         """
         return {
             'Authorization': f'Bearer {self.token}',
@@ -83,6 +83,8 @@ class AdobeClient:
                 message=response.text,
                 status_code=response.status_code)
         response = response.json()
+        # this is implemented for future use but not going to be used at this point.
+        # See docstring of the subscribe method.
         if 'service_pkey' in kwargs:
             self.subscribe(
                 kwargs['service_pkey'],
@@ -90,6 +92,11 @@ class AdobeClient:
         return response
 
     def subscribe(self, service_pkey, profile_pkey=None, subscribe_url=None):
+        """
+        Subscribe a profile to a campaign. This method was implemented but will not be used
+        directly as we are instead loading profiles into a staging area in adobe and using
+        a predefined workflow to subscribe them to the campaign.
+        """
         if not subscribe_url and profile_pkey:
             profile = self.get_profile(profile_pkey)
             subscribe_url = profile.get('subscriptions', {}).get('href')
@@ -144,7 +151,7 @@ class AdobeClient:
 
     def get_service(self, pkey):
         """
-        Return a single service by it's pkey
+        Return a single service by its pkey
         """
         url = self.url(f"profileAndServicesExt/service/{pkey}")
         return requests.get(url, headers=self.headers).json()

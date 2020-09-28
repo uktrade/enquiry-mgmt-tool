@@ -1,5 +1,5 @@
 """
-This module handles the connection to Adobe Campaign, subscribing non responsinve leads
+This module handles the connection to Adobe Campaign, subscribing non responsive leads
 to an email campaign. The campaign prompts leads to fill in a 2nd qualification form,
 requesting  call back.
 The process includes a few steps:
@@ -53,7 +53,7 @@ def process_latest_enquiries():
     """
     Get latest enquiries, created from the last fetch.
     """
-    last_action_date = EnquiryActionLog.action_date_boundary(
+    last_action_date = EnquiryActionLog.get_last_action_date(
         ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE)
     enquiries = Enquiry.objects.filter(
         enquiryactionlog__isnull=True,
@@ -66,7 +66,7 @@ def process_latest_enquiries():
 
     for enquiry in enquiries:
         process_enquiry(enquiry)
-        logger.info(f'Processed enquiry {enquiry}')
+        logger.info('Processed enquiry %s', enquiry)
 
 
 def process_second_qualifications():
@@ -113,7 +113,7 @@ def process_second_qualifications():
     print(query)
     # for enquiry in enquiries:
     #     process_enquiry_update(enquiry)
-    #     logger.info(f'Processed enquiry {enquiry}')
+    #     logger.info('Processed enquiry %s', enquiry)
 
 
 def process_engaged_enquiries():
@@ -121,7 +121,7 @@ def process_engaged_enquiries():
     Collect all enquiries marked with the `EXIT_STAGE` which will cause them
     to be unsubscribed from the campaign.
     """
-    last_action_date = EnquiryActionLog.action_date_boundary(
+    last_action_date = EnquiryActionLog.get_last_action_date(
         ref_data.EnquiryAction.MARKED_RESPONSIVE)
 
     enquiries = Enquiry.objects.filter(
@@ -136,7 +136,7 @@ def process_engaged_enquiries():
 
     for enquiry in enquiries:
         process_engaged_enquiry(enquiry)
-        logger.info(f'Processed engaged enquiry {enquiry}')
+        logger.info('Processed engaged enquiry %s', enquiry)
 
 
 # def process_unsubscribes():
@@ -162,6 +162,9 @@ def process_engaged_enquiries():
 
 
 def randword(size=8):
+    """
+    Temporary method - will be removed
+    """
     return crypto.get_random_string(size)
 
 
@@ -190,8 +193,10 @@ def process_enquiry(enquiry):
         'ditSource': ENQUIRY_SOURCE,
     }
     logger.info("Processing enquiry. Email=%s", email)
+    # temporary replacing of email to mine
     email = f'harel+{randword()}@harelmalka.com'
     client = AdobeClient()
+    log = None
     try:
         response = client.create_staging_profile(
             email=email,
@@ -275,7 +280,7 @@ def process_engaged_enquiry(enquiry):
 
 def log_action(*, action, action_data, emt_id=None, enquiry=None):
     """
-    Log an action for an enquiryt engagement with Adobe Campaign.
+    Log an action for an enquiry engagement with Adobe Campaign.
     """
     log = None
     try:
