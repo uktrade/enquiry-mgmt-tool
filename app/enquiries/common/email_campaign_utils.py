@@ -39,13 +39,15 @@ import app.enquiries.ref_data as ref_data
 from django.conf import settings
 from django.utils import crypto, timezone
 from .adobe import AdobeClient, AdobeCampaignRequestException
-# from .as_utils import hawk_request
+from .as_utils import get_new_second_qualification_forms
 
 
 logger = logging.getLogger(__name__)
 
 # The enquiry stage to use for triggering an unsubscribe
 EXIT_STAGE = ref_data.EnquiryStage.SENT_TO_POST
+# The enquiry stagee to set after second qualification form is submitted
+SECOND_QUALIFICATION_STAGE = ref_data.EnquiryStage.NURTURE_AWAITING_RESPONSE
 ENQUIRY_SOURCE = 'EMT'
 
 
@@ -68,6 +70,9 @@ def process_latest_enquiries():
         process_enquiry(enquiry)
         logger.info('Processed enquiry %s', enquiry)
 
+    # kick off the workflow to process the updates
+    start_staging_workflow()
+
 
 def process_second_qualifications():
     """
@@ -77,43 +82,18 @@ def process_second_qualifications():
     last_action_date = EnquiryActionLog.objects.filter(
         action=ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM
     ).order_by('-actioned_at').first()
-
-    query = {
-        "size": 50,
-        "query": {
-            "bool": {
-                "filter": [
-                    {"range": {"object.published": {"gte": last_action_date.actioned_at}}},
-                    {
-                        "term": {
-                            settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY3:
-                                settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE3
-                        }
-                    },
-                    {
-                        "term": {
-                            settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2:
-                                settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2
-                        }
-                    },
-                    {
-                        "bool": {
-                            "must_not": {
-                                "term": {
-                                    "actor.dit:emailAddress": "noreply@invest.great.gov.uk"
-                                }
-                            }
-                        }
-                    },
-                ]
-            }
-        },
-        "sort": [{"published": "asc"}, {"id": "asc"}],
-    }
-    print(query)
-    # for enquiry in enquiries:
-    #     process_enquiry_update(enquiry)
-    #     logger.info('Processed enquiry %s', enquiry)
+    submissions = get_new_second_qualification_forms(
+        last_datetime=last_action_date.actioned_at if last_action_date else None
+    )
+    for submission in submissions:
+        data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]
+        process_enquiry_update(
+            emt_id=data.get('emt_id'),
+            phone=data.get('phone_number'),
+            consent=data.get('telephone_contact_consent') == 'yes'
+        )
+    # kick off the workflow to process the updates
+    start_staging_workflow()
 
 
 def process_engaged_enquiries():
@@ -138,27 +118,8 @@ def process_engaged_enquiries():
         process_engaged_enquiry(enquiry)
         logger.info('Processed engaged enquiry %s', enquiry)
 
-
-# def process_unsubscribes():
-#     """
-#     Process any unsubscribes made on the Adobe side, by clicking the unsubscribe link
-#     on the email.
-#     For each unsubscribe item :
-#         - retrigger an activity stream event which will then reach consent service.
-#         - update email consent on the specific enquiry
-#     """
-#     client = AdobeClient()
-#     unsubscribers = client.get_unsubscribers()
-#     for item in unsubscribers.get('content', []):
-#         enquiry = Enquiry.objects.get(id=item.get('EMT_ID'))
-#         enquirer = enquiry.enquirer
-#         enquirer.email_consent = False
-#         enquirer.save()
-#         log = EnquiryActionLog.objects.create(
-#             enquiry=enquiry,
-#             action=ref_data.EnquiryAction.UNSUBSCRIBED_FROM_CAMPAIGN,
-#             action_data=item,
-#         )
+    # kick off the workflow to process the updates
+    start_staging_workflow()
 
 
 def randword(size=8):
@@ -213,9 +174,6 @@ def process_enquiry(enquiry):
         )
     except AdobeCampaignRequestException as exc:
         logger.exception('Error creating staging profiles in Adobe: %s', str(exc))
-    finally:
-        # kick off the workflow to process the updates
-        client.start_workflow(settings.ADOBE_STAGING_WORKFLOW)
     return log
 
 
@@ -228,7 +186,7 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
     data = {
         'phone': phone,
         'phoneConsent': consent,
-        'enquiry_stage': ref_data.EnquiryStage.NURTURE_AWAITING_RESPONSE,
+        'enquiry_stage': SECOND_QUALIFICATION_STAGE,
         'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
     }
     client = AdobeClient()
@@ -244,9 +202,6 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
         )
     except AdobeCampaignRequestException as exc:
         logger.exception("Error updating enquiry stage in Adobe: %s", str(exc))
-    finally:
-        # kick off the workflow to process the updates
-        client.start_workflow(settings.ADOBE_STAGING_WORKFLOW)
     return log
 
 
@@ -272,10 +227,15 @@ def process_engaged_enquiry(enquiry):
         )
     except AdobeCampaignRequestException as exc:
         logger.exception("Error updating engaged enquiry in Adobe: %s", str(exc))
-    finally:
-        # kick off the workflow to process the updates
-        client.start_workflow(settings.ADOBE_STAGING_WORKFLOW)
     return log
+
+
+def start_staging_workflow():
+    """
+    Initiate the Adobe workflow to process the staging area
+    """
+    client = AdobeClient()
+    return client.start_workflow(settings.ADOBE_STAGING_WORKFLOW)
 
 
 def log_action(*, action, action_data, emt_id=None, enquiry=None):

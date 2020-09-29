@@ -363,18 +363,27 @@ def get_new_second_qualification_forms(last_datetime=None, max_size=100):
     search_filter = [
         {"range": {"object.published": {"gte": last_datetime}}}
     ] if last_datetime else []
-    search_filter.append({
+    search_filter += [
+        {
             "term": {
                 settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1:
                     settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1
             }
-        })
-    search_filter.append({
-        "term": {
-            settings.ACTIVITY_STREAM_SECOND_QUALIFICATION_ID_NAME:
-                settings.ACTIVITY_STREAM_SECOND_QUALIFICATION_ID_VALUE
+        },
+        {
+            "term": {
+                settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2:
+                    settings.ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2
+            }
+        },
+        {
+            "term": {
+                settings.ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_NAME:
+                    settings.ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_VALUE
+            }
         }
-    })
+    ]
+
     query = {
         "size": max_size,
         "query": {
@@ -391,13 +400,4 @@ def get_new_second_qualification_forms(last_datetime=None, max_size=100):
         return None
 
     response = response.json()
-
-    # url field in the object is not part of search mapping.
-    # The above query returns trade related enquiries also hence filter
-    # investment related using the url field
-    # target_url = settings.ACTIVITY_STREAM_SEARCH_TARGET_URL
-    # enquiries = list(
-    #     filter(lambda x: x["_source"]["object"]["url"] == target_url, response["hits"]["hits"])
-    # )
-
-    return enquiries
+    return response["hits"]["hits"]
