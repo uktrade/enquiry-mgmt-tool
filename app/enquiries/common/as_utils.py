@@ -358,7 +358,7 @@ def get_new_second_qualification_forms(last_datetime=None, max_size=100):
     """
 
     key_id = settings.SECOND_QUALIFICATION_FORMS_SENDER_ID
-    secret_key = settings.ACTIVITY_STSECOND_QUALIFICATION_FORMS_API_KEYREAM_KEY
+    secret_key = settings.SECOND_QUALIFICATION_FORMS_API_KEY
     url = settings.ACTIVITY_STREAM_SEARCH_URL
     search_filter = [
         {"range": {"object.published": {"gte": last_datetime}}}
