@@ -38,6 +38,7 @@ from app.enquiries.models import Enquiry, EnquiryActionLog
 import app.enquiries.ref_data as ref_data
 from django.conf import settings
 from django.utils import crypto, timezone
+from django.db import transaction
 from .adobe import AdobeClient, AdobeCampaignRequestException
 from .as_utils import get_new_second_qualification_forms
 
@@ -65,7 +66,6 @@ def process_latest_enquiries():
         enquiries = enquiries.filter(created__gt=last_action_date)
 
     enquiries = enquiries.order_by('created')
-
     for enquiry in enquiries:
         process_enquiry(enquiry)
         logger.info('Processed enquiry %s', enquiry)
@@ -86,11 +86,11 @@ def process_second_qualifications():
         last_datetime=last_action_date.actioned_at if last_action_date else None
     )
     for submission in submissions:
-        data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]
+        data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]["data"]
         process_enquiry_update(
             emt_id=data.get('emt_id'),
             phone=data.get('phone_number'),
-            consent=data.get('telephone_contact_consent') == 'yes'
+            consent=data.get('arrange_callback') == 'yes'
         )
     # kick off the workflow to process the updates
     start_staging_workflow()
@@ -166,7 +166,6 @@ def process_enquiry(enquiry):
             emt_id=emt_id,
             extra_data=additional_data
         )
-        print(response)
         log = EnquiryActionLog.objects.create(
             enquiry=enquiry,
             action=ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE,
@@ -177,9 +176,11 @@ def process_enquiry(enquiry):
     return log
 
 
+@transaction.atomic
 def process_enquiry_update(emt_id, phone=None, consent=None):
     """
-    Create a staging record referencing an emt_id with an updated phone and consent,
+    Updates the enquiry record with the new stage and create a staging
+    record referencing an emt_id with an updated phone and consent,
     and new stage, to update the relevant profile.
     """
     log = None
@@ -191,6 +192,9 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
     }
     client = AdobeClient()
     try:
+        enquiry = Enquiry.objects.get(id=emt_id)
+        enquiry.enquiry_stage = SECOND_QUALIFICATION_STAGE
+        enquiry.save()
         response = client.create_staging_profile(
             emt_id=emt_id,
             extra_data=data,
@@ -200,6 +204,9 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
             action_data=response,
             emt_id=emt_id
         )
+    except Enquiry.DoesNotExist:
+        logger.exception(
+            "Enquiry %s does not exist. Cannot update stage for second qualification.", emt_id)
     except AdobeCampaignRequestException as exc:
         logger.exception("Error updating enquiry stage in Adobe: %s", str(exc))
     return log
