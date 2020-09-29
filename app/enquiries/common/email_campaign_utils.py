@@ -62,6 +62,7 @@ def process_latest_enquiries():
         enquiryactionlog__isnull=True,
         enquiry_stage__in=[ref_data.EnquiryStage.NON_RESPONSIVE],
     )
+    print(last_action_date)
     if last_action_date:
         enquiries = enquiries.filter(created__gt=last_action_date)
 
@@ -155,7 +156,7 @@ def process_enquiry(enquiry):
     }
     logger.info("Processing enquiry. Email=%s", email)
     # temporary replacing of email to mine
-    email = f'harel+{randword()}@harelmalka.com'
+    # email = f'harel+{randword()}@harelmalka.com'
     client = AdobeClient()
     log = None
     try:
@@ -195,6 +196,10 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
         enquiry = Enquiry.objects.get(id=emt_id)
         enquiry.enquiry_stage = SECOND_QUALIFICATION_STAGE
         enquiry.save()
+        enquirer = enquiry.enquirer
+        if phone and phone != enquirer.phone:
+            enquirer.phone = phone
+            enquirer.save()
         response = client.create_staging_profile(
             emt_id=emt_id,
             extra_data=data,
