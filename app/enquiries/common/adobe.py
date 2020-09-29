@@ -23,15 +23,15 @@ class AdobeClient:
         """
         Generate, encode and exchange the JWT token for an access token.
         """
-        url = "https://ims-na1.adobelogin.com/ims/exchange/jwt"
+        url = f"https://{settings.ADOBE_AUTH_API_DOMAIN}/ims/exchange/jwt"
         expiry = datetime.datetime.now() + datetime.timedelta(minutes=5)
         payload = {
             "exp": int(expiry.timestamp()),
             "iss": settings.ADOBE_ORGANISATION_ID,
             "sub": settings.ADOBE_TECHNICAL_ACCOUNT_ID,
-            "aud": f"https://ims-na1.adobelogin.com/c/{settings.ADOBE_API_KEY}",
-            "https://ims-na1.adobelogin.com/s/ent_campaign_sdk": True,
-            "https://ims-na1.adobelogin.com/s/ent_adobeio_sdk": True,
+            "aud": f"https://{settings.ADOBE_AUTH_API_DOMAIN}/c/{settings.ADOBE_API_KEY}",
+            f"https://{settings.ADOBE_AUTH_API_DOMAIN}/s/ent_campaign_sdk": True,
+            f"https://{settings.ADOBE_AUTH_API_DOMAIN}/s/ent_adobeio_sdk": True,
         }
         encoded_jwt = jwt.encode(payload, settings.ADOBE_PRIVATE_KEY, algorithm='RS256')
         response = requests.post(url, data={
@@ -57,7 +57,7 @@ class AdobeClient:
         """
         Generate a url for Adobe Campaign for a given path.
         """
-        return f"https://mc.adobe.io/{settings.ADOBE_TENANT_ID}/campaign/{path}"
+        return f"https://{settings.ADOBE_API_DOMAIN}/{settings.ADOBE_TENANT_ID}/campaign/{path}"
 
     def create_staging_profile(
             self, email=None, first_name=None, last_name=None,
