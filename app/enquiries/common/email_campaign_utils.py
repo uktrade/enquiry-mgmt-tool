@@ -67,12 +67,15 @@ def process_latest_enquiries():
         enquiries = enquiries.filter(created__gt=last_action_date)
 
     enquiries = enquiries.order_by('created')
-    for enquiry in enquiries:
-        process_enquiry(enquiry)
-        logger.info('Processed enquiry %s', enquiry)
+    total_enquiries = enquiries.count()
+    if total_enquiries > 0:
+        logger.info('Processing %s enquiries', total_enquiries)
+        for enquiry in enquiries:
+            process_enquiry(enquiry)
+            logger.info('Processed enquiry %s', enquiry)
 
-    # kick off the workflow to process the updates
-    start_staging_workflow()
+        # kick off the workflow to process the updates
+        start_staging_workflow()
 
 
 def process_second_qualifications():
