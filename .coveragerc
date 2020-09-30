@@ -1,4 +1,4 @@
 [run]
 omit =
     .venv/*
-    adobe.py
+    app/enquiries/common/adobe.py
