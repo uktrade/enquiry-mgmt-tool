@@ -39,6 +39,17 @@ class TestAdobeCampaign(TestCase):
             primary_sector=ref_data.PrimarySector.AEROSPACE.value,
             website='http://example.com',
         )
+        self.enquiry_done = Enquiry.objects.create(
+            enquirer=self.enquirer,
+            company_name=faker.company(),
+            company_hq_address=faker.address(),
+            date_received=datetime.datetime.now(),
+            enquiry_stage=ref_data.EnquiryStage.SENT_TO_POST.value,
+            how_they_heard_dit=ref_data.HowDidTheyHear.INTERNET_SEARCH.value,
+            ist_sector=ref_data.ISTSector.AEM.value,
+            primary_sector=ref_data.PrimarySector.AEROSPACE.value,
+            website='http://example.com',
+        )
         self.additional_data = {
             'companyName': self.enquiry.company_name,
             'companyHQAddress': self.enquiry.company_hq_address,
@@ -90,5 +101,66 @@ class TestAdobeCampaign(TestCase):
             last_name=self.enquirer.last_name,
             emt_id=self.enquiry.id,
             extra_data=self.additional_data
+        )
+        client.start_workflow.assert_called_with(settings.ADOBE_STAGING_WORKFLOW)
+
+    @freeze_time()
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.get_token')
+    @mock.patch('app.enquiries.common.as_utils.hawk_request')
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.start_workflow')
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.create_staging_profile')
+    def test_process_second_qualification(self, mock_staging, mock_wf, mock_as, mock_token):
+        mock_staging.return_value = {'PKey': 1}
+        mock_wf.return_value = {}
+        mock_token.return_value = 'token'
+        mock_as.return_value.ok = True
+        mock_as.return_value.json.return_value = {
+            'hits': {
+                'hits': [
+                    {
+                        '_source': {
+                            'object': {
+                                settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ: {
+                                    'data': {
+                                        'emt_id': self.enquiry.id,
+                                        'phone_number': '0771231234',
+                                        'arrange_callback': 'yes',
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+        campaign.process_second_qualifications()
+        client = AdobeClient()
+        client.create_staging_profile.assert_called_once_with(
+            emt_id=self.enquiry.id,
+            extra_data={
+                'phone': '0771231234',
+                'phoneConsent': True,
+                'enquiry_stage': ref_data.EnquiryStage.NURTURE_AWAITING_RESPONSE,
+                'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+            }
+        )
+        client.start_workflow.assert_called_with(settings.ADOBE_STAGING_WORKFLOW)
+
+    @freeze_time()
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.get_token')
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.start_workflow')
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.create_staging_profile')
+    def test_process_engaged(self, mock_staging, mock_wf, mock_token):
+        mock_staging.return_value = {'PKey': 2}
+        mock_wf.return_value = {}
+        mock_token.return_value = 'token'
+        campaign.process_engaged_enquiries()
+        client = AdobeClient()
+        client.create_staging_profile.assert_called_once_with(
+            emt_id=self.enquiry_done.id,
+            extra_data={
+                'enquiry_stage': campaign.EXIT_STAGE.value,
+                'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+            }
         )
         client.start_workflow.assert_called_with(settings.ADOBE_STAGING_WORKFLOW)

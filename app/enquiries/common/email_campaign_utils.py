@@ -37,7 +37,7 @@ import logging
 from app.enquiries.models import Enquiry, EnquiryActionLog
 import app.enquiries.ref_data as ref_data
 from django.conf import settings
-from django.utils import crypto, timezone
+from django.utils import timezone
 from django.db import transaction
 from .adobe import AdobeClient, AdobeCampaignRequestException
 from .as_utils import get_new_second_qualification_forms
@@ -62,7 +62,6 @@ def process_latest_enquiries():
         enquiryactionlog__isnull=True,
         enquiry_stage__in=[ref_data.EnquiryStage.NON_RESPONSIVE],
     )
-    print(last_action_date)
     if last_action_date:
         enquiries = enquiries.filter(created__gt=last_action_date)
 
@@ -126,13 +125,6 @@ def process_engaged_enquiries():
     start_staging_workflow()
 
 
-def randword(size=8):
-    """
-    Temporary method - will be removed
-    """
-    return crypto.get_random_string(size)
-
-
 def process_enquiry(enquiry):
     enquirer = enquiry.enquirer
     email = enquirer.email
@@ -158,8 +150,6 @@ def process_enquiry(enquiry):
         'ditSource': ENQUIRY_SOURCE,
     }
     logger.info("Processing enquiry. Email=%s", email)
-    # temporary replacing of email to mine
-    # email = f'harel+{randword()}@harelmalka.com'
     client = AdobeClient()
     log = None
     try:
@@ -223,10 +213,10 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
 def process_engaged_enquiry(enquiry):
     """
     Update Adobe that a lead has now been marked as engaged and no
-    longer required nurture. The lead will be unsubscribed from the campaign
+    longer requires nurturing. The lead will be unsubscribed from the campaign
     """
     additional_data = {
-        'enquiry_stage': EXIT_STAGE,
+        'enquiry_stage': EXIT_STAGE.value,
         'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
     }
     client = AdobeClient()
