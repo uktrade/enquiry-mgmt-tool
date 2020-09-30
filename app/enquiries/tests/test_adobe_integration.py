@@ -6,7 +6,7 @@ from django.conf import settings
 from faker import Faker
 from freezegun import freeze_time
 from unittest import mock
-from app.enquiries.models import Enquiry, Enquirer, EnquiryActionLog
+from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.common import email_campaign_utils as campaign
 from app.enquiries.common.adobe import AdobeClient
 
