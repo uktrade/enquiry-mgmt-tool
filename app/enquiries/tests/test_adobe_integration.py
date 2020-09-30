@@ -6,7 +6,7 @@ from django.conf import settings
 from faker import Faker
 from freezegun import freeze_time
 from unittest import mock
-from app.enquiries.models import Enquiry, Enquirer
+from app.enquiries.models import Enquiry, Enquirer, EnquiryActionLog
 from app.enquiries.common import email_campaign_utils as campaign
 from app.enquiries.common.adobe import AdobeClient
 
@@ -164,3 +164,16 @@ class TestAdobeCampaign(TestCase):
             }
         )
         client.start_workflow.assert_called_with(settings.ADOBE_STAGING_WORKFLOW)
+
+    @freeze_time()
+    def test_log_action(self):
+        action = ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE
+        campaign.log_action(
+            action=action,
+            enquiry=self.enquiry,
+            emt_id=self.enquiry.id,
+            action_data={'PKey': 1}
+        )
+
+        last_action_date = EnquiryActionLog.get_last_action_date(action)
+        self.assertEqual(last_action_date.enquiry.id, self.enquiry.id)
