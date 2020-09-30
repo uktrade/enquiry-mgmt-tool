@@ -59,9 +59,11 @@ class TestAdobeCampaign(TestCase):
         }
 
     @freeze_time()
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.get_token')
     @mock.patch('app.enquiries.common.adobe.AdobeClient.create_staging_profile')
-    def test_process_latest_enquiries(self, mock_staging):
+    def test_process_latest_enquiries(self, mock_staging, mock_token):
         mock_staging.return_value = {'PKey': 1}
+        mock_token.return_value = 'token'
         campaign.process_latest_enquiries()
         client = AdobeClient()
         client.create_staging_profile.assert_called_with(
@@ -73,11 +75,13 @@ class TestAdobeCampaign(TestCase):
         )
 
     @freeze_time()
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.get_token')
     @mock.patch('app.enquiries.common.adobe.AdobeClient.start_workflow')
     @mock.patch('app.enquiries.common.adobe.AdobeClient.create_staging_profile')
-    def test_process_workflow_kickoff(self, mock_staging, mock_wf):
+    def test_process_workflow_kickoff(self, mock_staging, mock_wf, mock_token):
         mock_staging.return_value = {'PKey': 1}
         mock_wf.return_value = {}
+        mock_token.return_value = 'token'
         campaign.process_latest_enquiries()
         client = AdobeClient()
         client.create_staging_profile.assert_called_with(
