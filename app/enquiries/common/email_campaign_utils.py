@@ -1,12 +1,12 @@
 """
 This module handles the connection to Adobe Campaign, subscribing non responsive leads
-to an email campaign. The campaign prompts leads to fill in a 2nd qualification form,
+to an email campaign. The campaign prompts enquirers to fill in a 2nd qualification form,
 requesting  call back.
 The process includes a few steps:
 
 Process 1:
 1. collect enquiries which are marked as Non Responsive.
-2. For each one, subscribe the lead to the adobe campaign.
+2. For each one, subscribe the enquirers to the adobe campaign.
 3. Collect a log of each such subscription to ensure the next run picks up from the
    last subscription
 
@@ -19,14 +19,14 @@ Process 1:
 
 Process 2:
 1. Collect any submission to the 2nd qualification form via activity stream.
-2. Update Adobe Campaign that the lead has completed the 2nd qualification form.
+2. Update Adobe Campaign that the enquirer has completed the 2nd qualification form.
 
     Example:
     ```
     process_second_qualifications()
     ```
 Process 3:
-1. Collect any leads marked as engaged. Unsubscribe them from the adobe campaign.
+1. Collect any enquiries marked as sent to post. Unsubscribe them from the adobe campaign.
 
     Example:
     ```
