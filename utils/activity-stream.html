@@ -197,6 +197,28 @@ This is used to fetch next set of results when this is invoked again.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="app.enquiries.common.as_utils.get_new_second_qualification_forms">
+<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">get_new_second_qualification_forms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">last_datetime</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_size</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.get_new_second_qualification_forms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches new submissions of the second qualification form
+from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a>.
+The submissions are fetched from last_datetime onward, or without
+a date filter if not provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>last_dattime</strong> – The last time a second qualification form was submitted.
+Subsequent forms will filter after this date. If omited
+all forms will be fetched</p></li>
+<li><p><strong>max_size</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The maximum number of results to fetch</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON-parsed response or <code class="docutils literal notranslate"><span class="pre">None</span></code> in case of an error</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="app.enquiries.common.as_utils.great_ui_sector_rtt_mapping">
 <code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">great_ui_sector_rtt_mapping</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.great_ui_sector_rtt_mapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resolves the <cite>primary sector</cite> for <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
