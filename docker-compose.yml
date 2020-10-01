@@ -9,7 +9,6 @@ services:
     depends_on:
       - db
       - redis
-      - dh-api-mock
       - mock-sso
     ports:
       - 8001:8001
@@ -19,7 +18,7 @@ services:
       DJANGO_SUPERUSER_USERNAME: testuser
       DJANGO_SUPERUSER_EMAIL: testuser@example.com
       DJANGO_SUPERUSER_PASSWORD: testpass
-    entrypoint: dockerize -wait tcp://dh-api-mock:8000 -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 5m
+    entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 5m
     command: ./start.sh
 
   celery:
@@ -29,7 +28,6 @@ services:
     depends_on:
       - db
       - redis
-      - dh-api-mock
     entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 5m
     command: celery worker -A app -l info -Q celery -B
 
@@ -41,11 +39,6 @@ services:
 
   redis:
     image: redis:3.2
-
-  dh-api-mock:
-    image: ukti/data-hub-sandbox:latest
-    environment:
-      PORT: 8000
 
   mock-sso:
     image: ukti/mock-sso
