@@ -16,6 +16,7 @@ app.autodiscover_tasks()
 AS_ENQUIRIES_POLL_INTERVAL_MINS = settings.ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS
 ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS = settings.ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS
 ENQUIRY_STATUS_SHOULD_UPDATE = settings.ENQUIRY_STATUS_SHOULD_UPDATE
+CAMPAIGN_ENQUIRIES_POLL_INTERVAL_MINS = settings.CAMPAIGN_ENQUIRIES_POLL_INTERVAL_MINS
 
 app.conf.beat_schedule = {
     "fetch-new-enquiries": {
@@ -27,7 +28,20 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute="0", hour="0",
                             day_of_month=f"*/{ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS}"
                             )
-    }
+    },
+
+    "handle_non_responsives": {
+        "task": "handle_non_responsives",
+        "schedule": crontab(minute=f"*/{CAMPAIGN_ENQUIRIES_POLL_INTERVAL_MINS}"),
+    },
+    "handle_second_qualifications": {
+        "task": "handle_second_qualifications",
+        "schedule": crontab(minute=f"*/{CAMPAIGN_ENQUIRIES_POLL_INTERVAL_MINS}"),
+    },
+    "handle_exit_criteria_enquiries": {
+        "task": "handle_exit_criteria_enquiries",
+        "schedule": crontab(minute=f"*/{CAMPAIGN_ENQUIRIES_POLL_INTERVAL_MINS}"),
+    },
 } if ENQUIRY_STATUS_SHOULD_UPDATE else {
     "fetch-new-enquiries": {
         "task": "fetch_new_enquiries",

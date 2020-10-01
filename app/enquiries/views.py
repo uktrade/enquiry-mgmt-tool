@@ -77,7 +77,10 @@ class DataHubAdviserSearch(LoginRequiredMixin, View):
 
 
 def get_filter_config():
-    filter_fields = [field for field in models.Enquiry._meta.get_fields() if field.choices]
+    filter_fields = [
+        field for field in models.Enquiry._meta.get_fields()
+        if hasattr(field, 'choices') and field.choices
+    ]
     filter_config = {}
     for field in filter_fields:
         filter_config[field.name] = field
