@@ -63,7 +63,7 @@ def process_latest_enquiries():
         enquiry_stage__in=[ref_data.EnquiryStage.NON_RESPONSIVE],
     )
     if last_action_date:
-        enquiries = enquiries.filter(created__gt=last_action_date)
+        enquiries = enquiries.filter(created__gt=last_action_date.actioned_at)
 
     enquiries = enquiries.order_by('created')
     total_enquiries = enquiries.count()
@@ -112,7 +112,7 @@ def process_engaged_enquiries():
         enquiry_stage__in=[EXIT_STAGE],
     )
     if last_action_date:
-        enquiries = enquiries.filter(created__gt=last_action_date)
+        enquiries = enquiries.filter(created__gt=last_action_date.actioned_at)
     enquiries = enquiries.order_by(
         'created'
     )
