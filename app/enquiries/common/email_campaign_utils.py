@@ -220,6 +220,7 @@ def process_engaged_enquiry(enquiry):
         'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
     }
     client = AdobeClient()
+    log = None
     try:
         response = client.create_staging_profile(
             emt_id=enquiry.id,
