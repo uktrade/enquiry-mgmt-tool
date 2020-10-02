@@ -339,7 +339,9 @@ class EnquiryActionLog(models.Model):
     @staticmethod
     def get_last_action_date(action):
         """
-        Return the last time an action was performed and logged
+        Return the last EnquiryActionLog for a specified action type.
+        This record will contain the last time that action was performed.
+        Returns None if no such action was done before.
         """
         return EnquiryActionLog.objects.filter(
             action=action

@@ -34,6 +34,7 @@ Process 3:
     ```
 """
 import logging
+import datetime
 from app.enquiries.models import Enquiry, EnquiryActionLog
 import app.enquiries.ref_data as ref_data
 from django.conf import settings
@@ -64,7 +65,12 @@ def process_latest_enquiries():
     )
     if last_action_date:
         enquiries = enquiries.filter(created__gt=last_action_date.actioned_at)
-
+    elif settings.NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE:
+        last_action_date = datetime.datetime.strptime(
+            settings.NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE,
+            "%d-%B-%Y"
+        ).isoformat()
+        enquiries = enquiries.filter(created__gt=last_action_date)
     enquiries = enquiries.order_by('created')
     total_enquiries = enquiries.count()
     if total_enquiries > 0:
