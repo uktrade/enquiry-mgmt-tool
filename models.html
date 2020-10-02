@@ -398,7 +398,9 @@ received by our teams.</p>
 <dl class="py method">
 <dt id="app.enquiries.models.EnquiryActionLog.get_last_action_date">
 <em class="property">static </em><code class="sig-name descname">get_last_action_date</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.models.EnquiryActionLog.get_last_action_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the last time an action was performed and logged</p>
+<dd><p>Return the last EnquiryActionLog for a specified action type.
+This record will contain the last time that action was performed.
+Returns None if no such action was done before.</p>
 </dd></dl>
 
 </dd></dl>
