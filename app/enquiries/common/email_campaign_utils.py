@@ -51,6 +51,10 @@ EXIT_STAGE = ref_data.EnquiryStage.SENT_TO_POST
 # The enquiry stagee to set after second qualification form is submitted
 SECOND_QUALIFICATION_STAGE = ref_data.EnquiryStage.NURTURE_AWAITING_RESPONSE
 ENQUIRY_SOURCE = 'EMT'
+# These error codes mean a retry is not possible (email invalid for example)
+TERMINAL_ERROR_CODES = [
+    'XTK-170049'
+]
 
 
 def process_latest_enquiries():
@@ -152,7 +156,7 @@ def process_enquiry(enquiry):
         'requestForCall': enquiry.enquirer.request_for_call,
         'website': enquiry.website,
         'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'enquiryDate': enquiry.created.strftime('%Y-%m-%d %H:%M:%S'),
+        'enquiryDate': enquiry.date_received.strftime('%Y-%m-%d %H:%M:%S'),
         'ditSource': ENQUIRY_SOURCE,
     }
     logger.info("Processing enquiry. Email=%s", email)
@@ -173,6 +177,16 @@ def process_enquiry(enquiry):
         )
     except AdobeCampaignRequestException as exc:
         logger.exception('Error creating staging profiles in Adobe: %s', str(exc))
+        # if the failure is known and there is no need to retry, log it.
+        if any([code in exc.message for code in TERMINAL_ERROR_CODES]):
+            logger.warning("Enquiry %s failed and will not be retried: [email=%s]", emt_id, email)
+            log = EnquiryActionLog.objects.create(
+                enquiry=enquiry,
+                action=ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE,
+                action_data={
+                    "error": exc.message
+                }
+            )
     return log
 
 
