@@ -59,7 +59,7 @@ TERMINAL_ERROR_CODES = [
 
 def process_latest_enquiries():
     """
-    Get latest enquiries, created from the last fetch.
+    Get latest enquiries, received from the last fetch.
     """
     last_action_date = EnquiryActionLog.get_last_action_date(
         ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE)
@@ -68,14 +68,14 @@ def process_latest_enquiries():
         enquiry_stage__in=[ref_data.EnquiryStage.NON_RESPONSIVE],
     )
     if last_action_date:
-        enquiries = enquiries.filter(created__gt=last_action_date.actioned_at)
+        enquiries = enquiries.filter(date_received__gt=last_action_date.enquiry.date_received)
     elif settings.NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE:
         last_action_date = datetime.datetime.strptime(
             settings.NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE,
             "%d-%B-%Y"
         ).isoformat()
-        enquiries = enquiries.filter(created__gt=last_action_date)
-    enquiries = enquiries.order_by('created')
+        enquiries = enquiries.filter(date_received__gt=last_action_date)
+    enquiries = enquiries.order_by('date_received')
     total_enquiries = enquiries.count()
     if total_enquiries > 0:
         logger.info('Processing %s enquiries', total_enquiries)
@@ -122,9 +122,9 @@ def process_engaged_enquiries():
         enquiry_stage__in=[EXIT_STAGE],
     )
     if last_action_date:
-        enquiries = enquiries.filter(created__gt=last_action_date.actioned_at)
+        enquiries = enquiries.filter(date_received__gt=last_action_date.enquiry.date_received)
     enquiries = enquiries.order_by(
-        'created'
+        'date_received'
     )
 
     for enquiry in enquiries:
