@@ -357,8 +357,8 @@ def get_new_second_qualification_forms(last_datetime=None, max_size=100):
     :returns: JSON-parsed response or ``None`` in case of an error
     """
 
-    key_id = settings.SECOND_QUALIFICATION_FORMS_SENDER_ID
-    secret_key = settings.SECOND_QUALIFICATION_FORMS_API_KEY
+    key_id = settings.ACTIVITY_STREAM_KEY_ID
+    secret_key = settings.ACTIVITY_STREAM_KEY
     url = settings.ACTIVITY_STREAM_SEARCH_URL
     search_filter = [
         {"range": {"object.published": {"gte": last_datetime}}}
