@@ -60,24 +60,14 @@ class AdobeClient:
         return f"https://{settings.ADOBE_API_DOMAIN}/{settings.ADOBE_TENANT_ID}/campaign/{path}"
 
     def create_staging_profile(
-            self, email=None, first_name=None, last_name=None,
-            emt_id=None, extra_data=None, **kwargs):
+            self, data, **kwargs):
         """
         Create a staging profile on the `staging` custom resource on Adobe Campaigns.
         Staging profiles use an internal workflow to correctly transfer into profiles
         within Adobe Campaign.
         """
         url = self.url("profileAndServicesExt/cusStaging")
-        extra_data = extra_data or {}
-        if email:
-            extra_data['email'] = email
-        if first_name:
-            extra_data['firstName'] = first_name
-        if last_name:
-            extra_data['lastName'] = last_name
-        if emt_id:
-            extra_data['emt_id'] = emt_id
-        response = requests.post(url, json=extra_data, headers=self.headers)
+        response = requests.post(url, json=data, headers=self.headers)
         if response.status_code != 201:
             raise AdobeCampaignRequestException(
                 message=response.text,
