@@ -70,6 +70,17 @@ class TestAdobeCampaign(TestCase):
         }
 
     @freeze_time()
+    def test_serialize_enquiry(self):
+        override = {
+            'phone': '+14151234',
+            'jobTitle': 'CEO'
+        }
+        serialized = campaign.serialize_enquiry(self.enquiry, **override)
+        assert 'jobTitle' in serialized
+        assert serialized['jobTitle'] == override['jobTitle']
+        assert serialized['phone'] == override['phone']
+
+    @freeze_time()
     @mock.patch('app.enquiries.common.adobe.AdobeClient.get_token')
     @mock.patch('app.enquiries.common.adobe.AdobeClient.create_staging_profile')
     def test_process_latest_enquiries(self, mock_staging, mock_token):
@@ -78,11 +89,7 @@ class TestAdobeCampaign(TestCase):
         campaign.process_latest_enquiries()
         client = AdobeClient()
         client.create_staging_profile.assert_called_with(
-            email=self.enquirer.email,
-            first_name=self.enquirer.first_name,
-            last_name=self.enquirer.last_name,
-            emt_id=self.enquiry.id,
-            extra_data=self.additional_data
+            data=campaign.serialize_enquiry(self.enquiry)
         )
 
     @freeze_time()
@@ -96,11 +103,7 @@ class TestAdobeCampaign(TestCase):
         campaign.process_latest_enquiries()
         client = AdobeClient()
         client.create_staging_profile.assert_called_with(
-            email=self.enquirer.email,
-            first_name=self.enquirer.first_name,
-            last_name=self.enquirer.last_name,
-            emt_id=self.enquiry.id,
-            extra_data=self.additional_data
+            data=campaign.serialize_enquiry(self.enquiry)
         )
         client.start_workflow.assert_called_with(settings.ADOBE_STAGING_WORKFLOW)
 
@@ -136,13 +139,12 @@ class TestAdobeCampaign(TestCase):
         campaign.process_second_qualifications()
         client = AdobeClient()
         client.create_staging_profile.assert_called_once_with(
-            emt_id=self.enquiry.id,
-            extra_data={
+            data=campaign.serialize_enquiry(self.enquiry, **{
                 'phone': '0771231234',
                 'phoneConsent': True,
                 'enquiry_stage': ref_data.EnquiryStage.NURTURE_AWAITING_RESPONSE,
                 'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
-            }
+            })
         )
         client.start_workflow.assert_called_with(settings.ADOBE_STAGING_WORKFLOW)
 
@@ -161,11 +163,10 @@ class TestAdobeCampaign(TestCase):
         campaign.process_engaged_enquiries()
         client = AdobeClient()
         client.create_staging_profile.assert_called_once_with(
-            emt_id=self.enquiry_done.id,
-            extra_data={
+            data=campaign.serialize_enquiry(self.enquiry_done, **{
                 'enquiry_stage': campaign.EXIT_STAGE.value,
                 'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
-            }
+            })
         )
         client.start_workflow.assert_called_with(settings.ADOBE_STAGING_WORKFLOW)
 

@@ -135,38 +135,13 @@ def process_engaged_enquiries():
 def process_enquiry(enquiry):
     enquirer = enquiry.enquirer
     email = enquirer.email
-    first_name = enquirer.first_name
-    last_name = enquirer.last_name
     emt_id = enquiry.id
-    additional_data = {
-        'companyName': enquiry.company_name,
-        'companyHQAddress': enquiry.company_hq_address,
-        'country': enquiry.country,
-        'emailConsent': enquiry.enquirer.email_consent,
-        'enquiry_stage': enquiry.enquiry_stage,
-        'howTheyHeard_DIT': enquiry.how_they_heard_dit,
-        'istSector': enquiry.ist_sector,
-        'jobTitle': enquiry.enquirer.job_title,
-        'phone': enquiry.enquirer.phone,
-        'phoneConsent': enquiry.enquirer.phone_consent,
-        'primarySector': enquiry.primary_sector,
-        'requestForCall': enquiry.enquirer.request_for_call,
-        'website': enquiry.website,
-        'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'enquiryDate': enquiry.date_received.strftime('%Y-%m-%d %H:%M:%S'),
-        'ditSource': ENQUIRY_SOURCE,
-    }
+    data = serialize_enquiry(enquiry)
     logger.info("Processing enquiry. Email=%s", email)
     client = AdobeClient()
     log = None
     try:
-        response = client.create_staging_profile(
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            emt_id=emt_id,
-            extra_data=additional_data
-        )
+        response = client.create_staging_profile(data=data)
         log = EnquiryActionLog.objects.create(
             enquiry=enquiry,
             action=ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE,
@@ -210,9 +185,9 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
         if phone and phone != enquirer.phone:
             enquirer.phone = phone
             enquirer.save()
+        enquiry.refresh_from_db()
         response = client.create_staging_profile(
-            emt_id=emt_id,
-            extra_data=data,
+            data=serialize_enquiry(enquiry, **data),
         )
         log = log_action(
             action=ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM,
@@ -232,7 +207,7 @@ def process_engaged_enquiry(enquiry):
     Update Adobe that a lead has now been marked as engaged and no
     longer requires nurturing. The lead will be unsubscribed from the campaign
     """
-    additional_data = {
+    data = {
         'enquiry_stage': EXIT_STAGE.value,
         'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
     }
@@ -240,8 +215,7 @@ def process_engaged_enquiry(enquiry):
     log = None
     try:
         response = client.create_staging_profile(
-            emt_id=enquiry.id,
-            extra_data=additional_data
+            data=serialize_enquiry(enquiry, **data)
         )
         log = log_action(
             action=ref_data.EnquiryAction.UNSUBSCRIBED_FROM_CAMPAIGN,
@@ -276,3 +250,34 @@ def log_action(*, action, action_data, emt_id=None, enquiry=None):
     except Enquiry.DoesNotExist:
         logger.error('Second qualification process error: Invalid enquiry id: %s', emt_id)
     return log
+
+
+def serialize_enquiry(enquiry, **kwargs):
+    """
+    Serialize an enquiry for Adobe, and overlay any additional kwargs on top
+    overwriting any fields if present.
+    """
+    serialized = {
+        'emt_id': enquiry.id,
+        'email': enquiry.enquirer.email,
+        'firstName': enquiry.enquirer.first_name,
+        'lastName': enquiry.enquirer.last_name,
+        'companyName': enquiry.company_name,
+        'companyHQAddress': enquiry.company_hq_address,
+        'country': enquiry.country,
+        'emailConsent': enquiry.enquirer.email_consent,
+        'enquiry_stage': enquiry.enquiry_stage,
+        'howTheyHeard_DIT': enquiry.how_they_heard_dit,
+        'istSector': enquiry.ist_sector,
+        'jobTitle': enquiry.enquirer.job_title,
+        'phone': enquiry.enquirer.phone,
+        'phoneConsent': enquiry.enquirer.phone_consent,
+        'primarySector': enquiry.primary_sector,
+        'requestForCall': enquiry.enquirer.request_for_call,
+        'website': enquiry.website,
+        'uploadDate': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'enquiryDate': enquiry.date_received.strftime('%Y-%m-%d %H:%M:%S'),
+        'ditSource': ENQUIRY_SOURCE,
+    }
+    serialized.update(kwargs)
+    return serialized
