@@ -59,21 +59,19 @@ TERMINAL_ERROR_CODES = [
 
 def process_latest_enquiries():
     """
-    Get latest enquiries, received from the last fetch.
+    Get latest enquiries, which were not yet processed.
     """
-    last_action_date = EnquiryActionLog.get_last_action_date(
-        ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE)
     enquiries = Enquiry.objects.filter(
         enquiryactionlog__isnull=True,
-        enquiry_stage__in=[ref_data.EnquiryStage.NON_RESPONSIVE],
+        enquiry_stage__in=[
+            ref_data.EnquiryStage.NON_RESPONSIVE
+        ],
     )
-    if last_action_date:
-        enquiries = enquiries.filter(date_received__gt=last_action_date.enquiry.date_received)
-    elif settings.NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE:
+    if settings.NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE:
         last_action_date = datetime.datetime.strptime(
             settings.NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE,
             "%d-%B-%Y"
-        ).isoformat()
+        )
         enquiries = enquiries.filter(date_received__gt=last_action_date)
     enquiries = enquiries.order_by('date_received')
     total_enquiries = enquiries.count()
@@ -92,11 +90,11 @@ def process_second_qualifications():
     Collect second qualification submissions from the last time it was fetched
     successfuly.
     """
-    last_action_date = EnquiryActionLog.objects.filter(
-        action=ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM
-    ).order_by('-actioned_at').first()
+    last_action = EnquiryActionLog.get_last_action_date(
+        ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM
+    )
     submissions = get_new_second_qualification_forms(
-        last_datetime=last_action_date.actioned_at if last_action_date else None
+        last_datetime=last_action.actioned_at if last_action else None
     )
     for submission in submissions:
         data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]["data"]
@@ -114,15 +112,14 @@ def process_engaged_enquiries():
     Collect all enquiries marked with the `EXIT_STAGE` which will cause them
     to be unsubscribed from the campaign.
     """
-    last_action_date = EnquiryActionLog.get_last_action_date(
-        ref_data.EnquiryAction.MARKED_RESPONSIVE)
-
+    # get enquiries that have been subscribed before and are now
+    # in the exit stage
     enquiries = Enquiry.objects.filter(
-        enquiryactionlog__isnull=True,
+        enquiryactionlog__action=ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE,
         enquiry_stage__in=[EXIT_STAGE],
+    ).exclude(
+        enquiryactionlog__action=ref_data.EnquiryAction.UNSUBSCRIBED_FROM_CAMPAIGN
     )
-    if last_action_date:
-        enquiries = enquiries.filter(date_received__gt=last_action_date.enquiry.date_received)
     enquiries = enquiries.order_by(
         'date_received'
     )
