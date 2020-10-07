@@ -154,6 +154,10 @@ class TestAdobeCampaign(TestCase):
         mock_staging.return_value = {'PKey': 2}
         mock_wf.return_value = {}
         mock_token.return_value = 'token'
+        EnquiryActionLog.objects.create(
+            enquiry=self.enquiry_done,
+            action=ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE,
+        )
         campaign.process_engaged_enquiries()
         client = AdobeClient()
         client.create_staging_profile.assert_called_once_with(
