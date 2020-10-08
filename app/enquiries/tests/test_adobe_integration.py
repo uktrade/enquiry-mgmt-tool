@@ -182,3 +182,8 @@ class TestAdobeCampaign(TestCase):
 
         last_action_date = EnquiryActionLog.get_last_action_date(action)
         self.assertEqual(last_action_date.enquiry.id, self.enquiry.id)
+
+    @freeze_time()
+    def test_process_enquiry_update_bad_id(self):
+        log = campaign.process_enquiry_update(None)
+        assert log is None
