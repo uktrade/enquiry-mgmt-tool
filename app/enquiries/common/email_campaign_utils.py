@@ -100,11 +100,14 @@ def process_second_qualifications():
     )
     for submission in submissions:
         data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]["data"]
-        process_enquiry_update(
-            emt_id=data.get('emt_id'),
-            phone=data.get('phone_number'),
-            consent=data.get('arrange_callback') == 'yes'
-        )
+        if data.get('emt_id'):
+            process_enquiry_update(
+                emt_id=data.get('emt_id'),
+                phone=data.get('phone_number'),
+                consent=data.get('arrange_callback') == 'yes'
+            )
+        else:
+            logger.warning("Emt_id not provided for second qualification form")
     # kick off the workflow to process the updates
     start_staging_workflow()
 
@@ -171,10 +174,6 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
     record referencing an emt_id with an updated phone and consent,
     and new stage, to update the relevant profile.
     """
-    log = None
-    if not emt_id:
-        logger.warning("Emt_id not provided for second qualification form")
-        return log
     data = {
         'phone': phone,
         'phoneConsent': consent,
@@ -190,7 +189,7 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
             action=ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM
         ).exists()
         if has_processed:
-            return log
+            return
         enquiry.enquiry_stage = SECOND_QUALIFICATION_STAGE
         enquiry.save()
         enquirer = enquiry.enquirer
@@ -201,7 +200,7 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
         response = client.create_staging_profile(
             data=serialize_enquiry(enquiry, **data),
         )
-        log = log_action(
+        log_action(
             action=ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM,
             action_data=response,
             emt_id=emt_id
@@ -211,7 +210,7 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
             "Enquiry %s does not exist. Cannot update stage for second qualification.", emt_id)
     except AdobeCampaignRequestException as exc:
         logger.exception("Error updating enquiry stage in Adobe: %s", str(exc))
-    return log
+    return
 
 
 def process_engaged_enquiry(enquiry):
