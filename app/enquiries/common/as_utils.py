@@ -361,7 +361,7 @@ def get_new_second_qualification_forms(last_datetime=None, max_size=100):
     secret_key = settings.ACTIVITY_STREAM_KEY
     url = settings.ACTIVITY_STREAM_SEARCH_URL
     search_filter = [
-        {"range": {"object.published": {"gte": last_datetime}}}
+        {"range": {"object.published": {"gte": last_datetime.isoformat()}}}
     ] if last_datetime else []
     search_filter += [
         {

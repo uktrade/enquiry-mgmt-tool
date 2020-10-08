@@ -33,6 +33,7 @@ Process 3:
     process_engaged_enquiry()
     ```
 """
+import pytz
 import logging
 import datetime
 from app.enquiries.models import Enquiry, EnquiryActionLog
@@ -72,6 +73,7 @@ def process_latest_enquiries():
             settings.NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE,
             "%d-%B-%Y"
         )
+        last_action_date = pytz.UTC.localize(last_action_date)
         enquiries = enquiries.filter(date_received__gt=last_action_date)
     enquiries = enquiries.order_by('date_received')
     total_enquiries = enquiries.count()
@@ -94,7 +96,7 @@ def process_second_qualifications():
         ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM
     )
     submissions = get_new_second_qualification_forms(
-        last_datetime=last_action.actioned_at if last_action else None
+        last_datetime=last_action.actioned_at.date() if last_action else None
     )
     for submission in submissions:
         data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]["data"]
@@ -170,6 +172,9 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
     and new stage, to update the relevant profile.
     """
     log = None
+    if not emt_id:
+        logger.warning("Emt_id not provided for second qualification form")
+        return log
     data = {
         'phone': phone,
         'phoneConsent': consent,
@@ -179,6 +184,13 @@ def process_enquiry_update(emt_id, phone=None, consent=None):
     client = AdobeClient()
     try:
         enquiry = Enquiry.objects.get(id=emt_id)
+        # check if this has already been processed
+        has_processed = EnquiryActionLog.objects.filter(
+            enquiry=enquiry,
+            action=ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM
+        ).exists()
+        if has_processed:
+            return log
         enquiry.enquiry_stage = SECOND_QUALIFICATION_STAGE
         enquiry.save()
         enquirer = enquiry.enquirer
