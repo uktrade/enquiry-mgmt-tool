@@ -124,11 +124,9 @@ class TestAdobeCampaign(TestCase):
                         '_source': {
                             'object': {
                                 settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ: {
-                                    'data': {
-                                        'emt_id': self.enquiry.id,
-                                        'phone_number': '0771231234',
-                                        'arrange_callback': 'yes',
-                                    }
+                                    'emt_id': self.enquiry.id,
+                                    'phone_number': '0771231234',
+                                    'arrange_callback': 'yes',
                                 }
                             }
                         }

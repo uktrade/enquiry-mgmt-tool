@@ -99,7 +99,7 @@ def process_second_qualifications():
         last_datetime=last_action.actioned_at.date() if last_action else None
     )
     for submission in submissions:
-        data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]["data"]
+        data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]
         if data.get('emt_id'):
             process_enquiry_update(
                 emt_id=data.get('emt_id'),
