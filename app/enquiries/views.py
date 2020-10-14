@@ -207,6 +207,7 @@ class EnquiryFilter(filters.FilterSet):
     """
     Enquiry search filters
     """
+    id = filters.NumberFilter(field_name="id", method="filter_id")
     owner__id = filters.CharFilter(field_name="owner__id", method="filter_owner_id")
     received__lt = filters.DateFilter(field_name="receive", method="filter_received_lt")
     received__gt = filters.DateFilter(field_name="receive", method="filter_received_gt")
@@ -214,6 +215,9 @@ class EnquiryFilter(filters.FilterSet):
         field_name="enquiry_stage", lookup_expr="in", method="filter_enquiry_stage"
     )
     enquirer__email = filters.CharFilter(field_name="enquirer__email", lookup_expr="icontains")
+
+    def filter_id(self, queryset, name, value):
+        return queryset.filter(id=value)
 
     def filter_enquiry_stage(self, queryset, name, value):
         values = self.request.GET.getlist(name)
