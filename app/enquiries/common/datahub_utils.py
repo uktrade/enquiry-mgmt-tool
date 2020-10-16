@@ -104,7 +104,7 @@ def fetch_metadata(name):
     return response.json()
 
 
-def map_to_datahub_id(title, metadata):
+def resolve_metadata_id(title, metadata):
     """
     Resolves an ID of the specified metadata by its ``title``.
 
@@ -436,7 +436,7 @@ def prepare_dh_payload(
         ``payload`` is a ``dict``.
     """
 
-    sector = map_to_datahub_id(
+    sector = resolve_metadata_id(
         enquiry.get_primary_sector_display(),
         fetch_metadata("sector"),
     )
@@ -450,7 +450,7 @@ def prepare_dh_payload(
             fetch_metadata("investment-type"),
             ref_data.DATA_HUB_INVESTMENT_TYPE_FDI
         ),
-        fdi_type=map_to_datahub_id(
+        fdi_type=resolve_metadata_id(
             enquiry.get_investment_type_display(),
             fetch_metadata("fdi-type"),
         ),
@@ -458,15 +458,15 @@ def prepare_dh_payload(
             fetch_metadata("investment-project-stage"),
             ref_data.DATA_HUB_PROJECT_STAGE_PROSPECT,
         ),
-        investor_type=map_to_datahub_id(
+        investor_type=resolve_metadata_id(
             enquiry.get_new_existing_investor_display(),
             fetch_metadata("investment-investor-type"),
         ),
-        level_of_involvement=map_to_datahub_id(
+        level_of_involvement=resolve_metadata_id(
             enquiry.get_investor_involvement_level_display(),
             fetch_metadata("investment-involvement"),
         ),
-        specific_programme=map_to_datahub_id(
+        specific_programme=resolve_metadata_id(
             enquiry.get_specific_investment_programme_display(),
             fetch_metadata("investment-specific-programme"),
         ),
