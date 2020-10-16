@@ -104,24 +104,25 @@ def fetch_metadata(name):
     return response.json()
 
 
-def map_to_datahub_id(refdata_value, dh_category, target_key="name"):
+def map_to_datahub_id(title, metadata):
     """
-    Maps application reference data to |data-hub|_ reference data and
-    extracts the unique identifier
+    Resolves an ID of the specified metadata by its ``title``.
 
-    :param refdata_value: Human readable value of a choice field
-    :type refdata_value: str
-    :param dh_category: |data-hub|_ metadata category
-    :type dh_category: str
-    :param target_key: key name with the metadata object
-    :type target_key: str
+    :param title: Metadata title
+    :type title: str
+    :param metadata: |data-hub|_ metadata list
+    :type metadata: TypedDict('Metadata', {'name': str, 'id': str})
 
-    :returns: |data-hub|_ uuid for the given ``refdata_value`` if available, else ``None``
+    :returns: |data-hub|_ uuid for the given ``title`` if found, else ``None``
     """
 
-    dh_data = list(filter(lambda d: d[target_key] == refdata_value, fetch_metadata(dh_category)))
+    filtered = list(filter(
+        lambda d: d['name'].lower() == title.lower(),
+        metadata,
+    ))
 
-    return dh_data[0]["id"] if dh_data else None
+    if filtered:
+        return filtered[0]['id']
 
 
 def dh_get_user_details(request, access_token):
@@ -437,7 +438,7 @@ def prepare_dh_payload(
 
     sector = map_to_datahub_id(
         enquiry.get_primary_sector_display(),
-        "sector",
+        fetch_metadata("sector"),
     )
 
     payload = dict(
@@ -451,7 +452,7 @@ def prepare_dh_payload(
         ),
         fdi_type=map_to_datahub_id(
             enquiry.get_investment_type_display(),
-            "fdi-type"
+            fetch_metadata("fdi-type"),
         ),
         stage=get_dh_id(
             fetch_metadata("investment-project-stage"),
@@ -459,15 +460,15 @@ def prepare_dh_payload(
         ),
         investor_type=map_to_datahub_id(
             enquiry.get_new_existing_investor_display(),
-            "investment-investor-type",
+            fetch_metadata("investment-investor-type"),
         ),
         level_of_involvement=map_to_datahub_id(
             enquiry.get_investor_involvement_level_display(),
-            "investment-involvement",
+            fetch_metadata("investment-involvement"),
         ),
         specific_programme=map_to_datahub_id(
             enquiry.get_specific_investment_programme_display(),
-            "investment-specific-programme",
+            fetch_metadata("investment-specific-programme"),
         ),
         client_contacts=[contact_id],
         client_relationship_manager=client_relationship_manager_id,
