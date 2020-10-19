@@ -353,25 +353,6 @@ one hour in <a class="reference external" href="https://docs.djangoproject.com/e
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.enquiries.common.datahub_utils.map_to_datahub_id">
-<code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">map_to_datahub_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">refdata_value</span></em>, <em class="sig-param"><span class="n">dh_category</span></em>, <em class="sig-param"><span class="n">target_key</span><span class="o">=</span><span class="default_value">'name'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.map_to_datahub_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Maps application reference data to <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/datahub.html">DataHub</a> reference data and
-extracts the unique identifier</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>refdata_value</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Human readable value of a choice field</p></li>
-<li><p><strong>dh_category</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/datahub.html">DataHub</a> metadata category</p></li>
-<li><p><strong>target_key</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – key name with the metadata object</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/datahub.html">DataHub</a> uuid for the given <code class="docutils literal notranslate"><span class="pre">refdata_value</span></code> if available, else <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt id="app.enquiries.common.datahub_utils.prepare_dh_payload">
 <code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">prepare_dh_payload</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">enquiry</span></em>, <em class="sig-param"><span class="n">company_id</span></em>, <em class="sig-param"><span class="n">contact_id</span></em>, <em class="sig-param"><span class="n">adviser_id</span></em>, <em class="sig-param"><span class="n">client_relationship_manager_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.prepare_dh_payload" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares the payload for investment create request</p>
@@ -388,6 +369,23 @@ extracts the unique identifier</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">(payload,</span> <span class="pre">'primary_sector')</span></code> or <code class="docutils literal notranslate"><span class="pre">(payload,</span> <span class="pre">None)</span></code>, where
 <code class="docutils literal notranslate"><span class="pre">payload</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.datahub_utils.resolve_metadata_id">
+<code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">resolve_metadata_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">metadata</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.resolve_metadata_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolves an ID of the specified metadata by its <code class="docutils literal notranslate"><span class="pre">title</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Metadata title</p></li>
+<li><p><strong>metadata</strong> (<em>TypedDict</em><em>(</em><em>'Metadata'</em><em>, </em><em>{'name': str</em><em>, </em><em>'id': str}</em><em>)</em>) – <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/datahub.html">DataHub</a> metadata list</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/datahub.html">DataHub</a> uuid for the given <code class="docutils literal notranslate"><span class="pre">title</span></code> if found, else <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
