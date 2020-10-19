@@ -71,7 +71,7 @@ describe('Edit', () => {
               dt: 'Company HQ address',
               dd: 'ABC Electronics Co. (UK), Far Far Away, United Kingdom',
             },
-            { dt: 'Primary sector', dd: 'Advanced Engineering' },
+            { dt: 'Primary sector', dd: 'Advanced engineering' },
             { dt: 'IST sector', dd: 'ITECH' },
           ],
         },
