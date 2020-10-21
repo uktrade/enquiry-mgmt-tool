@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from requests.exceptions import Timeout
 from unittest import mock
+from uuid import uuid4
 
 from app.enquiries.tests.factories import EnquiryFactory
 from app.enquiries.common.datahub_utils import (
@@ -14,7 +15,9 @@ from app.enquiries.common.datahub_utils import (
     dh_company_search,
     dh_contact_search,
     dh_investment_create,
+    prepare_dh_payload,
 )
+from app.enquiries import ref_data
 
 
 def company_search_response():
@@ -61,6 +64,67 @@ def contact_search_response():
 
 
 class DataHubIntegrationTests(TestCase):
+
+    @mock.patch("app.enquiries.common.datahub_utils.fetch_metadata")
+    def test_dh_request_payload(self, fetch_metadata):
+        enquiry = EnquiryFactory(
+            primary_sector='Aerospace',
+            investment_type='Joint venture',
+        )
+
+        fdi_id = uuid4()
+        stage_id = uuid4()
+        investment_type_id = uuid4()
+        sector_id = uuid4()
+        website_id = uuid4()
+        invest_id = uuid4()
+
+        fetch_metadata.side_effect = lambda _: [
+            {'id': investment_type_id, 'name': 'FDI'},
+            {'id': fdi_id, 'name': 'Joint venture'},
+            {'id': stage_id, 'name': 'Prospect'},
+            {'id': sector_id, 'name': 'Aerospace'},
+            {'id': website_id, 'name': 'Website'},
+            {'id': invest_id, 'name': 'Invest in GREAT Britain'},
+        ]
+
+        company_id = uuid4()
+        contact_id = uuid4()
+        referral_adviser = uuid4()
+        client_relationship_manager_id = uuid4()
+
+        payload, error_key = prepare_dh_payload(
+            enquiry,
+            company_id,
+            contact_id,
+            referral_adviser,
+            client_relationship_manager_id,
+        )
+
+        expected_dh_payload = {
+            'name': enquiry.project_name,
+            'investor_company': company_id,
+            'description': enquiry.project_description,
+            'anonymous_description': enquiry.anonymised_project_description,
+            'investment_type': investment_type_id,
+            'fdi_type': fdi_id,
+            'stage': stage_id,
+            'investor_type': None,
+            'level_of_involvement': None,
+            'specific_programme': None,
+            'client_contacts': [contact_id],
+            'client_relationship_manager': client_relationship_manager_id,
+            'sector': sector_id,
+            'estimated_land_date': None,
+            'business_activities': [ref_data.DATA_HUB_BUSINESS_ACTIVITIES_SERVICES],
+            'referral_source_adviser': referral_adviser,
+            'referral_source_activity': website_id,
+            'referral_source_activity_website': invest_id,
+        }
+
+        assert payload == expected_dh_payload
+        assert error_key is None
+
     @mock.patch("requests.post")
     def test_dh_request_timeout(self, mock_post):
         """ Tests to ensure data hub requests raise exception """
