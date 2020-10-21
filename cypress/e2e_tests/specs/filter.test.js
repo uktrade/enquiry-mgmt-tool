@@ -80,8 +80,8 @@ const submitFilters = () =>
   cy.contains('Apply filters')
     .as('submit')
     .click()
-  
-const setOwner = id => 
+
+const setOwner = id =>
   cy.get('label').contains('Owner').next()
     .select(id === UNASSIGNED ? 'Unassigned' : USERS[id])
 
@@ -302,7 +302,7 @@ describe('Filters', () => {
     expectedTotal: 0,
     assertItem: () => {},
   })
-  
+
   testFilters({
     filters: {
       [FILTERS.nonResponsive]: true,
@@ -321,7 +321,7 @@ describe('Filters', () => {
       cy.wrap($li).contains(/(^\s*Dominique Fernandez\s*$)/)
     },
   })
-  
+
   testFilters({
     filters: {
       [FILTERS.nonApplicable]: true,
@@ -359,7 +359,7 @@ describe('Filters', () => {
       cy.wrap($li).contains(/(^\s*Unassigned\s*$)/)
     },
   })
-  
+
   testFilters({
     filters: {
       [FILTERS.added]: true,
@@ -386,7 +386,7 @@ describe('Filters', () => {
     expectedTotal: 0,
     assertItem: () => {},
   })
-  
+
   testFilters({
     filters: {
       [FILTERS.sent]: true,
@@ -417,7 +417,7 @@ describe('Filters', () => {
       cy.wrap($li).contains(/(^\s*Unassigned\s*$)/)
     },
   })
-  
+
   testFilters({
     filters: {
       [FILTERS.postProgressing]: true,
@@ -447,7 +447,7 @@ describe('Filters', () => {
       cy.wrap($li).contains(/(^\s*Unassigned\s*$)/)
     },
   })
-  
+
   testFilters({
     filters: {},
     owner: UNASSIGNED,
@@ -483,7 +483,7 @@ describe('Filters', () => {
       cy.wrap($li).contains(/(^\s*Kaylee Richards\s*$)/)
     },
   })
-  
+
   testFilters({
     filters: {},
     owner: 2,
@@ -501,7 +501,7 @@ describe('Filters', () => {
       cy.wrap($li).contains(/(^\s*Sam Koenen\s*$)/)
     },
   })
-  
+
   testFilters({
     filters: {},
     owner: 3,
@@ -519,7 +519,7 @@ describe('Filters', () => {
       cy.wrap($li).contains(/(^\s*Julia Mieville\s*$)/)
     },
   })
-  
+
   testFilters({
     filters: {},
     owner: 4,
@@ -550,7 +550,7 @@ describe('Filters', () => {
     owner: 4,
     expectedTotal: 0,
   })
-  
+
   testFilters({
     filters: {},
     owner: 5,
@@ -568,7 +568,7 @@ describe('Filters', () => {
       cy.wrap($li).contains(/(^\s*Aiden Collet\s*$)/)
     },
   })
-  
+
   testFilters({
     filters: {
       'Received before': '2018-01-01',
@@ -583,7 +583,7 @@ describe('Filters', () => {
           expect(new Date($el.text())).to.be.below(new Date('2018-01-01'))
         ),
   })
-  
+
   testFilters({
     filters: {
       'Received after': '2019-01-01',
@@ -598,7 +598,7 @@ describe('Filters', () => {
           expect(new Date($el.text())).to.be.above(new Date('2001-01-01'))
         ),
   })
-  
+
   testFilters({
     filters: {
       'Received before': '2018-01-01',
@@ -616,7 +616,7 @@ describe('Filters', () => {
           )
         ),
   })
-  
+
   Object.entries({
     matchbox: [15, 3],
     company: [10, 2],
@@ -644,7 +644,7 @@ describe('Filters', () => {
       },
     })
   })
-  
+
   Object.entries({
     'evelyn.wang@example.com': 26,
     'jeff.bezos@washingtonpost.com': 12,
@@ -667,7 +667,7 @@ describe('Filters', () => {
       },
     })
   )
-  
+
   testFilters({
     filters: {
       'Company added to Data Hub before': '2020-02-04',
@@ -684,14 +684,14 @@ describe('Filters', () => {
       })
     },
   })
-  
+
   testFilters({
     filters: {
       'Company added to Data Hub before': '2020-02-03',
     },
     expectedTotal: 0,
   })
-  
+
   testFilters({
     filters: {
       'Company added to Data Hub after': '2020-02-02',
@@ -707,14 +707,14 @@ describe('Filters', () => {
       })
     },
   })
-  
+
   testFilters({
     filters: {
       'Company added to Data Hub after': '2020-02-03',
     },
     expectedTotal: 0,
   })
-  
+
   it("Should display results for all owners when the '---' option is selected", () => {
     setOwner(1),
     submitFilters()
@@ -728,5 +728,15 @@ describe('Filters', () => {
       'Data Hub project code': 'DHP-00000002',
     },
     expectedTotal: 1,
+  })
+
+  testFilters({
+    filters: {
+      'Enquiry ID': '18',
+    },
+    expectedTotal: 1,
+    assertItem: ($li) => {
+      cy.wrap($li).contains(/^ABC Electronics$/)
+    },
   })
 })
