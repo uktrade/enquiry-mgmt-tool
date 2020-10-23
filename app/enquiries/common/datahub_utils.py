@@ -442,7 +442,7 @@ def prepare_dh_payload(
     )
 
     payload = dict(
-        name=enquiry.company_name,
+        name=enquiry.project_name,
         investor_company=company_id,
         description=enquiry.project_description,
         anonymous_description=enquiry.anonymised_project_description,

@@ -71,6 +71,7 @@ def can_be_submitted(enquiry):
         not enquiry.date_added_to_datahub
         and enquiry.enquiry_stage != ref_data.EnquiryStage.ADDED_TO_DATAHUB
         and enquiry.datahub_project_status == ref_data.DatahubProjectStatus.DEFAULT
+        and enquiry.project_name
     )
 
 
