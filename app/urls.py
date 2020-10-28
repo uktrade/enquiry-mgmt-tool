@@ -17,9 +17,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 
-from app.enquiries import views
-from app.enquiries import ping
-
+from app.enquiries import views, ping
 
 urlpatterns = [
     path("", views.EnquiryListView.as_view(), name="index"),
@@ -39,8 +37,8 @@ urlpatterns = [
     path("enquiries/<int:pk>/delete", views.EnquiryDeleteView.as_view(), name="enquiry-delete"),
     path("healthcheck/ping", ping.ping, name="ping"),
     path("dh-adviser-search", views.DataHubAdviserSearch.as_view(), name="dh-adviser-search"),
+    path("api/v1/enquiries", views.APIEnquiries.as_view(), name="api-v1-enquiries"),
 ]
 
-
 if settings.FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
-    urlpatterns.append(path("auth/", include("authbroker_client.urls")),)
+    urlpatterns.append(path("auth/", include("authbroker_client.urls")), )

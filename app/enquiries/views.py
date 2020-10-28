@@ -20,6 +20,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django_filters import rest_framework as filters
 from rest_framework import status
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -28,15 +29,17 @@ from rest_framework.utils.urls import replace_query_param
 from rest_framework.views import APIView
 from rest_framework_csv.renderers import CSVRenderer
 
-from app.enquiries.common.datahub_utils import dh_investment_create
-from app.enquiries import forms, models, serializers, utils
+from app.enquiries import auth, forms, models, serializers, utils
+from app.enquiries.common.datahub_utils import (
+    dh_investment_create,
+    dh_company_search,
+    dh_request,
+)
 from app.enquiries.utils import (
     row_to_enquiry,
     get_oauth_payload,
     parse_error_messages,
 )
-from app.enquiries.common.datahub_utils import dh_company_search, dh_request
-
 
 UNASSIGNED = "UNASSIGNED"
 
@@ -46,6 +49,7 @@ class DataHubAdviserSearch(LoginRequiredMixin, View):
     Endpoint for the `Client Relationship Manager` autocomplete field
     of :class:`app.enquiries.forms.EnquiryForm`.
     """
+
     def get(self, request):
         session = get_oauth_payload(request)
         access_token = session["access_token"]
@@ -91,6 +95,13 @@ def get_enquiry_field(name):
     filter_config = get_filter_config()
 
     return {"name": name, "choices": filter_config[name].choices}
+
+
+class Pagination(PageNumberPagination):
+    """
+    Control API views pagination.
+    """
+    page_size_query_param = settings.ENQUIRIES_PAGE_SIZE_PARAM
 
 
 class PaginationWithPaginationMeta(PageNumberPagination):
@@ -279,6 +290,20 @@ class EnquiryListCSVRenderer(CSVRenderer):
     """
 
     header = settings.EXPORT_OUTPUT_FILE_CSV_HEADERS
+
+
+class APIEnquiries(auth.HawkResponseSigningMixin, ListAPIView):
+    """
+    The `enquiry search` json view.
+    """
+
+    authentication_classes = (auth.HawkAuthentication, auth.PaaSIPAuthentication)
+    permission_classes = (auth.HawkScopePermission,)
+    serializer_class = serializers.EnquiryDetailSerializer
+    pagination_class = Pagination
+    required_hawk_scope = auth.HawkScope.enquiries
+    filter_backends = (OrderingFilter,)
+    queryset = models.Enquiry.objects.all()
 
 
 class EnquiryListView(LoginRequiredMixin, ListAPIView):
