@@ -159,6 +159,24 @@
   <div class="section" id="module-app.enquiries.views">
 <span id="views"></span><h1>Views<a class="headerlink" href="#module-app.enquiries.views" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt id="app.enquiries.views.APIEnquiries">
+<em class="property">class </em><code class="sig-prename descclassname">app.enquiries.views.</code><code class="sig-name descname">APIEnquiries</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.views.APIEnquiries" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>enquiry search</cite> json view.</p>
+<dl class="py attribute">
+<dt id="app.enquiries.views.APIEnquiries.pagination_class">
+<code class="sig-name descname">pagination_class</code><a class="headerlink" href="#app.enquiries.views.APIEnquiries.pagination_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#app.enquiries.views.Pagination" title="app.enquiries.views.Pagination"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pagination</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="app.enquiries.views.APIEnquiries.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#app.enquiries.views.APIEnquiries.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">app.enquiries.serializers.EnquiryDetailSerializer</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="app.enquiries.views.DataHubAdviserSearch">
 <em class="property">class </em><code class="sig-prename descclassname">app.enquiries.views.</code><code class="sig-name descname">DataHubAdviserSearch</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.views.DataHubAdviserSearch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Endpoint for the <cite>Client Relationship Manager</cite> autocomplete field
@@ -299,6 +317,12 @@ which have <code class="docutils literal notranslate"><span class="pre">date_rec
 <dt id="app.enquiries.views.ImportEnquiriesView">
 <em class="property">class </em><code class="sig-prename descclassname">app.enquiries.views.</code><code class="sig-name descname">ImportEnquiriesView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.views.ImportEnquiriesView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles import of enquiries with a CSV file</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="app.enquiries.views.Pagination">
+<em class="property">class </em><code class="sig-prename descclassname">app.enquiries.views.</code><code class="sig-name descname">Pagination</code><a class="headerlink" href="#app.enquiries.views.Pagination" title="Permalink to this definition">¶</a></dt>
+<dd><p>Control API views pagination.</p>
 </dd></dl>
 
 <dl class="py class">
