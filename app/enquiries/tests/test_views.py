@@ -1,25 +1,22 @@
 import csv
-import pytest
 import random
-from openpyxl import load_workbook
-
-from bs4 import BeautifulSoup
-from io import StringIO
-
 from datetime import date, datetime
-from faker import Faker
+from io import StringIO
+from unittest import mock
 
+import mohawk
+import pytest
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.urls import reverse
-
+from faker import Faker
+from openpyxl import load_workbook
 from rest_framework import status
-from unittest import mock
 
 import app.enquiries.ref_data as ref_data
 import app.enquiries.tests.utils as test_utils
-
 from app.enquiries import utils
 from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.tests.factories import (
@@ -31,7 +28,6 @@ from app.enquiries.tests.factories import (
     return_display_value,
 )
 from app.enquiries.views import ImportEnquiriesView, ImportTemplateDownloadView
-
 
 faker = Faker(["en_GB", "en_US", "ja_JP"])
 headers = {"HTTP_CONTENT_TYPE": "text/html", "HTTP_ACCEPT": "text/html"}
@@ -322,7 +318,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         data["email_consent"] = False
         data["phone_consent"] = True
         data["request_for_call"] = enquirer.request_for_call
-        response = self.client.post(reverse("enquiry-edit", kwargs={"pk": data["id"]}), data,)
+        response = self.client.post(reverse("enquiry-edit", kwargs={"pk": data["id"]}), data, )
         # POST request response to a form is 302
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
@@ -717,3 +713,129 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertIn(
             settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition"),
         )
+
+
+def _auth_sender(
+    key_id="test-id-without-scope",
+    secret_key="test-key-without-scope",
+    url=None,
+    method="GET",
+    content="",
+    content_type="",
+):
+    credentials = {
+        "id": key_id,
+        "key": secret_key,
+        "algorithm": "sha256",
+    }
+    return mohawk.Sender(
+        credentials,
+        url,
+        method,
+        content=content,
+        content_type=content_type,
+    )
+
+
+@pytest.mark.django_db
+class TestAPIEnquiries:
+    def test_enquiries_list_unauthorized(self, api_client):
+        """Should return 401"""
+        url = reverse("api-v1-enquiries")
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_enquiries_list_forbidden(self, api_client, settings):
+        """Should return 403"""
+        settings.HAWK_CREDENTIALS = {
+            'test': {
+                'key': 'test-key',
+                'scopes': ("invalid-scope",),
+            },
+        }
+        url = f"http://testserver{reverse('api-v1-enquiries')}"
+        sender = _auth_sender("test", "test-key", url, "GET", "", "")
+        response = api_client.get(
+            url,
+            content_type="",
+            HTTP_AUTHORIZATION=sender.request_header,
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_enquiries_list_ok(self, api_client, settings):
+        """Should return 200"""
+        settings.HAWK_CREDENTIALS = {
+            'test': {
+                'key': 'test-key',
+                'scopes': ("enquiries",),
+            },
+        }
+
+        url = f"http://testserver{reverse('api-v1-enquiries')}"
+        sender = _auth_sender("test", "test-key", url, "GET", "", "")
+        response = api_client.get(
+            url,
+            content_type="",
+            HTTP_AUTHORIZATION=sender.request_header,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {'count': 0, 'next': None, 'previous': None, 'results': []}
+
+    def test_enquiries_pagination(self, api_client, settings):
+        """Should return pages"""
+        settings.HAWK_CREDENTIALS = {
+            'test': {
+                'key': 'test-key',
+                'scopes': ("enquiries",),
+            },
+        }
+        enquiries = [EnquiryFactory() for _ in range(30)]
+
+        # test return 10 results
+        url = f"http://testserver{reverse('api-v1-enquiries')}"
+        sender = _auth_sender("test", "test-key", url, "GET")
+        response = api_client.get(url, content_type="", HTTP_AUTHORIZATION=sender.request_header)
+        data = response.json()
+
+        assert response.status_code == status.HTTP_200_OK
+        assert data["count"] == len(enquiries)
+        assert data["next"] is not None
+        assert data["previous"] is None
+        assert len(data["results"]) == 10
+
+        # test return 20 results
+        url = f"http://testserver{reverse('api-v1-enquiries')}?page_size=20"
+        sender = _auth_sender("test", "test-key", url, "GET")
+        response = api_client.get(url, content_type="", HTTP_AUTHORIZATION=sender.request_header)
+        data = response.json()
+
+        assert response.status_code == status.HTTP_200_OK
+        assert data["count"] == len(enquiries)
+        assert data["next"] is not None
+        assert data["previous"] is None
+        assert len(data["results"]) == 20
+
+        # test return all results
+        url = f"http://testserver{reverse('api-v1-enquiries')}?page_size=100"
+        sender = _auth_sender("test", "test-key", url, "GET")
+        response = api_client.get(url, content_type="", HTTP_AUTHORIZATION=sender.request_header)
+        data = response.json()
+
+        assert response.status_code == status.HTTP_200_OK
+        assert data["count"] == len(enquiries)
+        assert data["next"] is None
+        assert data["previous"] is None
+        assert len(data["results"]) == len(enquiries)
+
+        # test return 2nd page
+        url = f"http://testserver{reverse('api-v1-enquiries')}?page_size=5&page=2"
+        sender = _auth_sender("test", "test-key", url, "GET")
+        response = api_client.get(url, content_type="", HTTP_AUTHORIZATION=sender.request_header)
+        data = response.json()
+
+        assert response.status_code == status.HTTP_200_OK
+        assert data["count"] == len(enquiries)
+        assert data["next"] is not None
+        assert data["previous"] is not None
+        assert len(data["results"]) == 5

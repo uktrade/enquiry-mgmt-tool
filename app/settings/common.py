@@ -10,18 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import environ
 import logging.config
 import os
-import sentry_sdk
-
-from sentry_sdk.integrations.celery import CeleryIntegration
-from sentry_sdk.integrations.django import DjangoIntegration
 from urllib.parse import urlencode
 
+import environ
+import sentry_sdk
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from django.utils import timezone
-
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
 
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
@@ -148,7 +147,7 @@ AUTH_USER_MODEL = "enquiries.Owner"
 # authbroker config
 if FEATURE_FLAGS["ENFORCE_STAFF_SSO_ON"]:
     TEST_SSO_PROVIDER_SET_RETURNED_ACCESS_TOKEN = env("MOCK_SSO_TOKEN", default=None)
-    INSTALLED_APPS.append("authbroker_client",)
+    INSTALLED_APPS.append("authbroker_client", )
 
     AUTHBROKER_URL = env("AUTHBROKER_URL")
     AUTHBROKER_CLIENT_ID = env("AUTHBROKER_CLIENT_ID")
@@ -180,11 +179,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -198,7 +196,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -227,6 +224,7 @@ SECURE_BROWSER_XSS_FILTER = True
 # App specific settings
 CHAR_FIELD_MAX_LENGTH = 255
 ENQUIRIES_PER_PAGE = env.int('ENQUIRIES_PER_PAGE', default=10)
+ENQUIRIES_PAGE_SIZE_PARAM = env.int('ENQUIRIES_PAGE_SIZE_PARAM', default='page_size')
 ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS = env.int('ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS', default=6)
 ENQUIRY_SORT_OPTIONS = {
     "company_name": "Company name: A-Z",
@@ -347,7 +345,38 @@ ADOBE_API_DOMAIN = env.str('ADOBE_API_DOMAIN', 'mc.adobe.io')
 ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_NAME = env('ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_NAME')
 ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_VALUE = env('ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_VALUE')
 
-
 NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE = env.str('NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE', '01-February-2020')
 
 CAMPAIGN_ENQUIRIES_POLL_INTERVAL_MINS = env.str('CAMPAIGN_ENQUIRIES_POLL_INTERVAL_MINS', 30)
+
+AUTH_PAAS_IP_CHECK_DISABLE = env.bool('AUTH_PAAS_IP_CHECK_DISABLE', default=False)
+AUTH_PAAS_IP_WHITELIST = env.list('AUTH_PAAS_IP_WHITELIST', default=[])
+AUTH_PAAS_ADDED_X_FORWARDED_FOR_IPS = 2
+
+# Hawk
+HAWK_NONCE_EXPIRY_SECONDS = 60
+HAWK_CREDENTIALS = {}
+
+
+def _add_hawk_credentials(id_env_name, key_env_name, scopes):
+    id_ = env(id_env_name, default=None)
+
+    if not id_:
+        return
+
+    if id_ in HAWK_CREDENTIALS:
+        raise ImproperlyConfigured(
+            'Duplicate Hawk access key IDs detected. All access key IDs should be unique.',
+        )
+
+    HAWK_CREDENTIALS[id_] = {
+        'key': env(key_env_name),
+        'scopes': scopes,
+    }
+
+
+_add_hawk_credentials(
+    'DATA_FLOW_HAWK_ID',
+    'DATA_FLOW_HAWK_KEY',
+    ('enquiries',),
+)
