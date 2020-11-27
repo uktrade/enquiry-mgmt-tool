@@ -195,18 +195,15 @@ def dh_company_search(request, access_token, company_name):
     return companies, None
 
 
-def dh_contact_search(request, access_token, contact_name, company_id):
+def dh_get_company_contact_list(request, access_token, company_id):
     """
-    Performs a `contact name` search using |data-hub-api|_.
+    Performs a contact search for a specific company using |data-hub-api|_.
 
     :param request:
     :type request: django.http.HttpRequest
 
     :param access_token: The user's |oauth|_ access token
     :type access_token: str
-
-    :param contact_name: Contact name to search for
-    :type contact_name: str
 
     :param company_id: Company ID
     :type company_id: str
@@ -216,7 +213,7 @@ def dh_contact_search(request, access_token, contact_name, company_id):
     """
     contacts = []
     url = settings.DATA_HUB_CONTACT_SEARCH_URL
-    payload = {"name": contact_name, "company": [company_id]}
+    payload = {"company": [company_id]}
 
     response = dh_request(request, access_token, "POST", url, payload)
 
@@ -238,6 +235,36 @@ def dh_contact_search(request, access_token, contact_name, company_id):
     return contacts, None
 
 
+def dh_get_matching_company_contact(first_name, last_name, email, company_contacts):
+    """
+    Performs check identifying whether an enquirer exists in their company's contact
+    list in |data-hub-api|_.
+
+    :param first_name:
+    :type first_name: str
+
+    :param last_name:
+    :type last_name: str
+
+    :param email:
+    :type email: str
+
+    :param company_contacts:
+    :type company_contacts: list
+
+    :returns: The first matching contact if any exist
+    :rtype: dict or None
+    """
+    return next((
+            company_contact for company_contact in company_contacts
+            if company_contact["first_name"].lower() == first_name.lower()
+            and company_contact["last_name"].lower() == last_name.lower()
+            and company_contact["email"].lower() == email.lower()
+        ),
+        None
+    )
+
+
 def dh_contact_create(request, access_token, enquirer, company_id, primary=False):
     """
     Create a |data-hub|_ `contact` and associate it with the given `company`.
@@ -248,8 +275,8 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
     :param access_token: The user's |oauth|_ access token
     :type access_token: str
 
-    :param contact_name: Contact name to search for
-    :type contact_name: str
+    :param enquirer: Contact to add
+    :type enquirer: app.enquiries.models.Enquirer
 
     :param company_id: Company ID
     :type company_id: str
@@ -261,7 +288,6 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
     :rtype: tuple
     """
     url = settings.DATA_HUB_CONTACT_CREATE_URL
-    enquirer = enquirer.enquirer
     payload = {
         "first_name": enquirer.first_name,
         "last_name": enquirer.last_name,
@@ -279,6 +305,64 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
         return None, response.json()
 
     return response.json(), None
+
+
+def dh_prepare_contact(request, access_token, enquirer, company_id):
+    """
+    Prepares contact for the Data Hub request based on enquirer details.
+    Prompts adding a new company contact to Data Hub if needed.
+
+    :param request:
+    :type request: django.http.HttpRequest
+
+    :param access_token: The user's |oauth|_ access token
+    :type access_token: str
+
+    :param enquirer:
+    :type enquirer: app.enquiries.models.Enquirer
+
+    :param company_id:
+    :type company_id: str
+
+    :returns: A ``(uuid, None)`` or ``(None, error_json_dict)`` tuple
+    :rtype: tuple
+    """
+
+    # Check whether enquiry company has existing contacts in DH
+    existing_contacts, error = dh_get_company_contact_list(
+        request, access_token, company_id
+    )
+    if error:
+        return None, {"contact_search": f"Error while checking company contacts, {error}"}
+
+    # Handle case where enquirer is first company contact
+    if not existing_contacts:
+        enquiry_contact, error = dh_contact_create(
+            request, access_token, enquirer, company_id, primary=True
+        )
+        if error:
+            return None, {"contact_create": f"Error while creating a new company contact, {error}"}
+        return enquiry_contact["id"], None
+
+    # If there are company contacts in DH, check whether the enquirer is one of them
+    matching_contact = dh_get_matching_company_contact(
+        enquirer.first_name, enquirer.last_name,
+        enquirer.email, existing_contacts
+    )
+
+    # If contact already in DH, return their id
+    if matching_contact:
+        enquiry_contact = matching_contact
+        return enquiry_contact["datahub_id"], None
+
+    # If enquirer is a new contact, add them to DH
+    enquiry_contact, error = dh_contact_create(
+        request, access_token, enquirer, company_id, primary=False
+    )
+
+    if error:
+        return None, {"contact_create": f"Error while creating a new company contact, {error}"}
+    return enquiry_contact["id"], None
 
 
 def dh_adviser_search(request, access_token, adviser_name):
@@ -409,7 +493,7 @@ def dh_enquiry_readiness(request, access_token, enquiry):
     return response
 
 
-def prepare_dh_payload(
+def dh_prepare_payload(
     enquiry, company_id, contact_id, adviser_id, client_relationship_manager_id,
 ):
     """
@@ -541,32 +625,16 @@ def dh_investment_create(request, enquiry):
         return response
 
     company_id = enquiry.dh_company_id
-    # Create a contact for this company
-    # If a contact already exists then make the new contact as secondary
-    full_name = f"{enquiry.enquirer.first_name} {enquiry.enquirer.last_name}"
-    existing_contacts, error = dh_contact_search(request, access_token, full_name, company_id)
+    contact_id, error = dh_prepare_contact(request, access_token, enquiry.enquirer, company_id)
     if error:
-        response["errors"].append(
-            {"contact_search": f"Error while checking company contacts, {str(error)}"}
-        )
+        response["errors"].append(error)
         return response
 
-    primary = not existing_contacts
-    contact_response, error = dh_contact_create(
-        request, access_token, enquiry, company_id, primary=primary
-    )
-    if error:
-        response["errors"].append(
-            {"contact_create": f"Error while creating a new company contact, {error}"}
-        )
-        return response
-
-    contact_id = contact_response["id"]
     referral_adviser = user_details["id"]
     client_relationship_manager_id = dh_status["adviser"]
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
-    payload, error_key = prepare_dh_payload(
+    payload, error_key = dh_prepare_payload(
         enquiry,
         company_id,
         contact_id,
