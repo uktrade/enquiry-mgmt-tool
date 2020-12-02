@@ -13,9 +13,9 @@ from app.enquiries.tests.factories import EnquiryFactory
 from app.enquiries.common.datahub_utils import (
     dh_request,
     dh_company_search,
-    dh_contact_search,
+    dh_get_company_contact_list,
     dh_investment_create,
-    prepare_dh_payload,
+    dh_prepare_payload,
 )
 from app.enquiries import ref_data
 
@@ -59,7 +59,7 @@ def contact_search_response():
                 }
             ]
         },
-        "error": {"name": ["This field may not be blank."]},
+        "error": {"detail": "JSON parse error - Expecting value: line 1 column 1 (char 0)"},
     }
 
 
@@ -93,7 +93,7 @@ class DataHubIntegrationTests(TestCase):
         referral_adviser = uuid4()
         client_relationship_manager_id = uuid4()
 
-        payload, error_key = prepare_dh_payload(
+        payload, error_key = dh_prepare_payload(
             enquiry,
             company_id,
             contact_id,
@@ -163,31 +163,20 @@ class DataHubIntegrationTests(TestCase):
             self.assertEqual(error["name"], expected["name"])
 
     def test_contact_search_success(self):
-        """ Test contact search returns matches """
+        """ Test company contact search returns matches """
         with requests_mock.Mocker() as m:
             url = settings.DATA_HUB_CONTACT_SEARCH_URL
             m.post(url, json=contact_search_response()["success"])
             expected = contact_search_response()["success"]["results"]
 
-            response, error = dh_contact_search(
-                "mock_request", "access_token", "User", "company_id"
+            response, error = dh_get_company_contact_list(
+                "mock_request", "access_token", "company_id"
             )
             self.assertIsNone(error)
             self.assertEqual(len(response), 1)
             self.assertEqual(response[0]["datahub_id"], expected[0]["id"])
             self.assertEqual(response[0]["first_name"], expected[0]["first_name"])
             self.assertEqual(response[0]["last_name"], expected[0]["last_name"])
-
-    def test_contact_search_error(self):
-        """ Test contact search error case eg if input is blank """
-        with requests_mock.Mocker() as m:
-            url = settings.DATA_HUB_CONTACT_SEARCH_URL
-            m.post(url, status_code=400, json=contact_search_response()["error"])
-            expected = contact_search_response()["error"]
-
-            response, error = dh_contact_search("mock_request", "access_token", "", "company_id")
-            self.assertIsNotNone(error)
-            self.assertEqual(error["name"], expected["name"])
 
     def test_investment_creation_fails_company_not_in_dh(self):
         """ Test that we cannot create investment if company doesn't exist in Data Hub """
