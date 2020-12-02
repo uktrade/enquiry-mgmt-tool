@@ -215,7 +215,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>request</strong> (<a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest" title="(in Django v3.2)"><em>django.http.HttpRequest</em></a>) – </p></li>
 <li><p><strong>access_token</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The user’s <a class="reference external" href="https://oauth.net/2/">OAuth 2.0</a> access token</p></li>
-<li><p><strong>contact_name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Contact name to search for</p></li>
+<li><p><strong>enquirer</strong> (<a class="reference internal" href="../models.html#app.enquiries.models.Enquirer" title="app.enquiries.models.Enquirer"><em>app.enquiries.models.Enquirer</em></a>) – Contact to add</p></li>
 <li><p><strong>company_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Company ID</p></li>
 <li><p><strong>primary</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
 </ul>
@@ -225,28 +225,6 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.enquiries.common.datahub_utils.dh_contact_search">
-<code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">dh_contact_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">access_token</span></em>, <em class="sig-param"><span class="n">contact_name</span></em>, <em class="sig-param"><span class="n">company_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.dh_contact_search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs a <cite>contact name</cite> search using <a class="reference external" href="https://github.com/uktrade/data-hub-api#data-hub-api">DataHub API</a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest" title="(in Django v3.2)"><em>django.http.HttpRequest</em></a>) – </p></li>
-<li><p><strong>access_token</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The user’s <a class="reference external" href="https://oauth.net/2/">OAuth 2.0</a> access token</p></li>
-<li><p><strong>contact_name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Contact name to search for</p></li>
-<li><p><strong>company_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Company ID</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A subset of fields for each company found</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -270,6 +248,50 @@ client relationship manager is a valid user, given user is available etc.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.datahub_utils.dh_get_company_contact_list">
+<code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">dh_get_company_contact_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">access_token</span></em>, <em class="sig-param"><span class="n">company_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.dh_get_company_contact_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a contact search for a specific company using <a class="reference external" href="https://github.com/uktrade/data-hub-api#data-hub-api">DataHub API</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest" title="(in Django v3.2)"><em>django.http.HttpRequest</em></a>) – </p></li>
+<li><p><strong>access_token</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The user’s <a class="reference external" href="https://oauth.net/2/">OAuth 2.0</a> access token</p></li>
+<li><p><strong>company_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Company ID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A subset of fields for each company found</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.datahub_utils.dh_get_matching_company_contact">
+<code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">dh_get_matching_company_contact</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">first_name</span></em>, <em class="sig-param"><span class="n">last_name</span></em>, <em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">company_contacts</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.dh_get_matching_company_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs check identifying whether an enquirer exists in their company’s contact
+list in <a class="reference external" href="https://github.com/uktrade/data-hub-api#data-hub-api">DataHub API</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>first_name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>last_name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>company_contacts</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The first matching contact if any exist</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a> or <a class="reference external" href="https://docs.python.org/3.8/library/constants.html#None" title="(in Python v3.8)">None</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -314,6 +336,50 @@ If this is the only <cite>contact</cite> then it will be made primary.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="app.enquiries.common.datahub_utils.dh_prepare_contact">
+<code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">dh_prepare_contact</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">access_token</span></em>, <em class="sig-param"><span class="n">enquirer</span></em>, <em class="sig-param"><span class="n">company_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.dh_prepare_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares contact for the Data Hub request based on enquirer details.
+Prompts adding a new company contact to Data Hub if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest" title="(in Django v3.2)"><em>django.http.HttpRequest</em></a>) – </p></li>
+<li><p><strong>access_token</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The user’s <a class="reference external" href="https://oauth.net/2/">OAuth 2.0</a> access token</p></li>
+<li><p><strong>enquirer</strong> (<a class="reference internal" href="../models.html#app.enquiries.models.Enquirer" title="app.enquiries.models.Enquirer"><em>app.enquiries.models.Enquirer</em></a>) – </p></li>
+<li><p><strong>company_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">(uuid,</span> <span class="pre">None)</span></code> or <code class="docutils literal notranslate"><span class="pre">(None,</span> <span class="pre">error_json_dict)</span></code> tuple</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="app.enquiries.common.datahub_utils.dh_prepare_payload">
+<code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">dh_prepare_payload</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">enquiry</span></em>, <em class="sig-param"><span class="n">company_id</span></em>, <em class="sig-param"><span class="n">contact_id</span></em>, <em class="sig-param"><span class="n">adviser_id</span></em>, <em class="sig-param"><span class="n">client_relationship_manager_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.dh_prepare_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares the payload for investment create request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enquiry</strong> (<a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><em>app.enquiries.models.Enquiry</em></a>) – </p></li>
+<li><p><strong>company_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>contact_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>adviser_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>client_relationship_manager_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">(payload,</span> <span class="pre">'primary_sector')</span></code> or <code class="docutils literal notranslate"><span class="pre">(payload,</span> <span class="pre">None)</span></code>, where
+<code class="docutils literal notranslate"><span class="pre">payload</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="app.enquiries.common.datahub_utils.dh_request">
 <code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">dh_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">access_token</span></em>, <em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">payload</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">request_headers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">15</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.dh_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a <a class="reference external" href="https://github.com/uktrade/data-hub-api#data-hub-api">DataHub API</a> request.</p>
@@ -331,7 +397,7 @@ If this is the only <cite>contact</cite> then it will be made primary.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <a class="reference external" href="https://requests.readthedocs.io/en/master/api/#requests.Response" title="(in Requests v2.24.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Response</span></code></a> instance</p>
+<dd class="field-even"><p>A <a class="reference external" href="https://requests.readthedocs.io/en/master/api/#requests.Response" title="(in Requests v2.25.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Response</span></code></a> instance</p>
 </dd>
 </dl>
 </dd></dl>
@@ -348,27 +414,6 @@ one hour in <a class="reference external" href="https://docs.djangoproject.com/e
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The parsed metadata as a <code class="docutils literal notranslate"><span class="pre">list</span></code> of dictionaries.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.enquiries.common.datahub_utils.prepare_dh_payload">
-<code class="sig-prename descclassname">app.enquiries.common.datahub_utils.</code><code class="sig-name descname">prepare_dh_payload</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">enquiry</span></em>, <em class="sig-param"><span class="n">company_id</span></em>, <em class="sig-param"><span class="n">contact_id</span></em>, <em class="sig-param"><span class="n">adviser_id</span></em>, <em class="sig-param"><span class="n">client_relationship_manager_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.prepare_dh_payload" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepares the payload for investment create request</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>enquiry</strong> (<a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><em>app.enquiries.models.Enquiry</em></a>) – </p></li>
-<li><p><strong>company_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
-<li><p><strong>contact_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
-<li><p><strong>adviser_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
-<li><p><strong>client_relationship_manager_id</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">(payload,</span> <span class="pre">'primary_sector')</span></code> or <code class="docutils literal notranslate"><span class="pre">(payload,</span> <span class="pre">None)</span></code>, where
-<code class="docutils literal notranslate"><span class="pre">payload</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
