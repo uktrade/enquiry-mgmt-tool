@@ -103,9 +103,9 @@ describe('Edit', () => {
             { dt: 'How did they hear about DIT?', dd: 'Internet search' },
             {
               dt: 'Consent (email)',
-              dd: 'Yes',
+              dd: 'Maybe',
             },
-            { dt: 'Consent (telephone)', dd: 'No' },
+            { dt: 'Consent (telephone)', dd: 'Maybe' },
           ],
         },
         {
@@ -312,12 +312,12 @@ describe('Edit', () => {
             },
             {
               type: 'select',
-              label: 'Email consent',
-              value: 'True',
+              label: 'Consent (email)',
+              value: 'False',
             },
             {
               type: 'select',
-              label: 'Phone consent',
+              label: 'Consent (telephone)',
               value: 'False',
             },
           ],
@@ -722,9 +722,9 @@ describe('Edit', () => {
             },
             {
               dt: 'Consent (email)',
-              dd: 'No',
+              dd: 'Maybe',
             },
-            { dt: 'Consent (telephone)', dd: 'Yes' },
+            { dt: 'Consent (telephone)', dd: 'Maybe' },
           ],
         },
         {

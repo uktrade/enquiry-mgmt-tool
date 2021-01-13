@@ -156,6 +156,29 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         return response.json()
 
+    def set_enquiry_for_update(self, enquiry):
+        # Enquirer fields are also sent in a single form update
+        enquirer = enquiry.enquirer
+        data = {k: v for k, v in model_to_dict(enquiry).items() if v}
+        data.update(
+            company_name=self.faker.company(),
+            enquiry_stage=get_random_item(ref_data.EnquiryStage),
+            notes=self.faker.sentence(),
+            country=get_random_item(ref_data.Country),
+            date_received=self.faker.date_time(),
+            enquirer=enquirer.id,
+            first_name="updated first name",
+            last_name=enquirer.last_name,
+            job_title=enquirer.job_title,
+            email=enquirer.email,
+            phone_country_code=enquirer.phone_country_code,
+            phone=enquirer.phone,
+            email_consent=False,
+            phone_consent=True,
+            request_for_call=enquirer.request_for_call,
+        )
+        return data
+
     def get_an_enquiry_detail(self):
         """Helper function to get a single enquiry and retrieve details"""
         enquiry = EnquiryFactory()
@@ -276,49 +299,33 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             self.create_enquiry_and_assert(enquiry)
         self.assertEqual(Enquirer.objects.all().count(), num_enquirers)
 
-    def test_enquiry_detail(self):
+    @mock.patch("app.enquiries.common.consent.request")
+    def test_enquiry_detail(self, _):
         """Test retrieving a valid enquiry returns 200"""
         enquiry = EnquiryFactory()
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_enquiry_detail_nonexistent_id(self):
+    @mock.patch("app.enquiries.common.consent.request")
+    def test_enquiry_detail_nonexistent_id(self, _):
         """Test retrieving non-existent enquiry returns 404"""
         response = self.client.get(reverse("enquiry-detail", kwargs={"pk": 100}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_enquiry_successful_update(self):
+    @mock.patch("app.enquiries.common.consent.request")
+    def test_enquiry_successful_update(self, _):
         """
         Test a successful update
         Creates an enquiry first, updates few fields and ensures
         the data is updated after submitting the form
         """
-        enquiry_obj = EnquiryFactory()
-        enquiry = model_to_dict(enquiry_obj)
-        # TODO: remove blank fields
+
         # POST request to a form expects all the fields but sending optional
         # fields whose value is None causing form_invalid errors.
         # Setting content-type as json also not helping, ignore blank fields
-        data = {k: v for k, v in enquiry.items() if v}
-        data["company_name"] = self.faker.company()
-        data["enquiry_stage"] = get_random_item(ref_data.EnquiryStage)
-        data["notes"] = self.faker.sentence()
-        data["country"] = get_random_item(ref_data.Country)
-        data["date_received"] = self.faker.date_time()
+        data = self.set_enquiry_for_update(enquiry=EnquiryFactory())
+        response = self.client.post(reverse("enquiry-edit", kwargs={"pk": data["id"]}), data)
 
-        # Enquirer fields are also sent in a single form update
-        enquirer = enquiry_obj.enquirer
-        data["enquirer"] = enquirer.id
-        data["first_name"] = "updated first name"
-        data["last_name"] = enquirer.last_name
-        data["job_title"] = enquirer.job_title
-        data["email"] = enquirer.email
-        data["phone_country_code"] = enquirer.phone_country_code
-        data["phone"] = enquirer.phone
-        data["email_consent"] = False
-        data["phone_consent"] = True
-        data["request_for_call"] = enquirer.request_for_call
-        response = self.client.post(reverse("enquiry-edit", kwargs={"pk": data["id"]}), data, )
         # POST request response to a form is 302
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
@@ -334,7 +341,8 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(updated.enquirer.email_consent, False)
         self.assertEqual(updated.enquirer.phone_consent, True)
 
-    def test_enquiry_failed_update(self):
+    @mock.patch("app.enquiries.common.consent.request")
+    def test_enquiry_failed_update(self, _):
         """
         Test an unsuccessful update
         Creates an enquiry first, submits invalid data to a mandatory field
@@ -358,7 +366,8 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertContains(response, enquiry.company_name)
         self.assertContains(response, enquiry.notes)
 
-    def test_enquiry_detail_template_ref_data(self):
+    @mock.patch("app.enquiries.common.consent.request")
+    def test_enquiry_detail_template_ref_data(self, _):
         """Test the template is using the right variables to show enquiry data
         in the case when data is a ref_data choice and has a verbose name"""
         enquiry = EnquiryFactory()
@@ -713,6 +722,29 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertIn(
             settings.IMPORT_TEMPLATE_FILENAME, response.get("Content-Disposition"),
         )
+
+    @mock.patch("app.enquiries.common.consent.check_consent")
+    def test_enquiry_consent_get(self, mock_consent_check):
+        enquiry = EnquiryFactory()
+        assert mock_consent_check.call_count == 0
+        self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
+        assert mock_consent_check.call_count == 2
+
+    @mock.patch("app.enquiries.views.tasks.update_enquirer_consents.apply_async")
+    def test_enquiry_consent_create(self, mock_task):
+        assert mock_task.call_count == 0
+        self.client.post(
+            reverse("enquiry-create"), data=canned_enquiry(), content_type="application/json",
+        )
+        assert mock_task.call_count == 2
+
+    @mock.patch("app.enquiries.views.tasks.update_enquirer_consents.apply_async")
+    def test_enquiry_consent_update(self, mock_task):
+        enquiry = EnquiryFactory()
+        data = self.set_enquiry_for_update(enquiry=enquiry)
+        assert mock_task.call_count == 0
+        self.client.post(reverse("enquiry-edit", kwargs={"pk": enquiry.pk}), data)
+        assert mock_task.call_count == 2
 
 
 def _auth_sender(

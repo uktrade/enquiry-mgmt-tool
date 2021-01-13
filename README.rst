@@ -141,6 +141,14 @@ Or in ``app/settings/*``
 
 In which case, it will redirect to |django|_ admin page for login.
 
+Consent Service
+^^^^^^^^^^^^^^^^^^^^
+To disable usage of Consent Service during development use ``FEATURE_ENFORCE_CONSENT_SERVICE`` env var. Set your local ``.env`` file like this:
+
+.. code-block::
+
+    FEATURE_ENFORCE_CONSENT_SERVICE=0
+
 |oauth| Access Token Refreshment
 """"""""""""""""""""""""""""""""
 

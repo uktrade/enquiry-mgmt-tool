@@ -1,9 +1,10 @@
 import logging
-
 from datetime import datetime
+
 from django.conf import settings
 
 from app.enquiries.celery import app
+from app.enquiries.common import consent
 from app.enquiries.common.as_utils import fetch_and_process_enquiries
 from app.enquiries.common.email_campaign_utils import (
     process_latest_enquiries,
@@ -48,3 +49,9 @@ def handle_exit_criteria_enquiries():
     """ Periodically fetch and handle enquirers marked as  sent-to-post"""
     process_engaged_enquiries()
     logging.info("Fetched completed enquiries %s", datetime.now())
+
+
+@app.task(name="update_enquirer_consents")
+def update_enquirer_consents(key: str, value: bool):
+    consent.set_consent(key=key, value=value)
+    logging.info("Updated enquirer consent")

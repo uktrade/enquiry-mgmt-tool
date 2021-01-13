@@ -1,0 +1,13 @@
+<div class="govuk-form-group">
+    <label class="govuk-label" for="{{ field }}">
+        {{ label }}
+    </label>
+    <select class="govuk-select" id={{ field }} name={{ field }}>
+        <option value="{{ True }}" {{ value|yesno:'selected,'}}>
+            Yes
+        </option>
+        <option value="{{ False }}" {{ value|yesno:',selected'}}>
+            No
+        </option>
+    </select>
+</div>

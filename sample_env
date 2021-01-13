@@ -37,6 +37,9 @@ CELERY_TIMEZONE=Europe/london
 # Staff SSO/OAuth2 settings
 FEATURE_ENFORCE_STAFF_SSO_ENABLED=1
 
+# Control Consent Service
+FEATURE_ENFORCE_CONSENT_SERVICE=1
+
 # The AUTHBROKER_URL needs to be accessible from the browser for the
 # authorization redirect and also from the Docker container for the access token
 # POST request, and the only way to do this is to use the
