@@ -29,7 +29,8 @@ from rest_framework.utils.urls import replace_query_param
 from rest_framework.views import APIView
 from rest_framework_csv.renderers import CSVRenderer
 
-from app.enquiries import auth, forms, models, serializers, utils
+from app.enquiries import auth, forms, models, serializers, utils, tasks
+from app.enquiries.common import consent
 from app.enquiries.common.datahub_utils import (
     dh_investment_create,
     dh_company_search,
@@ -214,6 +215,26 @@ def is_valid_int(v) -> bool:
     return True
 
 
+def set_enquirer_consent_update(enquirer: models.Enquirer):
+    if not enquirer:
+        return
+    if enquirer.email:
+        tasks.update_enquirer_consents.apply_async(
+            kwargs={"key": enquirer.email, "value": enquirer.email_consent}
+        )
+    if enquirer.phone:
+        tasks.update_enquirer_consents.apply_async(
+            kwargs={"key": enquirer.phone, "value": enquirer.phone_consent}
+        )
+
+
+def get_enquirer_consents(enquirer: models.Enquirer):
+    return {
+        "email": consent.check_consent(enquirer.email) if enquirer else None,
+        "phone": consent.check_consent(enquirer.phone) if enquirer else None,
+    }
+
+
 class EnquiryFilter(filters.FilterSet):
     """
     Enquiry search filters
@@ -358,7 +379,8 @@ class EnquiryCreateView(LoginRequiredMixin, APIView):
     def post(self, request, format=None):
         serializer = serializers.EnquirySerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            instance = serializer.save()
+            set_enquirer_consent_update(enquirer=instance.enquirer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -377,6 +399,7 @@ class EnquiryDetailView(LoginRequiredMixin, TemplateView):
         enquiry = get_object_or_404(models.Enquiry, pk=kwargs["pk"])
         context["enquiry"] = enquiry
         context["back_url"] = reverse("index")
+        context["consents"] = get_enquirer_consents(enquirer=enquiry.enquirer)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -413,7 +436,7 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
         # search results in the company search view
         data = self.request.GET
         selected_company_id = data.get("dh_id")
-        enquiry_obj = self.get_object()
+        enquiry = self.get_object()
         context = super().get_context_data(**kwargs)
         if selected_company_id:
             context["dh_company_id"] = selected_company_id
@@ -421,13 +444,14 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
             context["dh_duns_number"] = data.get("duns_number")
             context["dh_assigned_company_name"] = data.get("dh_name")
             context["dh_company_address"] = data.get("dh_address")
-        elif enquiry_obj.dh_company_id:
-            context["dh_company_id"] = enquiry_obj.dh_company_id
-            context["dh_company_number"] = enquiry_obj.dh_company_number
-            context["dh_duns_number"] = enquiry_obj.dh_duns_number
-            context["dh_assigned_company_name"] = enquiry_obj.dh_assigned_company_name
-            context["dh_company_address"] = enquiry_obj.dh_company_address
+        elif enquiry.dh_company_id:
+            context["dh_company_id"] = enquiry.dh_company_id
+            context["dh_company_number"] = enquiry.dh_company_number
+            context["dh_duns_number"] = enquiry.dh_duns_number
+            context["dh_assigned_company_name"] = enquiry.dh_assigned_company_name
+            context["dh_company_address"] = enquiry.dh_company_address
 
+        context["consents"] = get_enquirer_consents(enquirer=enquiry.enquirer)
         return context
 
     def form_valid(self, form):
@@ -440,6 +464,7 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
             with transaction.atomic():
                 enquirer.save()
                 enquiry.save()
+                set_enquirer_consent_update(enquirer=enquirer)
             return redirect("enquiry-detail", pk=enquiry.id)
         else:
             return self.form_invalid(form)

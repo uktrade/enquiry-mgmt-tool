@@ -11,7 +11,7 @@ from urllib.error import HTTPError
 
 import app.enquiries.ref_data as ref_data
 from app.enquiries.utils import get_oauth_payload
-from app.enquiries.common.requests import cached_requests
+from app.enquiries.common.cache import cached_requests
 
 
 def dh_request(

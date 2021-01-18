@@ -126,7 +126,7 @@
                         Consent (email)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {{ enquiry.enquirer.email_consent|yesno|capfirst }}
+                        {{ consents.email|yesno|capfirst }}
                     </dd>
                 </div>
                 <div class="govuk-summary-list__row">
@@ -134,7 +134,7 @@
                         Consent (telephone)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        {{ enquiry.enquirer.phone_consent|yesno|capfirst }}
+                        {{ consents.phone|yesno|capfirst }}
                     </dd>
                 </div>
             </dl>

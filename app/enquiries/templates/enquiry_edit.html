@@ -197,11 +197,9 @@
                 <!-- TODO: Change label to 'How did they hear about DIT?' -->
                 {% include 'snippets/enquiry_field_select.html' with instance=enquiry field="how_they_heard_dit" %}
 
-                <!-- TODO: Change label to 'Consent (email)' -->
-                {% include 'snippets/enquiry_field_boolean_select.html' with instance=enquiry.enquirer field="email_consent" %}
+                {% include 'snippets/select_boolean.html' with label="Consent (email)" field="email_consent" value=consents.email %}
 
-                <!-- TODO: Change label to 'Consent (telephone)' -->
-                {% include 'snippets/enquiry_field_boolean_select.html' with instance=enquiry.enquirer field="phone_consent" %}
+                {% include 'snippets/select_boolean.html' with label="Consent (telephone)" field="phone_consent" value=consents.phone %}
 
             </div>
 

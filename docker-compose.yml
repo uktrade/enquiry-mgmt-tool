@@ -18,6 +18,7 @@ services:
       DJANGO_SUPERUSER_USERNAME: testuser
       DJANGO_SUPERUSER_EMAIL: testuser@example.com
       DJANGO_SUPERUSER_PASSWORD: testpass
+      FEATURE_ENFORCE_CONSENT_SERVICE: 0
     entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 5m
     command: ./start.sh
 
