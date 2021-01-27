@@ -33,17 +33,19 @@ Process 3:
     process_engaged_enquiry()
     ```
 """
-import pytz
-import logging
 import datetime
-from app.enquiries.models import Enquiry, EnquiryActionLog
-import app.enquiries.ref_data as ref_data
+import logging
+
+import pytz
 from django.conf import settings
-from django.utils import timezone
 from django.db import transaction
+from django.utils import timezone
+
+import app.enquiries.ref_data as ref_data
+from app.enquiries.common import consent
+from app.enquiries.models import Enquiry, EnquiryActionLog
 from .adobe import AdobeClient, AdobeCampaignRequestException
 from .as_utils import get_new_second_qualification_forms
-
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +92,7 @@ def process_latest_enquiries():
 def process_second_qualifications():
     """
     Collect second qualification submissions from the last time it was fetched
-    successfuly.
+    successfully.
     """
     last_action = EnquiryActionLog.get_last_action_date(
         ref_data.EnquiryAction.SECOND_QUALIFICATION_FORM
@@ -276,13 +278,13 @@ def serialize_enquiry(enquiry, **kwargs):
         'companyName': enquiry.company_name,
         'companyHQAddress': enquiry.company_hq_address,
         'country': enquiry.country,
-        'emailConsent': enquiry.enquirer.email_consent,
+        'emailConsent': consent.check_consent(key=enquiry.enquirer.email),
         'enquiry_stage': enquiry.enquiry_stage,
         'howTheyHeard_DIT': enquiry.how_they_heard_dit,
         'istSector': enquiry.ist_sector,
         'jobTitle': enquiry.enquirer.job_title,
         'phone': enquiry.enquirer.phone,
-        'phoneConsent': enquiry.enquirer.phone_consent,
+        'phoneConsent': consent.check_consent(key=enquiry.enquirer.phone),
         'primarySector': enquiry.primary_sector,
         'requestForCall': enquiry.enquirer.request_for_call,
         'website': enquiry.website,

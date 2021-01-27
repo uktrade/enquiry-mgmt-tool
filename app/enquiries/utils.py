@@ -1,6 +1,7 @@
 import logging
-
 from datetime import datetime, timedelta, timezone
+from distutils import util
+
 from django.conf import settings
 from django.db import transaction
 from openpyxl import Workbook
@@ -181,3 +182,9 @@ def mark_non_responsive_enquiries(expiry_weeks):
             entry.save()
 
     logging.info(f"Updated enquiry stage of {len(entries)} enquiries")
+
+
+def str2bool(val=None):
+    if val is None:
+        return val
+    return bool(util.strtobool(str(val)))

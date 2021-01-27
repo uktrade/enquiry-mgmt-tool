@@ -1,11 +1,12 @@
 from datetime import datetime
+
+import pytest
 from django.test import Client, TestCase
 from faker import Faker
 from freezegun import freeze_time
 
 import app.enquiries.tests.utils as test_utils
 from app.enquiries import models, utils
-
 from app.enquiries.tests.factories import (
     create_fake_enquiry_csv_row,
     create_fake_enquiry_csv_row_no_date_received
@@ -69,3 +70,23 @@ class UtilsTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(self.logged_in, False)
         # re-authenticate so subsequent tests can pass
         self.login()
+
+
+@pytest.mark.parametrize("params", [
+    (None, None),
+    (True, True),
+    (False, False),
+    (1, True),
+    (0, False),
+    ("True", True),
+    ("False", False),
+    ("true", True),
+    ("false", False),
+    ("TRUE", True),
+    ("FALSE", False),
+    ("1", True),
+    ("0", False),
+])
+def test_str2bool(params):
+    val, expected = params
+    assert utils.str2bool(val) is expected

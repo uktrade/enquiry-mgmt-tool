@@ -173,8 +173,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
             email=enquirer.email,
             phone_country_code=enquirer.phone_country_code,
             phone=enquirer.phone,
-            email_consent=False,
-            phone_consent=True,
             request_for_call=enquirer.request_for_call,
         )
         return data
@@ -338,8 +336,6 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(updated.notes, data["notes"])
         self.assertEqual(updated.country, data["country"])
         self.assertEqual(updated.enquirer.first_name, "updated first name")
-        self.assertEqual(updated.enquirer.email_consent, False)
-        self.assertEqual(updated.enquirer.phone_consent, True)
 
     @mock.patch("app.enquiries.common.consent.request")
     def test_enquiry_failed_update(self, _):
@@ -730,7 +726,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.client.get(reverse("enquiry-detail", kwargs={"pk": enquiry.id}))
         assert mock_consent_check.call_count == 2
 
-    @mock.patch("app.enquiries.views.tasks.update_enquirer_consents.apply_async")
+    @mock.patch("app.enquiries.tasks.update_enquirer_consents.apply_async")
     def test_enquiry_consent_create(self, mock_task):
         assert mock_task.call_count == 0
         self.client.post(
@@ -738,7 +734,7 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         )
         assert mock_task.call_count == 2
 
-    @mock.patch("app.enquiries.views.tasks.update_enquirer_consents.apply_async")
+    @mock.patch("app.enquiries.tasks.update_enquirer_consents.apply_async")
     def test_enquiry_consent_update(self, mock_task):
         enquiry = EnquiryFactory()
         data = self.set_enquiry_for_update(enquiry=enquiry)

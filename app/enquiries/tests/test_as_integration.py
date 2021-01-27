@@ -1,15 +1,16 @@
 import random
-import requests_mock
-
 from datetime import datetime
+from unittest import mock
+
+import requests_mock
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import TestCase
 from faker import Faker
 from freezegun import freeze_time
 
-from app.enquiries.models import Enquiry, Enquirer
 from app.enquiries.common.as_utils import fetch_and_process_enquiries
+from app.enquiries.models import Enquiry, Enquirer
 
 faker = Faker()
 
@@ -156,8 +157,10 @@ def get_enquiries_data():
 
 
 class ActivityStreamIntegrationTests(TestCase):
+
     @freeze_time()
-    def test_fetch_new_enquiries(self):
+    @mock.patch("app.enquiries.tasks.update_enquirer_consents.apply_async")
+    def test_fetch_new_enquiries(self, mock_task):
         """
         Test that fetches sample enquiries data, parses them and creates
         Enquiry objects and asserts data matches with input data
@@ -171,7 +174,9 @@ class ActivityStreamIntegrationTests(TestCase):
             m.get(url, json=data)
 
             self.assertEqual(Enquiry.objects.count(), 0)
+            assert mock_task.call_count == 0
             fetch_and_process_enquiries()
+            assert mock_task.call_count == 4
             self.assertEqual(Enquiry.objects.count(), 2)
             enquiry = Enquiry.objects.all().first()
             assert enquiry.date_received == enquiry.created
@@ -185,8 +190,6 @@ class ActivityStreamIntegrationTests(TestCase):
                     for k, v in detail.items():
                         if k == "arrange_call":
                             v = True if v == "yes" else False
-                        if k in ["email_consent", "phone_consent"]:
-                            v = True if v == "True" else False
                         if k in enquiry.keys():
                             self.assertEqual(enquiry[k], v)
                         if k in enquirer.keys():

@@ -1,16 +1,16 @@
 import json
 import logging
+from datetime import datetime
+
 import mohawk
 import requests
-
-from distutils.util import strtobool
-
 from bs4 import BeautifulSoup
-from datetime import datetime
-from django.db import transaction
 from django.conf import settings
+from django.db import transaction
 
 import app.enquiries.ref_data as ref_data
+from app.enquiries import utils
+from app.enquiries.common import consent_utils
 from app.enquiries.models import Enquirer, Enquiry, ReceivedEnquiryCursor
 
 
@@ -67,12 +67,14 @@ def via_enquiry_to_enquiry_kwargs(data):
     investment_readiness = {
         "I’m convinced and want to talk to someone about my plans.":
             ref_data.InvestmentReadiness.CONVINCED,
-        "The UK is on my shortlist. How can the Department for International Trade help me?":
-        ref_data.InvestmentReadiness.SHORTLIST,
-        """I’m still exploring where to expand my business and would like to know more about the
-UK’s offer.""":
-        ref_data.InvestmentReadiness.EXPLORING,
-        "I’m not yet ready to invest. Keep me informed.": ref_data.InvestmentReadiness.NOT_READY,
+        "The UK is on my shortlist. How can the Department for "
+        "International Trade help me?":
+            ref_data.InvestmentReadiness.SHORTLIST,
+        "I’m still exploring where to expand my business and would "
+        "like to know more about the UK’s offer.":
+            ref_data.InvestmentReadiness.EXPLORING,
+        "I’m not yet ready to invest. Keep me informed.":
+            ref_data.InvestmentReadiness.NOT_READY,
     }
     enquiry_stage = {
         "New": ref_data.EnquiryStage.NEW,
@@ -84,7 +86,6 @@ UK’s offer.""":
         "Sent to Post": ref_data.EnquiryStage.SENT_TO_POST,
         "Post progressing": ref_data.EnquiryStage.POST_PROGRESSING,
     }
-
     how_did_you_hear = {
         "Press ad (newspaper/trade publication)": ref_data.HowDidTheyHear.PRESS_AD,
         "Outdoor ad/billboard": ref_data.HowDidTheyHear.OUTDOOR_AD,
@@ -123,11 +124,11 @@ UK’s offer.""":
         email = data["Work email address"]
     enquiry["enquirer"]["email"] = email
     enquiry["enquirer"]["phone"] = data["Phone number"]
-    email_consent = strtobool(
+    email_consent = utils.str2bool(
         data.get("I would like to receive additional information by email", "False")
     )
-    phone_consent = strtobool(
-        data.get("I would like to receive additional information by telephone", "False",)
+    phone_consent = utils.str2bool(
+        data.get("I would like to receive additional information by telephone", "False")
     )
     enquiry["enquirer"]["email_consent"] = email_consent
     enquiry["enquirer"]["phone_consent"] = phone_consent
@@ -321,6 +322,11 @@ def fetch_and_process_enquiries():
         with transaction.atomic():
             published = item["_source"]["object"]["published"]
             enquirer = enquiry.pop("enquirer")
+
+            consent_utils.create_consent_update_task(data=enquirer)
+            enquirer.pop("email_consent")
+            enquirer.pop("phone_consent")
+
             enquirer_instance = Enquirer.objects.create(**enquirer)
             enquiry_obj = Enquiry.objects.create(**enquiry, enquirer=enquirer_instance)
             enquiry_obj.created = published
@@ -345,11 +351,11 @@ def get_new_second_qualification_forms(last_datetime=None, max_size=100):
     The submissions are fetched from last_datetime onward, or without
     a date filter if not provided.
 
-    :param last_dattime:
+    :param last_datetime:
         The last time a second qualification form was submitted.
         Subsequent forms will filter after this date. If omited
         all forms will be fetched
-    :type last_cursor: datetime
+    :type last_datetime: datetime
 
     :param max_size: The maximum number of results to fetch
     :type max_size: int

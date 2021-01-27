@@ -8,8 +8,6 @@
             "job_title": "Director",
             "email": "evelyn.wang@example.com",
             "phone": "+86 88 8888 8888",
-            "email_consent": true,
-            "phone_consent": true,
             "request_for_call": "YES_OTHER"
         }
     },
@@ -22,8 +20,6 @@
             "job_title": "Editor",
             "email": "jeff.bezos@washingtonpost.com",
             "phone": "+1 202 334 6000",
-            "email_consent": true,
-            "phone_consent": false,
             "request_for_call": "YES_AFTERNOON"
         }
     },
@@ -36,8 +32,6 @@
             "job_title": "Founder",
             "email": "nanny.maroon@bluemountain.jm",
             "phone": "+876 000 176",
-            "email_consent": false,
-            "phone_consent": false,
             "request_for_call": "NO"
         }
     },
