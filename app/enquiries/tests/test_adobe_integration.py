@@ -24,8 +24,6 @@ class TestAdobeCampaign(TestCase):
             job_title='Manager',
             phone_country_code='1',
             phone=faker.phone_number(),
-            email_consent=True,
-            phone_consent=True,
             request_for_call=ref_data.RequestForCall.YES_AFTERNOON.value,
         )
         self.enquiry = Enquiry.objects.create(
@@ -54,13 +52,11 @@ class TestAdobeCampaign(TestCase):
             'companyName': self.enquiry.company_name,
             'companyHQAddress': self.enquiry.company_hq_address,
             'country': self.enquiry.country,
-            'emailConsent': self.enquiry.enquirer.email_consent,
             'enquiry_stage': self.enquiry.enquiry_stage,
             'howTheyHeard_DIT': self.enquiry.how_they_heard_dit,
             'istSector': self.enquiry.ist_sector,
             'jobTitle': self.enquiry.enquirer.job_title,
             'phone': self.enquiry.enquirer.phone,
-            'phoneConsent': self.enquiry.enquirer.phone_consent,
             'primarySector': self.enquiry.primary_sector,
             'requestForCall': self.enquiry.enquirer.request_for_call,
             'website': self.enquiry.website,

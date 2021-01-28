@@ -48,8 +48,6 @@ class DataHubUtilsTests(TestCase):
             job_title='Manager',
             phone_country_code='1',
             phone=faker.phone_number(),
-            email_consent=True,
-            phone_consent=True,
             request_for_call=ref_data.RequestForCall.YES_AFTERNOON.value,
         )
         self.partially_matching_enquirer = Enquirer.objects.create(
@@ -59,8 +57,6 @@ class DataHubUtilsTests(TestCase):
             job_title='Manager',
             phone_country_code='1',
             phone=faker.phone_number(),
-            email_consent=True,
-            phone_consent=True,
             request_for_call=ref_data.RequestForCall.YES_AFTERNOON.value,
         )
         self.new_enquirer = Enquirer.objects.create(
@@ -70,8 +66,6 @@ class DataHubUtilsTests(TestCase):
             job_title='Manager',
             phone_country_code='1',
             phone=faker.phone_number(),
-            email_consent=True,
-            phone_consent=True,
             request_for_call=ref_data.RequestForCall.YES_AFTERNOON.value,
         )
         self.company_results = [

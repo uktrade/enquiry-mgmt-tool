@@ -29,8 +29,8 @@ from rest_framework.utils.urls import replace_query_param
 from rest_framework.views import APIView
 from rest_framework_csv.renderers import CSVRenderer
 
-from app.enquiries import auth, forms, models, serializers, utils, tasks
-from app.enquiries.common import consent
+from app.enquiries import auth, forms, models, serializers, utils
+from app.enquiries.common import consent, consent_utils
 from app.enquiries.common.datahub_utils import (
     dh_investment_create,
     dh_company_search,
@@ -215,19 +215,6 @@ def is_valid_int(v) -> bool:
     return True
 
 
-def set_enquirer_consent_update(enquirer: models.Enquirer):
-    if not enquirer:
-        return
-    if enquirer.email:
-        tasks.update_enquirer_consents.apply_async(
-            kwargs={"key": enquirer.email, "value": enquirer.email_consent}
-        )
-    if enquirer.phone:
-        tasks.update_enquirer_consents.apply_async(
-            kwargs={"key": enquirer.phone, "value": enquirer.phone_consent}
-        )
-
-
 def get_enquirer_consents(enquirer: models.Enquirer):
     return {
         "email": consent.check_consent(enquirer.email) if enquirer else None,
@@ -379,8 +366,8 @@ class EnquiryCreateView(LoginRequiredMixin, APIView):
     def post(self, request, format=None):
         serializer = serializers.EnquirySerializer(data=request.data)
         if serializer.is_valid():
-            instance = serializer.save()
-            set_enquirer_consent_update(enquirer=instance.enquirer)
+            serializer.save()
+            consent_utils.create_consent_update_task(data=request.data["enquirer"])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -464,7 +451,7 @@ class EnquiryEditView(LoginRequiredMixin, UpdateView):
             with transaction.atomic():
                 enquirer.save()
                 enquiry.save()
-                set_enquirer_consent_update(enquirer=enquirer)
+                consent_utils.create_consent_update_task(data=form.data)
             return redirect("enquiry-detail", pk=enquiry.id)
         else:
             return self.form_invalid(form)
@@ -555,7 +542,6 @@ class ImportEnquiriesView(LoginRequiredMixin, TemplateView):
         return records
 
     def process_upload(self, uploaded_file):
-        records = []
         with uploaded_file as f:
             # Accumulate file content by reading in chunks
             # We should not process the chunk straightaway because depending on the

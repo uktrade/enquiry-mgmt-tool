@@ -53,5 +53,6 @@ def handle_exit_criteria_enquiries():
 
 @app.task(name="update_enquirer_consents")
 def update_enquirer_consents(key: str, value: bool):
+    """Updates marketing consent for enquirer email or phone number in consent service"""
     consent.set_consent(key=key, value=value)
     logging.info("Updated enquirer consent")

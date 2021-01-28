@@ -22,8 +22,6 @@ class Enquirer(models.Model):
         max_length=5, blank=True, null=True, verbose_name="Telephone country code"
     )
     phone = models.CharField(max_length=MAX_LENGTH, blank=True, verbose_name="Phone")
-    email_consent = models.BooleanField(default=False, verbose_name="Email consent")
-    phone_consent = models.BooleanField(default=False, verbose_name="Phone consent")
     request_for_call = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.RequestForCall.choices,
