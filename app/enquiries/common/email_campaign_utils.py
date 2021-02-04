@@ -102,14 +102,21 @@ def process_second_qualifications():
     )
     for submission in submissions:
         data = submission["_source"]["object"][settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ]
-        if data.get('emt_id'):
+
+        emt_id = data.get('emt_id')
+        if not emt_id:
+            logger.warning("Emt_id not provided for second qualification form")
+            continue
+
+        try:
             process_enquiry_update(
-                emt_id=data.get('emt_id'),
+                emt_id=emt_id,
                 phone=data.get('phone_number'),
                 consent=data.get('arrange_callback') == 'yes'
             )
-        else:
-            logger.warning("Emt_id not provided for second qualification form")
+        except Exception as e:
+            logger.exception(e)
+
     # kick off the workflow to process the updates
     start_staging_workflow()
 
