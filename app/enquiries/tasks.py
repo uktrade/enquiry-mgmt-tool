@@ -44,7 +44,7 @@ def handle_second_qualifications():
     logging.info("Fetched 2nd qualification submissions %s", datetime.now())
 
 
-@app.task(name="handle_engaged_leads")
+@app.task(name="handle_exit_criteria_enquiries")
 def handle_exit_criteria_enquiries():
     """ Periodically fetch and handle enquirers marked as  sent-to-post"""
     process_engaged_enquiries()
