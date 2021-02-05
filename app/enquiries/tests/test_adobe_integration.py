@@ -1,15 +1,16 @@
 import datetime
-import app.enquiries.ref_data as ref_data
+from unittest import mock
+
+from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
-from django.conf import settings
 from faker import Faker
 from freezegun import freeze_time
-from unittest import mock
-from app.enquiries.models import Enquiry, Enquirer, EnquiryActionLog
+
+import app.enquiries.ref_data as ref_data
 from app.enquiries.common import email_campaign_utils as campaign
 from app.enquiries.common.adobe import AdobeClient
-
+from app.enquiries.models import Enquiry, Enquirer, EnquiryActionLog
 
 faker = Faker()
 
@@ -141,6 +142,45 @@ class TestAdobeCampaign(TestCase):
             })
         )
         client.start_workflow.assert_called_with(settings.ADOBE_STAGING_WORKFLOW)
+
+    @freeze_time()
+    @mock.patch('app.enquiries.common.adobe.AdobeClient.get_token')
+    @mock.patch('app.enquiries.common.as_utils.hawk_request')
+    def test_process_second_qualification_invalid_data(self, mock_as, mock_token):
+        for emt_id, was_called in [
+            ('None', True),
+            ('-1', True),
+            (1.2, True),
+            (None, False),
+            ("", False),
+        ]:
+            with mock.patch(
+                'app.enquiries.common.email_campaign_utils.process_enquiry_update'
+            ) as mock_update:
+                phone = '0771231234'
+                mock_token.return_value = 'token'
+                mock_as.return_value.ok = True
+                mock_as.return_value.json.return_value = {
+                    'hits': {
+                        'hits': [
+                            {
+                                '_source': {
+                                    'object': {
+                                        settings.ACTIVITY_STREAM_ENQUIRY_DATA_OBJ: {
+                                            'emt_id': emt_id,
+                                            'phone_number': phone,
+                                            'arrange_callback': 'yes',
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+                campaign.process_second_qualifications()
+                assert mock_update.called is was_called
+                if was_called:
+                    mock_update.assert_called_with(emt_id=emt_id, phone=phone, consent=True)
 
     @freeze_time()
     @mock.patch('app.enquiries.common.adobe.AdobeClient.get_token')
