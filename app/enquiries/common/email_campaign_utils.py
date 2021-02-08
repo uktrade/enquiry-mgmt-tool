@@ -139,7 +139,10 @@ def process_engaged_enquiries():
     )
 
     for enquiry in enquiries:
-        process_engaged_enquiry(enquiry)
+        try:
+            process_engaged_enquiry(enquiry)
+        except Exception as e:
+            logger.exception(e)
         logger.info('Processed engaged enquiry %s', enquiry)
 
     # kick off the workflow to process the updates
