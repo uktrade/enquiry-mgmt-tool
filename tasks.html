@@ -164,37 +164,37 @@
 <span id="celery-tasks"></span><h1>Celery Tasks<a class="headerlink" href="#module-app.enquiries.tasks" title="Permalink to this headline">¶</a></h1>
 <dl class="py task">
 <dt id="app.enquiries.tasks.fetch_new_enquiries">
-<em class="property">(task)</em><code class="sig-prename descclassname">app.enquiries.tasks.</code><code class="sig-name descname">fetch_new_enquiries</code><a class="headerlink" href="#app.enquiries.tasks.fetch_new_enquiries" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">(task)</span></em><code class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></code><code class="sig-name descname"><span class="pre">fetch_new_enquiries</span></code><a class="headerlink" href="#app.enquiries.tasks.fetch_new_enquiries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Periodically fetches new <cite>investment enquiries</cite> from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a></p>
 </dd></dl>
 
 <dl class="py task">
 <dt id="app.enquiries.tasks.handle_exit_criteria_enquiries">
-<em class="property">(task)</em><code class="sig-prename descclassname">app.enquiries.tasks.</code><code class="sig-name descname">handle_exit_criteria_enquiries</code><a class="headerlink" href="#app.enquiries.tasks.handle_exit_criteria_enquiries" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">(task)</span></em><code class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></code><code class="sig-name descname"><span class="pre">handle_exit_criteria_enquiries</span></code><a class="headerlink" href="#app.enquiries.tasks.handle_exit_criteria_enquiries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Periodically fetch and handle enquirers marked as  sent-to-post</p>
 </dd></dl>
 
 <dl class="py task">
 <dt id="app.enquiries.tasks.handle_non_responsives">
-<em class="property">(task)</em><code class="sig-prename descclassname">app.enquiries.tasks.</code><code class="sig-name descname">handle_non_responsives</code><a class="headerlink" href="#app.enquiries.tasks.handle_non_responsives" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">(task)</span></em><code class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></code><code class="sig-name descname"><span class="pre">handle_non_responsives</span></code><a class="headerlink" href="#app.enquiries.tasks.handle_non_responsives" title="Permalink to this definition">¶</a></dt>
 <dd><p>Periodically fetch and handle non responsive enquiries</p>
 </dd></dl>
 
 <dl class="py task">
 <dt id="app.enquiries.tasks.handle_second_qualifications">
-<em class="property">(task)</em><code class="sig-prename descclassname">app.enquiries.tasks.</code><code class="sig-name descname">handle_second_qualifications</code><a class="headerlink" href="#app.enquiries.tasks.handle_second_qualifications" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">(task)</span></em><code class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></code><code class="sig-name descname"><span class="pre">handle_second_qualifications</span></code><a class="headerlink" href="#app.enquiries.tasks.handle_second_qualifications" title="Permalink to this definition">¶</a></dt>
 <dd><p>Periodically fetch and handle 2nd qualification submissions</p>
 </dd></dl>
 
 <dl class="py task">
 <dt id="app.enquiries.tasks.update_enquirer_consents">
-<em class="property">(task)</em><code class="sig-prename descclassname">app.enquiries.tasks.</code><code class="sig-name descname">update_enquirer_consents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.tasks.update_enquirer_consents" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">(task)</span></em><code class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></code><code class="sig-name descname"><span class="pre">update_enquirer_consents</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.tasks.update_enquirer_consents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates marketing consent for enquirer email or phone number in consent service</p>
 </dd></dl>
 
 <dl class="py task">
 <dt id="app.enquiries.tasks.update_stage_stale_enquiries">
-<em class="property">(task)</em><code class="sig-prename descclassname">app.enquiries.tasks.</code><code class="sig-name descname">update_stage_stale_enquiries</code><a class="headerlink" href="#app.enquiries.tasks.update_stage_stale_enquiries" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">(task)</span></em><code class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></code><code class="sig-name descname"><span class="pre">update_stage_stale_enquiries</span></code><a class="headerlink" href="#app.enquiries.tasks.update_stage_stale_enquiries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Periodically changes older enquiries from ‘Awaiting Response’ to ‘Non-responsive’</p>
 </dd></dl>
 

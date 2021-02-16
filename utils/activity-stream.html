@@ -170,14 +170,14 @@
 <span id="activity-stream-utils"></span><h1>Activity Stream Utils<a class="headerlink" href="#module-app.enquiries.common.as_utils" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="app.enquiries.common.as_utils.fetch_and_process_enquiries">
-<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">fetch_and_process_enquiries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.fetch_and_process_enquiries" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">app.enquiries.common.as_utils.</span></code><code class="sig-name descname"><span class="pre">fetch_and_process_enquiries</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.fetch_and_process_enquiries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches new enquiries from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a> and creates saved
 <a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.enquiries.models.Enquiry</span></code></a> instances.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="app.enquiries.common.as_utils.get_new_investment_enquiries">
-<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">get_new_investment_enquiries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">last_cursor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_size</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.get_new_investment_enquiries" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">app.enquiries.common.as_utils.</span></code><code class="sig-name descname"><span class="pre">get_new_investment_enquiries</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.get_new_investment_enquiries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches new investment enquiries from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a>.
 The <code class="docutils literal notranslate"><span class="pre">ACTIVITY_STREAM_INITIAL_LOAD_DATE</span></code> environmental variable determines
 the initial date from which the data is queried.</p>
@@ -202,7 +202,7 @@ This is used to fetch next set of results when this is invoked again.</p></li>
 
 <dl class="py function">
 <dt id="app.enquiries.common.as_utils.get_new_second_qualification_forms">
-<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">get_new_second_qualification_forms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">last_datetime</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_size</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.get_new_second_qualification_forms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">app.enquiries.common.as_utils.</span></code><code class="sig-name descname"><span class="pre">get_new_second_qualification_forms</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last_datetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.get_new_second_qualification_forms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches new submissions of the second qualification form
 from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a>.
 The submissions are fetched from last_datetime onward, or without
@@ -224,7 +224,7 @@ all forms will be fetched</p></li>
 
 <dl class="py function">
 <dt id="app.enquiries.common.as_utils.great_ui_sector_rtt_mapping">
-<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">great_ui_sector_rtt_mapping</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.great_ui_sector_rtt_mapping" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">app.enquiries.common.as_utils.</span></code><code class="sig-name descname"><span class="pre">great_ui_sector_rtt_mapping</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.great_ui_sector_rtt_mapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resolves the <cite>primary sector</cite> for <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
 <p>Sector data in the website is different from that in <cite>dit-sectors</cite>
 reference, so we first check if it is in standard reference data otherwise
@@ -244,7 +244,7 @@ map it to our reference data. If not found anywhere use default value.</p>
 
 <dl class="py function">
 <dt id="app.enquiries.common.as_utils.hawk_request">
-<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">hawk_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">id_</span></em>, <em class="sig-param"><span class="n">secret_key</span></em>, <em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.hawk_request" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">app.enquiries.common.as_utils.</span></code><code class="sig-name descname"><span class="pre">hawk_request</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.hawk_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a <code class="xref py py-mod docutils literal notranslate"><span class="pre">hawk</span></code> request</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -264,7 +264,7 @@ map it to our reference data. If not found anywhere use default value.</p>
 
 <dl class="py function">
 <dt id="app.enquiries.common.as_utils.parse_enquiry_email">
-<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">parse_enquiry_email</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">submission</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.parse_enquiry_email" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">app.enquiries.common.as_utils.</span></code><code class="sig-name descname"><span class="pre">parse_enquiry_email</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.parse_enquiry_email" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parses email body in the submission and returns Enquiry related fields.
 This can be used to create an Enquiry.</p>
 <dl class="field-list simple">
@@ -279,7 +279,7 @@ This can be used to create an Enquiry.</p>
 
 <dl class="py function">
 <dt id="app.enquiries.common.as_utils.via_enquiry_to_enquiry_kwargs">
-<code class="sig-prename descclassname">app.enquiries.common.as_utils.</code><code class="sig-name descname">via_enquiry_to_enquiry_kwargs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.via_enquiry_to_enquiry_kwargs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">app.enquiries.common.as_utils.</span></code><code class="sig-name descname"><span class="pre">via_enquiry_to_enquiry_kwargs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.as_utils.via_enquiry_to_enquiry_kwargs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts <cite>enquiry</cite> submitted via email into a dict of <cite>kwargs</cite> for
 <a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.enquiries.models.Enquiry</span></code></a>.</p>
 <dl class="field-list simple">
