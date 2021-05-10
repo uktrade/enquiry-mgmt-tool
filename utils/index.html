@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -173,8 +176,8 @@
 </ul>
 </div>
 <span class="target" id="module-app.enquiries.utils"></span><dl class="py function">
-<dt id="app.enquiries.utils.csv_row_to_enquiry_filter_kwargs">
-<code class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></code><code class="sig-name descname"><span class="pre">csv_row_to_enquiry_filter_kwargs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_row</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><span class="pre">dict</span></a><a class="headerlink" href="#app.enquiries.utils.csv_row_to_enquiry_filter_kwargs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.enquiries.utils.csv_row_to_enquiry_filter_kwargs">
+<span class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></span><span class="sig-name descname"><span class="pre">csv_row_to_enquiry_filter_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_row</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><span class="pre">dict</span></a><a class="headerlink" href="#app.enquiries.utils.csv_row_to_enquiry_filter_kwargs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a CSV <code class="docutils literal notranslate"><span class="pre">row</span></code> into a <code class="docutils literal notranslate"><span class="pre">dict</span></code> representing
 <a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.enquiries.models.Enquiry</span></code></a> query <cite>kwargs</cite>
 e.g. <code class="docutils literal notranslate"><span class="pre">enquiry__enquirer__first_name</span></code>.</p>
@@ -189,8 +192,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">enquiry__enqui
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.enquiries.utils.generate_import_template">
-<code class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></code><code class="sig-name descname"><span class="pre">generate_import_template</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.utils.generate_import_template" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.enquiries.utils.generate_import_template">
+<span class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></span><span class="sig-name descname"><span class="pre">generate_import_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.utils.generate_import_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates an <a class="reference external" href="https://docs.microsoft.com/en-us/openspecs/office_standards/ms-xlsx/">XLSX</a> spreadsheet for use by by <cite>IST team</cite> to capture enquiries.</p>
 <p>The main <cite>enquiry</cite> sheet is used by end users to capture information.
 The enquiry sheet columns are listed in <code class="xref py py-data docutils literal notranslate"><span class="pre">app.enquiries.ref_data.IMPORT_COL_NAMES</span></code>.</p>
@@ -205,8 +208,8 @@ enable end users to implement their own form of validation.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.enquiries.utils.get_oauth_payload">
-<code class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></code><code class="sig-name descname"><span class="pre">get_oauth_payload</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.utils.get_oauth_payload" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.enquiries.utils.get_oauth_payload">
+<span class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></span><span class="sig-name descname"><span class="pre">get_oauth_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.utils.get_oauth_payload" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts the user’s <a class="reference external" href="https://oauth.net/2/">OAuth 2.0</a> token from session</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -216,8 +219,8 @@ enable end users to implement their own form of validation.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.enquiries.utils.parse_error_messages">
-<code class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></code><code class="sig-name descname"><span class="pre">parse_error_messages</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.utils.parse_error_messages" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.enquiries.utils.parse_error_messages">
+<span class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></span><span class="sig-name descname"><span class="pre">parse_error_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.utils.parse_error_messages" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes an error and parses its messages in human-readable form.</p>
 <p>Where there are message dictionaries, separates out each message,
 parsing the keys into sentence case with title capitalisations</p>
@@ -232,8 +235,8 @@ parsing the keys into sentence case with title capitalisations</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.enquiries.utils.row_to_enquiry">
-<code class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></code><code class="sig-name descname"><span class="pre">row_to_enquiry</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><span class="pre">app.enquiries.models.Enquiry</span></a><a class="headerlink" href="#app.enquiries.utils.row_to_enquiry" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.enquiries.utils.row_to_enquiry">
+<span class="sig-prename descclassname"><span class="pre">app.enquiries.utils.</span></span><span class="sig-name descname"><span class="pre">row_to_enquiry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><span class="pre">app.enquiries.models.Enquiry</span></a><a class="headerlink" href="#app.enquiries.utils.row_to_enquiry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a CSV <code class="xref py py-data docutils literal notranslate"><span class="pre">row</span></code> into a persisted <a class="reference internal" href="../models.html#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.enquiries.models.Enquiry</span></code></a> instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
