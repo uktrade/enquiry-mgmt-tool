@@ -6,7 +6,7 @@ DJANGO_SECRET_KEY=supersecretkey
 DATABASE_URL=postgres://postgres:password@db:5432/postgres
 
 # Sentry
-DJANGO_SENTRY_DSN=sentry-dsn
+DJANGO_SENTRY_DSN=""
 
 ENQUIRIES_PER_PAGE=10
 ENQUIRY_RESPONSIVENESS_PERIOD_WEEKS=6
