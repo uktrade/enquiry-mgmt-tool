@@ -7,7 +7,8 @@
     "test": "cypress open",
     "sass": "sass sass/application.scss app/enquiries/static/application.css",
     "sass:watch": "npm run sass -- --watch",
-    "postinstall": "npm run sass"
+    "postinstall": "npm run sass",
+    "preinstall": "npx npm-force-resolutions"
   },
   "repository": {
     "type": "git",
@@ -26,5 +27,8 @@
   "devDependencies": {
     "cypress": "^4.12.0",
     "moment": "^2.24.0"
+  },
+  "resolutions": {
+    "ansi-regex": "5.0.1"
   }
 }
