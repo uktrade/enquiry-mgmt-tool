@@ -48,14 +48,11 @@ class Quality(models.TextChoices):
 class MarketingChannel(models.TextChoices):
     DEFAULT = "DEFAULT", _("----")
     LINKEDIN = "LINKEDIN", _("LinkedInLeadGen")
-    CHOGM = "CHOGM", _("CHOGM")
-    IIGB = "IIGB", _("IiGB")
-    IIGB_LINKEDIN = "IIGB_LINKEDIN", _("IiGB (LinkedIn)")
+    IIGB = "IIGB", _("Website")
+    IIGB_LINKEDIN = "IIGB_LINKEDIN", _("Website (LinkedIn)")
     HPO = "HPO", _("HPO")
-    B2B = "B2B", _("B2B")
-    EBOOK = "EBOOK", _("EBOOK - Worldwide")
+    EBOOK = "EBOOK", _("EBOOK")
     TRA = "TRA", _("TRA")
-    ENCORE = "ENCORE", _("Encore")
     OTHER = "OTHER", _("Other")
 
 
