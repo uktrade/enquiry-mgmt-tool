@@ -98,7 +98,7 @@ describe('Edit', () => {
             { dt: 'Google campaign', dd: '#r.4142563726849_345374257' },
             {
               dt: 'Marketing channel',
-              dd: 'IiGB',
+              dd: 'Website',
             },
             { dt: 'How did they hear about DIT?', dd: 'Internet search' },
             {
