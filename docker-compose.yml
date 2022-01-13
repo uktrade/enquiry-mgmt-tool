@@ -30,7 +30,7 @@ services:
       - db
       - redis
     entrypoint: dockerize -wait tcp://db:5432 -wait tcp://redis:6379 -timeout 5m
-    command: celery worker -A app -l info -Q celery -B
+    command: celery -A app worker -l info -Q celery -B
 
   db:
     image: postgres

@@ -2,7 +2,7 @@ attrs==19.3.0
 backcall==0.1.0
 beautifulsoup4==4.8.2
 cachecontrol-django==1.0.0
-celery[redis]==4.4.7
+celery[redis]==5.2.2
 certifi==2019.9.11
 cffi==1.13.2
 chardet==3.0.4

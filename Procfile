@@ -1,3 +1,3 @@
 web: ./web.sh
-celery: celery worker -A app -l info
-celerybeat: celery beat -A app -l info
+celery: celery -A app worker -l info
+celerybeat: celery -A app beat -l info
