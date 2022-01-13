@@ -16,7 +16,7 @@ django-autocomplete-light==3.5.0
 django-cache-memoize==0.1.7
 django-environ==0.4.5
 django-extensions==2.2.5
-django-filter==2.3.0
+django-filter==2.4.0
 django-redis==4.11.0
 django-rest-knox==4.1.0
 django-staff-sso-client==2.2.0
