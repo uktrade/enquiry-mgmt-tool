@@ -227,7 +227,7 @@ def dh_get_company_contact_list(request, access_token, company_id):
             "last_name": contact["last_name"],
             "job_title": contact["job_title"],
             "email": contact["email"],
-            "phone": contact["full_telephone_number"],
+            "phone": contact.get("full_telephone_number") or contact.get("telephone_number"),
         }
         for contact in response.json()["results"]
     ]
