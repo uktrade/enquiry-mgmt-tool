@@ -54,7 +54,7 @@ def contact_search_response():
                     "first_name": "Datahub",
                     "last_name": "User",
                     "job_title": "CEO",
-                    "telephone_number": "123456789",
+                    "full_telephone_number": "123456789",
                     "email": "user@example.com",
                 }
             ]

@@ -227,7 +227,7 @@ def dh_get_company_contact_list(request, access_token, company_id):
             "last_name": contact["last_name"],
             "job_title": contact["job_title"],
             "email": contact["email"],
-            "phone": contact["telephone_number"],
+            "phone": contact["full_telephone_number"],
         }
         for contact in response.json()["results"]
     ]
@@ -292,10 +292,10 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
         "first_name": enquirer.first_name,
         "last_name": enquirer.last_name,
         "job_title": enquirer.job_title,
-        "company": company_id,
+        "company": {"id": company_id},
         "primary": primary,
         "telephone_countrycode": enquirer.phone_country_code,
-        "telephone_number": enquirer.phone,
+        "full_telephone_number": enquirer.phone,
         "email": enquirer.email,
         "address_same_as_company": True,
     }
