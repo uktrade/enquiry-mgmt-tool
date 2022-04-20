@@ -30,7 +30,7 @@ def contact_search_response():
                     "first_name": MATCHING_CONTACT_DETAILS["first_name"],
                     "last_name": MATCHING_CONTACT_DETAILS["last_name"],
                     "job_title": "CEO",
-                    "telephone_number": "123456789",
+                    "full_telephone_number": "123456789",
                     "email": MATCHING_CONTACT_DETAILS["email"],
                 }
             ]
@@ -75,8 +75,9 @@ class DataHubUtilsTests(TestCase):
                 "last_name": contact["last_name"],
                 "job_title": contact["job_title"],
                 "email": contact["email"],
-                "phone": contact["telephone_number"],
-            } for contact in contact_search_response()["success"]["results"]
+                "phone": contact["full_telephone_number"],
+            }
+            for contact in contact_search_response()["success"]["results"]
         ]
         self.access_token = "mock_token"
         self.dh_company_id = "1234-5678"
