@@ -227,7 +227,7 @@ def dh_get_company_contact_list(request, access_token, company_id):
             "last_name": contact["last_name"],
             "job_title": contact["job_title"],
             "email": contact["email"],
-            "phone": contact["full_telephone_number"],
+            "phone": contact.get("full_telephone_number") or contact.get("telephone_number"),
         }
         for contact in response.json()["results"]
     ]
@@ -294,8 +294,10 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
         "job_title": enquirer.job_title,
         "company": {"id": company_id},
         "primary": primary,
-        "telephone_countrycode": enquirer.phone_country_code,
-        "full_telephone_number": enquirer.phone,
+        # Only use country code if it only contains integers
+        "full_telephone_number": f"{enquirer.phone_country_code} {enquirer.phone}"
+        if enquirer.phone_country_code.replace(" ", "").isdecimal()
+        else enquirer.phone,
         "email": enquirer.email,
         "address_same_as_company": True,
     }
