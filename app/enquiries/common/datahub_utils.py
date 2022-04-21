@@ -294,7 +294,7 @@ def dh_contact_create(request, access_token, enquirer, company_id, primary=False
         "job_title": enquirer.job_title,
         "company": {"id": company_id},
         "primary": primary,
-        "full_telephone_number": f"{enquirer.phone_country_code} {enquirer.phone}",
+        "full_telephone_number":  f"{enquirer.phone_country_code} {enquirer.phone}" if  enquirer.phone_country_code  else enquirer.phone,
         "email": enquirer.email,
         "address_same_as_company": True,
     }
