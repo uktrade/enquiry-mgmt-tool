@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import logging
 import os
 import requests
@@ -77,6 +79,12 @@ def dh_request(
     except RequestException as e:
         logging.error(f"Error {e} while requesting {url}, request timeout set to {timeout} secs")
         raise e
+
+    # If error catch so it can be presented more user friendly
+    if response.status_code >= 400:
+        # TODO catch specific field error?
+        pprint(f">>>> response: {response.__dict__}")
+        raise Exception(response._content)
 
     return response
 
@@ -527,6 +535,24 @@ def dh_prepare_payload(
         fetch_metadata("sector"),
     )
 
+    # Debug info
+    investment_type = get_dh_id(
+        fetch_metadata("investment-type"),
+        ref_data.DATA_HUB_INVESTMENT_TYPE_FDI
+    ),
+    pprint(f"fetch_metadata('investment-type'): {fetch_metadata('investment-type')}")
+    pprint(f"ref_data.DATA_HUB_INVESTMENT_TYPE_FDI: {ref_data.DATA_HUB_INVESTMENT_TYPE_FDI}")
+    pprint(f"investment-type: {investment_type}")
+
+    fdi_type = resolve_metadata_id(
+        enquiry.get_investment_type_display(),
+        fetch_metadata("fdi-type"),
+    )
+    pprint(f"enquiry.get_investment_type_display(): {enquiry.get_investment_type_display()}")
+    pprint(f"fetch_metadata(fdi-type): {fetch_metadata('fdi-type')}")
+    pprint(f"fdi_type: {fdi_type}")
+    # End debug info
+
     payload = dict(
         name=enquiry.project_name,
         investor_company=company_id,
@@ -636,6 +662,7 @@ def dh_investment_create(request, enquiry):
     client_relationship_manager_id = dh_status["adviser"]
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
+    pprint(f"enquiry: {enquiry.__dict__}")
     payload, error_key = dh_prepare_payload(
         enquiry,
         company_id,
