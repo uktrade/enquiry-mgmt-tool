@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
-from django.contrib.postgres.fields import JSONField
 
 import app.enquiries.ref_data as ref_data
 
@@ -14,7 +13,9 @@ class Enquirer(models.Model):
     Model for Enquirer details
     """
 
-    first_name = models.CharField(max_length=MAX_LENGTH, blank=True, verbose_name="First name")
+    first_name = models.CharField(
+        max_length=MAX_LENGTH, blank=True, verbose_name="First name"
+    )
     last_name = models.CharField(max_length=MAX_LENGTH, verbose_name="Last name")
     job_title = models.CharField(max_length=MAX_LENGTH, verbose_name="Job title")
     email = models.TextField(blank=True, verbose_name="Email")
@@ -51,8 +52,10 @@ class Enquiry(TimeStampedModel):
 
     #: Company name
     company_name = models.CharField(
-        max_length=MAX_LENGTH, help_text="Name of the company", blank=True,
-        verbose_name="Company name"
+        max_length=MAX_LENGTH,
+        help_text="Name of the company",
+        blank=True,
+        verbose_name="Company name",
     )
     #: Date the enquiry was received
     date_received = models.DateTimeField(
@@ -77,7 +80,10 @@ class Enquiry(TimeStampedModel):
         verbose_name="Owner",
     )
     #: Enquiry text
-    enquiry_text = models.TextField(verbose_name="Enquiry text", editable=False,)
+    enquiry_text = models.TextField(
+        verbose_name="Enquiry text",
+        editable=False,
+    )
     #: Stage of the enquiry, one of :attr:`ref_data.InvestmentReadiness.choices`
     investment_readiness = models.CharField(
         max_length=MAX_LENGTH,
@@ -128,7 +134,9 @@ class Enquiry(TimeStampedModel):
         verbose_name="IST sector",
     )
     #: Company headquarter address
-    company_hq_address = models.CharField(max_length=MAX_LENGTH, verbose_name="Company HQ address")
+    company_hq_address = models.CharField(
+        max_length=MAX_LENGTH, verbose_name="Company HQ address"
+    )
     #: The IST sector, one of :attr:`ref_data.Country.choices`
     country = models.CharField(
         max_length=MAX_LENGTH,
@@ -145,7 +153,10 @@ class Enquiry(TimeStampedModel):
     )
     #: The :class:`Enquirer`
     enquirer = models.ForeignKey(
-        Enquirer, related_name="enquirer", on_delete=models.PROTECT, verbose_name="Enquirer",
+        Enquirer,
+        related_name="enquirer",
+        on_delete=models.PROTECT,
+        verbose_name="Enquirer",
     )
     #: The IST sector, one of :attr:`ref_data.FirstResponseChannel.choices`
     first_response_channel = models.CharField(
@@ -259,13 +270,22 @@ class Enquiry(TimeStampedModel):
     # If the Enquiry for the company that already exists in DH then user can assign
     # that company details to below fields when editing an Enquiry
     dh_company_id = models.CharField(
-        max_length=MAX_LENGTH, blank=True, null=True, verbose_name="Company id in Data Hub",
+        max_length=MAX_LENGTH,
+        blank=True,
+        null=True,
+        verbose_name="Company id in Data Hub",
     )
     dh_company_number = models.CharField(
-        max_length=MAX_LENGTH, blank=True, null=True, verbose_name="Company number in Data Hub",
+        max_length=MAX_LENGTH,
+        blank=True,
+        null=True,
+        verbose_name="Company number in Data Hub",
     )
     dh_duns_number = models.CharField(
-        max_length=MAX_LENGTH, blank=True, null=True, verbose_name="Duns number",
+        max_length=MAX_LENGTH,
+        blank=True,
+        null=True,
+        verbose_name="Duns number",
     )
     dh_assigned_company_name = models.CharField(
         max_length=MAX_LENGTH,
@@ -295,7 +315,10 @@ class ReceivedEnquiryCursor(models.Model):
     """
 
     index = models.CharField(
-        max_length=MAX_LENGTH, help_text="Index of the object", blank=True, null=True,
+        max_length=MAX_LENGTH,
+        help_text="Index of the object",
+        blank=True,
+        null=True,
     )
     object_id = models.CharField(
         max_length=MAX_LENGTH,
@@ -311,36 +334,16 @@ class FailedEnquiry(models.Model):
     """
 
     index = models.CharField(
-        max_length=MAX_LENGTH, help_text="Index of the object", blank=True, null=True,
+        max_length=MAX_LENGTH,
+        help_text="Index of the object",
+        blank=True,
+        null=True,
     )
     object_id = models.CharField(
-        max_length=MAX_LENGTH, help_text="Id of the failed object", blank=True, null=True,
+        max_length=MAX_LENGTH,
+        help_text="Id of the failed object",
+        blank=True,
+        null=True,
     )
     html_body = models.TextField(blank=True, null=True, verbose_name="HTML body")
     text_body = models.TextField(blank=True, null=True, verbose_name="Text body")
-
-
-class EnquiryActionLog(models.Model):
-    enquiry = models.ForeignKey(Enquiry, null=False, blank=False, on_delete=models.PROTECT)
-    action = models.CharField(
-        max_length=150,
-        null=False,
-        blank=False,
-        choices=ref_data.EnquiryAction.choices,
-        default=ref_data.EnquiryAction.EMAIL_CAMPAIGN_SUBSCRIBE)
-    actioned_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    action_data = JSONField(default=dict)
-
-    def __str__(self):
-        return f"{self.action}: {self.enquiry}"
-
-    @staticmethod
-    def get_last_action_date(action):
-        """
-        Return the last EnquiryActionLog for a specified action type.
-        This record will contain the last time that action was performed.
-        Returns None if no such action was done before.
-        """
-        return EnquiryActionLog.objects.filter(
-            action=action
-        ).order_by('-actioned_at').first()

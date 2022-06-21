@@ -325,22 +325,7 @@ SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE', default=True)
 # token (currently 10 hours) is the simplest way of keeping the token valid.
 # It forces the user to go through the /auth/login endpoint just before the
 # token expires which gets the user a fresh one.
-SESSION_COOKIE_AGE = env('SESSION_COOKIE_AGE', default=60 * 60 * 9)
-
-# Adobe Campaigns
-
-ADOBE_PRIVATE_KEY = env.str('ADOBE_PRIVATE_KEY', '').replace('~~', """
-""")
-ADOBE_API_KEY = env.str('ADOBE_API_KEY', '')
-ADOBE_API_ID = env.str('ADOBE_API_ID', '')
-ADOBE_API_SECRET = env.str('ADOBE_API_SECRET', '')
-ADOBE_TENANT_ID = env.str('ADOBE_TENANT_ID', '')
-ADOBE_ORGANISATION_ID = env.str('ADOBE_ORGANISATION_ID', '')
-ADOBE_TECHNICAL_ACCOUNT_ID = env.str('ADOBE_TECHNICAL_ACCOUNT_ID', '')
-ADOBE_CAMPAIGN_BASE_URL = env.str('ADOBE_CAMPAIGN_BASE_URL', 'adobe_campaign')
-ADOBE_STAGING_WORKFLOW = env.str('ADOBE_STAGING_WORKFLOW', 'WKF8')
-ADOBE_AUTH_API_DOMAIN = env.str('ADOBE_AUTH_API_DOMAIN', 'ims-na1.adobelogin.com')
-ADOBE_API_DOMAIN = env.str('ADOBE_API_DOMAIN', 'mc.adobe.io')
+SESSION_COOKIE_AGE = env("SESSION_COOKIE_AGE", default=60 * 60 * 9)
 
 ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_NAME = env('ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_NAME')
 ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_VALUE = env('ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_VALUE')
