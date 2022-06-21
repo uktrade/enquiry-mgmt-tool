@@ -11,6 +11,10 @@ ENV DOCKERIZE_VERSION v0.2.0
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
+# Apple M1 silicon chipset
+# RUN wget https://github.com/powerman/dockerize/releases/download/v0.16.0/dockerize-linux-arm64 -O /usr/local/bin/dockerize && chmod a+x /usr/local/bin/dockerize
+
+
 # Install PIP packages
 COPY requirements.txt .
 RUN pip install -r requirements.txt
