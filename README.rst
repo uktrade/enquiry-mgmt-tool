@@ -89,6 +89,16 @@ development.
 
 #.  Build and run the necessary containers for the required environment:
 
+    Note: for Apple Mac M1 silicon chipset in Dockerfile comment RUN wget ... and uncomment the Apple M1 silicon chipset:
+        .. code-block:: Dockerfile
+            # Install dockerize https://github.com/jwilder/dockerize
+            ENV DOCKERIZE_VERSION v0.2.0
+            RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+               && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+            # Apple M1 silicon chipset
+            # RUN wget https://github.com/powerman/dockerize/releases/download/v0.16.0/dockerize-linux-arm64 -O /usr/local/bin/dockerize && chmod a+x /usr/local/bin/dockerize
+
     .. code-block:: bash
 
        $ docker-compose up --build
