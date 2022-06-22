@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -73,18 +74,18 @@
            <div itemprop="articleBody">
              
   <section id="module-app.enquiries.models">
-<span id="models"></span><h1>Models<a class="headerlink" href="#module-app.enquiries.models" title="Permalink to this headline"></a></h1>
+<span id="models"></span><h1>Models<a class="headerlink" href="#module-app.enquiries.models" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.enquiries.models.Enquirer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.models.</span></span><span class="sig-name descname"><span class="pre">Enquirer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.models.Enquirer" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
 <p>Model for Enquirer details</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="app.enquiries.models.Enquiry">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.models.</span></span><span class="sig-name descname"><span class="pre">Enquiry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.models.Enquiry" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django_extensions.db.models.TimeStampedModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeStampedModel</span></code></p>
 <p>Model for investment Enquiry</p>
 <p>Includes an optional <a class="reference internal" href="#app.enquiries.models.Enquiry.date_received" title="app.enquiries.models.Enquiry.date_received"><code class="xref py py-attr docutils literal notranslate"><span class="pre">date_received</span></code></a> field to allow a differentiation
 between when the <cite>enquiry</cite> is uploaded to the system and when it was
@@ -308,30 +309,16 @@ received by our teams.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="app.enquiries.models.EnquiryActionLog">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.models.</span></span><span class="sig-name descname"><span class="pre">EnquiryActionLog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enquiry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actioned_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.models.EnquiryActionLog" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.enquiries.models.EnquiryActionLog.get_last_action_date">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_last_action_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.models.EnquiryActionLog.get_last_action_date" title="Permalink to this definition"></a></dt>
-<dd><p>Return the last EnquiryActionLog for a specified action type.
-This record will contain the last time that action was performed.
-Returns None if no such action was done before.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="app.enquiries.models.FailedEnquiry">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.models.</span></span><span class="sig-name descname"><span class="pre">FailedEnquiry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.models.FailedEnquiry" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
 <p>Model to track failed enquiries when processing the data from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="app.enquiries.models.Owner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.models.</span></span><span class="sig-name descname"><span class="pre">Owner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.models.Owner" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#django.contrib.auth.models.AbstractUser" title="(in Django v4.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.AbstractUser</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#django.contrib.auth.models.AbstractUser" title="(in Django v4.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractUser</span></code></a></p>
 <p>Customer user model used by the app.
 Each <a class="reference internal" href="#app.enquiries.models.Enquiry" title="app.enquiries.models.Enquiry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enquiry</span></code></a> has an <a class="reference internal" href="#app.enquiries.models.Owner" title="app.enquiries.models.Owner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Owner</span></code></a>.</p>
 </dd></dl>
@@ -339,7 +326,7 @@ Each <a class="reference internal" href="#app.enquiries.models.Enquiry" title="a
 <dl class="py class">
 <dt class="sig sig-object py" id="app.enquiries.models.ReceivedEnquiryCursor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.models.</span></span><span class="sig-name descname"><span class="pre">ReceivedEnquiryCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.models.ReceivedEnquiryCursor" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
 <p>New enquiries data is pulled from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a> at regular intervals.
 This model tracks the timestamp and object id of the last item received.
 They are used to fetch the next set of results.</p>

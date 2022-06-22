@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -73,29 +74,11 @@
            <div itemprop="articleBody">
              
   <section id="module-app.enquiries.tasks">
-<span id="celery-tasks"></span><h1>Celery Tasks<a class="headerlink" href="#module-app.enquiries.tasks" title="Permalink to this headline"></a></h1>
+<span id="celery-tasks"></span><h1>Celery Tasks<a class="headerlink" href="#module-app.enquiries.tasks" title="Permalink to this heading"></a></h1>
 <dl class="py task">
 <dt class="sig sig-object py" id="app.enquiries.tasks.fetch_new_enquiries">
 <em class="property"><span class="pre">(task)</span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></span><span class="sig-name descname"><span class="pre">fetch_new_enquiries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.tasks.fetch_new_enquiries" title="Permalink to this definition"></a></dt>
 <dd><p>Periodically fetches new <cite>investment enquiries</cite> from <a class="reference external" href="https://readme.trade.gov.uk/docs/playbooks/activity-stream/index.html">Activity Stream</a></p>
-</dd></dl>
-
-<dl class="py task">
-<dt class="sig sig-object py" id="app.enquiries.tasks.handle_exit_criteria_enquiries">
-<em class="property"><span class="pre">(task)</span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></span><span class="sig-name descname"><span class="pre">handle_exit_criteria_enquiries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.tasks.handle_exit_criteria_enquiries" title="Permalink to this definition"></a></dt>
-<dd><p>Periodically fetch and handle enquirers marked as  sent-to-post</p>
-</dd></dl>
-
-<dl class="py task">
-<dt class="sig sig-object py" id="app.enquiries.tasks.handle_non_responsives">
-<em class="property"><span class="pre">(task)</span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></span><span class="sig-name descname"><span class="pre">handle_non_responsives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.tasks.handle_non_responsives" title="Permalink to this definition"></a></dt>
-<dd><p>Periodically fetch and handle non responsive enquiries</p>
-</dd></dl>
-
-<dl class="py task">
-<dt class="sig sig-object py" id="app.enquiries.tasks.handle_second_qualifications">
-<em class="property"><span class="pre">(task)</span></em><span class="sig-prename descclassname"><span class="pre">app.enquiries.tasks.</span></span><span class="sig-name descname"><span class="pre">handle_second_qualifications</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.tasks.handle_second_qualifications" title="Permalink to this definition"></a></dt>
-<dd><p>Periodically fetch and handle 2nd qualification submissions</p>
 </dd></dl>
 
 <dl class="py task">

@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -78,7 +79,7 @@
            <div itemprop="articleBody">
              
   <section id="module-app.enquiries.common.datahub_utils">
-<span id="datahub-utils"></span><h1>DataHub Utils<a class="headerlink" href="#module-app.enquiries.common.datahub_utils" title="Permalink to this headline"></a></h1>
+<span id="datahub-utils"></span><h1>DataHub Utils<a class="headerlink" href="#module-app.enquiries.common.datahub_utils" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="app.enquiries.common.datahub_utils.dh_adviser_search">
 <span class="sig-prename descclassname"><span class="pre">app.enquiries.common.datahub_utils.</span></span><span class="sig-name descname"><span class="pre">dh_adviser_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adviser_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.dh_adviser_search" title="Permalink to this definition"></a></dt>
@@ -312,7 +313,7 @@ Prompts adding a new company contact to Data Hub if needed.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <a class="reference external" href="https://requests.readthedocs.io/en/master/api/#requests.Response" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Response</span></code></a> instance</p>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Response</span></code> instance</p>
 </dd>
 </dl>
 </dd></dl>
@@ -321,7 +322,7 @@ Prompts adding a new company contact to Data Hub if needed.</p>
 <dt class="sig sig-object py" id="app.enquiries.common.datahub_utils.fetch_metadata">
 <span class="sig-prename descclassname"><span class="pre">app.enquiries.common.datahub_utils.</span></span><span class="sig-name descname"><span class="pre">fetch_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.enquiries.common.datahub_utils.fetch_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Fetches <a class="reference external" href="https://github.com/uktrade/data-hub-api#data-hub-api">DataHub API</a> metadata by <code class="docutils literal notranslate"><span class="pre">name</span></code>. The function is <em>memoized</em> for
-one hour in <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/cache/" title="(in Django v4.2)"><span class="xref std std-doc">Django’s cache</span></a>.</p>
+one hour in <span class="xref std std-doc">Django’s cache</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The trailing part of the <a class="reference external" href="https://github.com/uktrade/data-hub-api#data-hub-api">DataHub API</a> metadata endpoint e.g.
