@@ -89,6 +89,11 @@ development.
 
 #.  Build and run the necessary containers for the required environment:
 
+    Note when running Apple Mac M1 silicon chipset and you get an error:
+    .. code-block:: 
+       runtime: failed to create new OS thread (have 2 already; errno=22) fatal error: newosproc
+    In Dockerfile Use RUN wget for Apple instead of amd64.
+
     .. code-block:: bash
 
        $ docker-compose up --build

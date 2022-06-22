@@ -12,7 +12,9 @@ class EnquiryStage(models.TextChoices):
     SENT_TO_POST = "SENT_TO_POST", _("Sent to Post")
     POST_PROGRESSING = "POST_PROGRESSING", _("Post progressing")
     NON_APPLICABLE = "NON_APPLICABLE", _("Non-applicable")
-    NURTURE_AWAITING_RESPONSE = "NURTURE_AWAITING_RESPONSE", _("Nurture awaiting response")
+    NURTURE_AWAITING_RESPONSE = "NURTURE_AWAITING_RESPONSE", _(
+        "Nurture awaiting response"
+    )
 
 
 class InvestmentReadiness(models.TextChoices):
@@ -23,7 +25,9 @@ class InvestmentReadiness(models.TextChoices):
     )
     SHORTLIST = (
         "SHORTLIST",
-        _("The UK is on my shortlist. How can the Department for International Trade help me?"),
+        _(
+            "The UK is on my shortlist. How can the Department for International Trade help me?"
+        ),
     )
     EXPLORING = (
         "EXPLORING",
@@ -33,7 +37,9 @@ class InvestmentReadiness(models.TextChoices):
         ),
     )
     NOT_READY = "NOT_READY", _("I’m not yet ready to invest. Keep me informed")
-    NOT_INTERESTED_IN_UK = "NOT_INTERESTED_IN_UK", _("I’m not interested in setting up in the UK")
+    NOT_INTERESTED_IN_UK = "NOT_INTERESTED_IN_UK", _(
+        "I’m not interested in setting up in the UK"
+    )
 
 
 class Quality(models.TextChoices):
@@ -414,15 +420,21 @@ class InvestmentProgramme(models.TextChoices):
     ADVANCED_ENG = "ADVANCED_ENG", _("Advanced Engineering Supply Chain")
     BUSINESS_PARTNER = "BUSINESS_PARTNER", _("Business Partnership (Non-FDI)")
     CONTRACT_RESEARCH = "CONTRACT_RESEARCH", _("Contract Research (Non-FDI)")
-    EMERGING_MARKETS_GULF = "EMERGING_MARKETS_GULF", _("Emerging Markets Contract (Gulf)")
-    EMERGING_MARKETS_RUSSIA = "EMERGING_MARKETS_RUSSIA", _("Emerging Markets Contract (Russia)")
+    EMERGING_MARKETS_GULF = "EMERGING_MARKETS_GULF", _(
+        "Emerging Markets Contract (Gulf)"
+    )
+    EMERGING_MARKETS_RUSSIA = "EMERGING_MARKETS_RUSSIA", _(
+        "Emerging Markets Contract (Russia)"
+    )
     FDI_CAPITAL_ONLY = "FDI_CAPITAL_ONLY", _("FDI (Capital Only)")
     GLOBAL_ENTREP_PROG = "GLOBAL_ENTREP_PROG", _("Global Entrepreneur Programme")
     GRADUATE_ENTREP_PROG = "GRADUATE_ENTREP_PROG", _("Graduate Entrepreneur Programme")
     GREAT_INV_PROG = "GREAT_INV_PROG", _("GREAT Investors Programme")
     HQ_UK = "HQ_UK", _("HQ-UK")
     II_AND_I = "II&I", _("II&I Programme")
-    INFRASTRUCTURE_INVESTMENT = "INFRASTRUCTURE_INVESTMENT", _("Infrastructure Investment")
+    INFRASTRUCTURE_INVESTMENT = "INFRASTRUCTURE_INVESTMENT", _(
+        "Infrastructure Investment"
+    )
     INNOVATION_GATEWAY = "INNOVATION_GATEWAY", _("Innovation Gateway")
     IIGB = "IIGB", _("Invest in GREAT Britain")
     NO_SPECIFIC_PROG = "NO_SPECIFIC_PROG", _("No Specific Programme")
@@ -447,15 +459,6 @@ class DatahubProjectStatus(models.TextChoices):
     WON = "WON", _("Won")
     ABANDONED = "ABANDONED", _("Abandoned")
     DELAYED = "DELAYED", _("Delayed")
-
-
-class EnquiryAction(models.TextChoices):
-    EMAIL_CAMPAIGN_SUBSCRIBE = "EMAIL_CAMPAIGN_SUBSCRIBE", _("Subscribe to email campaign")
-    SECOND_QUALIFICATION_FORM = (
-        "SECOND_QUALIFICATION_FORM", _("Second qualification form submitted"))
-    MARKED_RESPONSIVE = "MARKED_RESPONSIVE", _("Marked responsive")
-    UNSUBSCRIBED_FROM_CAMPAIGN = (
-        "UNSUBSCRIBED_FROM_CAMPAIGN", _("Unsubscribed from email campaign"))
 
 
 # Data Hub metadata
