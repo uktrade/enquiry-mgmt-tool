@@ -263,6 +263,24 @@ You must therefor supply this method with JSON which describes a new seed user l
      "email": "evelyn@example.com"
    }
 
+Running locally with Data Hub API
+---------------------------------
+
+The Enquiry Management Tool application integrates with the `Data Hub API <https://github.com/uktrade/data-hub-api>`_.
+The EMT fetches metadata from the Data Hub API and creates an investment project if an enquiry is successful.
+
+* Run the Data Hub API following the `instructions in the repository's README <https://github.com/uktrade/data-hub-api#installation-with-docker>`_
+* In your .env file in the data-hub-api repository, find the ``DJANGO_SUPERUSER_EMAIL`` variable
+* From the top level of the data-hub-api repository, run the following command using the value of the variable above:
+
+   ``docker exec data-hub_api_1 python manage.py add_access_token DJANGO_SUPERUSER_EMAIL``
+
+* Copy the token from your terminal and add it as the value of the ``MOCK_SSO_TOKEN`` environment variable in the .env file of the enquiry-mgmt-tool repository
+* Also in the enquiry-mgmt-tool .env file, set the value of the ``MOCK_SSO_EMAIL_USER_ID`` and ``MOCK_SSO_USERNAME`` environment variables to the same email address you created the token for
+* Follow the instructions at the top of this file to run the Enquiry Management Tool application
+* You can check that the integration with Data Hub is working correctly by going to http://localhost:8000/enquiries/1/edit and making sure that a list of names appears in the 'Client Relationship Manager' field dropdown
+
+
 Documentation
 -------------
 
