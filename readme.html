@@ -295,6 +295,24 @@ You must therefor supply this method with JSON which describes a new seed user l
 </section>
 </section>
 </section>
+<section id="running-locally-with-data-hub-api">
+<h2>Running locally with Data Hub API<a class="headerlink" href="#running-locally-with-data-hub-api" title="Permalink to this heading"></a></h2>
+<p>The Enquiry Management Tool application integrates with the <a class="reference external" href="https://github.com/uktrade/data-hub-api">Data Hub API</a>.
+The EMT fetches metadata from the Data Hub API and creates an investment project if an enquiry is successful.</p>
+<ul>
+<li><p>Run the Data Hub API following the <a class="reference external" href="https://github.com/uktrade/data-hub-api#installation-with-docker">instructions in the repository’s README</a></p></li>
+<li><p>In your .env file in the data-hub-api repository, find the <code class="docutils literal notranslate"><span class="pre">DJANGO_SUPERUSER_EMAIL</span></code> variable</p></li>
+<li><p>From the top level of the data-hub-api repository, run the following command using the value of the variable above:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">data-hub_api_1</span> <span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">add_access_token</span> <span class="pre">DJANGO_SUPERUSER_EMAIL</span></code></p>
+</div></blockquote>
+</li>
+<li><p>Copy the token from your terminal and add it as the value of the <code class="docutils literal notranslate"><span class="pre">MOCK_SSO_TOKEN</span></code> environment variable in the .env file of the enquiry-mgmt-tool repository</p></li>
+<li><p>Also in the enquiry-mgmt-tool .env file, set the value of the <code class="docutils literal notranslate"><span class="pre">MOCK_SSO_EMAIL_USER_ID</span></code> and <code class="docutils literal notranslate"><span class="pre">MOCK_SSO_USERNAME</span></code> environment variables to the same email address you created the token for</p></li>
+<li><p>Follow the instructions at the top of this file to run the Enquiry Management Tool application</p></li>
+<li><p>You can check that the integration with Data Hub is working correctly by going to <a class="reference external" href="http://localhost:8000/enquiries/1/edit">http://localhost:8000/enquiries/1/edit</a> and making sure that a list of names appears in the ‘Client Relationship Manager’ field dropdown</p></li>
+</ul>
+</section>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading"></a></h2>
 <p>Documentation is written in <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">reStructuredText (RST)</a> and <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a>. The documentation source files
