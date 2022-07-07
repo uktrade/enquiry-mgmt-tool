@@ -1,5 +1,5 @@
 attrs==19.3.0
-backcall==0.1.0
+backcall==0.2.0
 beautifulsoup4==4.8.2
 cachecontrol-django==1.0.0
 celery[redis]==5.2.2
