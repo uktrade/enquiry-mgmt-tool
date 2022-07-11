@@ -50,7 +50,7 @@ services:
     env_file: ./app/settings/.env
 
   cypress:
-    image: cypress/included:9.5.3
+    image: cypress/included:9.7.0
     working_dir: /e2e
     volumes:
       - .:/e2e
