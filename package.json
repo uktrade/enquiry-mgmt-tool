@@ -24,7 +24,7 @@
     "sass": "^1.53.0"
   },
   "devDependencies": {
-    "cypress": "9.5.3",
+    "cypress": "^9.7.0",
     "moment": "^2.29.4"
   },
   "resolutions": {
