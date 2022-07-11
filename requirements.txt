@@ -35,7 +35,7 @@ itypes==1.1.0
 jedi==0.15.1
 Jinja2==3.1.2
 Markdown==3.1.1
-MarkupSafe==1.1.1
+MarkupSafe==2.1.1
 mohawk==1.1.0
 more-itertools==8.0.2
 lxml==4.9.1
