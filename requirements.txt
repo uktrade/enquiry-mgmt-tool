@@ -69,4 +69,4 @@ traitlets==4.3.3
 uritemplate==3.0.0
 urllib3==1.26.5
 wcwidth==0.1.7
-whitenoise==5.0.1
+whitenoise==6.2.0
