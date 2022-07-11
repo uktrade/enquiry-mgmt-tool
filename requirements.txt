@@ -41,7 +41,7 @@ more-itertools==8.0.2
 lxml==4.9.1
 openpyxl==3.0.3
 packaging==19.2
-parso==0.5.1
+parso==0.8.0
 pexpect==4.7.0
 pickleshare==0.7.5
 pluggy==0.13.1
