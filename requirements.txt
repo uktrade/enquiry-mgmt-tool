@@ -40,7 +40,7 @@ mohawk==1.1.0
 more-itertools==8.0.2
 lxml==4.9.1
 openpyxl==3.0.3
-packaging==19.2
+packaging==21.3
 parso==0.8.0
 pexpect==4.7.0
 pickleshare==0.7.5
