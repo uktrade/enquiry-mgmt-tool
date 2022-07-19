@@ -225,7 +225,7 @@ or
 
 .. code-block:: bash
 
-   $ docker-compose run cypress
+   $ docker-compose run cypress run --browser chrome
 
 Allowing for Fixture Reset during e2e tests
 """""""""""""""""""""""""""""""""""""""""""
