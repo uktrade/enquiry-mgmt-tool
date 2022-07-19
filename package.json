@@ -4,7 +4,7 @@
   "description": "This is tool mainly used by IST users to manage investment enquiries. They can review enquiries, update them during their engagement with the potential investors and submit the information to Data Hub.",
   "main": "index.html",
   "scripts": {
-    "test": "cypress open",
+    "test": "cypress open --browser chrome --e2e",
     "sass": "sass sass/application.scss app/enquiries/static/application.css",
     "sass:watch": "npm run sass -- --watch",
     "postinstall": "npm run sass"
