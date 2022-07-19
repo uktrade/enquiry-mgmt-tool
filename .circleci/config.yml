@@ -29,7 +29,7 @@ jobs:
           command: docker-compose run app python -m pytest --cov --cov-report=xml -s --ds=app.settings.djangotest -vvv app
       - run:
           name: Install dependencies
-          command: docker-compose run --entrypoint npm cypress install moment@2.24.0
+          command: docker-compose run --entrypoint npm cypress install date-fns
       - run:
           name: Run e2e tests
           # Chrome freezes when redirecting on the login page.

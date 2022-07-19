@@ -1,4 +1,4 @@
-const moment = require('moment')
+const { format } = require('date-fns')
 require('../support/commands')
 const {
   assertSummaryDetails,
@@ -651,7 +651,7 @@ describe('Edit', () => {
             { dt: 'Date received', dd: '21 February 2020' },
             {
               dt: 'Date last updated',
-              dd: moment().format('D MMMM YYYY'),
+              dd: format(new Date(), 'd MMMM yyyy'),
             },
             {
               dt: 'Enquiry stage',
