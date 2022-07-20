@@ -25,6 +25,9 @@
   },
   "devDependencies": {
     "cypress": "10.3.0",
-    "moment": "^2.29.4"
+    "date-fns": "^2.28.0"
+  },
+  "overrides": {
+    "glob-parent": "6.0.1"
   }
 }
