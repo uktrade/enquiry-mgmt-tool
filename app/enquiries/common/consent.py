@@ -42,11 +42,13 @@ def check_consent(key):
     url = f"{settings.CONSENT_SERVICE_BASE_URL}{CONSENT_SERVICE_PATH_PERSON}{key}/"
     try:
         response = request(url=url, method="GET")
+        response.raise_for_status()
         return bool(len(response.json()["consents"]))
     except HTTPError as e:
-        if e.response and e.response.status_code == status.HTTP_404_NOT_FOUND:
+        if e.response.status_code == status.HTTP_404_NOT_FOUND:
             return False
-    return False
+        else:
+            raise
 
 
 def set_consent(key, value=True):
