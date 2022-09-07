@@ -22,7 +22,7 @@ django-rest-knox==4.1.0
 django-staff-sso-client==4.0.1
 djangorestframework==3.11.2
 djangorestframework-csv==2.1.1
-drf-writable-nested==0.6.4
+drf-writable-nested==0.7.0
 django-widget-tweaks==1.4.12
 django-model-choices==1.0.0
 Faker==13.15.0
