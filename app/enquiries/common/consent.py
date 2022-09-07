@@ -43,7 +43,9 @@ def check_consent(key):
     try:
         response = request(url=url, method="GET")
         response.raise_for_status()
-        return bool(len(response.json()["consents"]))
+        if 'consents' in response.json():
+            return bool(len(response.json()["consents"]))
+        return False
     except HTTPError as e:
         if e.response.status_code == status.HTTP_404_NOT_FOUND:
             return False
