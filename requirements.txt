@@ -8,7 +8,7 @@ cffi==1.15.1
 chardet==5.0.0
 coreapi==2.3.3
 coreschema==0.0.4
-coverage==6.4.3
+coverage==6.4.4
 cryptography==37.0.4
 decorator==5.1.1
 Django==3.1.14
@@ -27,7 +27,7 @@ django-widget-tweaks==1.4.12
 django-model-choices==1.0.0
 Faker==13.15.0
 factory-boy==3.2.1
-flake8==4.0.1
+flake8==5.0.4
 gunicorn==20.1.0
 idna==3.3
 ipython-genutils==0.2.0
@@ -42,12 +42,12 @@ lxml==4.9.1
 openpyxl==3.0.10
 packaging==21.3
 parso==0.8.0
-pexpect==4.7.0
+pexpect==4.8.0
 pickleshare==0.7.5
 pluggy==1.0.0
 prompt-toolkit==3.0.30
 psycopg2==2.9.3
-ptyprocess==0.6.0
+ptyprocess==0.7.0
 py==1.11.0
 pycparser==2.21
 Pygments==2.7.4
