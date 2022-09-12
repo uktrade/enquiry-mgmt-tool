@@ -1,4 +1,4 @@
-attrs==21.4.0
+attrs==22.1.0
 backcall==0.2.0
 beautifulsoup4==4.11.1
 cachecontrol-django==1.0.0
