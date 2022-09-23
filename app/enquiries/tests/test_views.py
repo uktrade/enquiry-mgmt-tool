@@ -693,7 +693,8 @@ class EnquiryViewTestCase(test_utils.BaseEnquiryTestCase):
         self.assertEqual(len(enquiry_els), 0)
 
     def test_import_template(self):
-        """Tests that the dynamically generated .XLSX template is accessible has the correct format.
+        """
+        Tests that the dynamically generated .XLSX template is accessible has the correct format.
         The spreadsheet has multiple sheets with the 'enquiries' sheet used to capture user input.
         All other sheets are populate with the apps ref_data.py
         """
