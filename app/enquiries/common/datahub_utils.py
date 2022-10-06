@@ -97,7 +97,13 @@ def fetch_metadata(name):
     url = os.path.join(settings.DATA_HUB_METADATA_URL, name)
     response = cached_requests.get(
         url,
-        auth=HawkAuth(id=settings.DATA_HUB_HAWK_ID, key=settings.DATA_HUB_HAWK_KEY),
+        auth=HawkAuth(
+            id=settings.DATA_HUB_HAWK_ID,
+            key=settings.DATA_HUB_HAWK_KEY,
+        ),
+        # Add dummy data to avoid error: MissingContent payload content and/or content_type cannot
+        # be empty when always_hash_content is True
+        data={"data": name},
         timeout=10,
     )
     response.raise_for_status()
