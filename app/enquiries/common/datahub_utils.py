@@ -103,7 +103,7 @@ def fetch_metadata(name):
         ),
         # Add dummy data to avoid error: MissingContent payload content and/or content_type cannot
         # be empty when always_hash_content is True
-        data={""},
+        data={"data": name},
         timeout=10,
     )
     response.raise_for_status()
