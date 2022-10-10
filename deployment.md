@@ -28,7 +28,7 @@ The release title should be `v<VERSION_NUMBER>` and release notes can be created
 
 Check that the release notes generated contain what you expect to be deployed to production.
 
-6. Go to [Jenkins](https://jenkins.ci.uktrade.digital/view/Enquiry%20Management/job/enquiry-mgmt-tool/) and click on `Build with Parameters`.
+6. Go to the `enquiry-mgmt-tool` job in Jenkins and click on `Build with Parameters`.
 
 7. Select `production` for the environment.
 
