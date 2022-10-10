@@ -38,7 +38,7 @@ Check that the release notes generated contain what you expect to be deployed to
 
 10. After the Jenkins build has finished, go to Enquiry Management Tool production and check that everything is working correctly.
 
-11. Change the GH pre-release to an actual release.
+11. Change the GitHub pre-release to an actual release.
 
 12. Post the following message on the #data-hub slack channel, making sure to put the actual version number and link the release notes:
 
