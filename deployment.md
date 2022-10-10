@@ -28,7 +28,7 @@ The release title should be `v<VERSION_NUMBER>` and release notes can be created
 
 Check that the release notes generated contain what you expect to be deployed to production.
 
-6. Go to Jenkins and click on `Build with Parameters`.
+6. Go to [Jenkins](https://jenkins.ci.uktrade.digital/view/Enquiry%20Management/job/enquiry-mgmt-tool/) and click on `Build with Parameters`.
 
 7. Select `production` for the environment.
 
@@ -36,7 +36,7 @@ Check that the release notes generated contain what you expect to be deployed to
 
 9. Press the `Build` button.
 
-10. After the Jenkins build has finished, go to Data Hub production and check that everything is working correctly.
+10. After the Jenkins build has finished, go to Enquiry Management Tool production and check that everything is working correctly.
 
 11. Change the GH pre-release to an actual release.
 
