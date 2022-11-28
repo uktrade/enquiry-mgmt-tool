@@ -41,7 +41,7 @@ services:
       - 5432:5432
 
   redis:
-    image: redis:3.2
+    image: redis:6.2.6
 
   mock-sso:
     image: ukti/mock-sso
@@ -50,7 +50,7 @@ services:
     env_file: ./app/settings/.env
 
   cypress:
-    image: cypress/included:10.3.0
+    image: cypress/included:11.2.0
     working_dir: /e2e
     volumes:
       - .:/e2e
