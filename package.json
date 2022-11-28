@@ -24,7 +24,7 @@
     "sass": "^1.56.0"
   },
   "devDependencies": {
-    "cypress": "10.3.0",
+    "cypress": "11.2.0",
     "date-fns": "^2.29.3"
   },
   "overrides": {
