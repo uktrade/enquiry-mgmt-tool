@@ -17,7 +17,7 @@ class ServiceHealthCheckTestCase(test_utils.BaseEnquiryTestCase):
         """
         response = self.client.post(reverse("ping"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response._headers["content-type"], ("Content-Type", "text/plain"))
+        self.assertEqual(response.headers["Content-Type"], "text/plain")
         self.assertEqual(response.content.decode("utf-8"), "OK")
 
     @mock.patch("app.enquiries.models.Enquiry.objects")
