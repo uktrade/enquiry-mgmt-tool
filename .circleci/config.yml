@@ -43,7 +43,7 @@ jobs:
           path: cypress/screenshots
   docs-build:
     docker:
-      - image: python:3.11.1
+      - image: python:3.8.13
     steps:
       - checkout
       - dotenv/source:
