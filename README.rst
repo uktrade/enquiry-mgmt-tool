@@ -90,7 +90,7 @@ development.
 #.  Build and run the necessary containers for the required environment:
 
     Note when running Apple Mac M1 silicon chipset and you get an error:
-    .. code-block:: bash
+    .. code-block:: 
        runtime: failed to create new OS thread (have 2 already; errno=22) fatal error: newosproc
     In Dockerfile Use RUN wget for Apple instead of amd64.
 
@@ -478,4 +478,3 @@ The deployed documentation will then be available at
 
 .. |file-ci-config| replace:: ``.circleci/config.yml``
 .. _file-ci-config: https://github.com/uktrade/enquiry-mgmt-tool/blob/master/.circleci/config.yml
-
