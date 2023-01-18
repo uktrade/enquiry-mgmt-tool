@@ -41,6 +41,8 @@ jobs:
           file: coverage.xml
       - store_artifacts:
           path: cypress/screenshots
+      - store_artifacts:
+          path: cypress/videos
   docs-build:
     docker:
       - image: python:3.8
