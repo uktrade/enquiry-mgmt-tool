@@ -397,7 +397,7 @@ def dh_prepare_contact(request, access_token, enquirer, company_id):
                 f"The name {enquirer.first_name} {enquirer.last_name} doesn't match the name "
                 f"{matching_contact_email['first_name']} {matching_contact_email['last_name']} on "
                 "Data Hub. Please ensure the names match accross both systems or use an "
-                "alternative email address. "
+                "alternative email address."
             }
 
     # If enquirer is a new contact, add them to DH
