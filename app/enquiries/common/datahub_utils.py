@@ -390,13 +390,15 @@ def dh_prepare_contact(request, access_token, enquirer, company_id):
             existing_contacts,
         )
         if matching_contact_email:
-            return None,
-            {"contact_details_mismatch": f"a contact with the email "
-                "{matching_contact_email['email']} already exists on Data Hub for this company. "
+            return None, {
+                "contact_details_mismatch":
+                f"a contact with the email "
+                f"{matching_contact_email['email']} already exists on Data Hub for this company. "
                 f"The name {enquirer.first_name} {enquirer.last_name} doesn't match the name "
                 f"{matching_contact_email['first_name']} {matching_contact_email['last_name']} on "
                 "Data Hub. Please ensure the names match accross both systems or use an "
-                "alternative email address. "}
+                "alternative email address. "
+            }
 
     # If enquirer is a new contact, add them to DH
     enquiry_contact, error = dh_contact_create(
