@@ -19,7 +19,6 @@ jobs:
           name: Start Docker stack as daemon
           command: docker-compose up -d
           environment:
-            ALLOW_TEST_FIXTURE_SETUP: allow
             DJANGO_SETTINGS_MODULE: app.settings.e2etest
       - run:
           name: Run Flake8

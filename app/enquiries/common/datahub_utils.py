@@ -271,6 +271,28 @@ def dh_get_matching_company_contact(first_name, last_name, email, company_contac
     )
 
 
+def dh_get_matching_company_contact_by_email(email, company_contacts):
+    """
+    Performs check identifying whether an enquirer's email exists in their company's contact
+    list in |data-hub-api|_.
+
+    :param email:
+    :type email: str
+
+    :param company_contacts:
+    :type company_contacts: list
+
+    :returns: The first matching contact if any exist
+    :rtype: dict or None
+    """
+    return next((
+            company_contact for company_contact in company_contacts
+            if company_contact["email"].lower() == email.lower()
+        ),
+        None
+    )
+
+
 def dh_contact_create(request, access_token, enquirer, company_id, primary=False):
     """
     Create a |data-hub|_ `contact` and associate it with the given `company`.
@@ -362,6 +384,21 @@ def dh_prepare_contact(request, access_token, enquirer, company_id):
     if matching_contact:
         enquiry_contact = matching_contact
         return enquiry_contact["datahub_id"], None
+    else:
+        matching_contact_email = dh_get_matching_company_contact_by_email(
+            enquirer.email,
+            existing_contacts,
+        )
+        if matching_contact_email:
+            return None, {
+                "contact_details_mismatch":
+                f"a contact with the email "
+                f"{matching_contact_email['email']} already exists on Data Hub for this company. "
+                f"The name {enquirer.first_name} {enquirer.last_name} doesn't match the name "
+                f"{matching_contact_email['first_name']} {matching_contact_email['last_name']} on "
+                "Data Hub. Please ensure the names match accross both systems or use an "
+                "alternative email address."
+            }
 
     # If enquirer is a new contact, add them to DH
     enquiry_contact, error = dh_contact_create(
