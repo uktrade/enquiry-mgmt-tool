@@ -67,6 +67,6 @@ six==1.16.0
 sqlparse==0.4.3
 traitlets==5.8.1
 uritemplate==4.1.1
-urllib3==1.26.13
+urllib3==1.26.14
 wcwidth==0.2.5
 whitenoise==6.3.0
