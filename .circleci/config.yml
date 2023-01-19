@@ -19,7 +19,6 @@ jobs:
           name: Start Docker stack as daemon
           command: docker-compose up -d
           environment:
-            ALLOW_TEST_FIXTURE_SETUP: allow
             DJANGO_SETTINGS_MODULE: app.settings.e2etest
       - run:
           name: Run Flake8
@@ -35,8 +34,6 @@ jobs:
           # Chrome freezes when redirecting on the login page.
           # See: https://github.com/cypress-io/cypress/issues/3594
           command: docker-compose run cypress run --browser chrome
-          environment:
-            ALLOW_TEST_FIXTURE_SETUP: allow
       - run: docker-compose stop app
       - run: docker-compose run app coverage xml
       - codecov/upload:
