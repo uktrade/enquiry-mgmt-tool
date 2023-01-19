@@ -8,6 +8,7 @@ from unittest import mock
 from app.enquiries.models import Enquirer
 from app.enquiries.common.datahub_utils import (
     dh_get_matching_company_contact,
+    dh_get_matching_company_contact_by_email,
     dh_prepare_contact,
 )
 
@@ -54,6 +55,15 @@ class DataHubUtilsTests(TestCase):
             first_name=MATCHING_CONTACT_DETAILS["first_name"],
             last_name=MATCHING_CONTACT_DETAILS["last_name"],
             email=faker.email(),
+            job_title='Manager',
+            phone_country_code='1',
+            phone=faker.phone_number(),
+            request_for_call=ref_data.RequestForCall.YES_AFTERNOON.value,
+        )
+        self.partially_matching_on_email_enquirer = Enquirer.objects.create(
+            first_name=faker.name(),
+            last_name=faker.name(),
+            email=MATCHING_CONTACT_DETAILS["email"],
             job_title='Manager',
             phone_country_code='1',
             phone=faker.phone_number(),
@@ -115,6 +125,33 @@ class DataHubUtilsTests(TestCase):
         contact = dh_get_matching_company_contact(
             self.new_enquirer.first_name,
             self.new_enquirer.last_name,
+            self.new_enquirer.email,
+            self.company_results
+        )
+        self.assertIsNone(contact)
+
+    def test_dh_get_matching_company_contact_by_email_match(self):
+        """Test company contact match by email function returns matching contact"""
+
+        contact = dh_get_matching_company_contact_by_email(
+            self.matching_enquirer.email,
+            self.company_results
+        )
+        self.assertEqual(contact["email"], MATCHING_CONTACT_DETAILS["email"])
+
+    def test_dh_get_matching_company_contact_by_email_partial_match(self):
+        """Test company contact match by email function does not return a partial match"""
+
+        contact = dh_get_matching_company_contact_by_email(
+            self.partially_matching_enquirer.email,
+            self.company_results
+        )
+        self.assertIsNone(contact)
+
+    def test_dh_get_matching_company_contact_by_email_no_match(self):
+        """Test company contact match by email function returns None if no match"""
+
+        contact = dh_get_matching_company_contact_by_email(
             self.new_enquirer.email,
             self.company_results
         )
@@ -186,6 +223,47 @@ class DataHubUtilsTests(TestCase):
 
         self.assertEqual(contact_id, self.dh_contact_id)
         self.assertIsNone(error)
+
+    @mock.patch('app.enquiries.common.datahub_utils.dh_contact_create')
+    @mock.patch('app.enquiries.common.datahub_utils.dh_get_matching_company_contact_by_email')
+    @mock.patch('app.enquiries.common.datahub_utils.dh_get_company_contact_list')
+    def test_dh_prepare_contact_mismatch_contact_existing_contacts(
+        self,
+        mock_dh_contact_list,
+        mock_matching_company_contact_by_email,
+        mock_create_dh_contact,
+    ):
+        """Test contact prepare function in case of company having different existing """
+        """contacts with mismatched name"""
+        mock_dh_contact_list.return_value = [self.company_results, None]
+        mock_create_dh_contact.return_value = [{"id": self.dh_contact_id}, None]
+        mock_matching_company_contact_by_email.return_value = {
+            'datahub_id': self.dh_company_id,
+            'first_name': self.matching_enquirer.first_name,
+            'last_name': self.matching_enquirer.last_name,
+            'job_title': self.matching_enquirer.job_title,
+            'email': self.matching_enquirer.email,
+            'phone': self.matching_enquirer.phone,
+        }
+
+        contact_id, error = dh_prepare_contact(
+            self.request,
+            self.access_token,
+            self.partially_matching_on_email_enquirer,
+            self.dh_company_id
+        )
+
+        self.assertIsNotNone(error)
+        contact_details_mismatch_error = (
+            f"a contact with the email "
+            f"{self.matching_enquirer.email} already exists on Data Hub for this company. "
+            f"The name {self.partially_matching_on_email_enquirer.first_name} "
+            f"{self.partially_matching_on_email_enquirer.last_name} doesn't match the name "
+            f"{MATCHING_CONTACT_DETAILS['first_name']} {MATCHING_CONTACT_DETAILS['last_name']} on "
+            "Data Hub. Please ensure the names match accross both systems or use an "
+            "alternative email address."
+        )
+        self.assertEqual(error['contact_details_mismatch'], contact_details_mismatch_error)
 
     @mock.patch('app.enquiries.common.datahub_utils.dh_contact_create')
     @mock.patch('app.enquiries.common.datahub_utils.dh_get_matching_company_contact')
