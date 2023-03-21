@@ -110,12 +110,12 @@ class Enquiry(TimeStampedModel):
         default=ref_data.MarketingChannel.DEFAULT,
         verbose_name="Marketing channel",
     )
-    #: How did the enquirer hear about DIT
+    #: How did the enquirer hear about DBT
     how_they_heard_dit = models.CharField(
         max_length=MAX_LENGTH,
         choices=ref_data.HowDidTheyHear.choices,
         default=ref_data.HowDidTheyHear.DEFAULT,
-        verbose_name="How did they hear about DIT?",
+        verbose_name="How did they hear about DBT?",
     )
     #: Website URL
     website = models.TextField(blank=True, verbose_name="Website")
