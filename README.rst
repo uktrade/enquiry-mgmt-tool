@@ -356,7 +356,7 @@ The deployed documentation will then be available at
 .. |great| replace:: GREAT
 .. _great: https://readme.trade.gov.uk/docs/playbooks/great.gov.uk-website.html
 
-.. |dit-docs| replace:: DIT Software Development Manual
+.. |dit-docs| replace:: DBT Software Development Manual
 .. _dit-docs: https://readme.trade.gov.uk
 
 .. |em-playbook| replace:: Enquiry Management playbook

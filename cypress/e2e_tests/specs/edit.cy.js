@@ -100,7 +100,7 @@ describe('Edit', () => {
               dt: 'Marketing channel',
               dd: 'Website',
             },
-            { dt: 'How did they hear about DIT?', dd: 'Internet search' },
+            { dt: 'How did they hear about DBT?', dd: 'Internet search' },
             {
               dt: 'Consent (email)',
               dd: 'Maybe',
@@ -307,7 +307,7 @@ describe('Edit', () => {
             },
             {
               type: 'select',
-              label: 'How did they hear about DIT?',
+              label: 'How did they hear about DBT?',
               value: 'INTERNET_SEARCH',
             },
             {
@@ -717,7 +717,7 @@ describe('Edit', () => {
               dd: 'LinkedInLeadGen',
             },
             {
-              dt: 'How did they hear about DIT?',
+              dt: 'How did they hear about DBT?',
               dd: 'Other social media (e.g. Twitter/Facebook)',
             },
             {
