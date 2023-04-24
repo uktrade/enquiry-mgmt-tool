@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/uktrade/enquiry-mgmt-tool#readme",
   "dependencies": {
-    "govuk-frontend": "^4.5.0",
+    "govuk-frontend": "^4.6.0",
     "sass": "^1.62.1"
   },
   "devDependencies": {
