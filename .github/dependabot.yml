@@ -5,8 +5,16 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+    - dependency-name: sphinx
+      versions:
+      - ">= 5.3.0"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+    - dependency-name: cypress
+      versions:
+      - ">= 11.2.0"
