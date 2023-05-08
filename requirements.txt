@@ -58,9 +58,15 @@ pytest-cov==4.0.0
 pytest-django==4.5.2
 pytest-freezegun==0.4.2
 pytz==2023.3
+<<<<<<< HEAD
 redis==4.5.5
 requests==2.30.0
-requests-hawk==1.1.1
+requests-hawk==1.2.1
+=======
+redis==4.5.4
+requests==2.29.0
+requests-hawk==1.2.1
+>>>>>>> 6ed55b0 (Bump requests-hawk from 1.1.1 to 1.2.1)
 requests-mock==1.10.0
 sentry-sdk==1.22.2
 six==1.16.0
