@@ -11,7 +11,7 @@ coreschema==0.0.4
 coverage==7.2.5
 cryptography==40.0.2
 decorator==5.1.1
-Django==3.2.18
+Django==3.2.19
 django-autocomplete-light==3.5.0
 django-cache-memoize==0.1.10
 django-environ==0.10.0
