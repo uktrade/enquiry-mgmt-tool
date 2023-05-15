@@ -51,7 +51,7 @@ ptyprocess==0.7.0
 py==1.11.0
 pycparser==2.21
 Pygments==2.15.1
-PyJWT==2.6.0
+PyJWT==2.7.0
 pyparsing==3.0.9
 pytest==7.3.1
 pytest-cov==4.0.0
