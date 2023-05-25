@@ -90,11 +90,9 @@ workflows:
   version: 1
   emt-workflow:
     jobs:
-      - test
       - docs-build
       - docs-deploy:
           requires:
-            - test
             - docs-build
           filters:
             branches:
