@@ -26,7 +26,7 @@ class InvestmentReadiness(models.TextChoices):
     SHORTLIST = (
         "SHORTLIST",
         _(
-            "The UK is on my shortlist. How can the Department for International Trade help me?"
+            "The UK is on my shortlist. How can the Department for Business and Trade help me?"
         ),
     )
     EXPLORING = (
