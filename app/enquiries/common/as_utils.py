@@ -68,7 +68,7 @@ def via_enquiry_to_enquiry_kwargs(data):
         "I’m convinced and want to talk to someone about my plans.":
             ref_data.InvestmentReadiness.CONVINCED,
         "The UK is on my shortlist. How can the Department for "
-        "International Trade help me?":
+        "Business and Trade help me?":
             ref_data.InvestmentReadiness.SHORTLIST,
         "I’m still exploring where to expand my business and would "
         "like to know more about the UK’s offer.":
