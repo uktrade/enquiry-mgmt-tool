@@ -58,7 +58,7 @@ pytest-cov==4.1.0
 pytest-django==4.5.2
 pytest-freezegun==0.4.2
 pytz==2023.3
-redis==4.5.5
+redis==4.6.0
 requests==2.31.0
 requests-hawk==1.2.1
 requests-mock==1.11.0
