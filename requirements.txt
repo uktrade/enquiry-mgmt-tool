@@ -50,7 +50,7 @@ psycopg2==2.9.7
 ptyprocess==0.7.0
 py==1.11.0
 pycparser==2.21
-Pygments==2.15.1
+Pygments==2.16.1
 PyJWT==2.8.0
 pyparsing==3.1.1
 pytest==7.4.0
