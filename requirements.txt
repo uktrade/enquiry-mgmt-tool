@@ -23,7 +23,7 @@ django-staff-sso-client==4.2.0
 djangorestframework==3.14.0
 djangorestframework-csv==2.1.1
 drf-writable-nested==0.7.0
-django-widget-tweaks==1.4.12
+django-widget-tweaks==1.5.0
 django-model-choices==1.0.0
 Faker==19.6.1
 factory-boy==3.3.0
