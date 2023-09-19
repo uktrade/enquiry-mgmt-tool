@@ -21,7 +21,7 @@
   "homepage": "https://github.com/uktrade/enquiry-mgmt-tool#readme",
   "dependencies": {
     "govuk-frontend": "^4.7.0",
-    "sass": "^1.66.1"
+    "sass": "^1.67.0"
   },
   "devDependencies": {
     "cypress": "11.2.0",
