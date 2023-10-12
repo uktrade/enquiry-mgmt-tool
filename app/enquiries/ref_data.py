@@ -380,7 +380,6 @@ class InvestmentType(models.TextChoices):
     JOINT_VENTURE = "JOINT_VENTURE", _("Joint venture")
     MERGER = "MERGER", _("Merger")
     RETENTION = "RETENTION", _("Retention")
-    NOT_SPECIFIED = "NOT_SPECIFIED", _("Not specified")
 
 
 class NewExistingInvestor(models.TextChoices):
