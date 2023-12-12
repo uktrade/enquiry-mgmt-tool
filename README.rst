@@ -337,7 +337,7 @@ Hosting the compiled documentation
 
 There is a |ci-workflow|_ defined in |file-ci-config|_ which compiles
 and deploys the documentation to the |gh-pages|_ branch of the |repository|_
-when code is pushed to the ``master`` branch, which is after every PR merge.
+when code is pushed to the ``main`` branch, which is after every PR merge.
 The deployed documentation will then be available at
 `<https://uktrade.github.io/enquiry-mgmt-tool>`_.
 
