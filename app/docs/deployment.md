@@ -1,6 +1,6 @@
 # Deployments
 
-Commits to `master` are automatically deployed to dev and staging environments.
+Commits to `main` are automatically deployed to dev and staging environments.
 
 Deployments to production are done manually through Jenkins where a Git tag can be used.
 
@@ -8,7 +8,7 @@ Deployments to production are done manually through Jenkins where a Git tag can 
 
 1. Post a message into the #data-hub-core-dev channel saying that you want to do a Enquiry Management Tool release and ask if there are any objections. If no objections, proceed with the following steps.
 
-2. Create a GIT tag `git tag v<MAJOR>.<MINOR>.<PATCH>`, e.g. `v3.4.0` pointing to the latest `master`.
+2. Create a GIT tag `git tag v<MAJOR>.<MINOR>.<PATCH>`, e.g. `v3.4.0` pointing to the latest `main`.
 
    | Release type      | When to increase                                                                         |
    | ----------------- | ---------------------------------------------------------------------------------------- |
