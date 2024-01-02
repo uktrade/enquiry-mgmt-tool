@@ -2,7 +2,7 @@
 $govuk-assets-path: '../static/govuk-frontend/assets/';
 $color-green-success: govuk-colour("green");
 $color-red-error: govuk-colour("red");
-@import "../node_modules/govuk-frontend/govuk/all";
+@import "../node_modules/govuk-frontend/dist/govuk/all";
 @import "_settings";
 @import "_enquiries";
 @import "_enquiry_list";
