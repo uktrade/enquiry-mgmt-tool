@@ -55,7 +55,7 @@ PyJWT==2.8.0
 pyparsing==3.1.1
 pytest==7.4.4
 pytest-cov==4.1.0
-pytest-django==4.7.0
+pytest-django==4.8.0
 pytest-freezegun==0.4.2
 pytz==2024.1
 redis==5.0.1
