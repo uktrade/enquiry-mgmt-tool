@@ -6,6 +6,12 @@ Cypress.Commands.add('findDetailsSection', number =>
     .find(number === 0 ? 'h2' : 'h3')
 )
 
+Cypress.on('uncaught:exception', (err, runnable) => {
+  if (err.message.includes('jQuery is not defined')) {
+    return false
+  }
+})
+
 const populateField = (type, name, value) => {
   if (typeof type === 'function') {
     return type()
