@@ -1,6 +1,6 @@
 ---
 applications:
 - buildpacks:
-    - https://github.com/cloudfoundry/python-buildpack.git#v1.8.14
+    - https://github.com/cloudfoundry/python-buildpack.git#v1.8.21
     - nodejs_buildpack
   stack: cflinuxfs4
