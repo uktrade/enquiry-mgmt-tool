@@ -2,7 +2,7 @@ attrs==23.2.0
 backcall==0.2.0
 beautifulsoup4==4.12.3
 cachecontrol-django==1.0.0
-celery[redis]==5.2.7
+celery[redis]==5.3.6
 certifi==2024.2.2
 cffi==1.16.0
 chardet==5.2.0
