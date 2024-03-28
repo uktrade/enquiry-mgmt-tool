@@ -8,12 +8,27 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from redis.exceptions import RedisError
 
+from app.pingdom.views import ping
+
+
 pytestmark = pytest.mark.django_db
 
 
 class ServiceHealthCheckPingdomTestCase(test_dh_utils.DataHubUtilsTests):
+    def test_ping(self):
+        """Fake Celery for Circle CI"""
+        with patch(
+            'app.enquiries.celery.app.control.inspect.stats',
+            return_value=[{"dummy": True}]
+        ):
+            response = ping({})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert '<status>OK</status>' in str(response.content)
+        assert response.headers['content-type'] == 'text/xml'
+
     def test_all_good(self):
-        """Test all good."""
+        """Fake Celery for Circle CI"""
         with patch(
             'app.enquiries.celery.app.control.inspect.stats',
             return_value=[{"dummy": True}]
