@@ -24,7 +24,7 @@ class ServiceHealthCheckPingdomTestCase(test_dh_utils.DataHubUtilsTests):
         check_celery.return_value = (True, "")
         check_redis.return_value = (True, "")
 
-        response = ping()
+        response = ping({})
 
         assert response.status_code == status.HTTP_200_OK
         assert '<status>OK</status>' in str(response.content)
@@ -33,7 +33,7 @@ class ServiceHealthCheckPingdomTestCase(test_dh_utils.DataHubUtilsTests):
     @patch.object(CheckDatabase, 'check')
     def test_ping_failure(self, check_database):
         check_database.return_value = (False, "Error message")
-        response = ping()
+        response = ping({})
 
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert '<status>FALSE</status>' in str(response.content)

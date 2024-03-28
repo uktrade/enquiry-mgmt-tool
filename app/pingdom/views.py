@@ -11,7 +11,7 @@ PINGDOM_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 COMMENT_TEMPLATE = "<!--{comment}-->\n"
 
 
-def ping():
+def ping(request):
     """Ping view."""
     checked = {}
     for service in services_to_check:
