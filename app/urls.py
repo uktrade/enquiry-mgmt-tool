@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from app.enquiries import views
-from app.pingdom.views import ping
+from app.enquiries.pingdom.views import ping
 
 urlpatterns = [
     path("", views.EnquiryListView.as_view(), name="index"),
