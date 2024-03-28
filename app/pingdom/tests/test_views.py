@@ -14,8 +14,12 @@ pytestmark = pytest.mark.django_db
 class ServiceHealthCheckPingdomTestCase(test_dh_utils.DataHubUtilsTests):
     def test_all_good(self):
         """Test all good."""
-        url = reverse('ping')
-        response = self.client.get(url)
+        with patch(
+            'app.enquiries.celery.app.control.inspect.stats',
+            return_value=[{"dummy": True}]
+        ):
+            url = reverse('ping')
+            response = self.client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
         assert '<status>OK</status>' in str(response.content)
