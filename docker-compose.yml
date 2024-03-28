@@ -33,15 +33,15 @@ services:
     command: celery -A app worker -l info -Q celery -B
 
   db:
-    image: postgres:12
+    image: postgres:16
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - 5432:5432
+      - 5432
 
   redis:
-    image: redis:6.2.6
+    image: redis:7.2
 
   mock-sso:
     image: ukti/mock-sso
