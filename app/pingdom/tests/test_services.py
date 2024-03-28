@@ -4,7 +4,7 @@ from django.db import DatabaseError
 from django.test import TestCase
 from redis import RedisError
 
-from app.enquiries.pingdom.services import CheckCelery, CheckDatabase, CheckRedis
+from app.pingdom.services import CheckCelery, CheckDatabase, CheckRedis
 
 
 class PingdomServicesTestCase(TestCase):
@@ -53,6 +53,16 @@ class PingdomServicesTestCase(TestCase):
             result = check_redis.check()
         assert check_redis.name == "redis"
         assert result == (True, "")
+
+    def test_check_redis_no_ping(self):
+        check_redis = CheckRedis()
+        with patch(
+            'redis.Redis.ping',
+            return_value=False,
+        ):
+            result = check_redis.check()
+        assert check_redis.name == "redis"
+        assert result == (False, "Redis is not connected")
 
     def test_check_redis_failure(self):
         check_redis = CheckRedis()

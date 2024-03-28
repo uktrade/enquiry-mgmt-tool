@@ -8,8 +8,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from redis.exceptions import RedisError
 
-from app.enquiries.pingdom.services import CheckCelery, CheckDatabase, CheckRedis
-from app.enquiries.pingdom.views import ping
+from app.pingdom.services import CheckCelery, CheckDatabase, CheckRedis
+from app.pingdom.views import ping
 
 
 pytestmark = pytest.mark.django_db
