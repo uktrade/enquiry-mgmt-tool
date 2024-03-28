@@ -7,7 +7,7 @@ from redis import RedisError
 from app.enquiries.pingdom.services import CheckCelery, CheckDatabase, CheckRedis
 
 
-class EnquiryViewTestCase(TestCase):
+class PingdomServicesTestCase(TestCase):
     def test_check_database_success(self):
         check_database = CheckDatabase()
         result = check_database.check()
