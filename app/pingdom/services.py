@@ -28,7 +28,7 @@ class CheckCelery:
             insp = celery_app.control.inspect()
             nodes = insp.stats()
             if not nodes:
-                raise Exception("Celery is not running.")
+                raise Exception("Celery is not running")
             return True, ""
         except Exception as exception:
             return False, f"Pingdom check Celery: {exception}"
