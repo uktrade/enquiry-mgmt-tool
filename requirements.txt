@@ -28,7 +28,7 @@ django-model-choices==1.0.0
 Faker==24.9.0
 factory-boy==3.3.0
 flake8==7.0.0
-gunicorn==21.2.0
+gunicorn==22.0.0
 idna==3.7
 ipython-genutils==0.2.0
 itypes==1.2.0
