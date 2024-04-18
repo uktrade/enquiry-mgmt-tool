@@ -172,6 +172,8 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -205,6 +207,7 @@ APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(APP_ROOT, 'enquiries', 'static')
 STATICFILES_DIRS = [
     ('govuk-frontend', 'node_modules/govuk-frontend/dist/govuk'),
+    ('jquery', 'node_modules/jquery/dist/'),
 ]
 
 # This setting alone will NOT enable the "Test Fixture API" facility -
