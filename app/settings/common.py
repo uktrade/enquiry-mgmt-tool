@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import logging.config
 import os
+import sys
 from urllib.parse import urlencode
 
 import environ
@@ -19,43 +20,49 @@ import sentry_sdk
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django_log_formatter_asim import ASIMFormatter
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
 
-logging.config.dictConfig({
+# Logging
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'console': {
-            'format': '[%(asctime)s] [%(levelname)-4s] %(name)-8s: %(message)s',
-            'datefmt': '%d-%m-%Y %H:%M:%S'
+        'verbose': {
+            'format': '%(asctime)s [%(levelname)s] [%(name)s] %(message)s'
         },
-        'file': {
-            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-        }
+        'asim_formatter': {
+            '()': ASIMFormatter,
+        },
     },
     'handlers': {
-        'console': {
+        'asim': {
             'class': 'logging.StreamHandler',
-            'formatter': 'console'
+            'formatter': 'asim_formatter',
+            'stream': sys.stdout,
         },
-        'file': {
-            'level': 'DEBUG' if env.bool('DEBUG') else 'INFO',
-            'class': 'logging.FileHandler',
-            'formatter': 'file',
-            'filename': '/tmp/debug.log'
-        }
+    },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['asim'],
     },
     'loggers': {
-        '': {
+        'django': {
             'level': 'INFO',
-            'handlers': ['console', 'file']
-        }
-    }
-})
+            'handlers': ['asim'],
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['asim'],
+            'propagate': False,
+        },
+    },
+}
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

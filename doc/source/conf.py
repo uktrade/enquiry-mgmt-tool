@@ -90,7 +90,7 @@ rst_prolog = re.search(r'rst_prolog.*?$(.*)',
                        re.MULTILINE | re.DOTALL).group(1)
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.8", None),
+    "python": ("https://docs.python.org/3.12", None),
     "django": (
         "https://docs.djangoproject.com/en/dev/",
         "https://docs.djangoproject.com/en/dev/_objects/",
