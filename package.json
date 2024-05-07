@@ -7,7 +7,9 @@
     "test": "cypress open --browser chrome --e2e",
     "sass": "sass sass/application.scss app/enquiries/static/application.css",
     "sass:watch": "npm run sass -- --watch",
-    "postinstall": "npm run sass"
+    "postinstall": "npm run sass",
+    "start": "echo start",
+    "build": "echo build"
   },
   "repository": {
     "type": "git",
