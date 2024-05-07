@@ -68,14 +68,14 @@ LOGGING = {
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Configure Sentry
-DJANGO_SENTRY_DSN = env('DJANGO_SENTRY_DSN')
-sentry_sdk.init(
-    dsn=DJANGO_SENTRY_DSN,
-    integrations=[
-        CeleryIntegration(),
-        DjangoIntegration(),
-    ],
-)
+if DJANGO_SENTRY_DSN := env.str('DJANGO_SENTRY_DSN', default=False):
+    sentry_sdk.init(
+        dsn=DJANGO_SENTRY_DSN,
+        integrations=[
+            CeleryIntegration(),
+            DjangoIntegration(),
+        ],
+    )
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
