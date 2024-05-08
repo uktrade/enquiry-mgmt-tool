@@ -3,7 +3,7 @@ DEBUG=True
 DJANGO_SECRET_KEY=supersecretkey
 
 # Database settings
-DATABASE_CREDENTIALS={"username": "postgres", "password": "password", "engine": "postgres", "port": 5432, "dbname": "postgres", "host": "db", "dbInstanceIdentifier": "emt-db"}
+DATABASE_CREDENTIALS='{"username": "postgres", "password": "password", "engine": "postgres", "port": 5432, "dbname": "postgres", "host": "db", "dbInstanceIdentifier": "emt-db"}'
 
 # Sentry
 DJANGO_SENTRY_DSN=""
