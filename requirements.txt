@@ -10,7 +10,9 @@ coreapi==2.3.3
 coreschema==0.0.4
 coverage==7.4.4
 cryptography==42.0.5
+dbt-copilot-python==0.2.1
 decorator==5.1.1
+dj-database-url
 Django==4.2.11
 django-autocomplete-light==3.11.0
 django-cache-memoize==0.2.0
