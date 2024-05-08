@@ -15,6 +15,8 @@ import os
 import sys
 from urllib.parse import urlencode
 
+import dj_database_url
+from dbt_copilot_python.database import database_url_from_env
 import environ
 import sentry_sdk
 from django.core.exceptions import ImproperlyConfigured
@@ -178,9 +180,9 @@ else:
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        **env.db('DATABASE_URL'),
-    }
+    'default': dj_database_url.config(
+        default=database_url_from_env("DATABASE_CREDENTIALS")
+    )
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
