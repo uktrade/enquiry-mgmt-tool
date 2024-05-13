@@ -22,7 +22,7 @@
   "dependencies": {
     "govuk-frontend": "^5.3.1",
     "jquery": "^3.7.1",
-    "sass": "^1.75.0"
+    "sass": "^1.77.1"
   },
   "devDependencies": {
     "cypress": "11.2.0",
