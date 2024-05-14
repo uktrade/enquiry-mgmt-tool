@@ -19,5 +19,7 @@ export DATA_HUB_ADVISER_SEARCH_URL="http://docker.for.mac.localhost:8000/adviser
 export DATA_HUB_WHOAMI_URL="http://docker.for.mac.localhost:8000/whoami/"
 export DATA_HUB_FRONTEND="https://www.datahub.dev.uktrade.io"
 export DATA_HUB_CREATE_COMPANY_PAGE_URL="https://www.datahub.dev.uktrade.io/companies/create"
+export DATA_HUB_HAWK_ID="hawk-id"
+export DATA_HUB_HAWK_KEY="hawk-key"
 
 python manage.py collectstatic --noinput
