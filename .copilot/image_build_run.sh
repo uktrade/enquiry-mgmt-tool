@@ -37,4 +37,7 @@ export NON_RESPONSIVE_ENQUIRY_INITIAL_LOAD_DATE="01-April-2020"
 export ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_NAME="enquiry-data-search-name"
 export ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_VALUE="enquiry-data-search-value"
 
+export ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS="1"
+export ENQUIRY_STATUS_SHOULD_UPDATE="0"
+
 python manage.py collectstatic --noinput
