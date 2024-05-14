@@ -22,4 +22,18 @@ export DATA_HUB_CREATE_COMPANY_PAGE_URL="https://www.datahub.dev.uktrade.io/comp
 export DATA_HUB_HAWK_ID="hawk-id"
 export DATA_HUB_HAWK_KEY="hawk-key"
 
+export ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS="1"
+export ACTIVITY_STREAM_KEY_ID="enquiry-mgmt-key-id"
+export ACTIVITY_STREAM_KEY="enquiry-mgmt-secret-key"
+export ACTIVITY_STREAM_SEARCH_URL="https://activity-stream/search"
+export ACTIVITY_STREAM_SEARCH_TARGET_URL="/international/invest/contact/"
+export ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY1="enquiry-key-1"
+export ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE1="enquiry-value-2"
+export ACTIVITY_STREAM_ENQUIRY_SEARCH_KEY2="enquiry-key-2"
+export ACTIVITY_STREAM_ENQUIRY_SEARCH_VALUE2="enquiry-value-2"
+export ACTIVITY_STREAM_ENQUIRY_DATA_OBJ="enquiry-data-obj"
+
+export ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_NAME="enquiry-data-search-name"
+export ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_VALUE="enquiry-data-search-value"
+
 python manage.py collectstatic --noinput
