@@ -8,6 +8,7 @@ set -e
 export DJANGO_SECRET_KEY="build-time-secret"
 export DEBUG="False"
 export FEATURE_ENFORCE_STAFF_SSO_ENABLED="False"
+export REDIS_BASE_URL="redis://redis:6379"
 export ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS="1"
 export DATABASE_CREDENTIALS='{"username": "postgres", "password": "password", "engine": "postgres", "port": 5432, "dbname": "postgres", "host": "db", "dbInstanceIdentifier": "emt-db"}'
 export DATA_HUB_METADATA_URL="http://docker.for.mac.localhost:8000/v4/metadsuf"
