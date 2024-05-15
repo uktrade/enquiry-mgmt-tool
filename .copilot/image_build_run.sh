@@ -21,8 +21,6 @@ export DATA_HUB_FRONTEND="https://www.datahub.dev.uktrade.io"
 export DATA_HUB_CREATE_COMPANY_PAGE_URL="https://www.datahub.dev.uktrade.io/companies/create"
 export DATA_HUB_HAWK_ID="hawk-id"
 export DATA_HUB_HAWK_KEY="hawk-key"
-
-export ACTIVITY_STREAM_ENQUIRY_POLL_INTERVAL_MINS="1"
 export ACTIVITY_STREAM_KEY_ID="enquiry-mgmt-key-id"
 export ACTIVITY_STREAM_KEY="enquiry-mgmt-secret-key"
 export ACTIVITY_STREAM_INITIAL_LOAD_DATE="01-January-2020"
