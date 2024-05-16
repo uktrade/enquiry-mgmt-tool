@@ -1,4 +1,4 @@
-const { defineConfig } = require('cypress')
+const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   video: false,
@@ -7,7 +7,8 @@ module.exports = defineConfig({
   defaultCommandTimeout: 10000,
   e2e: {
     setupNodeEvents(on, config) {},
-    specPattern: 'cypress/e2e_tests/specs//**/*.cy.{js,jsx,ts,tsx}',
-    baseUrl: 'http://localhost:8001',
+    specPattern: "cypress/e2e_tests/specs//**/*.cy.{js,jsx,ts,tsx}",
+    // baseUrl: "http://localhost:8001",
+    baseUrl: "https://enquiry-mgmt-dev.london.cloudapps.digital/",
   },
-})
+});
