@@ -59,7 +59,7 @@ pytest-django==4.8.0
 pytest-freezegun==0.4.2
 pytz==2024.1
 redis==5.0.4
-requests==2.32.0
+requests==2.32.2
 requests-hawk==1.2.1
 requests-mock==1.12.1
 sentry-sdk==2.3.1
