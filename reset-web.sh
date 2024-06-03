@@ -4,11 +4,14 @@
 
 set  -xe
 
-# Reset migrations to zero
+# Reset migrations for the enquiries app to zero
 ./manage.py migrate --fake enquiries zero
 
-# Make migrations
+# Make migrations for the enquiries app
 ./manage.py makemigrations enquiries
+
+# Apply migrations for the enquiries app
+./manage.py migrate enquiries
 
 # Apply migrations
 ./manage.py migrate --noinput
