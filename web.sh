@@ -10,7 +10,8 @@ if [ -n "${COPILOT_ENVIRONMENT_NAME}" ]; then
   echo "Running in DBT Platform"
 else
   echo "Running in Cloud Foundry"
-  python manage.py collectstatic  --noinput
 fi
+
+python manage.py collectstatic  --noinput
 
 gunicorn app.wsgi --config app/gunicorn.py
