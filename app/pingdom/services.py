@@ -50,6 +50,5 @@ class CheckRedis:
 
 services_to_check = (
     CheckDatabase,
-    CheckCelery,
     CheckRedis,
 )
