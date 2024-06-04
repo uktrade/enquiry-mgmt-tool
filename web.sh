@@ -4,10 +4,9 @@
 
 set  -xe
 
-./manage.py migrate --noinput
-
 if [ -n "${COPILOT_ENVIRONMENT_NAME}" ]; then
   echo "Running in DBT Platform"
+  ./manage.py migrate collectstatic --noinput
 else
   echo "Running in Cloud Foundry"
   python manage.py collectstatic  --noinput
