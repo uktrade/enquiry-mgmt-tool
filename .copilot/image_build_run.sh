@@ -95,4 +95,9 @@ export ACTIVITY_STREAM_SECOND_QUALIFICATION_SEARCH_VALUE="enquiry-data-search-va
 
 export ALLOW_TEST_FIXTURE_SETUP="allow"
 
+echo "Running npm i"
+npm i
+echo "Running npm run sass"
+npm run sass
+echo "Running python manage.py collectstatic --noinput --traceback"
 python manage.py collectstatic --noinput
