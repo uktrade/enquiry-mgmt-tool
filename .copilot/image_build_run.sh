@@ -38,7 +38,8 @@ export DATA_HUB_HAWK_KEY="hawk-key"
 export ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS="1"
 export ENQUIRY_STATUS_SHOULD_UPDATE="0"
 export REDIS_BASE_URL="redis://redis:6379"
-export CELERY_TIMEZONE="Europe/london"
+export CELERY_TIMEZONE="UTC"
+#export CELERY_TIMEZONE="Europe/london"
 
 # Staff SSO/OAuth2 settings
 export FEATURE_ENFORCE_STAFF_SSO_ENABLED="1"
