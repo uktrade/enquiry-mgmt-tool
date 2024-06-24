@@ -113,7 +113,7 @@ in the ``app/settings/.env`` file at the appropriate location.
 
 The actual values are added to the `Parameter store <https://eu-west-2.console.aws.amazon.com/systems-manager/parameters?region=eu-west-2&tab=Table#>`_.
 Ensure you are in the correct AWS account when accessing the parameter store. For dev, uat and staging use the
-``datahub`` acount when accessing the `AWS account page <https://uktrade.awsapps.com/start/#/?tab=accounts>`_
+``datahub`` account when accessing the `AWS account page <https://uktrade.awsapps.com/start/#/?tab=accounts>`_
 Once in the parameter store, you can filter for the ``dev`` environment.
 
 .. admonition:: Gov PaaS will be deprecated from July 2024 and keys will be moved from Vault to Parameter Store.
