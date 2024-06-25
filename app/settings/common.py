@@ -68,6 +68,7 @@ sentry_sdk.init(
         CeleryIntegration(),
         DjangoIntegration(),
     ],
+    enable_tracing=True,
 )
 
 # Quick-start development settings - unsuitable for production
