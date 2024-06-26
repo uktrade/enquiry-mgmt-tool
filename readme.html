@@ -177,8 +177,15 @@ will create a user in the database.</p>
 <p>The <a class="reference external" href="https://github.com/uktrade/enquiry-mgmt-tool/blob/master/sample_env"><code class="docutils literal notranslate"><span class="pre">sample_env</span></code></a> file contains all the required environment variable for the application.
 Sample values are provided in this file but the actual values are to be included
 in the <code class="docutils literal notranslate"><span class="pre">app/settings/.env</span></code> file at the appropriate location.</p>
+<p>The actual values are added to the <a class="reference external" href="https://eu-west-2.console.aws.amazon.com/systems-manager/parameters?region=eu-west-2&amp;tab=Table#">Parameter store</a>.
+Ensure you are in the correct AWS account when accessing the parameter store. For dev, uat and staging use the
+<code class="docutils literal notranslate"><span class="pre">datahub</span></code> account when accessing the <a class="reference external" href="https://uktrade.awsapps.com/start/#/?tab=accounts">AWS account page</a>
+Once in the parameter store, you can filter for the <code class="docutils literal notranslate"><span class="pre">dev</span></code> environment.</p>
+<div class="warning admonition">
+<p class="admonition-title">Gov PaaS will be deprecated from July 2024 and keys will be moved from Vault to Parameter Store.</p>
 <p>The actual values are added to <code class="docutils literal notranslate"><span class="pre">ready-to-trade</span></code> <cite>vault</cite>. Please use the values
 corresponding to the <code class="docutils literal notranslate"><span class="pre">dev</span></code> environment.</p>
+</div>
 <section id="single-sign-on-sso">
 <h3>Single Sign On (SSO)<a class="headerlink" href="#single-sign-on-sso" title="Permalink to this heading"></a></h3>
 <p>The app works out of the box with <a class="reference external" href="https://github.com/uktrade/mock-sso">Mock SSO</a>, which is part of the
