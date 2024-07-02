@@ -1,57 +1,57 @@
 [
-    {
-        "model": "enquiries.owner",
+  {
+    "model": "enquiries.owner",
 
-        "pk": 1,
-        "fields": {
-            "username": "ist-user-1",
-            "first_name": "Kaylee",
-            "last_name": "Richards",
-            "email": "ist.user.1@example.com"
-        }
-    },
-    {
-        "model": "enquiries.owner",
-
-        "pk": 2,
-        "fields": {
-            "username": "ist-user-2",
-            "first_name": "Sam",
-            "last_name": "Koenen",
-            "email": "ist.user.2@example.com"
-        }
-    },
-    {
-        "model": "enquiries.owner",
-
-        "pk": 3,
-        "fields": {
-            "username": "ist-user-3",
-            "first_name": "Julia",
-            "last_name": "Mieville",
-            "email": "ist.user.3@example.com"
-        }
-    },
-    {
-        "model": "enquiries.owner",
-
-        "pk": 4,
-        "fields": {
-            "username": "ist-user-4",
-            "first_name": "Dominique",
-            "last_name": "Fernandez",
-            "email": "ist.user.4@example.com"
-        }
-    },
-    {
-        "model": "enquiries.owner",
-
-        "pk": 5,
-        "fields": {
-            "username": "ist-user-5",
-            "first_name": "Aiden",
-            "last_name": "Collet",
-            "email": "ist.user.5@example.com"
-        }
+    "pk": 1,
+    "fields": {
+      "username": "ist-user-1",
+      "first_name": "Anais",
+      "last_name": "Reding",
+      "email": "ist.user.1@example.com"
     }
+  },
+  {
+    "model": "enquiries.owner",
+
+    "pk": 2,
+    "fields": {
+      "username": "ist-user-2",
+      "first_name": "Anna",
+      "last_name": "Brennan",
+      "email": "ist.user.2@example.com"
+    }
+  },
+  {
+    "model": "enquiries.owner",
+
+    "pk": 3,
+    "fields": {
+      "username": "ist-user-3",
+      "first_name": "Ahsan",
+      "last_name": "Zameer",
+      "email": "ist.user.3@example.com"
+    }
+  },
+  {
+    "model": "enquiries.owner",
+
+    "pk": 4,
+    "fields": {
+      "username": "ist-user-4",
+      "first_name": "Billy",
+      "last_name": "Glover",
+      "email": "ist.user.4@example.com"
+    }
+  },
+  {
+    "model": "enquiries.owner",
+
+    "pk": 5,
+    "fields": {
+      "username": "ist-user-5",
+      "first_name": "Adam",
+      "last_name": "Edwards",
+      "email": "ist.user.5@example.com"
+    }
+  }
 ]
