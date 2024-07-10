@@ -69,6 +69,7 @@ sentry_sdk.init(
         DjangoIntegration(),
     ],
     enable_tracing=True,
+    sample_rate=0.01,
 )
 
 # Quick-start development settings - unsuitable for production
