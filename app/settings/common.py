@@ -70,6 +70,8 @@ sentry_sdk.init(
     ],
     enable_tracing=True,
     sample_rate=0.01,
+    traces_sample_rate=0.01, # reduce the number of performance traces
+    enable_backpressure_handling=True, # ensure that when sentry is overloaded, we back off and wait
 )
 
 # Quick-start development settings - unsuitable for production
