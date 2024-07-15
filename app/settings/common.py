@@ -12,67 +12,76 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import logging.config
 import os
+import sys
 from urllib.parse import urlencode
 
+import dj_database_url
+from dbt_copilot_python.database import database_url_from_env
 import environ
 import sentry_sdk
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django_log_formatter_asim import ASIMFormatter
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 environ.Env.read_env()  # read the .env file which should be in the same folder as settings.py
 env = environ.Env()
 
-logging.config.dictConfig({
+# Logging
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'console': {
-            'format': '[%(asctime)s] [%(levelname)-4s] %(name)-8s: %(message)s',
-            'datefmt': '%d-%m-%Y %H:%M:%S'
+        'verbose': {
+            'format': '%(asctime)s [%(levelname)s] [%(name)s] %(message)s'
         },
-        'file': {
-            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-        }
+        'asim_formatter': {
+            '()': ASIMFormatter,
+        },
     },
     'handlers': {
-        'console': {
+        'asim': {
             'class': 'logging.StreamHandler',
-            'formatter': 'console'
+            'formatter': 'asim_formatter',
+            'stream': sys.stdout,
         },
-        'file': {
-            'level': 'DEBUG' if env.bool('DEBUG') else 'INFO',
-            'class': 'logging.FileHandler',
-            'formatter': 'file',
-            'filename': '/tmp/debug.log'
-        }
+    },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['asim'],
     },
     'loggers': {
-        '': {
+        'django': {
             'level': 'INFO',
-            'handlers': ['console', 'file']
-        }
-    }
-})
+            'handlers': ['asim'],
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['asim'],
+            'propagate': False,
+        },
+    },
+}
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Configure Sentry
-DJANGO_SENTRY_DSN = env('DJANGO_SENTRY_DSN')
-sentry_sdk.init(
-    dsn=DJANGO_SENTRY_DSN,
-    integrations=[
-        CeleryIntegration(),
-        DjangoIntegration(),
-    ],
-    enable_tracing=True,
-    sample_rate=0.01,
-    traces_sample_rate=0.01, # reduce the number of performance traces
-    enable_backpressure_handling=True, # ensure that when sentry is overloaded, we back off and wait
-)
+if DJANGO_SENTRY_DSN := env.str('DJANGO_SENTRY_DSN', default=False):
+    sentry_sdk.init(
+        dsn=DJANGO_SENTRY_DSN,
+        integrations=[
+            CeleryIntegration(),
+            DjangoIntegration(),
+        ],
+        enable_tracing=True,
+        sample_rate=0.01,
+        traces_sample_rate=0.01, # reduce the number of performance traces
+        enable_backpressure_handling=True, # ensure that when sentry is overloaded, we back off and wait
+    )
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -171,9 +180,9 @@ else:
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        **env.db('DATABASE_URL'),
-    }
+    'default': dj_database_url.config(
+        default=database_url_from_env("DATABASE_CREDENTIALS")
+    )
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
@@ -288,7 +297,7 @@ if REDIS_BASE_URL:
     encoded_query_args = urlencode(redis_url_args)
     BROKER_URL = f'{REDIS_BASE_URL}/{REDIS_CELERY_DB}?{encoded_query_args}'
     CELERY_RESULT_BACKEND = BROKER_URL
-    CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='Europe/london')
+    CELERY_TIMEZONE = env('CELERY_TIMEZONE', default='UTC')
     ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS = env.int('ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS', default=1)
     ENQUIRY_STATUS_SHOULD_UPDATE = env.bool('ENQUIRY_STATUS_SHOULD_UPDATE', True)
 
