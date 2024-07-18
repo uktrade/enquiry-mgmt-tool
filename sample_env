@@ -16,7 +16,7 @@ DATA_HUB_FRONTEND==https://www.datahub.dev.uktrade.io
 DATA_HUB_CREATE_COMPANY_PAGE_URL=https://www.datahub.dev.uktrade.io/companies/create
 
 # DataHub API variables when running Data Hub API locally on port 8000
-DATA_HUB_METADATA_URL=http://docker.for.mac.localhost:8000/v4/metadsuf
+DATA_HUB_METADATA_URL=http://docker.for.mac.localhost:8000/v4/metadata
 DATA_HUB_COMPANY_SEARCH_URL=http://docker.for.mac.localhost:8000/v4/search/company
 DATA_HUB_CONTACT_SEARCH_URL=http://docker.for.mac.localhost:8000/v3/search/contact
 DATA_HUB_CONTACT_CREATE_URL=http://docker.for.mac.localhost:8000/v3/contact
