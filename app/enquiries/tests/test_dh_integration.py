@@ -111,7 +111,7 @@ class DataHubIntegrationTests(TestCase):
             'stage': stage_id,
             'investor_type': None,
             'level_of_involvement': None,
-            'specific_programme': None,
+            'specific_programmes': [],
             'client_contacts': [contact_id],
             'client_relationship_manager': client_relationship_manager_id,
             'sector': sector_id,
