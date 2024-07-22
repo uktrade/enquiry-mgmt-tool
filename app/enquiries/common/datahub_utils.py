@@ -564,6 +564,10 @@ def dh_prepare_payload(
         A ``(payload, 'primary_sector')`` or ``(payload, None)``, where
         ``payload`` is a ``dict``.
     """
+    specific_programme_id = resolve_metadata_id(
+            enquiry.get_specific_investment_programme_display(),
+            fetch_metadata("investment-specific-programme"),
+        )
 
     sector = resolve_metadata_id(
         enquiry.get_primary_sector_display(),
@@ -595,10 +599,8 @@ def dh_prepare_payload(
             enquiry.get_investor_involvement_level_display(),
             fetch_metadata("investment-involvement"),
         ),
-        specific_programme=resolve_metadata_id(
-            enquiry.get_specific_investment_programme_display(),
-            fetch_metadata("investment-specific-programme"),
-        ),
+        # despite only accepting one in EMT, specific_programmes is a many-to-many field in DH API
+        specific_programmes=[specific_programme_id] if specific_programme_id is not None else [],
         client_contacts=[contact_id],
         client_relationship_manager=client_relationship_manager_id,
         sector=sector,
