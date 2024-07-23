@@ -31,8 +31,8 @@ export DATA_HUB_ADVISER_SEARCH_URL="http://docker.for.mac.localhost:8000/adviser
 export DATA_HUB_WHOAMI_URL="http://docker.for.mac.localhost:8000/whoami/"
 
 # Hawk
-export DATA_HUB_HAWK_ID="hawk-id"
-export DATA_HUB_HAWK_KEY="hawk-key"
+export DATA_HUB_ENQUIRY_MGMT_HAWK_ID="data-hub-enquiry-mgmt-hawk-id"
+export DATA_HUB_ENQUIRY_MGMT_HAWK_SECRET_KEY="data-hub-enquiry-mgmt-hawk-secret-key"
 
 # Celery and Redis
 export ENQUIRY_STATUS_UPDATE_INTERVAL_DAYS="1"

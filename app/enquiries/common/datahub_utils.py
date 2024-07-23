@@ -98,8 +98,8 @@ def fetch_metadata(name):
     response = cached_requests.get(
         url,
         auth=HawkAuth(
-            id=settings.DATA_HUB_HAWK_ID,
-            key=settings.DATA_HUB_HAWK_KEY,
+            id=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_ID,
+            key=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_SECRET_KEY,
         ),
         # Add dummy data to avoid error: MissingContent payload content and/or content_type cannot
         # be empty when always_hash_content is True
