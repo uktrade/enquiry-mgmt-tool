@@ -1,4 +1,6 @@
+import os
 import pytest
+import requests
 import requests_mock
 
 from datetime import date
@@ -12,6 +14,7 @@ from uuid import uuid4
 from app.enquiries.tests.factories import EnquiryFactory
 from app.enquiries.common.datahub_utils import (
     dh_request,
+    fetch_metadata,
     dh_company_search,
     dh_get_company_contact_list,
     dh_investment_create,
@@ -125,6 +128,45 @@ class DataHubIntegrationTests(TestCase):
         assert payload == expected_dh_payload
         assert error_key is None
 
+    def test_fetch_metadata_raises_error(self):
+        metadata_name = "investment-specific-programme"
+        response_json = {'detail': 'Incorrect authentication credentials.'}
+        with requests_mock.Mocker() as m:
+            url = os.path.join(settings.DATA_HUB_METADATA_URL, metadata_name)
+            m.get(url, status_code=401, json=response_json)
+            with (
+                self.assertLogs("app.enquiries.common.datahub_utils", level="ERROR") as log,
+                pytest.raises(requests.exceptions.HTTPError)
+            ):
+                fetch_metadata(metadata_name)
+        assert any(
+            f"Error fetching metadata for {metadata_name} from {url}"
+            in message for message in log.output
+        )
+        assert any(
+            f"; response body: {response_json}"
+            in message for message in log.output
+        )
+
+    def test_dh_request_raises_error(self):
+        url = settings.DATA_HUB_COMPANY_SEARCH_URL
+        timeout = 2
+        with (
+            self.assertLogs("app.enquiries.common.datahub_utils", level="ERROR") as log,
+            pytest.raises(Exception),
+        ):
+            dh_request(
+                "mock_request", "access_token", "PATCH", url, {"key": "value"}, timeout=timeout,
+            )
+        assert any(
+            f"Error while requesting {url}"
+            in message for message in log.output
+        )
+        assert any(
+            f"; request timeout set to {timeout} secs"
+            in message for message in log.output
+        )
+
     @mock.patch("requests.post")
     def test_dh_request_timeout(self, mock_post):
         """ Tests to ensure data hub requests raise exception """
@@ -213,3 +255,27 @@ class DataHubIntegrationTests(TestCase):
                 f"Enquiry can only be submitted once, previously submitted on {prev_date}, stage\
  {stage}",
             )
+
+    @mock.patch("app.enquiries.common.datahub_utils.dh_prepare_contact")
+    @mock.patch("app.enquiries.common.datahub_utils.dh_enquiry_readiness")
+    @mock.patch("app.enquiries.common.datahub_utils.dh_get_user_details")
+    @mock.patch("app.enquiries.common.datahub_utils.get_oauth_payload")
+    def test_investment_create_logs_error_when_failing_to_prepare_dh_payload(
+        self,
+        mock_oauth,
+        mock_get_user_details,
+        mock_enquiry_readiness,
+        mock_prepare_contact,
+    ):
+        mock_oauth.return_value = {"access_token": "mock_token"}
+        mock_get_user_details.return_value = ({"id": str(uuid4())}, None)
+        mock_enquiry_readiness.return_value = {"errors": [], "adviser": uuid4()}
+        mock_prepare_contact.return_value = (str(uuid4()), None)
+        with requests_mock.Mocker() as m:
+            url = os.path.join(settings.DATA_HUB_METADATA_URL, "investment-specific-programme")
+            m.get(url, status_code=401, json={"detail": "Incorrect authentication credentials."})
+            with self.assertLogs("app.enquiries.common.datahub_utils", level="ERROR") as log:
+                response = dh_investment_create("mock_request", EnquiryFactory())
+                assert "Error preparing payload for Data Hub" \
+                    in response["errors"][0]["investment_create"]
+        assert any("Error preparing payload for Data Hub" in message for message in log.output)
