@@ -76,11 +76,11 @@ def dh_request(
             response = requests.post(url, headers=headers, json=payload, timeout=timeout)
         return response
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Error while requesting {url}: {e}"
             f"; request timeout set to {timeout} secs"
         )
-        raise e
+        raise
 
 
 @cache_memoize(60 * 60)
@@ -112,10 +112,7 @@ def fetch_metadata(name):
         response.raise_for_status()
         return response.json()
     except Exception as e:
-        logger.error(
-            f"Error fetching metadata for {name} from {url}: {e}"
-            f"; response body: {response.json()}"
-        )
+        logger.exception(f"Error fetching metadata for {name} from {url}: {e}")
         raise
 
 
