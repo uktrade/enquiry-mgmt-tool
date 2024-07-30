@@ -143,10 +143,7 @@ class DataHubIntegrationTests(TestCase):
             f"Error fetching metadata for {metadata_name} from {url}"
             in message for message in log.output
         )
-        assert any(
-            f"; response body: {response_json}"
-            in message for message in log.output
-        )
+        assert any("Traceback" in message for message in log.output)
 
     def test_dh_request_raises_error(self):
         url = settings.DATA_HUB_COMPANY_SEARCH_URL
@@ -166,6 +163,7 @@ class DataHubIntegrationTests(TestCase):
             f"; request timeout set to {timeout} secs"
             in message for message in log.output
         )
+        assert any("Traceback" in message for message in log.output)
 
     @mock.patch("requests.post")
     def test_dh_request_timeout(self, mock_post):
