@@ -6,11 +6,11 @@ from cache_memoize import cache_memoize
 from datetime import date
 from django.conf import settings
 from django.forms.models import model_to_dict
-from requests_hawk import HawkAuth
 
 import app.enquiries.ref_data as ref_data
 from app.enquiries.utils import get_oauth_payload
 from app.enquiries.common.cache import cached_requests
+from app.enquiries.common.hawk import HawkAuth
 
 logger = logging.getLogger(__name__)
 
@@ -101,12 +101,9 @@ def fetch_metadata(name):
         response = cached_requests.get(
             url,
             auth=HawkAuth(
-                id=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_ID,
-                key=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_SECRET_KEY,
+                api_id=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_ID,
+                api_key=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_SECRET_KEY,
             ),
-            # Add dummy data to avoid error: MissingContent payload content and/or
-            # content_type cannot be empty when always_hash_content is True
-            data={"data": name},
             timeout=10,
         )
         response.raise_for_status()
