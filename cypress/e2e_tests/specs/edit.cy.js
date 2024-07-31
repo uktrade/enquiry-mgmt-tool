@@ -1,4 +1,5 @@
-const { format } = require('date-fns')
+import { format } from 'date-fns'
+
 require('../support/commands')
 const {
   assertSummaryDetails,
