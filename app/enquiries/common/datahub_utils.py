@@ -1,17 +1,18 @@
 import logging
 import os
 import requests
-from requests_hawk import HawkAuth
+
 from cache_memoize import cache_memoize
 from datetime import date
 from django.conf import settings
 from django.forms.models import model_to_dict
-from requests.exceptions import RequestException
-from urllib.error import HTTPError
 
 import app.enquiries.ref_data as ref_data
 from app.enquiries.utils import get_oauth_payload
 from app.enquiries.common.cache import cached_requests
+from app.enquiries.common.hawk import HawkAuth
+
+logger = logging.getLogger(__name__)
 
 
 def dh_request(
@@ -68,17 +69,18 @@ def dh_request(
         }
 
     params = params if params else {}
-
     try:
         if method == "GET":
             response = requests.get(url, headers=headers, params=params, timeout=timeout)
         elif method == "POST":
             response = requests.post(url, headers=headers, json=payload, timeout=timeout)
-    except RequestException as e:
-        logging.error(f"Error {e} while requesting {url}, request timeout set to {timeout} secs")
-        raise e
-
-    return response
+        return response
+    except Exception as e:
+        logger.exception(
+            f"Error while requesting {url}: {e}"
+            f"; request timeout set to {timeout} secs"
+        )
+        raise
 
 
 @cache_memoize(60 * 60)
@@ -89,25 +91,26 @@ def fetch_metadata(name):
 
     :param name:
         The trailing part of the |data-hub-api|_ metadata endpoint e.g.
-        ``https://api.datahub.dev.uktrade.io/v4/metadata/<name>``.
+        ``https://api.dev.datahub.uktrade.digital/v4/metadata/<name>``.
     :type name: str
 
     :returns: The parsed metadata as a ``list`` of dictionaries.
     """
     url = os.path.join(settings.DATA_HUB_METADATA_URL, name)
-    response = cached_requests.get(
-        url,
-        auth=HawkAuth(
-            id=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_ID,
-            key=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_SECRET_KEY,
-        ),
-        # Add dummy data to avoid error: MissingContent payload content and/or content_type cannot
-        # be empty when always_hash_content is True
-        data={"data": name},
-        timeout=10,
-    )
-    response.raise_for_status()
-    return response.json()
+    try:
+        response = cached_requests.get(
+            url,
+            auth=HawkAuth(
+                api_id=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_ID,
+                api_key=settings.DATA_HUB_ENQUIRY_MGMT_HAWK_SECRET_KEY,
+            ),
+            timeout=10,
+        )
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        logger.exception(f"Error fetching metadata for {name} from {url}: {e}")
+        raise
 
 
 def resolve_metadata_id(title, metadata):
@@ -681,29 +684,31 @@ def dh_investment_create(request, enquiry):
     client_relationship_manager_id = dh_status["adviser"]
 
     url = settings.DATA_HUB_INVESTMENT_CREATE_URL
-    payload, error_key = dh_prepare_payload(
-        enquiry,
-        company_id,
-        contact_id,
-        referral_adviser,
-        client_relationship_manager_id,
-    )
-    if error_key:
-        response["errors"].append({error_key: "Reference data mismatch in DataHub"})
+    try:
+        payload, error_key = dh_prepare_payload(
+            enquiry,
+            company_id,
+            contact_id,
+            referral_adviser,
+            client_relationship_manager_id,
+        )
+        if error_key:
+            response["errors"].append({error_key: "Reference data mismatch in DataHub"})
+            return response
+    except Exception as e:
+        message = f"Error preparing payload for Data Hub: {e}"
+        logger.error(message)
+        response["errors"].append({"investment_create": message})
         return response
 
     try:
         result = dh_request(request, access_token, "POST", url, payload)
-
         result.raise_for_status()
-
         response["result"] = result.json()
-    except HTTPError as e:
-        response["errors"].append(
-            {"investment_create": f"Error contacting DataHub_ to create investment, {str(e)}"}
-        )
     except Exception as e:
-        response["errors"].append({"investment_create": f"Error creating investment, {str(e)}"})
+        message = f"Error contacting Data Hub to create investment: {e}"
+        logger.error(message)
+        response["errors"].append({"investment_create": message})
         return response
 
     if result.ok:
