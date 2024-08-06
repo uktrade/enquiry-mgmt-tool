@@ -1,4 +1,4 @@
-attrs==23.2.0
+attrs==24.1.0
 backcall==0.2.0
 beautifulsoup4==4.12.3
 cachecontrol-django==1.0.0
@@ -8,7 +8,7 @@ cffi==1.16.0
 chardet==5.2.0
 coreapi==2.3.3
 coreschema==0.0.4
-coverage==7.6.0
+coverage==7.6.1
 cryptography==43.0.0
 dbt-copilot-python==0.2.1
 decorator==5.1.1
@@ -18,7 +18,7 @@ django-autocomplete-light==3.11.0
 django-cache-memoize==0.2.0
 django-environ==0.11.2
 django-extensions==3.2.3
-django-filter==24.2
+django-filter==24.3
 django-log-formatter-asim==0.0.5
 django-redis==5.4.0
 django-rest-knox==5.0.1
@@ -28,9 +28,9 @@ djangorestframework-csv==3.0.2
 drf-writable-nested==0.7.0
 django-widget-tweaks==1.5.0
 django-model-choices==1.0.0
-Faker==26.0.0
+Faker==26.1.0
 factory-boy==3.3.0
-flake8==7.1.0
+flake8==7.1.1
 gunicorn==22.0.0
 idna==3.7
 ipython-genutils==0.2.0
@@ -54,7 +54,7 @@ ptyprocess==0.7.0
 py==1.11.0
 pycparser==2.22
 Pygments==2.18.0
-PyJWT==2.8.0
+PyJWT==2.9.0
 pyparsing==3.1.2
 pytest==8.3.2
 pytest-cov==5.0.0
