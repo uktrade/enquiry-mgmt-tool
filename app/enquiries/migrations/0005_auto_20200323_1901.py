@@ -5,7 +5,6 @@ import django.contrib.auth.models
 import django.contrib.auth.validators
 from django.db import migrations, models
 import django.utils.timezone
-from django.utils.timezone import utc
 
 
 class Migration(migrations.Migration):
@@ -89,7 +88,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='owner',
             name='username',
-            field=models.CharField(default=datetime.datetime(2020, 3, 23, 19, 1, 33, 723242, tzinfo=utc), error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='username'),
+            field=models.CharField(default=datetime.datetime(2020, 3, 23, 19, 1, 33, 723242, tzinfo=datetime.timezone.utc), error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='username'),
             preserve_default=False,
         ),
     ]
