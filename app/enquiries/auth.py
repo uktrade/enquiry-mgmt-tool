@@ -37,7 +37,7 @@ class HawkAuthentication(BaseAuthentication):
         If we cannot authenticate, AuthenticationFailed is raised, as required
         in the DRF authentication flow
         """
-        if "HTTP_AUTHORIZATION" not in request.META:
+        if "authorization" not in request.headers:
             raise AuthenticationFailed(NO_CREDENTIALS_MESSAGE)
 
         try:
@@ -128,7 +128,7 @@ def _authorise(request):
     """Raises a HawkFail if the passed request cannot be authenticated"""
     return Receiver(
         _lookup_credentials,
-        request.META["HTTP_AUTHORIZATION"],
+        request.headers["authorization"],
         request.build_absolute_uri(),
         request.method,
         content=request.body,
@@ -180,12 +180,12 @@ class PaaSIPAuthentication(BaseAuthentication):
             logger.warning("PaaS IP check authentication is disabled.")
             return None
 
-        if "HTTP_X_FORWARDED_FOR" not in request.META:
+        if "x-forwarded-for" not in request.headers:
             # We assume that absence of the header indicates connection originating
             # in the internal network
             return None
 
-        x_forwarded_for = request.META["HTTP_X_FORWARDED_FOR"]
+        x_forwarded_for = request.headers["x-forwarded-for"]
         ip_addresses = x_forwarded_for.split(",")
 
         if len(ip_addresses) < settings.AUTH_PAAS_ADDED_X_FORWARDED_FOR_IPS:
