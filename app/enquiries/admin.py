@@ -18,11 +18,11 @@ class OwnerAdmin(admin.ModelAdmin):
     list_display = all_fields_of(Owner, ("password",))
 
 
+@admin.display(
+    description="Enquirer",
+)
 def enquirer(obj):
     return f"{obj.enquirer.first_name} {obj.enquirer.last_name}"
-
-
-enquirer.short_description = "Enquirer"
 
 
 @admin.register(Enquiry)
