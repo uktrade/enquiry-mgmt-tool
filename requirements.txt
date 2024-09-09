@@ -3,7 +3,7 @@ backcall==0.2.0
 beautifulsoup4==4.12.3
 cachecontrol-django==1.0.0
 celery[redis]==5.3.6
-certifi==2024.7.4
+certifi==2024.8.30
 cffi==1.17.0
 chardet==5.2.0
 coreapi==2.3.3
