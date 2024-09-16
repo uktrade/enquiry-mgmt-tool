@@ -32,7 +32,7 @@ Faker==28.4.1
 factory-boy==3.3.1
 flake8==7.1.1
 gunicorn==23.0.0
-idna==3.8
+idna==3.10
 ipython-genutils==0.2.0
 itypes==1.2.0
 jedi==0.19.1
