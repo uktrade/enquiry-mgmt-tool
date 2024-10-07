@@ -21,7 +21,7 @@ django-extensions==3.2.3
 django-filter==24.3
 django-log-formatter-asim==0.0.6
 django-redis==5.4.0
-django-rest-knox==5.0.1
+django-rest-knox==5.0.2
 django-staff-sso-client==4.3.0
 djangorestframework==3.15.2
 djangorestframework-csv==3.0.2
